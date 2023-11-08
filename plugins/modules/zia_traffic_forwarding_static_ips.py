@@ -36,23 +36,10 @@ author:
 version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
+extends_documentation_fragment:
+    - zscaler.ziacloud.fragments.credentials_set
+    - zscaler.ziacloud.fragments.provider
 options:
-  username:
-    description: "Username of admin user that is provisioned"
-    required: True
-    type: str
-  password:
-    description: "Password of the admin user"
-    required: True
-    type: str
-  api_key:
-    description: "The obfuscated form of the API key"
-    required: True
-    type: str
-  base_url:
-    description: "The host and basePath for the cloud services API"
-    required: True
-    type: str
   id:
     description: ""
     type: int
