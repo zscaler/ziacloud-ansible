@@ -89,18 +89,29 @@ def core(module):
             new_status = client.config.status()
 
             if new_status == "PENDING":
-                message = (f"Requested to change status to 'ACTIVE'. However, "
-                           f"due to another admin's pending changes, the status remains '{new_status}'. "
-                           "Please check with other admins or try again later.")
-                module.exit_json(changed=False, data={"status": new_status, "message": message})
+                message = (
+                    f"Requested to change status to 'ACTIVE'. However, "
+                    f"due to another admin's pending changes, the status remains '{new_status}'. "
+                    "Please check with other admins or try again later."
+                )
+                module.exit_json(
+                    changed=False, data={"status": new_status, "message": message}
+                )
             else:
                 message = f"Status was '{original_activation_status}' and is now '{new_status}'."
-                module.exit_json(changed=True, data={"status": new_status, "message": message})
+                module.exit_json(
+                    changed=True, data={"status": new_status, "message": message}
+                )
         else:
             message = f"Status remains '{original_activation_status}'."
-            module.exit_json(changed=False, data={"status": original_activation_status, "message": message})
+            module.exit_json(
+                changed=False,
+                data={"status": original_activation_status, "message": message},
+            )
     else:
-        module.fail_json(msg="State 'absent' is not supported as the API only provides POST and GET methods.")
+        module.fail_json(
+            msg="State 'absent' is not supported as the API only provides POST and GET methods."
+        )
 
     module.exit_json(changed=False, data={})
 

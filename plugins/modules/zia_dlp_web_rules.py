@@ -309,13 +309,17 @@ def core(module):
                     notification_template=existing_rule.get("notification_template"),
                     match_only=existing_rule.get("match_only"),
                     icap_server=existing_rule.get("icap_server"),
-                    without_content_inspection=existing_rule.get("without_content_inspection"),
+                    without_content_inspection=existing_rule.get(
+                        "without_content_inspection"
+                    ),
                     labels=existing_rule.get("labels"),
                     ocr_enabled=existing_rule.get("ocr_enabled"),
                     excluded_groups=existing_rule.get("excluded_groups"),
                     excluded_departments=existing_rule.get("excluded_departments"),
                     excluded_users=existing_rule.get("excluded_users"),
-                    zscaler_incident_receiver=existing_rule.get("zscaler_incident_receiver"),
+                    zscaler_incident_receiver=existing_rule.get(
+                        "zscaler_incident_receiver"
+                    ),
                 )
             )
             existing_rule = client.web_dlp.update_rule(**existing_rule).to_dict()

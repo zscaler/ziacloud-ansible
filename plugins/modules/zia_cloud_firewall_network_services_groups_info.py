@@ -84,7 +84,9 @@ def core(module: AnsibleModule):
         service_group = client.firewall.get_network_svc_group(group_id).to_dict()
         service_groups = [service_group]
     else:
-        service_groups = client.firewall.list_network_svc_groups(search=group_name).to_list()
+        service_groups = client.firewall.list_network_svc_groups(
+            search=group_name
+        ).to_list()
         if not service_groups:
             module.fail_json(
                 msg="Failed to retrieve network services group: '%s'" % (group_name)

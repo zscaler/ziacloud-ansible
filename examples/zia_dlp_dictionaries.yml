@@ -1,10 +1,33 @@
 - name: DLP Dictionaries
   hosts: localhost
+  vars:
+    zia_cloud:
+      username: "{{ lookup('env', 'ZIA_USERNAME') }}"
+      password: "{{ lookup('env', 'ZIA_PASSWORD') }}"
+      api_key: "{{ lookup('env', 'ZIA_API_KEY') }}"
+      cloud: "{{ lookup('env', 'ZIA_CLOUD') | default(omit) }}"
+
   tasks:
     - name: Gather information about DLP Dictionary (by id or name)
       zscaler.ziacloud.zia_dlp_dictionaries_info:
-        name: "Credit Cards"
+        provider: '{{ zia_cloud }}'
+        name: "TNID_LEAKAGE"
         # ip_address: "50.98.112.178"
       register: result
     - debug:
         msg: "{{ result }}"
+
+    # - name: Create DLP Dictionary
+    #   zscaler.ziacloud.zia_dlp_dictionaries:
+    #     name: "Ansible_Test"
+    #     description: "Ansible_Test"
+    #     match_type: "all"
+    #     phrases:
+    #       - action: "PHRASE_COUNT_TYPE_UNIQUE"
+    #         phrase: "YourPhrase"
+    #     patterns:
+    #       - action: "PATTERN_COUNT_TYPE_ALL"
+    #         pattern: "YourPattern"
+    #   register: result
+    # - debug:
+    #     msg: "{{ result }}"
