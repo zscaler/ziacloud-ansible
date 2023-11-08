@@ -1,0 +1,22 @@
+- name: DLP ICAP Servers
+  hosts: localhost
+  tasks:
+    - name: Gather Information Details of all icap servers
+      zscaler.ziacloud.zia_dlp_icap_servers_info:
+      register: result
+    - debug:
+        msg: "{{ result }}"
+
+    - name: Gather Information Details of a icap servers by name
+      zscaler.ziacloud.zia_dlp_icap_servers_info:
+        name: "ZS_BD_ICAP_01"
+      register: result
+    - debug:
+        msg: "{{ result }}"
+
+    - name: Gather Information Details of a icap servers by ID
+      zscaler.ziacloud.zia_dlp_icap_servers_info:
+        id: 1808
+      register: result
+    - debug:
+        msg: "{{ result }}"

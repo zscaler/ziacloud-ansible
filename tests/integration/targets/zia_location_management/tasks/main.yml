@@ -1,0 +1,180 @@
+---
+- block:
+    - name: Ensure ZIA API Credential is Set
+      ansible.builtin.fail:
+        msg: username, password and api_key should be defined in tests/integration/integration_config.yml
+      when:
+        - username is not defined
+        - username | length == 0
+        - password is not defined
+        - password | length == 0
+        - api_key  is not defined
+        - api_key | length == 0
+        - base_url | is not defined
+        - base_url | length == 0
+
+    - name: Ensure Location is absent (leftover)
+      zscaler.ziacloud.zia_location_management:
+        state: absent
+        username: "{{ username }}"
+        password: "{{ password }}"
+        api_key: "{{ api_key }}"
+        base_url: "{{ base_url }}"
+        name: "{{ name }}"
+        description: "{{ description }}"
+        country: "{{ country }}"
+        tz: "{{ tz }}"
+        auth_required: "{{ auth_required }}"
+        idle_time_in_minutes: "{{ idle_time_in_minutes }}"
+        display_time_unit: "{{ display_time_unit }}"
+        surrogate_ip: "{{ surrogate_ip }}"
+        xff_forward_enabled: "{{ xff_forward_enabled }}"
+        ofw_enabled: "{{ ofw_enabled }}"
+        ips_control: "{{ ips_control }}"
+        ip_addresses: "{{ ip_addresses }}"
+        ignore_errors: true # In case one was left from previous run
+      register: result
+
+    - name: Ensure Location is absent
+      zscaler.ziacloud.zia_location_management:
+        state: absent
+        username: "{{ username }}"
+        password: "{{ password }}"
+        api_key: "{{ api_key }}"
+        base_url: "{{ base_url }}"
+        name: "{{ name }}"
+        description: "{{ description }}"
+        country: "{{ country }}"
+        tz: "{{ tz }}"
+        auth_required: "{{ auth_required }}"
+        idle_time_in_minutes: "{{ idle_time_in_minutes }}"
+        display_time_unit: "{{ display_time_unit }}"
+        surrogate_ip: "{{ surrogate_ip }}"
+        xff_forward_enabled: "{{ xff_forward_enabled }}"
+        ofw_enabled: "{{ ofw_enabled }}"
+        ips_control: "{{ ips_control }}"
+        ip_addresses: "{{ ip_addresses }}"
+      register: result
+
+    - name: Verify Location is absent
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+
+    - name: Ensure Location is (Present)
+      zscaler.ziacloud.zia_location_management:
+        state: present
+        username: "{{ username }}"
+        password: "{{ password }}"
+        api_key: "{{ api_key }}"
+        base_url: "{{ base_url }}"
+        name: "{{ name }}"
+        description: "{{ description }}"
+        country: "{{ country }}"
+        tz: "{{ tz }}"
+        auth_required: "{{ auth_required }}"
+        idle_time_in_minutes: "{{ idle_time_in_minutes }}"
+        display_time_unit: "{{ display_time_unit }}"
+        surrogate_ip: "{{ surrogate_ip }}"
+        xff_forward_enabled: "{{ xff_forward_enabled }}"
+        ofw_enabled: "{{ ofw_enabled }}"
+        ips_control: "{{ ips_control }}"
+        ip_addresses: "{{ ip_addresses }}"
+      register: result
+
+    - name: Verify Location is Present
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+          - result.data is defined
+          - result.data.name is defined
+          - result.data.name == name
+          - result.data.description is defined
+          - result.data.description == description
+
+    - name: Ensure Location is (again; idempotency check)
+      zscaler.ziacloud.zia_location_management:
+        state: present
+        username: "{{ username }}"
+        password: "{{ password }}"
+        api_key: "{{ api_key }}"
+        base_url: "{{ base_url }}"
+        name: "{{ name }}"
+        description: "{{ description }}"
+        country: "{{ country }}"
+        tz: "{{ tz }}"
+        auth_required: "{{ auth_required }}"
+        idle_time_in_minutes: "{{ idle_time_in_minutes }}"
+        display_time_unit: "{{ display_time_unit }}"
+        surrogate_ip: "{{ surrogate_ip }}"
+        xff_forward_enabled: "{{ xff_forward_enabled }}"
+        ofw_enabled: "{{ ofw_enabled }}"
+        ips_control: "{{ ips_control }}"
+        ip_addresses: "{{ ip_addresses }}"
+      register: result
+
+    - name: Verify Location is absent
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+
+    - name: Fetch All Locations
+      zscaler.ziacloud.zia_location_management_info:
+        username: "{{ username }}"
+        password: "{{ password }}"
+        api_key: "{{ api_key }}"
+        base_url: "{{ base_url }}"
+      register: result
+
+    - name: Ensure all Locations found
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+          - result.data is defined
+
+    - name: Fetch this Location
+      zscaler.ziacloud.zia_location_management_info:
+        username: "{{ username }}"
+        password: "{{ password }}"
+        api_key: "{{ api_key }}"
+        base_url: "{{ base_url }}"
+        name: "{{ name }}"
+      register: result
+
+    - name: Ensure this Location is found
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+          - result.data is defined
+          - result.data.name is defined
+          - result.data.name == name
+
+    - name: Delete Location
+      zscaler.ziacloud.zia_location_management:
+        state: absent
+        username: "{{ username }}"
+        password: "{{ password }}"
+        api_key: "{{ api_key }}"
+        base_url: "{{ base_url }}"
+        name: "{{ name }}"
+      register: result
+
+    - name: Verify Location is Deleted
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+
+    - name: Delete Location (again; idempotency check)
+      zscaler.ziacloud.zia_location_management:
+        state: absent
+        username: "{{ username }}"
+        password: "{{ password }}"
+        api_key: "{{ api_key }}"
+        base_url: "{{ base_url }}"
+        name: "{{ name }}"
+      register: result
+
+    - name: Verify the Location is deleted
+      ansible.builtin.assert:
+        that:
+          - not result.changed

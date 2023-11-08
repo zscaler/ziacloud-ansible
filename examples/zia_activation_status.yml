@@ -1,0 +1,9 @@
+- name: Activation Status
+  hosts: localhost
+  tasks:
+    - name: Get Activation Status
+      zscaler.ziacloud.zia_activation_status:
+        status: "ACTIVE"
+      register: result
+    - debug:
+        msg: "{{ result }}"

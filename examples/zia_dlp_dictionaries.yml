@@ -1,0 +1,10 @@
+- name: DLP Dictionaries
+  hosts: localhost
+  tasks:
+    - name: Gather information about DLP Dictionary (by id or name)
+      zscaler.ziacloud.zia_dlp_dictionaries_info:
+        name: "Credit Cards"
+        # ip_address: "50.98.112.178"
+      register: result
+    - debug:
+        msg: "{{ result }}"

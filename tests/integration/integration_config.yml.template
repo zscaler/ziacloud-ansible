@@ -1,0 +1,5 @@
+---
+username: ${ZIA_USERNAME}
+papssword: ${ZIA_PASSWORD}
+api_key: ${ZIA_API_KEY}
+base_url: ${ZIA_BASE_URL}

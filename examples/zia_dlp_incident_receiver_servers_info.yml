@@ -1,0 +1,22 @@
+- name: DLP Incident Receivers
+  hosts: localhost
+  tasks:
+    - name: Gather Information Details of all Incident Receivers
+      zscaler.ziacloud.zia_dlp_incident_receiver_servers_info:
+      register: result
+    - debug:
+        msg: "{{ result }}"
+
+    - name: Gather Information Details of a Incident Receivers by name
+      zscaler.ziacloud.zia_dlp_incident_receiver_servers_info:
+        name: "ZIR-BD-SA01"
+      register: result
+    - debug:
+        msg: "{{ result }}"
+
+    - name: Gather Information Details of a Incident Receivers by ID
+      zscaler.ziacloud.zia_dlp_incident_receiver_servers_info:
+        id: 1664
+      register: result
+    - debug:
+        msg: "{{ result }}"
