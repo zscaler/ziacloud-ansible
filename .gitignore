@@ -110,5 +110,5 @@ zpa_all_together/*
 ansible_collections/
 ansible_demo/
 tests/integration/integration_config.yml
-local_dev
+local_test
 ansible.cfg
