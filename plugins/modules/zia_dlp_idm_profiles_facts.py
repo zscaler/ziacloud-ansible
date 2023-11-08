@@ -27,10 +27,10 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_cloud_firewall_network_application_groups_info
-short_description: "Gets a list of all network application groups."
+module: zia_dlp_idm_profiles_facts
+short_description: "Get IDM template information"
 description:
-  - "Gets a list of all network application groups."
+  - "Get IDM template information for the specified ID or Name"
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
@@ -53,27 +53,28 @@ options:
     description: "The host and basePath for the cloud services API"
     required: true
     type: str
-  id:
-    description: ""
+  profile_id:
+    description: "The identifier (1-64) for the IDM template (i.e., IDM profile) that is unique within the organization"
     required: false
     type: int
-  name:
-    description: ""
-    required: true
+  profile_name:
     type: str
+    required: false
+    description:
+      - The IDM template name, which is unique per Index Tool.
 """
 
 EXAMPLES = """
-- name: Gather Information Details of all application groups
-  zscaler.ziacloud.zia_fw_filtering_network_application_groups_info:
+- name: Gets all list of DLP IDM Profiles
+  zscaler.ziacloud.zia_dlp_idm_profiles_facts:
 
-- name: Gather Information of an Application Group by Name
-  zscaler.ziacloud.zia_fw_filtering_network_application_groups_info:
-    name: "Microsoft Office365"
+- name: Gets a list of  DLP IDM Profiles by name
+  zscaler.ziacloud.zia_dlp_idm_profiles_facts:
+    name: "IDM_PROFILE_TEMPLATE"
 """
 
 RETURN = """
-# Returns information on a specific or all application groups.
+# Returns information about specific DLP IDM Profiles.
 """
 
 from traceback import format_exc
@@ -81,46 +82,39 @@ from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    zia_argument_spec,
+    ZIAClientHelper,
 )
-from zscaler import ZIA
 
 
-def core(module: AnsibleModule):
-    app_group_id = module.params.get("id", None)
-    app_group_name = module.params.get("name", None)
-    client = ZIA(
-        api_key=module.params.get("api_key", ""),
-        cloud=module.params.get("base_url", ""),
-        username=module.params.get("username", ""),
-        password=module.params.get("password", ""),
-    )
-    app_groups = []
-    if app_group_id is not None:
-        app_group = client.firewall.get_network_app_group(app_group_id).to_dict()
-        app_groups = [app_group]
+def core(module):
+    profile_id = module.params.get("profile_id", None)
+    profile_name = module.params.get("template_name", None)
+    client = ZIAClientHelper(module)
+    idm_profiles = []
+    if profile_id is not None:
+        profile = client.dlp.get_dlp_idm_profiles(profile_id).to_dict()
+        idm_profiles = [profile]
     else:
-        app_groups = client.firewall.list_network_app_groups().to_list()
-        if app_group_name is not None:
-            app_group = None
-            for app in app_groups:
-                if app.get("name", None) == app_group_name:
-                    app_group = app
+        idm_profiles = client.dlp.list_dlp_idm_profiles().to_list()
+        if profile_name is not None:
+            profile = None
+            for idm in idm_profiles:
+                if idm.get("profile_name", None) == profile_name:
+                    profile = idm
                     break
-            if app_group is None:
+            if profile is None:
                 module.fail_json(
-                    msg="Failed to retrieve network application groups: '%s'"
-                    % (app_group_name)
+                    msg="Failed to retrieve dlp idm profile: '%s'" % (profile_name)
                 )
-            app_groups = [app_group]
-    module.exit_json(changed=False, data=app_groups)
+            idm_profiles = [profile]
+    module.exit_json(changed=False, data=idm_profiles)
 
 
 def main():
-    argument_spec = zia_argument_spec()
+    argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
-        name=dict(type="str", required=False),
-        id=dict(type="int", required=False),
+        profile_name=dict(type="str", required=False),
+        profile_id=dict(type="int", required=False),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
     try:

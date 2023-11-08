@@ -27,7 +27,7 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_dlp_incident_receiver_servers_info
+module: zia_dlp_incident_receiver_servers_facts
 short_description: "Gets a list of DLP Incident Receivers."
 description:
   - "Gets a list of DLP Incident Receivers."
@@ -66,10 +66,10 @@ options:
 
 EXAMPLES = """
 - name: Gets all list of DLP Incident Receiver Server
-  zscaler.ziacloud.zia_dlp_incident_receiver_servers_info:
+  zscaler.ziacloud.zia_dlp_incident_receiver_servers_facts:
 
 - name: Gets a list of DLP Incident Receiver Server by name
-  zscaler.ziacloud.zia_dlp_incident_receiver_servers_info:
+  zscaler.ziacloud.zia_dlp_incident_receiver_servers_facts:
     name: "ZIR_BD_SA01
 "
 """
@@ -83,20 +83,14 @@ from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    zia_argument_spec,
+    ZIAClientHelper,
 )
-from zscaler import ZIA
 
 
-def core(module: AnsibleModule):
+def core(module):
     receiver_id = module.params.get("id", None)
     receiver_name = module.params.get("name", None)
-    client = ZIA(
-        api_key=module.params.get("api_key", ""),
-        cloud=module.params.get("base_url", ""),
-        username=module.params.get("username", ""),
-        password=module.params.get("password", ""),
-    )
+    client = ZIAClientHelper(module)
     receivers = []
     if receiver_id is not None:
         receiver = client.dlp.get_dlp_incident_receiver(receiver_id).to_dict()
@@ -119,7 +113,7 @@ def core(module: AnsibleModule):
 
 
 def main():
-    argument_spec = zia_argument_spec()
+    argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         name=dict(type="str", required=False),
         id=dict(type="int", required=False),

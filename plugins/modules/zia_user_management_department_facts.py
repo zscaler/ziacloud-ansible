@@ -27,10 +27,10 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_dlp_idm_profiles_info
-short_description: "Get IDM template information"
+module: zia_user_management_department_facts
+short_description: "Gets a list of user departments"
 description:
-  - "Get IDM template information for the specified ID or Name"
+  - "Gets a list of departments"
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
@@ -53,28 +53,27 @@ options:
     description: "The host and basePath for the cloud services API"
     required: true
     type: str
-  profile_id:
-    description: "The identifier (1-64) for the IDM template (i.e., IDM profile) that is unique within the organization"
+  id:
+    description: "Department ID."
     required: false
     type: int
-  profile_name:
+  name:
+    description: "Department name."
+    required: true
     type: str
-    required: false
-    description:
-      - The IDM template name, which is unique per Index Tool.
 """
 
 EXAMPLES = """
-- name: Gets all list of DLP IDM Profiles
-  zscaler.ziacloud.zia_dlp_idm_profiles_info:
+- name: Gets a list of all departments
+  zscaler.ziacloud.zia_user_management_department_facts:
 
-- name: Gets a list of  DLP IDM Profiles by name
-  zscaler.ziacloud.zia_dlp_idm_profiles_info:
-    name: "IDM_PROFILE_TEMPLATE"
+- name: Gets a list of a single department
+  zscaler.ziacloud.zia_user_management_department_facts:
+    name: "marketing"
 """
 
 RETURN = """
-# Returns information about specific DLP IDM Profiles.
+# Returns information of all departments.
 """
 
 from traceback import format_exc
@@ -82,45 +81,39 @@ from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    zia_argument_spec,
+    ZIAClientHelper,
 )
-from zscaler import ZIA
 
 
-def core(module: AnsibleModule):
-    profile_id = module.params.get("profile_id", None)
-    profile_name = module.params.get("template_name", None)
-    client = ZIA(
-        api_key=module.params.get("api_key", ""),
-        cloud=module.params.get("base_url", ""),
-        username=module.params.get("username", ""),
-        password=module.params.get("password", ""),
-    )
-    idm_profiles = []
-    if profile_id is not None:
-        profile = client.dlp.get_dlp_idm_profiles(profile_id).to_dict()
-        idm_profiles = [profile]
+def core(module):
+    department_id = module.params.get("id", None)
+    department_name = module.params.get("name", None)
+    client = ZIAClientHelper(module)
+    departments = []
+    if department_id is not None:
+        department = client.users.get_department(department_id).to_dict()
+        departments = [department]
     else:
-        idm_profiles = client.dlp.list_dlp_idm_profiles().to_list()
-        if profile_name is not None:
-            profile = None
-            for idm in idm_profiles:
-                if idm.get("profile_name", None) == profile_name:
-                    profile = idm
+        departments = client.users.list_departments().to_list()
+        if department_name is not None:
+            department = None
+            for dept in departments:
+                if dept.get("name", None) == department_name:
+                    department = dept
                     break
-            if profile is None:
+            if department is None:
                 module.fail_json(
-                    msg="Failed to retrieve dlp idm profile: '%s'" % (profile_name)
+                    msg="Failed to retrieve department: '%s'" % (department_name)
                 )
-            idm_profiles = [profile]
-    module.exit_json(changed=False, data=idm_profiles)
+            departments = [department]
+    module.exit_json(changed=False, data=departments)
 
 
 def main():
-    argument_spec = zia_argument_spec()
+    argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
-        profile_name=dict(type="str", required=False),
-        profile_id=dict(type="int", required=False),
+        name=dict(type="str", required=False),
+        id=dict(type="str", required=False),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
     try:

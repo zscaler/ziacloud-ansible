@@ -10,7 +10,7 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_cloud_firewall_network_services_groups_info
+module: zia_cloud_firewall_network_services_groups_facts
 short_description: "Gets a list of all network service groups."
 description:
   - "Gets a list of all network service groups."
@@ -48,10 +48,10 @@ options:
 
 EXAMPLES = """
 - name: Gather Information Details of all network services groups
-  zscaler.ziacloud.zia_fw_filtering_network_services_groups_info:
+  zscaler.ziacloud.zia_fw_filtering_network_services_groups_facts:
 
 - name: Gather Information Details of a specific network services group
-  zscaler.ziacloud.zia_fw_filtering_network_services_groups_info:
+  zscaler.ziacloud.zia_fw_filtering_network_services_groups_facts:
     name: "Corporate Custom SSH TCP_10022"
 """
 
@@ -64,20 +64,14 @@ from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    zia_argument_spec,
+    ZIAClientHelper,
 )
-from zscaler import ZIA
 
 
-def core(module: AnsibleModule):
+def core(module):
     group_id = module.params.get("id", None)
     group_name = module.params.get("name", None)
-    client = ZIA(
-        api_key=module.params.get("api_key", ""),
-        cloud=module.params.get("base_url", ""),
-        username=module.params.get("username", ""),
-        password=module.params.get("password", ""),
-    )
+    client = ZIAClientHelper(module)
     service_groups = []
 
     if group_id is not None:
@@ -109,7 +103,7 @@ def core(module: AnsibleModule):
 
 
 def main():
-    argument_spec = zia_argument_spec()
+    argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         name=dict(type="str", required=False),
         id=dict(type="int", required=False),

@@ -27,10 +27,10 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_dlp_icap_servers_info
-short_description: "Gets a the list of DLP servers using ICAP."
+module: zia_admin_role_management_facts
+short_description: "Gets a list of admin roles"
 description:
-  - "Gets a the list of DLP servers using ICAP."
+  - "Gets a list of admin roles"
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
@@ -54,27 +54,26 @@ options:
     required: true
     type: str
   id:
-    description: "The unique identifier for a DLP ICAP server."
+    description: "Admin role ID."
     required: false
     type: int
   name:
+    description: "Name of the admin role."
+    required: true
     type: str
-    required: false
-    description:
-      - The DLP ICAP server name.
 """
 
 EXAMPLES = """
-- name: Gets all list of DLP ICAP Server
-  zscaler.ziacloud.zia_dlp_icap_servers_info:
+- name: Gets a list of all admin roles
+  zscaler.ziacloud.zia_admin_role_management_facts:
 
-- name: Gets a list of DLP ICAP Server by name
-  zscaler.ziacloud.zia_dlp_icap_servers_info:
-    name: "ZS_ICAP"
+- name: Gets a list of an admin roles
+  zscaler.ziacloud.zia_admin_role_management_facts:
+    name: "marketing"
 """
 
 RETURN = """
-# Returns information about specific DLP ICAP Server.
+# Returns information of all admin roles.
 """
 
 from traceback import format_exc
@@ -82,45 +81,36 @@ from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    zia_argument_spec,
+    ZIAClientHelper,
 )
-from zscaler import ZIA
 
 
-def core(module: AnsibleModule):
-    icap_server_id = module.params.get("id", None)
-    icap_server_name = module.params.get("name", None)
-    client = ZIA(
-        api_key=module.params.get("api_key", ""),
-        cloud=module.params.get("base_url", ""),
-        username=module.params.get("username", ""),
-        password=module.params.get("password", ""),
-    )
-    icaps = []
-    if icap_server_id is not None:
-        icap = client.dlp.get_dlp_icap_servers(icap_server_id).to_dict()
-        icaps = [icap]
-    else:
-        icaps = client.dlp.list_dlp_icap_servers().to_list()
-        if icap_server_name is not None:
-            icap = None
-            for dlp in icaps:
-                if dlp.get("name", None) == icap_server_name:
-                    icap = dlp
+def core(module):
+    # role_id = module.params.get("id", None)
+    role_name = module.params.get("name", None)
+    client = ZIAClientHelper(module)
+    roles = []
+    if role_name is not None:
+        roles = client.admin_and_role_management.list_roles().to_list()
+        if role_name is not None:
+            role = None
+            for rol in roles:
+                if rol.get("name", None) == role_name:
+                    role = rol
                     break
-            if icap is None:
+            if role is None:
                 module.fail_json(
-                    msg="Failed to retrieve dlp icap server: '%s'" % (icap_server_name)
+                    msg="Failed to retrieve admin role management: '%s'" % (role_name)
                 )
-            icaps = [icap]
-    module.exit_json(changed=False, data=icaps)
+            roles = [role]
+    module.exit_json(changed=False, data=roles)
 
 
 def main():
-    argument_spec = zia_argument_spec()
+    argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         name=dict(type="str", required=False),
-        id=dict(type="int", required=False),
+        id=dict(type="str", required=False),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
     try:

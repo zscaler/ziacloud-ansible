@@ -27,10 +27,9 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_rule_labels_info
-short_description: "Gets a list of rule labels"
-description:
-  - "Gets a list of rule labels"
+module: zia_dlp_dictionaries_facts
+short_description: "Custom and predefined DLP dictionaries."
+description: "Gets information on all custom and predefined DLP dictionaries."
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
@@ -54,111 +53,65 @@ options:
     required: true
     type: str
   id:
-    description: "The unique identifier for the rule label."
+    description: "Unique identifier for the DLP dictionary"
     required: false
     type: int
   name:
-    description: "The rule label name."
-    required: true
-    type: str
-  description:
-    description: "The rule label description."
-    required: true
-    type: str
-  last_modified_time:
-    description: "Timestamp when the rule lable was last modified. This is a read-only field. Ignored by PUT and DELETE requests."
-    required: true
-    type: int
-  last_modified_by:
-    description: "The admin that modified the rule label last. This is a read-only field. Ignored by PUT requests."
-    type: list
-    elements: dict
-    suboptions:
-      id:
-        type: int
-        required: false
-        description:
-          - Identifier that uniquely identifies an entity.
-      name:
-        type: str
-        required: false
-        description:
-          - The configured name of the entity.
-  created_by:
-    description: "The admin that created the rule label. This is a read-only field. Ignored by PUT requests"
-    type: list
-    elements: dict
-    suboptions:
-      id:
-        type: int
-        required: false
-        description:
-          - Identifier that uniquely identifies an entity.
-      name:
-        type: str
-        required: false
-        description:
-          - The configured name of the entity.
-  referenced_rule_count:
-    description: "The rule label name."
+    description: "Name of the DLP dictionary's name"
     required: true
     type: str
 """
 
 EXAMPLES = """
-- name: Gets all list of rule label
-  zscaler.ziacloud.zia_rule_labels_info:
+- name: Gather Information Details of all ZIA DLP Dictionaries
+  zscaler.ziacloud.zia_firewall_filtering_rules_facts:
 
-- name: Gets a list of rule label by name
-  zscaler.ziacloud.zia_rule_labels_info:
-    name: "example"
+- name: Gather Information Details of a ZIA DLP Dictionaries by Name
+  zscaler.ziacloud.zia_firewall_filtering_rules_facts:
+    name: "Example"
 """
 
 RETURN = """
-# Returns information specific Gets rule labels.
+# Returns information on a specified ZIA DLP Dictionaries.
 """
+
 
 from traceback import format_exc
 
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    zia_argument_spec,
+    ZIAClientHelper,
 )
-from zscaler import ZIA
 
 
-def core(module: AnsibleModule):
-    label_id = module.params.get("id", None)
-    label_name = module.params.get("name", None)
-    client = ZIA(
-        api_key=module.params.get("api_key", ""),
-        cloud=module.params.get("base_url", ""),
-        username=module.params.get("username", ""),
-        password=module.params.get("password", ""),
-    )
-    labels = []
-    if label_id is not None:
-        label = client.labels.get_label(label_id).to_dict()
-        labels = [label]
+
+def core(module):
+    dict_id = module.params.get("id", None)
+    dict_name = module.params.get("name", None)
+    client = ZIAClientHelper(module)
+    dictionaries = []
+    if dict_id is not None:
+        dictionary = client.dlp.get_dict(dict_id).to_dict()
+        dictionaries = [dictionary]
     else:
-        labels = client.labels.list_labels().to_list()
-        if label_name is not None:
-            label = None
-            for rule in labels:
-                if rule.get("name", None) == label_name:
-                    label = rule
+        dictionaries = client.dlp.list_dicts().to_list()
+        if dict_name is not None:
+            dictionary = None
+            for dict in dictionaries:
+                if dict.get("name", None) == dict_name:
+                    dictionary = dict
                     break
-            if label is None:
+            if dictionary is None:
                 module.fail_json(
-                    msg="Failed to retrieve ip source group: '%s'" % (label_name)
+                    msg="Failed to retrieve dlp dictionary: '%s'" % (dict_name)
                 )
-            labels = [label]
-    module.exit_json(changed=False, data=labels)
+            dictionaries = [dictionary]
+    module.exit_json(changed=False, data=dictionaries)
 
 
 def main():
-    argument_spec = zia_argument_spec()
+    argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         name=dict(type="str", required=False),
         id=dict(type="int", required=False),

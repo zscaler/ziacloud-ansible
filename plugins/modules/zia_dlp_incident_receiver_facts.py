@@ -27,10 +27,10 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_admin_role_management_info
-short_description: "Gets a list of admin roles"
+module: zia_dlp_incident_receiver_facts
+short_description: "Gets a list of DLP Incident Receivers."
 description:
-  - "Gets a list of admin roles"
+  - "Gets a list of DLP Incident Receivers."
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
@@ -54,26 +54,27 @@ options:
     required: true
     type: str
   id:
-    description: "Admin role ID."
+    description: "The unique identifier for the Incident Receiver."
     required: false
     type: int
   name:
-    description: "Name of the admin role."
-    required: true
     type: str
+    required: false
+    description:
+      - "The Incident Receiver server name."
 """
 
 EXAMPLES = """
-- name: Gets a list of all admin roles
-  zscaler.ziacloud.zia_admin_role_management_info:
+- name: Gets all list of DLP Incident Receivers
+  zscaler.ziacloud.zia_dlp_icident_receiver_facts:
 
-- name: Gets a list of an admin roles
-  zscaler.ziacloud.zia_admin_role_management_info:
-    name: "marketing"
+- name: Gets a list of DLP Incident Receivers by name
+  zscaler.ziacloud.zia_dlp_icident_receiver_facts:
+    name: "ZS_INC_RECEIVER_01"
 """
 
 RETURN = """
-# Returns information of all admin roles.
+# Returns information about specific DLP Incident Receivers.
 """
 
 from traceback import format_exc
@@ -81,42 +82,40 @@ from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    zia_argument_spec,
+    ZIAClientHelper,
 )
-from zscaler import ZIA
 
 
-def core(module: AnsibleModule):
-    # role_id = module.params.get("id", None)
-    role_name = module.params.get("name", None)
-    client = ZIA(
-        api_key=module.params.get("api_key", ""),
-        cloud=module.params.get("base_url", ""),
-        username=module.params.get("username", ""),
-        password=module.params.get("password", ""),
-    )
-    roles = []
-    if role_name is not None:
-        roles = client.admin_and_role_management.list_roles().to_list()
-        if role_name is not None:
-            role = None
-            for rol in roles:
-                if rol.get("name", None) == role_name:
-                    role = rol
+def core(module):
+    receiver_id = module.params.get("id", None)
+    receiver_name = module.params.get("name", None)
+    client = ZIAClientHelper(module)
+    receivers = []
+    if receiver_id is not None:
+        receiver = client.dlp.get_dlp_incident_receiver(receiver_id).to_dict()
+        receivers = [receiver]
+    else:
+        receivers = client.dlp.list_dlp_incident_receiver().to_list()
+        if receiver_name is not None:
+            receiver = None
+            for dlp in receivers:
+                if dlp.get("name", None) == receiver_name:
+                    receiver = dlp
                     break
-            if role is None:
+            if receiver is None:
                 module.fail_json(
-                    msg="Failed to retrieve admin role management: '%s'" % (role_name)
+                    msg="Failed to retrieve dlp incident receiver: '%s'"
+                    % (receiver_name)
                 )
-            roles = [role]
-    module.exit_json(changed=False, data=roles)
+            receivers = [receiver]
+    module.exit_json(changed=False, data=receivers)
 
 
 def main():
-    argument_spec = zia_argument_spec()
+    argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         name=dict(type="str", required=False),
-        id=dict(type="str", required=False),
+        id=dict(type="int", required=False),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
     try:

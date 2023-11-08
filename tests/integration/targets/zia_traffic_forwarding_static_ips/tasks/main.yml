@@ -89,7 +89,7 @@
           - not result.changed
 
     - name: Fetch All Static IPs
-      zscaler.ziacloud.zia_traffic_forwarding_static_ips_info:
+      zscaler.ziacloud.zia_traffic_forwarding_static_ips_facts:
         username: "{{ username }}"
         password: "{{ password }}"
         api_key: "{{ api_key }}"
@@ -102,7 +102,7 @@
           - result.data is defined
 
     - name: Fetch this Static IP
-      zscaler.ziacloud.zia_traffic_forwarding_static_ips_info:
+      zscaler.ziacloud.zia_traffic_forwarding_static_ips_facts:
         username: "{{ username }}"
         password: "{{ password }}"
         api_key: "{{ api_key }}"

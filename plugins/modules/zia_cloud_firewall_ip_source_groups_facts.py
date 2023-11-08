@@ -27,28 +27,53 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_cloud_firewall_network_application_info
-short_description: "Gets a list of all network application groups."
+module: zia_cloud_firewall_ip_source_groups_facts
+short_description: "Cloud Firewall IP source groups"
 description:
-  - "Gets a list of all network application groups."
+  - "List of Cloud Firewall IP source groups"
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
+options:
+  username:
+    description: "Username of admin user that is provisioned"
+    required: true
+    type: str
+  password:
+    description: "Password of the admin user"
+    required: true
+    type: str
+  api_key:
+    description: "The obfuscated form of the API key"
+    required: true
+    type: str
+  base_url:
+    description: "The host and basePath for the cloud services API"
+    required: true
+    type: str
+  id:
+    description: ""
+    required: false
+    type: int
+  name:
+    description: ""
+    required: true
+    type: str
 """
 
 EXAMPLES = """
-- name: Gather Information Details of all Network Applicactions
-  zscaler.ziacloud.zia_fw_network_application_info:
+- name: Gather Information Details of all ip source groups
+  zscaler.ziacloud.zia_fw_filtering_ip_source_groups_facts:
 
-- name: Gather Information Details of a Network Applicaction
-  zscaler.ziacloud.zia_fw_network_application_info:
-    name: "APNS"
+- name: Gather Information of an ip source group by name
+  zscaler.ziacloud.zia_fw_filtering_ip_source_groups_facts:
+    name: "example"
 """
 
 RETURN = """
-# Returns information on a specified Network Application(s).
+# Returns information a specific ip source group or groups.
 """
 
 from traceback import format_exc
@@ -56,46 +81,39 @@ from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    zia_argument_spec,
+    ZIAClientHelper,
 )
-from zscaler import ZIA
 
 
-def core(module: AnsibleModule):
-    network_app_id = module.params.get("id", None)
-    network_app_name = module.params.get("name", None)
-    client = ZIA(
-        api_key=module.params.get("api_key", ""),
-        cloud=module.params.get("base_url", ""),
-        username=module.params.get("username", ""),
-        password=module.params.get("password", ""),
-    )
-    network_apps = []
-    if network_app_id is not None:
-        network_app = client.firewall.get_network_app(network_app_id).to_dict()
-        network_apps = [network_app]
+def core(module):
+    group_id = module.params.get("id", None)
+    group_name = module.params.get("name", None)
+    client = ZIAClientHelper(module)
+    groups = []
+    if group_id is not None:
+        group = client.firewall.get_ip_source_group(group_id).to_dict()
+        groups = [group]
     else:
-        network_apps = client.firewall.list_network_apps().to_list()
-        if network_app_name is not None:
-            network_app = None
-            for app in network_apps:
-                if app.get("name", None) == network_app_name:
-                    network_app = app
+        groups = client.firewall.list_ip_source_groups().to_list()
+        if group_name is not None:
+            group = None
+            for dest in groups:
+                if dest.get("name", None) == group_name:
+                    group = dest
                     break
-            if network_app is None:
+            if group is None:
                 module.fail_json(
-                    msg="Failed to retrieve network application: '%s'"
-                    % (network_app_name)
+                    msg="Failed to retrieve ip source group: '%s'" % (group_name)
                 )
-            network_apps = [network_app]
-    module.exit_json(changed=False, data=network_apps)
+            groups = [group]
+    module.exit_json(changed=False, data=groups)
 
 
 def main():
-    argument_spec = zia_argument_spec()
+    argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         name=dict(type="str", required=False),
-        id=dict(type="str", required=False),
+        id=dict(type="int", required=False),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
     try:

@@ -27,54 +27,28 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_dlp_dictionaries_info
-short_description: "Custom and predefined DLP dictionaries."
-description: "Gets information on all custom and predefined DLP dictionaries."
+module: zia_url_categories_facts
+short_description: "Gets information about all or custom URL categories."
+description: "Gets information about all or custom URL categories."
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
-options:
-  username:
-    description: "Username of admin user that is provisioned"
-    required: true
-    type: str
-  password:
-    description: "Password of the admin user"
-    required: true
-    type: str
-  api_key:
-    description: "The obfuscated form of the API key"
-    required: true
-    type: str
-  base_url:
-    description: "The host and basePath for the cloud services API"
-    required: true
-    type: str
-  id:
-    description: "Unique identifier for the DLP dictionary"
-    required: false
-    type: int
-  name:
-    description: "Name of the DLP dictionary's name"
-    required: true
-    type: str
 """
 
 EXAMPLES = """
-- name: Gather Information Details of all ZIA DLP Dictionaries
-  zscaler.ziacloud.zia_firewall_filtering_rules_info:
+- name: Gather Information Details of all URL Categories
+  zscaler.ziacloud.zia_url_categories_facts:
 
-- name: Gather Information Details of a ZIA DLP Dictionaries by Name
-  zscaler.ziacloud.zia_firewall_filtering_rules_info:
-    name: "Example"
+- name: Gather Information Details of a specific URL Category by ID
+  zscaler.ziacloud.zia_url_categories_facts:
+    id: "OTHER_ADULT_MATERIAL"
 """
 
 RETURN = """
-# Returns information on a specified ZIA DLP Dictionaries.
+# Returns information on a specified url category.
 """
-
 
 from traceback import format_exc
 
@@ -85,36 +59,38 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 )
 
 
-
 def core(module):
-    dict_id = module.params.get("id", None)
-    dict_name = module.params.get("name", None)
+    category_id = module.params.get("id", None)
+    # category_name = module.params.get("name", None)
     client = ZIAClientHelper(module)
-    dictionaries = []
-    if dict_id is not None:
-        dictionary = client.dlp.get_dict(dict_id).to_dict()
-        dictionaries = [dictionary]
+    categories = []
+    if category_id is not None:
+        categoryBox = client.url_categories.get_category(category_id=category_id)
+        if categoryBox is None:
+            module.fail_json(
+                msg="Failed to retrieve url category ID: '%s'" % (category_id)
+            )
+        categories = [categoryBox.to_dict()]
     else:
-        dictionaries = client.dlp.list_dicts().to_list()
-        if dict_name is not None:
-            dictionary = None
-            for dict in dictionaries:
-                if dict.get("name", None) == dict_name:
-                    dictionary = dict
-                    break
-            if dictionary is None:
+        categories = client.url_categories.list_categories().to_list()
+        if category_id is not None:
+            categoryFound = False
+            for category in categories:
+                if category.get("id") == category_id:
+                    categoryFound = True
+                    categories = [category]
+            if not categoryFound:
                 module.fail_json(
-                    msg="Failed to retrieve dlp dictionary: '%s'" % (dict_name)
+                    msg="Failed to retrieve url category name: '%s'" % (category_id)
                 )
-            dictionaries = [dictionary]
-    module.exit_json(changed=False, data=dictionaries)
+    module.exit_json(changed=False, data=categories)
 
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         name=dict(type="str", required=False),
-        id=dict(type="int", required=False),
+        id=dict(type="str", required=False),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
     try:

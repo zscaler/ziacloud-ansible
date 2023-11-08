@@ -27,10 +27,10 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_dlp_incident_receiver_info
-short_description: "Gets a list of DLP Incident Receivers."
+module: zia_traffic_forwarding_vpn_credentials_facts
+short_description: "Gets VPN credentials that can be associated to locations"
 description:
-  - "Gets a list of DLP Incident Receivers."
+  - "Gets VPN credentials that can be associated to locations"
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
@@ -54,73 +54,64 @@ options:
     required: true
     type: str
   id:
-    description: "The unique identifier for the Incident Receiver."
+    description:
+      - VPN credential id
     required: false
     type: int
-  name:
-    type: str
+  fqdn:
+    description: "Fully Qualified Domain Name. Applicable only to UFQDN or XAUTH (or HOSTED_MOBILE_USERS) auth type."
     required: false
-    description:
-      - "The Incident Receiver server name."
+    type: str
+
 """
 
 EXAMPLES = """
-- name: Gets all list of DLP Incident Receivers
-  zscaler.ziacloud.zia_dlp_icident_receiver_info:
 
-- name: Gets a list of DLP Incident Receivers by name
-  zscaler.ziacloud.zia_dlp_icident_receiver_info:
-    name: "ZS_INC_RECEIVER_01"
+- name: Retrieve Details of All ZPN Credentials.
+  zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_facts:
+
+- name: Retrieve Details of Specific ZPN Credentials By fqdn.
+  zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_facts:
+    fqdn: "sjc-1-37@acme.com"
+
+- name: Retrieve Details of Specific ZPN Credentials By ID.
+  zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_facts:
+    id: 222
+
 """
 
-RETURN = """
-# Returns information about specific DLP Incident Receivers.
-"""
 
 from traceback import format_exc
 
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    zia_argument_spec,
+    ZIAClientHelper,
 )
-from zscaler import ZIA
 
 
-def core(module: AnsibleModule):
-    receiver_id = module.params.get("id", None)
-    receiver_name = module.params.get("name", None)
-    client = ZIA(
-        api_key=module.params.get("api_key", ""),
-        cloud=module.params.get("base_url", ""),
-        username=module.params.get("username", ""),
-        password=module.params.get("password", ""),
-    )
-    receivers = []
-    if receiver_id is not None:
-        receiver = client.dlp.get_dlp_incident_receiver(receiver_id).to_dict()
-        receivers = [receiver]
+def core(module):
+    client = ZIAClientHelper(module)
+    vpn_id = module.params.get("id", None)
+    fqdn = module.params.get("fqdn", None)
+    credentials = []
+    if vpn_id is not None or fqdn is not None:
+        if vpn_id is not None:
+            credentialBox = client.traffic.get_vpn_credential(credential_id=vpn_id)
+        else:
+            credentialBox = client.traffic.get_vpn_credential(fqdn=fqdn)
+        if credentialBox is None:
+            module.fail_json(msg="Failed to retrieve vpn credential ID: '%s'" % (id))
+        credentials = [credentialBox.to_dict()]
     else:
-        receivers = client.dlp.list_dlp_incident_receiver().to_list()
-        if receiver_name is not None:
-            receiver = None
-            for dlp in receivers:
-                if dlp.get("name", None) == receiver_name:
-                    receiver = dlp
-                    break
-            if receiver is None:
-                module.fail_json(
-                    msg="Failed to retrieve dlp incident receiver: '%s'"
-                    % (receiver_name)
-                )
-            receivers = [receiver]
-    module.exit_json(changed=False, data=receivers)
+        credentials = client.traffic.list_vpn_credentials().to_list()
+    module.exit_json(changed=False, data=credentials)
 
 
 def main():
-    argument_spec = zia_argument_spec()
+    argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
-        name=dict(type="str", required=False),
+        fqdn=dict(type="str", required=False),
         id=dict(type="int", required=False),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)

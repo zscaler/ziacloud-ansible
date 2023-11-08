@@ -27,10 +27,10 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_user_management_info
-short_description: "Gets a list of users"
+module: zia_dlp_engines_facts
+short_description: "Get a list of DLP engines."
 description:
-  - "Gets a list of users"
+  - "Get a list of DLP engines."
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
@@ -54,26 +54,27 @@ options:
     required: true
     type: str
   id:
-    description: "User ID."
+    description: "The unique identifier for the DLP engine."
     required: false
     type: int
   name:
-    description: "User name. This appears when choosing users for policies."
-    required: true
     type: str
+    required: false
+    description:
+      - The DLP engine name as configured by the admin..
 """
 
 EXAMPLES = """
-- name: Gets a list of all users
-  zscaler.ziacloud.zia_user_management_info:
+- name: Gets all list of DLP Engines
+  zscaler.ziacloud.zia_dlp_engines_facts:
 
-- name: Gets a list of a single user
-  zscaler.ziacloud.zia_user_management_info:
-    name: "Adam Ashcroft"
+- name: Gets a list of DLP Engines by name
+  zscaler.ziacloud.zia_dlp_engines_facts:
+    name: "PCI"
 """
 
 RETURN = """
-# Returns information of all users.
+# Returns information about specific DLP Engines.
 """
 
 from traceback import format_exc
@@ -81,40 +82,36 @@ from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    zia_argument_spec,
+    ZIAClientHelper,
 )
-from zscaler import ZIA
 
 
-def core(module: AnsibleModule):
-    user_id = module.params.get("id", None)
-    user_name = module.params.get("name", None)
-    client = ZIA(
-        api_key=module.params.get("api_key", ""),
-        cloud=module.params.get("base_url", ""),
-        username=module.params.get("username", ""),
-        password=module.params.get("password", ""),
-    )
-    users = []
-    if user_id is not None:
-        user = client.users.get_user(user_id).to_dict()
-        users = [user]
+def core(module):
+    engine_id = module.params.get("id", None)
+    engine_name = module.params.get("name", None)
+    client = ZIAClientHelper(module)
+    engines = []
+    if engine_id is not None:
+        engine = client.dlp.get_dlp_engines(engine_id).to_dict()
+        engines = [engine]
     else:
-        users = client.users.list_users().to_list()
-        if user_name is not None:
-            user = None
-            for usr in users:
-                if usr.get("name", None) == user_name:
-                    user = usr
+        engines = client.dlp.list_dlp_engines().to_list()
+        if engine_name is not None:
+            engine = None
+            for dlp in engines:
+                if dlp.get("name", None) == engine_name:
+                    engine = dlp
                     break
-            if user is None:
-                module.fail_json(msg="Failed to retrieve user: '%s'" % (user_name))
-            users = [user]
-    module.exit_json(changed=False, data=users)
+            if engine is None:
+                module.fail_json(
+                    msg="Failed to retrieve dlp engine: '%s'" % (engine_name)
+                )
+            engines = [engine]
+    module.exit_json(changed=False, data=engines)
 
 
 def main():
-    argument_spec = zia_argument_spec()
+    argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         name=dict(type="str", required=False),
         id=dict(type="int", required=False),

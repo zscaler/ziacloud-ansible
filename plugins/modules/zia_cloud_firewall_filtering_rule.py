@@ -221,10 +221,10 @@ options:
 
 EXAMPLES = """
 - name: Gather Information Details of a ZIA User Role
-  zscaler.ziacloud.zia_device_group_info:
+  zscaler.ziacloud.zia_device_group_facts:
 
 - name: Gather Information Details of a ZIA Admin User by Name
-  zscaler.ziacloud.zia_device_group_info:
+  zscaler.ziacloud.zia_device_group_facts:
     name: "IOS"
 """
 
@@ -237,22 +237,17 @@ from traceback import format_exc
 
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
     deleteNone,
-    zia_argument_spec,
 )
-from numpy import delete
-from zscaler import ZIA
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
 
 
 def core(module):
     state = module.params.get("state", None)
-    client = ZIA(
-        api_key=module.params.get("api_key", ""),
-        cloud=module.params.get("base_url", ""),
-        username=module.params.get("username", ""),
-        password=module.params.get("password", ""),
-    )
+    client = ZIAClientHelper(module)
     rule = dict()
     params = [
         "id",
@@ -387,7 +382,7 @@ def core(module):
 
 
 def main():
-    argument_spec = zia_argument_spec()
+    argument_spec = ZIAClientHelper.zia_argument_spec()
     id_spec = dict(
         type="list",
         elements="str",

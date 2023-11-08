@@ -60,9 +60,8 @@ from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    zia_argument_spec,
+    ZIAClientHelper,
 )
-from zscaler import ZIA
 
 
 def core(module):
@@ -72,12 +71,7 @@ def core(module):
         "inspection_mode", "sandbox"
     )  # either 'sandbox' or 'out_of_band'
 
-    client = ZIA(
-        api_key=module.params.get("api_key", ""),
-        cloud=module.params.get("base_url", ""),
-        username=module.params.get("username", ""),
-        password=module.params.get("password", ""),
-    )
+    client = ZIAClientHelper(module)
 
     sandbox_api = client.sandbox
 
@@ -93,7 +87,7 @@ def core(module):
 
 
 def main():
-    argument_spec = zia_argument_spec()
+    argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         file_path=dict(type="str", required=True),
         force=dict(type="bool", default=False),

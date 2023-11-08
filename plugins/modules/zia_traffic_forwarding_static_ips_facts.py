@@ -27,10 +27,9 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_location_management_info
-short_description: "Gets locations only, not sub-locations."
-description:
-  - "Gets locations only, not sub-locations."
+module: zia_traffic_forwarding_static_ips_facts
+short_description: "Gets static IP address for the specified ID"
+description: "Gets static IP address for the specified ID"
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
@@ -53,27 +52,33 @@ options:
     description: "The host and basePath for the cloud services API"
     required: true
     type: str
+  ip_address:
+    description:
+      - The static IP address
+    required: true
+    type: str
   id:
-    description: "The unique identifier for the location"
+    description: "Static IP ID to retrieve"
     required: false
     type: int
-  name:
-    description: "The location name"
-    required: false
-    type: str
 """
 
 EXAMPLES = """
-- name: Gather Information Details of all ZIA Locations
-  zscaler.ziacloud.zia_location_management_info:
+- name: Retrieve Details of All Static IPs.
+  zscaler.ziacloud.zia_traffic_forwarding_static_ips_facts:
 
-- name: Gather Information Details of ZIA Location By Name
-  zscaler.ziacloud.zia_location_management_info:
-    name: "USA-SJC37"
+- name: Retrieve Details of Specific Static IPs By IP Address.
+  zscaler.ziacloud.zia_traffic_forwarding_static_ips_facts:
+    ip_address: 1.1.1.1
+
+- name: Retrieve Details of Specific Static IPs By ID.
+  zscaler.ziacloud.zia_traffic_forwarding_static_ips_facts:
+    id: 82709
+
 """
 
 RETURN = """
-# Returns information on a specified ZIA Location.
+# Returns information on a specified ZIA Admin User.
 """
 
 
@@ -82,45 +87,38 @@ from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    zia_argument_spec,
+    ZIAClientHelper,
 )
-from zscaler import ZIA
 
 
 def core(module):
-    client = ZIA(
-        api_key=module.params.get("api_key", ""),
-        cloud=module.params.get("base_url", ""),
-        username=module.params.get("username", ""),
-        password=module.params.get("password", ""),
-    )
-    location_name = module.params.get("name", None)
-    location_id = module.params.get("id", None)
-    locations = []
-    if location_id is not None:
-        locationBox = client.locations.get_location(location_id=location_id)
-        if locationBox is None:
-            module.fail_json(
-                msg="Failed to retrieve location management ID: '%s'" % (location_id)
-            )
-        locations = [locationBox.to_dict()]
-    elif location_name is not None:
-        locationBox = client.locations.get_location(location_name=location_name)
-        if locationBox is None:
-            module.fail_json(
-                msg="Failed to retrieve location management Name: '%s'"
-                % (location_name)
-            )
-        locations = [locationBox.to_dict()]
+    static_ip_id = module.params.get("id", None)
+    ip_address = module.params.get("ip_address", None)
+    client = ZIAClientHelper(module)
+    static_ips = []
+    if static_ip_id is not None:
+        static_ip = client.traffic.get_static_ip(static_ip_id).to_dict()
+        static_ips = [static_ip]
     else:
-        locations = client.locations.list_locations().to_list()
-    module.exit_json(changed=False, data=locations)
+        static_ips = client.traffic.list_static_ips().to_list()
+        if ip_address is not None:
+            static_ip = None
+            for ip in static_ips:
+                if ip.get("ip_address", None) == ip_address:
+                    static_ip = ip
+                    break
+            if static_ip is None:
+                module.fail_json(
+                    msg="Failed to retrieve static ip address: '%s'" % (ip_address)
+                )
+            static_ips = [static_ip]
+    module.exit_json(changed=False, data=static_ips)
 
 
 def main():
-    argument_spec = zia_argument_spec()
+    argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
-        name=dict(type="str", required=False),
+        ip_address=dict(type="str", required=False),
         id=dict(type="int", required=False),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)

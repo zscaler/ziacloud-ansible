@@ -73,7 +73,7 @@
           - not result.changed
 
     - name: Fetch All Rule Labels
-      zscaler.ziacloud.zia_rule_labels_info:
+      zscaler.ziacloud.zia_rule_labels_facts:
         username: "{{ username }}"
         password: "{{ password }}"
         api_key: "{{ api_key }}"
@@ -86,7 +86,7 @@
           - result.data is defined
 
     - name: Fetch this Rule Label
-      zscaler.ziacloud.zia_rule_labels_info:
+      zscaler.ziacloud.zia_rule_labels_facts:
         username: "{{ username }}"
         password: "{{ password }}"
         api_key: "{{ api_key }}"

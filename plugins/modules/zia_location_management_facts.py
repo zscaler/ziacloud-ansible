@@ -27,10 +27,10 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_user_management_department_info
-short_description: "Gets a list of user departments"
+module: zia_location_management_facts
+short_description: "Gets locations only, not sub-locations."
 description:
-  - "Gets a list of departments"
+  - "Gets locations only, not sub-locations."
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
@@ -54,72 +54,68 @@ options:
     required: true
     type: str
   id:
-    description: "Department ID."
+    description: "The unique identifier for the location"
     required: false
     type: int
   name:
-    description: "Department name."
-    required: true
+    description: "The location name"
+    required: false
     type: str
 """
 
 EXAMPLES = """
-- name: Gets a list of all departments
-  zscaler.ziacloud.zia_user_management_department_info:
+- name: Gather Information Details of all ZIA Locations
+  zscaler.ziacloud.zia_location_management_facts:
 
-- name: Gets a list of a single department
-  zscaler.ziacloud.zia_user_management_department_info:
-    name: "marketing"
+- name: Gather Information Details of ZIA Location By Name
+  zscaler.ziacloud.zia_location_management_facts:
+    name: "USA-SJC37"
 """
 
 RETURN = """
-# Returns information of all departments.
+# Returns information on a specified ZIA Location.
 """
+
 
 from traceback import format_exc
 
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    zia_argument_spec,
+    ZIAClientHelper,
 )
-from zscaler import ZIA
 
 
-def core(module: AnsibleModule):
-    department_id = module.params.get("id", None)
-    department_name = module.params.get("name", None)
-    client = ZIA(
-        api_key=module.params.get("api_key", ""),
-        cloud=module.params.get("base_url", ""),
-        username=module.params.get("username", ""),
-        password=module.params.get("password", ""),
-    )
-    departments = []
-    if department_id is not None:
-        department = client.users.get_department(department_id).to_dict()
-        departments = [department]
+def core(module):
+    client = ZIAClientHelper(module)
+    location_name = module.params.get("name", None)
+    location_id = module.params.get("id", None)
+    locations = []
+    if location_id is not None:
+        locationBox = client.locations.get_location(location_id=location_id)
+        if locationBox is None:
+            module.fail_json(
+                msg="Failed to retrieve location management ID: '%s'" % (location_id)
+            )
+        locations = [locationBox.to_dict()]
+    elif location_name is not None:
+        locationBox = client.locations.get_location(location_name=location_name)
+        if locationBox is None:
+            module.fail_json(
+                msg="Failed to retrieve location management Name: '%s'"
+                % (location_name)
+            )
+        locations = [locationBox.to_dict()]
     else:
-        departments = client.users.list_departments().to_list()
-        if department_name is not None:
-            department = None
-            for dept in departments:
-                if dept.get("name", None) == department_name:
-                    department = dept
-                    break
-            if department is None:
-                module.fail_json(
-                    msg="Failed to retrieve department: '%s'" % (department_name)
-                )
-            departments = [department]
-    module.exit_json(changed=False, data=departments)
+        locations = client.locations.list_locations().to_list()
+    module.exit_json(changed=False, data=locations)
 
 
 def main():
-    argument_spec = zia_argument_spec()
+    argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         name=dict(type="str", required=False),
-        id=dict(type="str", required=False),
+        id=dict(type="int", required=False),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
     try:

@@ -27,10 +27,10 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_cloud_firewall_network_services_info
-short_description: "Gets a list of all network services."
+module: zia_user_management_facts
+short_description: "Gets a list of users"
 description:
-  - "Gets a list of all network services."
+  - "Gets a list of users"
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
@@ -54,26 +54,26 @@ options:
     required: true
     type: str
   id:
-    description: "The unique identifier for the network services"
+    description: "User ID."
     required: false
     type: int
   name:
-    description: "The network services name"
+    description: "User name. This appears when choosing users for policies."
     required: true
     type: str
 """
 
 EXAMPLES = """
-- name: Gather Information Details of all Network Services
-  zscaler.ziacloud.zia_fw_filtering_network_services_info:
+- name: Gets a list of all users
+  zscaler.ziacloud.zia_user_management_facts:
 
-- name: Gather Information Details of a Network Services by Name
-  zscaler.ziacloud.zia_fw_filtering_network_services_info:
-    name: "ICMP_ANY"
+- name: Gets a list of a single user
+  zscaler.ziacloud.zia_user_management_facts:
+    name: "Adam Ashcroft"
 """
 
 RETURN = """
-# Returns information on a specific network services.
+# Returns information of all users.
 """
 
 from traceback import format_exc
@@ -81,42 +81,34 @@ from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    zia_argument_spec,
+    ZIAClientHelper,
 )
-from zscaler import ZIA
 
 
-def core(module: AnsibleModule):
-    service_id = module.params.get("id", None)
-    service_name = module.params.get("name", None)
-    client = ZIA(
-        api_key=module.params.get("api_key", ""),
-        cloud=module.params.get("base_url", ""),
-        username=module.params.get("username", ""),
-        password=module.params.get("password", ""),
-    )
-    services = []
-    if service_id is not None:
-        service = client.firewall.get_network_service(service_id).to_dict()
-        services = [service]
+def core(module):
+    user_id = module.params.get("id", None)
+    user_name = module.params.get("name", None)
+    client = ZIAClientHelper(module)
+    users = []
+    if user_id is not None:
+        user = client.users.get_user(user_id).to_dict()
+        users = [user]
     else:
-        services = client.firewall.list_network_services().to_list()
-        if service_name is not None:
-            service = None
-            for svc in services:
-                if svc.get("name", None) == service_name:
-                    service = svc
+        users = client.users.list_users().to_list()
+        if user_name is not None:
+            user = None
+            for usr in users:
+                if usr.get("name", None) == user_name:
+                    user = usr
                     break
-            if service is None:
-                module.fail_json(
-                    msg="Failed to retrieve service: '%s'" % (service_name)
-                )
-            services = [service]
-    module.exit_json(changed=False, data=services)
+            if user is None:
+                module.fail_json(msg="Failed to retrieve user: '%s'" % (user_name))
+            users = [user]
+    module.exit_json(changed=False, data=users)
 
 
 def main():
-    argument_spec = zia_argument_spec()
+    argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         name=dict(type="str", required=False),
         id=dict(type="int", required=False),

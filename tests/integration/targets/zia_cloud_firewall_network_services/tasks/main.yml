@@ -91,7 +91,7 @@
           - not result.changed
 
     - name: Fetch All Network Services
-      zscaler.ziacloud.zia_cloud_firewall_network_services_info:
+      zscaler.ziacloud.zia_cloud_firewall_network_services_facts:
         username: "{{ username }}"
         password: "{{ password }}"
         api_key: "{{ api_key }}"
@@ -105,7 +105,7 @@
           - result.data is defined
 
     - name: Fetch this Network Services
-      zscaler.ziacloud.zia_cloud_firewall_network_services_info:
+      zscaler.ziacloud.zia_cloud_firewall_network_services_facts:
         username: "{{ username }}"
         password: "{{ password }}"
         api_key: "{{ api_key }}"

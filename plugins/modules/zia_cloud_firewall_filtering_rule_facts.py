@@ -27,9 +27,9 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_traffic_forwarding_static_ips_info
-short_description: "Gets static IP address for the specified ID"
-description: "Gets static IP address for the specified ID"
+module: zia_cloud_firewall_filtering_rule_facts
+short_description: "Gets all rules in the Firewall Filtering policy."
+description: "Gets all rules in the Firewall Filtering policy."
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
@@ -52,33 +52,27 @@ options:
     description: "The host and basePath for the cloud services API"
     required: true
     type: str
-  ip_address:
-    description:
-      - The static IP address
-    required: true
-    type: str
   id:
-    description: "Static IP ID to retrieve"
+    description: "Unique identifier for the Firewall Filtering policy rule"
     required: false
     type: int
+  name:
+    description: "Name of the Firewall Filtering policy rule"
+    required: true
+    type: str
 """
 
 EXAMPLES = """
-- name: Retrieve Details of All Static IPs.
-  zscaler.ziacloud.zia_traffic_forwarding_static_ips_info:
+- name: Gather Information Details of a ZIA Cloud Firewall Rule
+  zscaler.ziacloud.zia_firewall_filtering_rules_facts:
 
-- name: Retrieve Details of Specific Static IPs By IP Address.
-  zscaler.ziacloud.zia_traffic_forwarding_static_ips_info:
-    ip_address: 1.1.1.1
-
-- name: Retrieve Details of Specific Static IPs By ID.
-  zscaler.ziacloud.zia_traffic_forwarding_static_ips_info:
-    id: 82709
-
+- name: Gather Information Details of a ZIA Cloud Firewall Rule by Name
+  zscaler.ziacloud.zia_firewall_filtering_rules_facts:
+    name: "Example"
 """
 
 RETURN = """
-# Returns information on a specified ZIA Admin User.
+# Returns information on a specified ZIA Cloud Firewall Rule.
 """
 
 
@@ -87,44 +81,40 @@ from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    zia_argument_spec,
+    ZIAClientHelper,
 )
-from zscaler import ZIA
 
-
-def core(module: AnsibleModule):
-    static_ip_id = module.params.get("id", None)
-    ip_address = module.params.get("ip_address", None)
-    client = ZIA(
-        api_key=module.params.get("api_key", ""),
-        cloud=module.params.get("base_url", ""),
-        username=module.params.get("username", ""),
-        password=module.params.get("password", ""),
-    )
-    static_ips = []
-    if static_ip_id is not None:
-        static_ip = client.traffic.get_static_ip(static_ip_id).to_dict()
-        static_ips = [static_ip]
+def core(module):
+    rule_id = module.params.get("id", None)
+    rule_name = module.params.get("name", None)
+    client = ZIAClientHelper(module)
+    rules = []
+    if rule_id is not None:
+        ruleBox = client.firewall.get_rule(rule_id=rule_id)
+        if ruleBox is None:
+            module.fail_json(
+                msg="Failed to retrieve Firewall Rule ID: '%s'" % (rule_id)
+            )
+        rules = [ruleBox.to_dict()]
     else:
-        static_ips = client.traffic.list_static_ips().to_list()
-        if ip_address is not None:
-            static_ip = None
-            for ip in static_ips:
-                if ip.get("ip_address", None) == ip_address:
-                    static_ip = ip
-                    break
-            if static_ip is None:
+        rules = client.firewall.list_rules().to_list()
+        if rule_name is not None:
+            ruleFound = False
+            for rule in rules:
+                if rule.get("name") == rule_name:
+                    ruleFound = True
+                    rules = [rule]
+            if not ruleFound:
                 module.fail_json(
-                    msg="Failed to retrieve static ip address: '%s'" % (ip_address)
+                    msg="Failed to retrieve Firewall Rule Name: '%s'" % (rule_name)
                 )
-            static_ips = [static_ip]
-    module.exit_json(changed=False, data=static_ips)
+    module.exit_json(changed=False, data=rules)
 
 
 def main():
-    argument_spec = zia_argument_spec()
+    argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
-        ip_address=dict(type="str", required=False),
+        name=dict(type="str", required=False),
         id=dict(type="int", required=False),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)

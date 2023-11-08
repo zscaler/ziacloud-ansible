@@ -27,10 +27,10 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_traffic_forwarding_vpn_credentials_info
-short_description: "Gets VPN credentials that can be associated to locations"
+module: zia_cloud_firewall_ip_destination_groups_facts
+short_description: "Gets a list of all IP destination groups"
 description:
-  - "Gets VPN credentials that can be associated to locations"
+  - "Gets a list of all IP destination groups"
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
@@ -54,70 +54,65 @@ options:
     required: true
     type: str
   id:
-    description:
-      - VPN credential id
+    description: "Unique identifer for the destination IP group"
     required: false
     type: int
-  fqdn:
-    description: "Fully Qualified Domain Name. Applicable only to UFQDN or XAUTH (or HOSTED_MOBILE_USERS) auth type."
-    required: false
+  name:
+    description: "Destination IP group name"
+    required: true
     type: str
-
 """
 
 EXAMPLES = """
+- name: Gather Information of all Destination Group
+  zscaler.ziacloud.zia_fw_filtering_ip_destination_groups_facts:
 
-- name: Retrieve Details of All ZPN Credentials.
-  zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_info:
-
-- name: Retrieve Details of Specific ZPN Credentials By fqdn.
-  zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_info:
-    fqdn: "sjc-1-37@acme.com"
-
-- name: Retrieve Details of Specific ZPN Credentials By ID.
-  zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_info:
-    id: 222
-
+- name: Gather Information of a Destination Group by Name
+  zscaler.ziacloud.zia_fw_filtering_ip_destination_groups_facts:
+    name: "example"
 """
 
+RETURN = """
+# Returns information on a specific or all destination groups.
+"""
 
 from traceback import format_exc
 
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    zia_argument_spec,
+    ZIAClientHelper,
 )
-from zscaler import ZIA
 
 
 def core(module):
-    client = ZIA(
-        api_key=module.params.get("api_key", ""),
-        cloud=module.params.get("base_url", ""),
-        username=module.params.get("username", ""),
-        password=module.params.get("password", ""),
-    )
-    vpn_id = module.params.get("id", None)
-    fqdn = module.params.get("fqdn", None)
-    credentials = []
-    if vpn_id is not None or fqdn is not None:
-        if vpn_id is not None:
-            credentialBox = client.traffic.get_vpn_credential(credential_id=vpn_id)
-        else:
-            credentialBox = client.traffic.get_vpn_credential(fqdn=fqdn)
-        if credentialBox is None:
-            module.fail_json(msg="Failed to retrieve vpn credential ID: '%s'" % (id))
-        credentials = [credentialBox.to_dict()]
+    group_id = module.params.get("id", None)
+    group_name = module.params.get("name", None)
+    client = ZIAClientHelper(module)
+    groups = []
+    if group_id is not None:
+        group = client.firewall.get_ip_destination_group(group_id).to_dict()
+        groups = [group]
     else:
-        credentials = client.traffic.list_vpn_credentials().to_list()
-    module.exit_json(changed=False, data=credentials)
+        groups = client.firewall.list_ip_destination_groups().to_list()
+        if group_name is not None:
+            group = None
+            for dest in groups:
+                if dest.get("name", None) == group_name:
+                    group = dest
+                    break
+            if group is None:
+                module.fail_json(
+                    msg="Failed to retrieve destination ip group: '%s'" % (group_name)
+                )
+            groups = [group]
+    module.exit_json(changed=False, data=groups)
 
 
 def main():
-    argument_spec = zia_argument_spec()
+    argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
-        fqdn=dict(type="str", required=False),
+        name=dict(type="str", required=False),
         id=dict(type="int", required=False),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)

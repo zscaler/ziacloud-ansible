@@ -27,10 +27,10 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_user_management_groups_info
-short_description: "Gets a list of user groups. "
+module: zia_dlp_icap_servers_facts
+short_description: "Gets a the list of DLP servers using ICAP."
 description:
-  - "Gets a list of user groups. "
+  - "Gets a the list of DLP servers using ICAP."
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
@@ -54,26 +54,27 @@ options:
     required: true
     type: str
   id:
-    description: "Group ID."
+    description: "The unique identifier for a DLP ICAP server."
     required: false
     type: int
   name:
-    description: "Group name."
-    required: true
     type: str
+    required: false
+    description:
+      - The DLP ICAP server name.
 """
 
 EXAMPLES = """
-- name: Gets a list of all groups
-  zscaler.ziacloud.zia_user_management_groups_info:
+- name: Gets all list of DLP ICAP Server
+  zscaler.ziacloud.zia_dlp_icap_servers_facts:
 
-- name: Gets a list of a single group
-  zscaler.ziacloud.zia_user_management_groups_info:
-    name: "marketing"
+- name: Gets a list of DLP ICAP Server by name
+  zscaler.ziacloud.zia_dlp_icap_servers_facts:
+    name: "ZS_ICAP"
 """
 
 RETURN = """
-# Returns information of all groups.
+# Returns information about specific DLP ICAP Server.
 """
 
 from traceback import format_exc
@@ -81,40 +82,36 @@ from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    zia_argument_spec,
+    ZIAClientHelper,
 )
-from zscaler import ZIA
 
 
-def core(module: AnsibleModule):
-    group_id = module.params.get("id", None)
-    group_name = module.params.get("name", None)
-    client = ZIA(
-        api_key=module.params.get("api_key", ""),
-        cloud=module.params.get("base_url", ""),
-        username=module.params.get("username", ""),
-        password=module.params.get("password", ""),
-    )
-    groups = []
-    if group_id is not None:
-        group = client.users.get_group(group_id).to_dict()
-        groups = [group]
+def core(module):
+    icap_server_id = module.params.get("id", None)
+    icap_server_name = module.params.get("name", None)
+    client = ZIAClientHelper(module)
+    icaps = []
+    if icap_server_id is not None:
+        icap = client.dlp.get_dlp_icap_servers(icap_server_id).to_dict()
+        icaps = [icap]
     else:
-        groups = client.users.list_groups().to_list()
-        if group_name is not None:
-            group = None
-            for grp in groups:
-                if grp.get("name", None) == group_name:
-                    group = grp
+        icaps = client.dlp.list_dlp_icap_servers().to_list()
+        if icap_server_name is not None:
+            icap = None
+            for dlp in icaps:
+                if dlp.get("name", None) == icap_server_name:
+                    icap = dlp
                     break
-            if group is None:
-                module.fail_json(msg="Failed to retrieve group: '%s'" % (group_name))
-            groups = [group]
-    module.exit_json(changed=False, data=groups)
+            if icap is None:
+                module.fail_json(
+                    msg="Failed to retrieve dlp icap server: '%s'" % (icap_server_name)
+                )
+            icaps = [icap]
+    module.exit_json(changed=False, data=icaps)
 
 
 def main():
-    argument_spec = zia_argument_spec()
+    argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         name=dict(type="str", required=False),
         id=dict(type="int", required=False),
