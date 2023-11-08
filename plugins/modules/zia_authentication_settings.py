@@ -112,7 +112,9 @@ def core(module):
     elif state == "absent":
         urls_to_remove = [url for url in urls if url in current_exempted_urls]
         if urls_to_remove:
-            updated_list = auth_settings_api.delete_urls_from_exempt_list(urls_to_remove)
+            updated_list = auth_settings_api.delete_urls_from_exempt_list(
+                urls_to_remove
+            )
             module.exit_json(changed=True, exempted_urls=updated_list)
         else:
             module.exit_json(changed=False, msg="URLs not in the exempted list.")

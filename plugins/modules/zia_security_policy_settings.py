@@ -94,6 +94,7 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 )
 from zscaler import ZIA
 
+
 def core(module):
     state = module.params.get("state", None)
     urls = module.params.get("urls", [])
@@ -141,13 +142,18 @@ def core(module):
             if resp_code == 204:
                 module.exit_json(changed=True, msg="URLs removed from blacklist.")
             else:
-                module.exit_json(changed=False, msg="Failed to remove URLs from blacklist.")
+                module.exit_json(
+                    changed=False, msg="Failed to remove URLs from blacklist."
+                )
+
 
 def main():
     argument_spec = zia_argument_spec()
     argument_spec.update(
         urls=dict(type="list", elements="str", required=True),
-        url_type=dict(type="str", choices=["whitelist", "blacklist"], default="whitelist"),
+        url_type=dict(
+            type="str", choices=["whitelist", "blacklist"], default="whitelist"
+        ),
         state=dict(type="str", choices=["present", "absent"], default="present"),
     )
 
