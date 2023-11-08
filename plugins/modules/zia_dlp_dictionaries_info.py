@@ -81,20 +81,15 @@ from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    zia_argument_spec,
+    ZIAClientHelper,
 )
-from zscaler import ZIA
 
 
-def core(module: AnsibleModule):
+
+def core(module):
     dict_id = module.params.get("id", None)
     dict_name = module.params.get("name", None)
-    client = ZIA(
-        api_key=module.params.get("api_key", ""),
-        cloud=module.params.get("base_url", ""),
-        username=module.params.get("username", ""),
-        password=module.params.get("password", ""),
-    )
+    client = ZIAClientHelper(module)
     dictionaries = []
     if dict_id is not None:
         dictionary = client.dlp.get_dict(dict_id).to_dict()
@@ -116,7 +111,7 @@ def core(module: AnsibleModule):
 
 
 def main():
-    argument_spec = zia_argument_spec()
+    argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         name=dict(type="str", required=False),
         id=dict(type="int", required=False),

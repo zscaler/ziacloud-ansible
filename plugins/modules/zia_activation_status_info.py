@@ -65,6 +65,7 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 )
 from zscaler import ZIA
 
+
 def core(module: AnsibleModule):
     activation_status = module.params.get("status", None)
     client = ZIA(
@@ -79,11 +80,19 @@ def core(module: AnsibleModule):
     # If specific status provided, check if it matches the current activation status
     if activation_status:
         if current_activation_status == activation_status:
-            module.exit_json(changed=False, data=current_activation_status, status_matches=True)
+            module.exit_json(
+                changed=False, data=current_activation_status, status_matches=True
+            )
         else:
-            module.exit_json(changed=False, data=current_activation_status, status_matches=False, msg=f"Provided status '{activation_status}' does not match the current activation status '{current_activation_status}'")
+            module.exit_json(
+                changed=False,
+                data=current_activation_status,
+                status_matches=False,
+                msg=f"Provided status '{activation_status}' does not match the current activation status '{current_activation_status}'",
+            )
     else:
         module.exit_json(changed=False, data=current_activation_status)
+
 
 def main():
     argument_spec = zia_argument_spec()
@@ -95,6 +104,7 @@ def main():
         core(module)
     except Exception as e:
         module.fail_json(msg=to_native(e), exception=format_exc())
+
 
 if __name__ == "__main__":
     main()

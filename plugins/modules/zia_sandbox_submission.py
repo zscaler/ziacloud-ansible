@@ -68,7 +68,9 @@ from zscaler import ZIA
 def core(module):
     file_path = module.params.get("file_path", "")
     force = module.params.get("force", False)
-    inspection_mode = module.params.get("inspection_mode", "sandbox")  # either 'sandbox' or 'out_of_band'
+    inspection_mode = module.params.get(
+        "inspection_mode", "sandbox"
+    )  # either 'sandbox' or 'out_of_band'
 
     client = ZIA(
         api_key=module.params.get("api_key", ""),
@@ -95,7 +97,9 @@ def main():
     argument_spec.update(
         file_path=dict(type="str", required=True),
         force=dict(type="bool", default=False),
-        inspection_mode=dict(type="str", choices=["sandbox", "out_of_band"], default="sandbox"),
+        inspection_mode=dict(
+            type="str", choices=["sandbox", "out_of_band"], default="sandbox"
+        ),
     )
 
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)

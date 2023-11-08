@@ -112,3 +112,4 @@ ansible_demo/
 tests/integration/integration_config.yml
 local_test
 ansible.cfg
+examples

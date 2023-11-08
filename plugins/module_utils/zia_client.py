@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # This code is part of Ansible, but is an independent component.
 # This particular file snippet, and this file snippet only, is BSD licensed.
 # Modules you write using this snippet, which is embedded dynamically by Ansible
@@ -31,106 +29,166 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-import re
-import time
-
 from ansible.module_utils.basic import env_fallback
 
+import platform
+from ansible.module_utils import ansible_release
+import importlib
+from zscaler.zia import ZIAClientHelper as ZIA
 
-def obfuscate_api_key(seed):
-    now = int(time.time() * 1000)
-    n = str(now)[-6:]
-    r = str(int(n) >> 1).zfill(6)
-    key = "".join(seed[int(str(n)[i])] for i in range(len(str(n))))
-    for j in range(len(str(r))):
-        key += seed[int(str(r)[j]) + 2]
-
-    return {"timestamp": now, "key": key}
-
-
-def delete_none(f):
-    """
-    This decorator should be used on functions that return an object to delete empty fields
-    """
-
-    def wrapper(*args):
-        _dict = f(*args)
-        if _dict is not None:
-            return deleteNone(_dict)
-        return _dict
-
-    return wrapper
+VALID_ZIA_CLOUD = {
+    "zscaler",
+    "zscloud",
+    "zscalerbeta",
+    "zspreview",
+    "zscalerone",
+    "zscalertwo",
+    "zscalerthree",
+    "zscalergov",
+    "zscalerten",
+}
 
 
-def deleteNone(_dict):
-    """Delete None values recursively from all of the dictionaries, tuples, lists, sets"""
-    if isinstance(_dict, dict):
-        for key, value in list(_dict.items()):
-            if isinstance(value, (list, dict, tuple, set)):
-                _dict[key] = deleteNone(value)
-            elif value is None or key is None:
-                del _dict[key]
-    elif isinstance(_dict, (list, set, tuple)):
-        _dict = type(_dict)(deleteNone(item) for item in _dict if item is not None)
-    return _dict
+def to_zscaler_sdk_cls(pkg_name, cls_name):
+    sdk_names = (
+        "zscaler",
+    )  # tuple with one item for now. You can add more SDK names if needed
+
+    for sdk_name in sdk_names:
+        try:
+            mod = importlib.import_module("{0}.{1}".format(sdk_name, pkg_name))
+        except ModuleNotFoundError:
+            continue
+        else:
+            try:
+                return getattr(mod, cls_name)
+            except AttributeError:
+                raise Exception(
+                    "{0}.{1}.{2} does not exist".format(sdk_name, pkg_name, cls_name)
+                )
+
+    raise Exception("Couldn't find any sdk package named {0}".format(pkg_name))
 
 
-def camelcaseToSnakeCase(obj):
-    new_obj = dict()
-    for key, value in obj.items():
-        if value is not None:
-            new_obj[re.sub(r"(?<!^)(?=[A-Z])", "_", key).lower()] = value
-    return new_obj
+class ConnectionHelper:
+    def __init__(self, min_sdk_version):
+        self.min_sdk_version = min_sdk_version
+        self.sdk_installed = self._check_sdk_installed()
+
+    def _check_sdk_installed(self):
+        try:
+            import zscaler
+
+            installed_version = tuple(map(int, zscaler.__version__.split(".")))
+            if installed_version < self.min_sdk_version:
+                raise Exception(
+                    f"zscaler version should be >= {'.'.join(map(str, self.min_sdk_version))}"
+                )
+            return True
+        except ModuleNotFoundError:
+            return False
+        except AttributeError:
+            raise Exception(
+                "zscaler does not have a __version__ attribute. Please ensure you have the correct SDK installed."
+            )
+
+    def ensure_sdk_installed(self):
+        if not self.sdk_installed:
+            raise Exception('Missing required SDK "zscaler".')
 
 
-def snakecaseToCamelcase(obj):
-    new_obj = dict()
-    for key, value in obj.items():
-        if value is not None:
-            newKey = "".join(x.capitalize() or "_" for x in key.split("_"))
-            newKey = newKey[:1].lower() + newKey[1:]
-            new_obj[newKey] = value
-    return new_obj
+class ZIAClientHelper(ZIA):
+    def __init__(self, module):
+        self.connection_helper = ConnectionHelper(min_sdk_version=(1, 0, 0))
+        self.connection_helper.ensure_sdk_installed()
 
+        provider = module.params.get("provider") or {}
 
-def zia_argument_spec():
-    return dict(
-        username=dict(
-            no_log=True,
-            fallback=(
-                env_fallback,
-                ["ZIA_USERNAME"],
+        username = (
+            provider.get("username") if provider else module.params.get("username")
+        )
+        if not username:
+            raise ValueError("username must be provided via provider or directly")
+
+        password = (
+            provider.get("password") if provider else module.params.get("password")
+        )
+        if not password:
+            raise ValueError("password must be provided via provider or directly")
+
+        api_key = provider.get("api_key") if provider else module.params.get("api_key")
+        if not api_key:
+            raise ValueError("api_key must be provided via provider or directly")
+
+        cloud_env = (
+            provider.get("cloud") if provider else module.params.get("cloud")
+        )
+        if not cloud_env:
+            raise ValueError("cloud must be provided via provider or directly")
+
+        cloud_env = cloud_env.lower()
+
+        if cloud_env not in VALID_ZIA_CLOUD:
+            raise ValueError(
+                f"Invalid ZIA Cloud environment '{cloud_env}'. Supported environments are: {', '.join(VALID_ZIA_CLOUD)}."
+            )
+
+        super().__init__(
+            username=username,
+            password=password,
+            api_key=api_key,
+            cloud=cloud_env,  # using the validated cloud environment
+        )
+
+        ansible_version = ansible_release.__version__  # Get the Ansible version
+        self.user_agent = f"zia-ansible/{ansible_version}/({platform.system().lower()} {platform.machine()}"
+
+    @staticmethod
+    def zia_argument_spec():
+        return dict(
+            provider=dict(
+                type="dict",
+                options=dict(
+                    username=dict(
+                        no_log=True,
+                        fallback=(env_fallback, ["ZIA_USERNAME"]),
+                    ),
+                    password=dict(
+                        no_log=True,
+                        fallback=(env_fallback, ["ZIA_PASSWORD"]),
+                    ),
+                    api_key=dict(
+                        no_log=True,
+                        fallback=(env_fallback, ["ZIA_API_KEY"]),
+                    ),
+                    cloud=dict(
+                        no_log=False,
+                        fallback=(env_fallback, ["ZIA_CLOUD"]),
+                    ),
+                    sandbox_token=dict(
+                        no_log=True,
+                        fallback=(env_fallback, ["ZIA_SANDBOX_TOKEN"]),
+                    ),
+                ),
             ),
-        ),
-        password=dict(
-            no_log=True,
-            fallback=(
-                env_fallback,
-                ["ZIA_PASSWORD"],
+            username=dict(
+                no_log=True,
+                fallback=(env_fallback, ["ZIA_USERNAME"]),
             ),
-        ),
-        api_key=dict(
-            no_log=True,
-            fallback=(
-                env_fallback,
-                ["ZIA_API_KEY"],
+            password=dict(
+                no_log=True,
+                fallback=(env_fallback, ["ZIA_PASSWORD"]),
             ),
-        ),
-        base_url=dict(
-            no_log=True,
-            fallback=(
-                env_fallback,
-                ["ZIA_BASE_URL"],
+            api_key=dict(
+                no_log=True,
+                fallback=(env_fallback, ["ZIA_API_KEY"]),
             ),
-        ),
-        sandbox_token=dict(
-            no_log=True,
-            fallback=(
-                env_fallback,
-                ["ZIA_SANDBOX_TOKEN"],
+            cloud=dict(
+                no_log=False,
+                fallback=(env_fallback, ["ZIA_CLOUD"]),
             ),
-        ),
-    )
-
-
-__version__ = "1.4.1"
+            sandbox_token=dict(
+                no_log=True,
+                fallback=(env_fallback, ["ZIA_SANDBOX_TOKEN"]),
+            ),
+        )

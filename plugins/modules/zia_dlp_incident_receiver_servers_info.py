@@ -111,7 +111,8 @@ def core(module: AnsibleModule):
                     break
             if receiver is None:
                 module.fail_json(
-                    msg="Failed to retrieve dlp incident receiver server: '%s'" % (receiver_name)
+                    msg="Failed to retrieve dlp incident receiver server: '%s'"
+                    % (receiver_name)
                 )
             receivers = [receiver]
     module.exit_json(changed=False, data=receivers)
