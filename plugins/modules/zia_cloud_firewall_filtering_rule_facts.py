@@ -38,6 +38,7 @@ requirements:
 extends_documentation_fragment:
     - zscaler.ziacloud.fragments.credentials_set
     - zscaler.ziacloud.fragments.provider
+    - zscaler.zpacloud.fragments.enabled_state
 options:
   id:
     description: "Unique identifier for the Firewall Filtering policy rule"
