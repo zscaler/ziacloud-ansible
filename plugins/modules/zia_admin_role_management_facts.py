@@ -27,41 +27,41 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_authentication_settings
-short_description: "Adds a URL to or removes a URL from the cookie authentication exempt list."
+module: zia_admin_role_management_facts
+short_description: "Gets a list of admin roles"
 description:
-  - Adds a URL to or removes a URL from the cookie authentication exempt list.
+  - "Gets a list of admin roles"
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
-    - zscaler.zpacloud.fragments.credentials_set
-    - zscaler.zpacloud.fragments.provider
-    - zscaler.zpacloud.fragments.enabled_state
+    - zscaler.ziacloud.fragments.credentials_set
+    - zscaler.ziacloud.fragments.provider
 options:
-  urls:
-    description:
-        - Domains or URLs which are exempted from SSL Inspection.
-    type: list
-    elements: str
+
+  id:
+    description: "Admin role ID."
+    required: false
+    type: int
+  name:
+    description: "Name of the admin role."
     required: true
+    type: str
 """
 
 EXAMPLES = """
+- name: Gets a list of all admin roles
+  zscaler.ziacloud.zia_admin_role_management_facts:
 
-- name: Create/Update/Delete URLs.
-  zscaler.ziacloud.zia_authentication_settings:
-    urls:
-        - .okta.com,
-        - .oktacdn.com,
-        - .mtls.oktapreview.com,
-        - .mtls.okta.com,
+- name: Gets a list of an admin roles
+  zscaler.ziacloud.zia_admin_role_management_facts:
+    name: "marketing"
 """
 
 RETURN = """
-# The list of exempted URLs.
+# Returns information of all admin roles.
 """
 
 from traceback import format_exc
@@ -74,43 +74,33 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 
 def core(module):
-    state = module.params.get("state", None)
-    urls = module.params.get("urls", [])
-
+    # role_id = module.params.get("id", None)
+    role_name = module.params.get("name", None)
     client = ZIAClientHelper(module)
-
-    auth_settings_api = client.authentication_settings
-
-    current_exempted_urls = auth_settings_api.get_exempted_urls()
-
-    if state == "present":
-        new_urls = [url for url in urls if url not in current_exempted_urls]
-        if new_urls:
-            updated_list = auth_settings_api.add_urls_to_exempt_list(new_urls)
-            module.exit_json(changed=True, exempted_urls=updated_list)
-        else:
-            module.exit_json(changed=False, msg="No new URLs to add.")
-
-    elif state == "absent":
-        urls_to_remove = [url for url in urls if url in current_exempted_urls]
-        if urls_to_remove:
-            updated_list = auth_settings_api.delete_urls_from_exempt_list(
-                urls_to_remove
-            )
-            module.exit_json(changed=True, exempted_urls=updated_list)
-        else:
-            module.exit_json(changed=False, msg="URLs not in the exempted list.")
+    roles = []
+    if role_name is not None:
+        roles = client.admin_and_role_management.list_roles().to_list()
+        if role_name is not None:
+            role = None
+            for rol in roles:
+                if rol.get("name", None) == role_name:
+                    role = rol
+                    break
+            if role is None:
+                module.fail_json(
+                    msg="Failed to retrieve admin role management: '%s'" % (role_name)
+                )
+            roles = [role]
+    module.exit_json(changed=False, data=roles)
 
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
-        urls=dict(type="list", elements="str", required=True),
-        state=dict(type="str", choices=["present", "absent"], default="present"),
+        name=dict(type="str", required=False),
+        id=dict(type="str", required=False),
     )
-
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
-
     try:
         core(module)
     except Exception as e:

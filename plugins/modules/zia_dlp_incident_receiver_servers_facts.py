@@ -27,27 +27,42 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_url_categories_info
-short_description: "Gets information about all or custom URL categories."
-description: "Gets information about all or custom URL categories."
+module: zia_dlp_incident_receiver_servers_facts
+short_description: "Gets a list of DLP Incident Receivers."
+description:
+  - "Gets a list of DLP Incident Receivers."
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
+extends_documentation_fragment:
+    - zscaler.ziacloud.fragments.credentials_set
+    - zscaler.ziacloud.fragments.provider
+options:
+  id:
+    description: "The unique identifier for the Incident Receiver."
+    required: false
+    type: int
+  name:
+    type: str
+    required: false
+    description:
+      - The Incident Receiver server name.
 """
 
 EXAMPLES = """
-- name: Gather Information Details of all URL Categories
-  zscaler.ziacloud.zia_url_categories_info:
+- name: Gets all list of DLP Incident Receiver Server
+  zscaler.ziacloud.zia_dlp_incident_receiver_servers_facts:
 
-- name: Gather Information Details of a specific URL Category by ID
-  zscaler.ziacloud.zia_url_categories_info:
-    id: "OTHER_ADULT_MATERIAL"
+- name: Gets a list of DLP Incident Receiver Server by name
+  zscaler.ziacloud.zia_dlp_incident_receiver_servers_facts:
+    name: "ZIR_BD_SA01
+"
 """
 
 RETURN = """
-# Returns information on a specified url category.
+# Returns information about specific DLP Incident Receiver Server.
 """
 
 from traceback import format_exc
@@ -55,48 +70,40 @@ from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    zia_argument_spec,
+    ZIAClientHelper,
 )
-from zscaler import ZIA
 
 
-def core(module: AnsibleModule):
-    category_id = module.params.get("id", None)
-    # category_name = module.params.get("name", None)
-    client = ZIA(
-        api_key=module.params.get("api_key", ""),
-        cloud=module.params.get("base_url", ""),
-        username=module.params.get("username", ""),
-        password=module.params.get("password", ""),
-    )
-    categories = []
-    if category_id is not None:
-        categoryBox = client.url_categories.get_category(category_id=category_id)
-        if categoryBox is None:
-            module.fail_json(
-                msg="Failed to retrieve url category ID: '%s'" % (category_id)
-            )
-        categories = [categoryBox.to_dict()]
+def core(module):
+    receiver_id = module.params.get("id", None)
+    receiver_name = module.params.get("name", None)
+    client = ZIAClientHelper(module)
+    receivers = []
+    if receiver_id is not None:
+        receiver = client.dlp.get_dlp_incident_receiver(receiver_id).to_dict()
+        receivers = [receiver]
     else:
-        categories = client.url_categories.list_categories().to_list()
-        if category_id is not None:
-            categoryFound = False
-            for category in categories:
-                if category.get("id") == category_id:
-                    categoryFound = True
-                    categories = [category]
-            if not categoryFound:
+        receivers = client.dlp.list_dlp_incident_receiver().to_list()
+        if receiver_name is not None:
+            receiver = None
+            for dlp in receivers:
+                if dlp.get("name", None) == receiver_name:
+                    receiver = dlp
+                    break
+            if receiver is None:
                 module.fail_json(
-                    msg="Failed to retrieve url category name: '%s'" % (category_id)
+                    msg="Failed to retrieve dlp incident receiver server: '%s'"
+                    % (receiver_name)
                 )
-    module.exit_json(changed=False, data=categories)
+            receivers = [receiver]
+    module.exit_json(changed=False, data=receivers)
 
 
 def main():
-    argument_spec = zia_argument_spec()
+    argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         name=dict(type="str", required=False),
-        id=dict(type="str", required=False),
+        id=dict(type="int", required=False),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
     try:

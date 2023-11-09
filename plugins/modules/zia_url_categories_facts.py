@@ -27,28 +27,30 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_cloud_firewall_network_application_info
-short_description: "Gets a list of all network application groups."
-description:
-  - "Gets a list of all network application groups."
+module: zia_url_categories_facts
+short_description: "Gets information about all or custom URL categories."
+description: "Gets information about all or custom URL categories."
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
+extends_documentation_fragment:
+    - zscaler.ziacloud.fragments.credentials_set
+    - zscaler.ziacloud.fragments.provider
 """
 
 EXAMPLES = """
-- name: Gather Information Details of all Network Applicactions
-  zscaler.ziacloud.zia_fw_network_application_info:
+- name: Gather Information Details of all URL Categories
+  zscaler.ziacloud.zia_url_categories_facts:
 
-- name: Gather Information Details of a Network Applicaction
-  zscaler.ziacloud.zia_fw_network_application_info:
-    name: "APNS"
+- name: Gather Information Details of a specific URL Category by ID
+  zscaler.ziacloud.zia_url_categories_facts:
+    id: "OTHER_ADULT_MATERIAL"
 """
 
 RETURN = """
-# Returns information on a specified Network Application(s).
+# Returns information on a specified url category.
 """
 
 from traceback import format_exc
@@ -56,43 +58,39 @@ from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    zia_argument_spec,
+    ZIAClientHelper,
 )
-from zscaler import ZIA
 
 
-def core(module: AnsibleModule):
-    network_app_id = module.params.get("id", None)
-    network_app_name = module.params.get("name", None)
-    client = ZIA(
-        api_key=module.params.get("api_key", ""),
-        cloud=module.params.get("base_url", ""),
-        username=module.params.get("username", ""),
-        password=module.params.get("password", ""),
-    )
-    network_apps = []
-    if network_app_id is not None:
-        network_app = client.firewall.get_network_app(network_app_id).to_dict()
-        network_apps = [network_app]
+def core(module):
+    category_id = module.params.get("id", None)
+    # category_name = module.params.get("name", None)
+    client = ZIAClientHelper(module)
+    categories = []
+    if category_id is not None:
+        categoryBox = client.url_categories.get_category(category_id=category_id)
+        if categoryBox is None:
+            module.fail_json(
+                msg="Failed to retrieve url category ID: '%s'" % (category_id)
+            )
+        categories = [categoryBox.to_dict()]
     else:
-        network_apps = client.firewall.list_network_apps().to_list()
-        if network_app_name is not None:
-            network_app = None
-            for app in network_apps:
-                if app.get("name", None) == network_app_name:
-                    network_app = app
-                    break
-            if network_app is None:
+        categories = client.url_categories.list_categories().to_list()
+        if category_id is not None:
+            categoryFound = False
+            for category in categories:
+                if category.get("id") == category_id:
+                    categoryFound = True
+                    categories = [category]
+            if not categoryFound:
                 module.fail_json(
-                    msg="Failed to retrieve network application: '%s'"
-                    % (network_app_name)
+                    msg="Failed to retrieve url category name: '%s'" % (category_id)
                 )
-            network_apps = [network_app]
-    module.exit_json(changed=False, data=network_apps)
+    module.exit_json(changed=False, data=categories)
 
 
 def main():
-    argument_spec = zia_argument_spec()
+    argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         name=dict(type="str", required=False),
         id=dict(type="str", required=False),

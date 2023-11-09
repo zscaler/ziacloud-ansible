@@ -27,7 +27,7 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_traffic_forwarding_vpn_credentials_info
+module: zia_traffic_forwarding_vpn_credentials_facts
 short_description: "Gets VPN credentials that can be associated to locations"
 description:
   - "Gets VPN credentials that can be associated to locations"
@@ -36,23 +36,10 @@ author:
 version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
+extends_documentation_fragment:
+    - zscaler.ziacloud.fragments.credentials_set
+    - zscaler.ziacloud.fragments.provider
 options:
-  username:
-    description: "Username of admin user that is provisioned"
-    required: true
-    type: str
-  password:
-    description: "Password of the admin user"
-    required: true
-    type: str
-  api_key:
-    description: "The obfuscated form of the API key"
-    required: true
-    type: str
-  base_url:
-    description: "The host and basePath for the cloud services API"
-    required: true
-    type: str
   id:
     description:
       - VPN credential id
@@ -68,14 +55,14 @@ options:
 EXAMPLES = """
 
 - name: Retrieve Details of All ZPN Credentials.
-  zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_info:
+  zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_facts:
 
 - name: Retrieve Details of Specific ZPN Credentials By fqdn.
-  zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_info:
+  zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_facts:
     fqdn: "sjc-1-37@acme.com"
 
 - name: Retrieve Details of Specific ZPN Credentials By ID.
-  zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_info:
+  zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_facts:
     id: 222
 
 """
@@ -86,18 +73,12 @@ from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    zia_argument_spec,
+    ZIAClientHelper,
 )
-from zscaler import ZIA
 
 
 def core(module):
-    client = ZIA(
-        api_key=module.params.get("api_key", ""),
-        cloud=module.params.get("base_url", ""),
-        username=module.params.get("username", ""),
-        password=module.params.get("password", ""),
-    )
+    client = ZIAClientHelper(module)
     vpn_id = module.params.get("id", None)
     fqdn = module.params.get("fqdn", None)
     credentials = []
@@ -115,7 +96,7 @@ def core(module):
 
 
 def main():
-    argument_spec = zia_argument_spec()
+    argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         fqdn=dict(type="str", required=False),
         id=dict(type="int", required=False),

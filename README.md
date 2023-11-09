@@ -17,37 +17,37 @@ before 2.9.10 are **not supported**.
 
 ## Included content
 
-- [zia_admin_role_management_info](https://zscaler.github.io/ziacloud-ansible/modules/zia_admin_role_management_info.html) - Gets a list of admin roles
-- [zia_cloud_firewall_filtering_rule_info](https://zscaler.github.io/ziacloud-ansible/modules/zia_cloud_firewall_filtering_rule_info.html) - Create/Update/Delete an application segment.
+- [zia_admin_role_management_facts](https://zscaler.github.io/ziacloud-ansible/modules/zia_admin_role_management_facts.html) - Gets a list of admin roles
+- [zia_cloud_firewall_filtering_rule_facts](https://zscaler.github.io/ziacloud-ansible/modules/zia_cloud_firewall_filtering_rule_facts.html) - Create/Update/Delete an application segment.
 - [zia_cloud_firewall_filtering_rule](https://zscaler.github.io/ziacloud-ansible/modules/zia_cloud_firewall_filtering_rule.html) - Gather information details (ID and/or Name) of a application segment.
-- [zia_cloud_firewall_ip_destination_groups_info](https://zscaler.github.io/ziacloud-ansible/modules/zia_cloud_firewall_ip_destination_groups_info.html) - Create/Update/Delete an Application Server.
+- [zia_cloud_firewall_ip_destination_groups_facts](https://zscaler.github.io/ziacloud-ansible/modules/zia_cloud_firewall_ip_destination_groups_facts.html) - Create/Update/Delete an Application Server.
 - [zia_cloud_firewall_ip_destination_groups](https://zscaler.github.io/ziacloud-ansible/modules/zia_cloud_firewall_ip_destination_groups.html) - Gather information details (ID and/or Name) of an application server.
-- [zia_cloud_firewall_ip_source_groups_info](https://zscaler.github.io/ziacloud-ansible/modules/zia_cloud_firewall_ip_source_groups_info.html) - Gather information details (ID and/or Name) of an browser access certificate.
+- [zia_cloud_firewall_ip_source_groups_facts](https://zscaler.github.io/ziacloud-ansible/modules/zia_cloud_firewall_ip_source_groups_facts.html) - Gather information details (ID and/or Name) of an browser access certificate.
 - [zia_cloud_firewall_ip_source_groups](https://zscaler.github.io/ziacloud-ansible/modules/zia_cloud_firewall_ip_source_groups.html) - Gather information details (ID and/or Name) of an cloud connector group.
-- [zpa_customer_version_profile_info](https://zscaler.github.io/ziacloud-ansible/modules/zpa_customer_version_profile_info.html) - Gather information details (ID and/or Name) of an customer version profile for use in app connector group resource in the `version_profile_id` parameter.
-- [zia_cloud_firewall_network_application_groups_info](https://zscaler.github.io/ziacloud-ansible/modules/zia_cloud_firewall_network_application_groups_info.html) - Gather information details (ID and/or Name) of an enrollment certificate for use when creating provisioning keys for connector groups or service edge groups.
+- [zpa_customer_version_profile_facts](https://zscaler.github.io/ziacloud-ansible/modules/zpa_customer_version_profile_facts.html) - Gather information details (ID and/or Name) of an customer version profile for use in app connector group resource in the `version_profile_id` parameter.
+- [zia_cloud_firewall_network_application_groups_facts](https://zscaler.github.io/ziacloud-ansible/modules/zia_cloud_firewall_network_application_groups_facts.html) - Gather information details (ID and/or Name) of an enrollment certificate for use when creating provisioning keys for connector groups or service edge groups.
 - [zia_cloud_firewall_network_application_groups](https://zscaler.github.io/ziacloud-ansible/modules/zia_cloud_firewall_network_application_groups.html) - Gather information details (ID and/or Name) of an identity provider (IdP) created in the ZPA tenant.
-- [zia_cloud_firewall_network_services_groups_info](https://zscaler.github.io/ziacloud-ansible/modules/zia_cloud_firewall_network_services_groups_info.html) - Gather information details (ID and/or Name) of an machine group for use in a policy access and/or forwarding rules.
+- [zia_cloud_firewall_network_services_groups_facts](https://zscaler.github.io/ziacloud-ansible/modules/zia_cloud_firewall_network_services_groups_facts.html) - Gather information details (ID and/or Name) of an machine group for use in a policy access and/or forwarding rules.
 - [zia_cloud_firewall_network_services_groups](https://zscaler.github.io/ziacloud-ansible/modules/zia_cloud_firewall_network_services_groups.html) - Create/Update/Delete a policy access rule.
-- [zia_cloud_firewall_network_services_info](https://zscaler.github.io/ziacloud-ansible/modules/zia_cloud_firewall_network_services_info.html) - Gather information details (ID and/or Name) of a policy access rule.
+- [zia_cloud_firewall_network_services_facts](https://zscaler.github.io/ziacloud-ansible/modules/zia_cloud_firewall_network_services_facts.html) - Gather information details (ID and/or Name) of a policy access rule.
 - [zia_cloud_firewall_network_services](https://zscaler.github.io/ziacloud-ansible/modules/zia_cloud_firewall_network_services.html) - Create/Update/Delete a policy access timeout rule.
-- [zia_dlp_dictionaries_info](https://zscaler.github.io/ziacloud-ansible/modules/zia_dlp_dictionaries_info.html) - Gather information details (ID and/or Name) of a policy access timeout rule.
+- [zia_dlp_dictionaries_facts](https://zscaler.github.io/ziacloud-ansible/modules/zia_dlp_dictionaries_facts.html) - Gather information details (ID and/or Name) of a policy access timeout rule.
 - [zia_dlp_dictionaries](https://zscaler.github.io/ziacloud-ansible/modules/zia_dlp_dictionaries.html) - Create/Update/Delete a policy access forwarding rule.
-- [zia_location_management_info](https://zscaler.github.io/ziacloud-ansible/modules/zia_location_management_info.html) - Gather information details (ID and/or Name) of a policy access forwarding rule.
+- [zia_location_management_facts](https://zscaler.github.io/ziacloud-ansible/modules/zia_location_management_facts.html) - Gather information details (ID and/or Name) of a policy access forwarding rule.
 - [zia_location_management](https://zscaler.github.io/ziacloud-ansible/modules/zia_location_management.html) - Gather information details (ID and/or Name) of a posture profile to use in a policy access, timeout or forwarding rules.
-- [zia_rule_labels_info](https://zscaler.github.io/ziacloud-ansible/modules/zia_rule_labels_info.html) - Create/Update/Delete a provisioning key.
+- [zia_rule_labels_facts](https://zscaler.github.io/ziacloud-ansible/modules/zia_rule_labels_facts.html) - Create/Update/Delete a provisioning key.
 - [zia_rule_labels](https://zscaler.github.io/ziacloud-ansible/modules/zia_rule_labels.html) - Gather information details (ID and/or Name) of a provisioning key.
-- [zia_traffic_forwarding_static_ips_info](https://zscaler.github.io/ziacloud-ansible/modules/zia_traffic_forwarding_static_ips_info.html) - Gather information details (ID and/or Name) of a saml attribute.
+- [zia_traffic_forwarding_static_ips_facts](https://zscaler.github.io/ziacloud-ansible/modules/zia_traffic_forwarding_static_ips_facts.html) - Gather information details (ID and/or Name) of a saml attribute.
 - [zia_traffic_forwarding_static_ips](https://zscaler.github.io/ziacloud-ansible/modules/zia_traffic_forwarding_static_ips.html) - Gather information details (ID and/or Name) of a scim attribute header.
-- [zia_traffic_forwarding_vpn_credentials_info](https://zscaler.github.io/ziacloud-ansible/modules/zia_traffic_forwarding_vpn_credentials_info.html) - Gather information details (ID and/or Name) of a scim group.
+- [zia_traffic_forwarding_vpn_credentials_facts](https://zscaler.github.io/ziacloud-ansible/modules/zia_traffic_forwarding_vpn_credentials_facts.html) - Gather information details (ID and/or Name) of a scim group.
 - [zia_traffic_forwarding_vpn_credentials](https://zscaler.github.io/ziacloud-ansible/modules/zia_traffic_forwarding_vpn_credentials.html) - Create/Update/Delete a segment group.
-- [zia_url_categories_info](https://zscaler.github.io/ziacloud-ansible/modules/zia_url_categories_info.html) - Gather information details (ID and/or Name) of a segment group.
+- [zia_url_categories_facts](https://zscaler.github.io/ziacloud-ansible/modules/zia_url_categories_facts.html) - Gather information details (ID and/or Name) of a segment group.
 - [zia_url_categories](https://zscaler.github.io/ziacloud-ansible/modules/zia_url_categories.html) - Create/Update/Delete a segment group.
-- [zia_url_filtering_rules_info](https://zscaler.github.io/ziacloud-ansible/modules/zia_url_filtering_rules_info.html) - Gather information details (ID and/or Name) of a server group.
+- [zia_url_filtering_rules_facts](https://zscaler.github.io/ziacloud-ansible/modules/zia_url_filtering_rules_facts.html) - Gather information details (ID and/or Name) of a server group.
 - [zia_url_filtering_rules](https://zscaler.github.io/ziacloud-ansible/modules/zia_url_filtering_rules.html) - Gather information details (ID and/or Name) of a service edge group.
-- [zia_user_management_department_info](https://zscaler.github.io/ziacloud-ansible/modules/zia_user_management_department_info.html) - Create/Update/Delete an service edge group.
-- [zia_user_management_groups_info](https://zscaler.github.io/ziacloud-ansible/modules/zia_user_management_groups_info.html) - Gather information details (ID and/or Name) of a trusted network for use in a policy access and/or forwarding rules.
-- [zia_user_management_info](https://zscaler.github.io/ziacloud-ansible/modules/zia_user_management_info.html) - Gather information details (ID and/or Name) of a trusted network for use in a policy access and/or forwarding rules.
+- [zia_user_management_department_facts](https://zscaler.github.io/ziacloud-ansible/modules/zia_user_management_department_facts.html) - Create/Update/Delete an service edge group.
+- [zia_user_management_groups_facts](https://zscaler.github.io/ziacloud-ansible/modules/zia_user_management_groups_facts.html) - Gather information details (ID and/or Name) of a trusted network for use in a policy access and/or forwarding rules.
+- [zia_user_management_facts](https://zscaler.github.io/ziacloud-ansible/modules/zia_user_management_facts.html) - Gather information details (ID and/or Name) of a trusted network for use in a policy access and/or forwarding rules.
 
 ## Installation and Usage
 
@@ -76,7 +76,7 @@ It's preferable to use content in this collection using their Fully Qualified Co
 
   tasks:
     - name: Get Information Details of All Customer Version Profiles
-      zscaler.ziacloud.zia_cloud_firewall_filtering_rule_info:
+      zscaler.ziacloud.zia_cloud_firewall_filtering_rule_facts:
       register: cloud_firewall_rule
 
     - name: Create/update  firewall filtering rule
@@ -108,7 +108,7 @@ If you are using versions prior to Ansible 2.10 and this collection's existence,
 
   tasks:
     - name: Get Information Details of All Customer Version Profiles
-      zpa_customer_version_profile_info:
+      zpa_customer_version_profile_facts:
       register: version_profile_id
 
     - name: Create App Connector Group Example

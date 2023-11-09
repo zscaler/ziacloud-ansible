@@ -36,23 +36,11 @@ author:
 version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
+extends_documentation_fragment:
+    - zscaler.zpacloud.fragments.credentials_set
+    - zscaler.zpacloud.fragments.provider
+    - zscaler.zpacloud.fragments.enabled_state
 options:
-  username:
-    description: "Username of admin user that is provisioned"
-    required: true
-    type: str
-  password:
-    description: "Password of the admin user"
-    required: true
-    type: str
-  api_key:
-    description: "The obfuscated form of the API key"
-    required: true
-    type: str
-  base_url:
-    description: "The host and basePath for the cloud services API"
-    required: true
-    type: str
   id:
     description: "Unique identifer for the destination IP group"
     required: false
@@ -132,19 +120,33 @@ from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    zia_argument_spec,
+    ZIAClientHelper,
 )
-from zscaler import ZIA
 
+def normalize_ip_group(group):
+    """
+    Normalize app connector groups data by setting computed values.
+    """
+    normalized = group.copy()
+
+    computed_values = [
+        "creation_time",
+        "modified_by",
+        "modified_time",
+        "addresses",
+        "id",
+        "ip_categories",
+        "url_categories",
+        "countries",
+    ]
+    for attr in computed_values:
+        normalized.pop(attr, None)
+
+    return normalized
 
 def core(module):
     state = module.params.get("state", None)
-    client = ZIA(
-        api_key=module.params.get("api_key", ""),
-        cloud=module.params.get("base_url", ""),
-        username=module.params.get("username", ""),
-        password=module.params.get("password", ""),
-    )
+    client = ZIAClientHelper(module)
     destination_group = dict()
     params = [
         "id",
@@ -172,12 +174,30 @@ def core(module):
                 if ip.get("name", None) == group_name:
                     existing_dest_ip_group = ip
                     break
+
+    # Normalize and compare existing and desired application data
+    normalized_group = normalize_ip_group(destination_group)
+    normalized_existing_group = (
+        normalize_ip_group(existing_dest_ip_group) if existing_dest_ip_group else {}
+    )
+
+    fields_to_exclude = ["id"]
+    differences_detected = False
+    for key, value in normalized_group.items():
+        if key not in fields_to_exclude and normalized_existing_group.get(key) != value:
+            differences_detected = True
+            module.warn(
+                f"Difference detected in {key}. Current: {normalized_existing_group.get(key)}, Desired: {value}"
+            )
+
     if existing_dest_ip_group is not None:
         id = existing_dest_ip_group.get("id")
-        existing_dest_ip_group.update(destination_group)
+        existing_dest_ip_group.update(normalized_group)
         existing_dest_ip_group["id"] = id
+
     if state == "present":
         if existing_dest_ip_group is not None:
+          if differences_detected:
             """Update"""
             existing_dest_ip_group = client.firewall.update_ip_destination_group(
                 group_id=existing_dest_ip_group.get("id", ""),
@@ -198,7 +218,7 @@ def core(module):
                 addresses=destination_group.get("addresses", ""),
                 description=destination_group.get("description", ""),
                 ip_categories=destination_group.get("ip_categories", ""),
-                url_categories=existing_dest_ip_group.get("url_categories", ""),
+                url_categories=destination_group.get("url_categories", ""),
                 countries=destination_group.get("countries", ""),
             ).to_dict()
             module.exit_json(changed=False, data=destination_group)
@@ -214,7 +234,7 @@ def core(module):
 
 
 def main():
-    argument_spec = zia_argument_spec()
+    argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         id=dict(type="int", required=False),
         name=dict(type="str", required=True),

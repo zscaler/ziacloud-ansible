@@ -27,53 +27,41 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_user_management_groups_info
-short_description: "Gets a list of user groups. "
+module: zia_user_management_facts
+short_description: "Gets a list of users"
 description:
-  - "Gets a list of user groups. "
+  - "Gets a list of users"
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
+extends_documentation_fragment:
+    - zscaler.zpacloud.fragments.credentials_set
+    - zscaler.zpacloud.fragments.provider
+    - zscaler.zpacloud.fragments.enabled_state
 options:
-  username:
-    description: "Username of admin user that is provisioned"
-    required: true
-    type: str
-  password:
-    description: "Password of the admin user"
-    required: true
-    type: str
-  api_key:
-    description: "The obfuscated form of the API key"
-    required: true
-    type: str
-  base_url:
-    description: "The host and basePath for the cloud services API"
-    required: true
-    type: str
   id:
-    description: "Group ID."
+    description: "User ID."
     required: false
     type: int
   name:
-    description: "Group name."
+    description: "User name. This appears when choosing users for policies."
     required: true
     type: str
 """
 
 EXAMPLES = """
-- name: Gets a list of all groups
-  zscaler.ziacloud.zia_user_management_groups_info:
+- name: Gets a list of all users
+  zscaler.ziacloud.zia_user_management_facts:
 
-- name: Gets a list of a single group
-  zscaler.ziacloud.zia_user_management_groups_info:
-    name: "marketing"
+- name: Gets a list of a single user
+  zscaler.ziacloud.zia_user_management_facts:
+    name: "Adam Ashcroft"
 """
 
 RETURN = """
-# Returns information of all groups.
+# Returns information of all users.
 """
 
 from traceback import format_exc
@@ -81,40 +69,34 @@ from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    zia_argument_spec,
+    ZIAClientHelper,
 )
-from zscaler import ZIA
 
 
-def core(module: AnsibleModule):
-    group_id = module.params.get("id", None)
-    group_name = module.params.get("name", None)
-    client = ZIA(
-        api_key=module.params.get("api_key", ""),
-        cloud=module.params.get("base_url", ""),
-        username=module.params.get("username", ""),
-        password=module.params.get("password", ""),
-    )
-    groups = []
-    if group_id is not None:
-        group = client.users.get_group(group_id).to_dict()
-        groups = [group]
+def core(module):
+    user_id = module.params.get("id", None)
+    user_name = module.params.get("name", None)
+    client = ZIAClientHelper(module)
+    users = []
+    if user_id is not None:
+        user = client.users.get_user(user_id).to_dict()
+        users = [user]
     else:
-        groups = client.users.list_groups().to_list()
-        if group_name is not None:
-            group = None
-            for grp in groups:
-                if grp.get("name", None) == group_name:
-                    group = grp
+        users = client.users.list_users().to_list()
+        if user_name is not None:
+            user = None
+            for usr in users:
+                if usr.get("name", None) == user_name:
+                    user = usr
                     break
-            if group is None:
-                module.fail_json(msg="Failed to retrieve group: '%s'" % (group_name))
-            groups = [group]
-    module.exit_json(changed=False, data=groups)
+            if user is None:
+                module.fail_json(msg="Failed to retrieve user: '%s'" % (user_name))
+            users = [user]
+    module.exit_json(changed=False, data=users)
 
 
 def main():
-    argument_spec = zia_argument_spec()
+    argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         name=dict(type="str", required=False),
         id=dict(type="int", required=False),

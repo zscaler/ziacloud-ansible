@@ -10,7 +10,7 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_activation_status_info
+module: zia_activation_status_facts
 short_description: "Gets the activation status."
 description: "Gets the activation status for the saved configuration changes."
 author:
@@ -18,23 +18,10 @@ author:
 version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
+extends_documentation_fragment:
+    - zscaler.ziacloud.fragments.credentials_set
+    - zscaler.ziacloud.fragments.provider
 options:
-  username:
-    description: "Username of admin user that is provisioned"
-    required: true
-    type: str
-  password:
-    description: "Password of the admin user"
-    required: true
-    type: str
-  api_key:
-    description: "The obfuscated form of the API key"
-    required: true
-    type: str
-  base_url:
-    description: "The host and basePath for the cloud services API"
-    required: true
-    type: str
   status:
     description:
         - Organization Policy Edit/Update Activation status
@@ -61,19 +48,14 @@ from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    zia_argument_spec,
+    ZIAClientHelper,
 )
-from zscaler import ZIA
 
 
-def core(module: AnsibleModule):
+
+def core(module):
     activation_status = module.params.get("status", None)
-    client = ZIA(
-        api_key=module.params.get("api_key", ""),
-        cloud=module.params.get("base_url", ""),
-        username=module.params.get("username", ""),
-        password=module.params.get("password", ""),
-    )
+    client = ZIAClientHelper(module)
 
     current_activation_status = client.config.activate()
 
@@ -95,7 +77,7 @@ def core(module: AnsibleModule):
 
 
 def main():
-    argument_spec = zia_argument_spec()
+    argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         status=dict(type="str", required=False),
     )

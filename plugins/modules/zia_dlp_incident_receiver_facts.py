@@ -27,53 +27,41 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_user_management_info
-short_description: "Gets a list of users"
+module: zia_dlp_incident_receiver_facts
+short_description: "Gets a list of DLP Incident Receivers."
 description:
-  - "Gets a list of users"
+  - "Gets a list of DLP Incident Receivers."
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
+extends_documentation_fragment:
+    - zscaler.ziacloud.fragments.credentials_set
+    - zscaler.ziacloud.fragments.provider
 options:
-  username:
-    description: "Username of admin user that is provisioned"
-    required: true
-    type: str
-  password:
-    description: "Password of the admin user"
-    required: true
-    type: str
-  api_key:
-    description: "The obfuscated form of the API key"
-    required: true
-    type: str
-  base_url:
-    description: "The host and basePath for the cloud services API"
-    required: true
-    type: str
   id:
-    description: "User ID."
+    description: "The unique identifier for the Incident Receiver."
     required: false
     type: int
   name:
-    description: "User name. This appears when choosing users for policies."
-    required: true
     type: str
+    required: false
+    description:
+      - "The Incident Receiver server name."
 """
 
 EXAMPLES = """
-- name: Gets a list of all users
-  zscaler.ziacloud.zia_user_management_info:
+- name: Gets all list of DLP Incident Receivers
+  zscaler.ziacloud.zia_dlp_icident_receiver_facts:
 
-- name: Gets a list of a single user
-  zscaler.ziacloud.zia_user_management_info:
-    name: "Adam Ashcroft"
+- name: Gets a list of DLP Incident Receivers by name
+  zscaler.ziacloud.zia_dlp_icident_receiver_facts:
+    name: "ZS_INC_RECEIVER_01"
 """
 
 RETURN = """
-# Returns information of all users.
+# Returns information about specific DLP Incident Receivers.
 """
 
 from traceback import format_exc
@@ -81,40 +69,37 @@ from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    zia_argument_spec,
+    ZIAClientHelper,
 )
-from zscaler import ZIA
 
 
-def core(module: AnsibleModule):
-    user_id = module.params.get("id", None)
-    user_name = module.params.get("name", None)
-    client = ZIA(
-        api_key=module.params.get("api_key", ""),
-        cloud=module.params.get("base_url", ""),
-        username=module.params.get("username", ""),
-        password=module.params.get("password", ""),
-    )
-    users = []
-    if user_id is not None:
-        user = client.users.get_user(user_id).to_dict()
-        users = [user]
+def core(module):
+    receiver_id = module.params.get("id", None)
+    receiver_name = module.params.get("name", None)
+    client = ZIAClientHelper(module)
+    receivers = []
+    if receiver_id is not None:
+        receiver = client.dlp.get_dlp_incident_receiver(receiver_id).to_dict()
+        receivers = [receiver]
     else:
-        users = client.users.list_users().to_list()
-        if user_name is not None:
-            user = None
-            for usr in users:
-                if usr.get("name", None) == user_name:
-                    user = usr
+        receivers = client.dlp.list_dlp_incident_receiver().to_list()
+        if receiver_name is not None:
+            receiver = None
+            for dlp in receivers:
+                if dlp.get("name", None) == receiver_name:
+                    receiver = dlp
                     break
-            if user is None:
-                module.fail_json(msg="Failed to retrieve user: '%s'" % (user_name))
-            users = [user]
-    module.exit_json(changed=False, data=users)
+            if receiver is None:
+                module.fail_json(
+                    msg="Failed to retrieve dlp incident receiver: '%s'"
+                    % (receiver_name)
+                )
+            receivers = [receiver]
+    module.exit_json(changed=False, data=receivers)
 
 
 def main():
-    argument_spec = zia_argument_spec()
+    argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         name=dict(type="str", required=False),
         id=dict(type="int", required=False),
