@@ -261,6 +261,7 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
     ZIAClientHelper,
 )
 
+
 def core(module):
     client = ZIAClientHelper(module)
     state = module.params.get("state", None)

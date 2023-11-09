@@ -256,6 +256,7 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
     ZIAClientHelper,
 )
 
+
 # Helper function to transform match_type
 def transform_match_type(match_type):
     if match_type == "all":
@@ -280,8 +281,7 @@ def core(module):
         "exact_data_match_details",
         "idm_profile_match_accuracy",
         "ignore_exact_match_idm_dict",
-        "hierarchical_identifiers"
-        "include_bin_numbers",
+        "hierarchical_identifiers" "include_bin_numbers",
         "bin_numbers",
         "dict_template_id",
         "proximity",
@@ -301,7 +301,9 @@ def core(module):
             if dictionary_.get("name") == dict_name:
                 existing_dictionary = dictionary_
     if dictionary.get("match_type"):
-        dictionary["custom_phrase_match_type"] = transform_match_type(dictionary.pop("match_type"))
+        dictionary["custom_phrase_match_type"] = transform_match_type(
+            dictionary.pop("match_type")
+        )
     if existing_dictionary is not None:
         id = existing_dictionary.get("id")
         existing_dictionary.update(dictionary)
@@ -323,9 +325,7 @@ def core(module):
                     custom_phrase_match_type=existing_dictionary.get(
                         "custom_phrase_match_type", ""
                     ),
-                    match_type=existing_dictionary.get(
-                        "match_type", ""
-                    ),
+                    match_type=existing_dictionary.get("match_type", ""),
                     phrases=existing_dictionary.get("phrases", ""),
                     patterns=existing_dictionary.get("patterns", ""),
                     exact_data_match_details=existing_dictionary.get(
@@ -343,12 +343,8 @@ def core(module):
                     include_bin_numbers=existing_dictionary.get(
                         "include_bin_numbers", ""
                     ),
-                    bin_numbers=existing_dictionary.get(
-                        "bin_numbers", ""
-                    ),
-                    dict_template_id=existing_dictionary.get(
-                        "dict_template_id", ""
-                    ),
+                    bin_numbers=existing_dictionary.get("bin_numbers", ""),
+                    dict_template_id=existing_dictionary.get("dict_template_id", ""),
                     proximity=existing_dictionary.get("proximity", ""),
                 )
             )
@@ -368,9 +364,7 @@ def core(module):
                     custom_phrase_match_type=dictionary.get(
                         "custom_phrase_match_type", ""
                     ),
-                    match_type=dictionary.get(
-                        "match_type", ""
-                    ),
+                    match_type=dictionary.get("match_type", ""),
                     exact_data_match_details=dictionary.get(
                         "exact_data_match_details", ""
                     ),
@@ -383,15 +377,9 @@ def core(module):
                     hierarchical_identifiers=dictionary.get(
                         "hierarchical_identifiers", ""
                     ),
-                    include_bin_numbers=dictionary.get(
-                        "include_bin_numbers", ""
-                    ),
-                    bin_numbers=dictionary.get(
-                        "bin_numbers", ""
-                    ),
-                    dict_template_id=dictionary.get(
-                        "dict_template_id", ""
-                    ),
+                    include_bin_numbers=dictionary.get("include_bin_numbers", ""),
+                    bin_numbers=dictionary.get("bin_numbers", ""),
+                    dict_template_id=dictionary.get("dict_template_id", ""),
                     proximity=dictionary.get("proximity", ""),
                 )
             )

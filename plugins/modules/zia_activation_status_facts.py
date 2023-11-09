@@ -52,7 +52,6 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 )
 
 
-
 def core(module):
     activation_status = module.params.get("status", None)
     client = ZIAClientHelper(module)

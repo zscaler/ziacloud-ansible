@@ -24,11 +24,11 @@ extends_documentation_fragment:
     - zscaler.ziacloud.fragments.provider
 options:
   id:
-    description: ""
+    description: "A unique identifier of the network services groups"
     required: false
-    type: int
+    type: str
   name:
-    description: ""
+    description: "The name of the network services groups"
     required: true
     type: str
 """

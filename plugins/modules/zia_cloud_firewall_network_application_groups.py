@@ -27,10 +27,10 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_cloud_firewall_network_services_groups
-short_description: "Adds a new network service group."
+module: zia_cloud_firewall_ip_source_groups
+short_description: "Cloud Firewall IP source groups"
 description:
-  - "Adds a new network service group."
+  - "List of Cloud Firewall IP source groups"
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
@@ -42,33 +42,38 @@ extends_documentation_fragment:
     - zscaler.zpacloud.fragments.enabled_state
 options:
   id:
-    description: "A unique identifier of the network services groups"
+    description: "A unique identifier of the source IP address group"
     required: false
     type: str
   name:
-    description: "The name of the network services groups"
+    description: "The name of the source IP address group"
     required: true
     type: str
-  service_ids:
+  description:
+    description: "The description of the source IP address group"
+    required: true
+    type: str
+  ip_addresses:
+    description: "Source IP addresses added to the group"
     type: list
-    elements: dict
-    description: ""
-    required: false
+    elements: str
+    required: true
 """
 
 EXAMPLES = """
 
-- name: Create/Update/Delete Network Services Groups.
-  zscaler.ziacloud.zia_fw_filtering_network_services_groups:
-    name: "example"
-    description: "example"
-    services:
-        - name: [ "UDP_ANY", "TCP_ANY" ]
-
+- name: Create/Update/Delete ip source group.
+  zscaler.ziacloud.zia_fw_filtering_ip_source_groups:
+    name: "Example"
+    description: "Example"
+    ip_addresses:
+        - 192.168.1.1
+        - 192.168.1.2
+        - 192.168.1.3
 """
 
 RETURN = """
-# The newly created network services groups resource record.
+# The newly created ip source group resource record.
 """
 
 from traceback import format_exc
@@ -80,15 +85,17 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 )
 
 
-def normalize_svc_group(group):
+def normalize_app_group(group):
     """
-    Normalize network service group data by setting computed values.
+    Normalize network application group data by setting computed values.
     """
     normalized = group.copy()
 
     computed_values = [
         "id",
-        "service_ids",
+        "name",
+        "description",
+        "network_applications",
     ]
     for attr in computed_values:
         normalized.pop(attr, None)
@@ -99,34 +106,32 @@ def normalize_svc_group(group):
 def core(module):
     state = module.params.get("state", None)
     client = ZIAClientHelper(module)
-    service_group = dict()
+    app_group = dict()
     params = [
         "id",
         "name",
         "description",
-        "service_ids",
+        "network_applications",
     ]
     for param_name in params:
-        service_group[param_name] = module.params.get(param_name, None)
-    group_id = service_group.get("id", None)
-    group_name = service_group.get("name", None)
-    existing_service_group = None
+        app_group[param_name] = module.params.get(param_name, None)
+    group_id = app_group.get("id", None)
+    group_name = app_group.get("name", None)
+    existing_app_group = None
     if group_id is not None:
-        existing_service_group = client.firewall.get_network_svc_group(
-            group_id
-        ).to_dict()
+        existing_app_group = client.firewall.get_network_app_group(group_id).to_dict()
     else:
-        service_groups = client.firewall.list_network_svc_groups().to_list()
+        app_groups = client.firewall.list_network_app_groups().to_list()
         if group_name is not None:
-            for svc in service_groups:
-                if svc.get("name", None) == group_name:
-                    existing_service_group = svc
+            for app in app_groups:
+                if app.get("name", None) == group_name:
+                    existing_app_group = app
                     break
 
     # Normalize and compare existing and desired data
-    normalized_group = normalize_svc_group(service_group)
+    normalized_group = normalize_app_group(app_group)
     normalized_existing_group = (
-        normalize_svc_group(existing_service_group) if existing_service_group else {}
+        normalize_app_group(existing_app_group) if existing_app_group else {}
     )
 
     fields_to_exclude = ["id"]
@@ -138,53 +143,50 @@ def core(module):
                 f"Difference detected in {key}. Current: {normalized_existing_group.get(key)}, Desired: {value}"
             )
 
-    if existing_service_group is not None:
-        id = existing_service_group.get("id")
-        existing_service_group.update(normalized_group)
-        existing_service_group["id"] = id
+    if existing_app_group is not None:
+        id = existing_app_group.get("id")
+        existing_app_group.update(normalized_group)
+        existing_app_group["id"] = id
 
     if state == "present":
-        if existing_service_group is not None:
+        if existing_app_group is not None:
             if differences_detected:
                 """Update"""
-                existing_service_group = client.firewall.update_network_svc_group(
-                    group_id=existing_service_group.get("id", ""),
-                    name=existing_service_group.get("name", ""),
-                    service_ids=existing_service_group.get("service_ids", ""),
-                    description=existing_service_group.get("description", ""),
+                existing_app_group = client.firewall.update_network_app_group(
+                    group_id=existing_app_group.get("id", ""),
+                    name=existing_app_group.get("name", ""),
+                    network_applications=existing_app_group.get(
+                        "network_applications", ""
+                    ),
+                    description=existing_app_group.get("description", ""),
                 ).to_dict()
-                module.exit_json(changed=True, data=existing_service_group)
+                module.exit_json(changed=True, data=existing_app_group)
         else:
             """Create"""
-            service_group = client.firewall.add_network_svc_group(
-                name=service_group.get("name", ""),
-                service_ids=service_group.get("service_ids", ""),
-                description=service_group.get("description", ""),
+            app_group = client.firewall.add_network_app_group(
+                name=app_group.get("name", ""),
+                network_applications=app_group.get("network_applications", ""),
+                description=app_group.get("description", ""),
             ).to_dict()
-            module.exit_json(changed=False, data=service_group)
+            module.exit_json(changed=False, data=app_group)
     elif state == "absent":
-        if existing_service_group is not None:
-            code = client.firewall.delete_network_svc_group(
-                existing_service_group.get("id")
+        if existing_app_group is not None:
+            code = client.firewall.delete_network_app_group(
+                existing_app_group.get("id")
             )
             if code > 299:
                 module.exit_json(changed=False, data=None)
-            module.exit_json(changed=True, data=existing_service_group)
+            module.exit_json(changed=True, data=existing_app_group)
     module.exit_json(changed=False, data={})
 
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
-    id_name_spec = dict(
-        type="list",
-        elements="str",
-        required=True,
-    )
     argument_spec.update(
         id=dict(type="int", required=False),
         name=dict(type="str", required=True),
         description=dict(type="str", required=False),
-        service_ids=id_name_spec,
+        network_applications=dict(type="list", elements="str", required=True),
         state=dict(type="str", choices=["present", "absent"], default="present"),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
