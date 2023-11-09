@@ -41,18 +41,36 @@ extends_documentation_fragment:
     - zscaler.zpacloud.fragments.enabled_state
 options:
   id:
-    description: "The unique identifier for the rule label"
+    description: "The unique identifier for the network service"
     required: false
     type: int
   name:
-    description: "The rule label name"
+    description: "The network service name"
     required: true
     type: str
-  tag:
-    description: "The rule label name"
+  description:
+    description: ""
     required: false
     type: str
-    choices: [ 'ICMP_ANY', 'UDP_ANY', 'TCP_ANY', 'OTHER_NETWORK_SERVICE', 'DNS', 'NETBIOS',
+  type:
+    description: ""
+    required: false
+    type: str
+    choices:
+        - STANDARD
+        - PREDEFINED
+        - CUSTOM
+    default: STANDARD
+  is_name_l10n_tag:
+    description: ""
+    required: false
+    default: false
+    type: bool
+  tag:
+    description: "The network service tag"
+    required: false
+    type: str
+    choices: [  'ICMP_ANY', 'UDP_ANY', 'TCP_ANY', 'OTHER_NETWORK_SERVICE', 'DNS', 'NETBIOS',
                 'FTP', 'GNUTELLA', 'H_323', 'HTTP', 'HTTPS', 'IKE', 'IMAP', 'ILS', 'IKE_NAT',
                 'IRC', 'LDAP', 'QUIC', 'TDS', 'NETMEETING', 'NFS', 'NTP', 'SIP', 'SNMP', 'SMB',
                 'SMTP', 'SSH', 'SYSLOG', 'TELNET', 'TRACEROUTE', 'POP3', 'PPTP', 'RADIUS', 'REAL_MEDIA',
@@ -128,30 +146,12 @@ options:
         required: false
         description:
           - List of valid TCP ports.
-  type:
-    description: ""
-    required: false
-    type: str
-    choices:
-        - STANDARD
-        - PREDEFINED
-        - CUSTOM
-    default: STANDARD
-  description:
-    description: ""
-    required: false
-    type: str
-  is_name_l10n_tag:
-    description: ""
-    required: false
-    default: false
-    type: bool
 """
 
 EXAMPLES = """
 
 - name: Create/Update/Delete Network Services.
-  zscaler.ziacloud.zia_fw_filtering_network_services:
+  zscaler.ziacloud.zia_cloud_firewall_network_services:
     name: "example"
     description: "example"
     src_tcp_ports:
@@ -268,7 +268,6 @@ def main():
             type="list",
             elements="dict",
             options=dict(
-                id=dict(type="int", required=False),
                 start=dict(type="int", required=False),
                 end=dict(type="int", required=False),
             ),
@@ -278,7 +277,6 @@ def main():
             type="list",
             elements="dict",
             options=dict(
-                id=dict(type="int", required=False),
                 start=dict(type="int", required=False),
                 end=dict(type="int", required=False),
             ),
@@ -288,7 +286,6 @@ def main():
             type="list",
             elements="dict",
             options=dict(
-                id=dict(type="int", required=False),
                 start=dict(type="int", required=False),
                 end=dict(type="int", required=False),
             ),
@@ -298,7 +295,6 @@ def main():
             type="list",
             elements="dict",
             options=dict(
-                id=dict(type="int", required=False),
                 start=dict(type="int", required=False),
                 end=dict(type="int", required=False),
             ),

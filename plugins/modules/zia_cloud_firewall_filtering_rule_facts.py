@@ -72,6 +72,7 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
     ZIAClientHelper,
 )
 
+
 def core(module):
     rule_id = module.params.get("id", None)
     rule_name = module.params.get("name", None)

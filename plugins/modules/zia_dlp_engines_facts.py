@@ -77,24 +77,36 @@ def core(module):
     engine_id = module.params.get("id", None)
     engine_name = module.params.get("name", None)
     client = ZIAClientHelper(module)
-    engines = []
+
     if engine_id is not None:
-        engine = client.dlp.get_dlp_engines(engine_id).to_dict()
-        engines = [engine]
+        engine = client.dlp.get_dlp_engines(engine_id)
+        if engine:
+            module.exit_json(changed=False, data=engine.to_dict())
+        else:
+            module.fail_json(
+                msg=f"Failed to retrieve DLP engine with ID: '{engine_id}'"
+            )
+
+    engines = client.dlp.list_dlp_engines()
+    if engine_name:
+        # Search for both custom and predefined engine names
+        engine = next(
+            (
+                dlp
+                for dlp in engines
+                if dlp.get("name") == engine_name
+                or dlp.get("predefined_engine_name") == engine_name
+            ),
+            None,
+        )
+        if engine:
+            module.exit_json(changed=False, data=engine.to_dict())
+        else:
+            module.fail_json(
+                msg=f"Failed to retrieve DLP engine with name: '{engine_name}'"
+            )
     else:
-        engines = client.dlp.list_dlp_engines().to_list()
-        if engine_name is not None:
-            engine = None
-            for dlp in engines:
-                if dlp.get("name", None) == engine_name:
-                    engine = dlp
-                    break
-            if engine is None:
-                module.fail_json(
-                    msg="Failed to retrieve dlp engine: '%s'" % (engine_name)
-                )
-            engines = [engine]
-    module.exit_json(changed=False, data=engines)
+        module.exit_json(changed=False, data=[engine.to_dict() for engine in engines])
 
 
 def main():

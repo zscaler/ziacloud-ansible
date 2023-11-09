@@ -120,9 +120,7 @@ class ZIAClientHelper(ZIA):
         if not api_key:
             raise ValueError("api_key must be provided via provider or directly")
 
-        cloud_env = (
-            provider.get("cloud") if provider else module.params.get("cloud")
-        )
+        cloud_env = provider.get("cloud") if provider else module.params.get("cloud")
         if not cloud_env:
             raise ValueError("cloud must be provided via provider or directly")
 

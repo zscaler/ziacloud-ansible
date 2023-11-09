@@ -30,54 +30,66 @@ DOCUMENTATION = """
 module: zia_cloud_firewall_ip_destination_groups
 short_description: "Create IP destination groups."
 description:
-  - "Create IP destination groups."
+  - "This module allows you to create IP destination groups within the Zscaler Internet Access (ZIA) Cloud firewall."
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
-    - zscaler.zpacloud.fragments.credentials_set
-    - zscaler.zpacloud.fragments.provider
-    - zscaler.zpacloud.fragments.enabled_state
+    - zscaler.ziacloud.fragments.credentials_set
+    - zscaler.ziacloud.fragments.provider
+    - zscaler.ziacloud.fragments.enabled_state
 options:
   id:
-    description: "Unique identifer for the destination IP group"
+    description: "Unique identifier for the destination IP group."
     required: false
     type: int
   name:
-    description: "Destination IP group name"
+    description: "Destination IP group name."
+    required: true
+    type: str
+  description:
+    description: "Additional information about the destination IP group."
     required: true
     type: str
   type:
-    description:
-        - Destination IP group type (i.e., the group can contain destination IP addresses or FQDNs)
+    description: "Destination IP group type (i.e., the group can contain destination IP addresses or FQDNs)."
     required: true
     type: str
     choices:
       - DSTN_IP
       - DSTN_FQDN
+      - DSTN_DOMAIN
+      - DSTN_OTHER
   addresses:
-    description:
-      - Destination IP addresses within the group.
+    description: "Destination IP addresses, FQDNs, or wildcard FQDNs added to the group."
     type: list
     elements: str
     required: false
-  description:
-    description: "Additional information about the destination IP group"
-    required: true
-    type: str
   ip_categories:
     description:
-      - Destination IP address URL categories.
-      - You can identify destinations based on the URL category of the domain.
+      - "Destination IP address URL categories."
+      - "You can identify destinations based on the URL category of the domain."
+      - "There are hundreds of categories available such as 'ANY', 'NONE', 'SOCIAL_ADULT', 'OTHER_BUSINESS_AND_ECONOMY', etc."
+      - "For a complete list of all available categories, please refer to the Zscaler URL Categories documentation at:"
+      - "U(https://help.zscaler.com/zia/firewall-policies#/ipDestinationGroups-get)"
     type: list
     elements: str
     required: false
+    choices:
+      - ANY
+      - SOCIAL_ADULT
+      - OTHER_BUSINESS_AND_ECONOMY
+      - CORPORATE_MARKETING
+      - PROFESSIONAL_SERVICES
+      - CLASSIFIEDS
+      - TRADING_BROKARAGE_INSURANCE
   countries:
     description:
-      - Destination IP address counties.
+      - Destination IP address countries.
       - You can identify destinations based on the location of a server.
+      - Supports 2-letter ISO3166 Alpha2 Country i.e BR, CA, US.
     type: list
     elements: str
     required: false
@@ -86,14 +98,14 @@ options:
 EXAMPLES = """
 
 - name: Create/Update/Delete ip destination group - DSTN_FQDN.
-  zscaler.ziacloud.zia_fw_filtering_ip_destination_groups:
+  zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups:
     name: "Example"
     description: "Example"
     type: "DSTN_FQDN"
     addresses: [ "test1.acme.com", "test2.acme.com", "test3.acme.com" ]
 
 - name: Create/Update/Delete ip destination group - DSTN_IP by Country.
-  zscaler.ziacloud.zia_fw_filtering_ip_destination_groups:
+  zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups:
     name: "example"
     description: "example"
     type: "DSTN_IP"
@@ -101,7 +113,7 @@ EXAMPLES = """
     countries: ["COUNTRY_CA"]
 
 - name: Create/Update/Delete ip destination group - DSTN_IP.
-  zscaler.ziacloud.zia_fw_filtering_ip_destination_groups:
+  zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups:
     name: "Example - IP Ranges"
     description: "Example - IP Ranges"
     type: "DSTN_IP"
@@ -119,22 +131,29 @@ from traceback import format_exc
 
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
+    validate_iso3166_alpha2,
+)
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
     ZIAClientHelper,
 )
 
+
 def normalize_ip_group(group):
     """
-    Normalize app connector groups data by setting computed values.
+    Normalize ip destination group data by setting computed values.
     """
     normalized = group.copy()
 
     computed_values = [
+        "id",
+        "name",
+        "description",
+        "type",
         "creation_time",
         "modified_by",
         "modified_time",
         "addresses",
-        "id",
         "ip_categories",
         "url_categories",
         "countries",
@@ -144,10 +163,11 @@ def normalize_ip_group(group):
 
     return normalized
 
+
 def core(module):
     state = module.params.get("state", None)
     client = ZIAClientHelper(module)
-    destination_group = dict()
+    destination_group = {}
     params = [
         "id",
         "name",
@@ -159,7 +179,32 @@ def core(module):
         "countries",
     ]
     for param_name in params:
-        destination_group[param_name] = module.params.get(param_name, None)
+        destination_group[param_name] = module.params.get(param_name)
+
+    # Perform validation and prepending 'COUNTRY_' for countries list
+    countries = destination_group.get("countries")
+    if countries:
+        validated_countries = []
+        for country_code in countries:
+            if validate_iso3166_alpha2(country_code):
+                validated_countries.append(f"COUNTRY_{country_code}")
+            else:
+                module.fail_json(
+                    msg=f"The country code '{country_code}' is not a valid ISO3166 Alpha2 code."
+                )
+        destination_group["countries"] = validated_countries
+
+    # Now that destination_group is populated, perform the conditional validation check
+    destination_type = destination_group["type"]
+    ip_categories = destination_group["ip_categories"]
+    countries = destination_group["countries"]
+
+    # Check if the type is DSTN_OTHER, then either ip_categories or countries should be set
+    if destination_type == "DSTN_OTHER" and not (ip_categories or countries):
+        module.fail_json(
+            msg="'ip_categories' or 'countries' must be set when 'type' is 'DSTN_OTHER'."
+        )
+
     group_id = destination_group.get("id", None)
     group_name = destination_group.get("name", None)
     existing_dest_ip_group = None
@@ -175,7 +220,7 @@ def core(module):
                     existing_dest_ip_group = ip
                     break
 
-    # Normalize and compare existing and desired application data
+    # Normalize and compare existing and desired data
     normalized_group = normalize_ip_group(destination_group)
     normalized_existing_group = (
         normalize_ip_group(existing_dest_ip_group) if existing_dest_ip_group else {}
@@ -197,19 +242,19 @@ def core(module):
 
     if state == "present":
         if existing_dest_ip_group is not None:
-          if differences_detected:
-            """Update"""
-            existing_dest_ip_group = client.firewall.update_ip_destination_group(
-                group_id=existing_dest_ip_group.get("id", ""),
-                name=existing_dest_ip_group.get("name", ""),
-                type=existing_dest_ip_group.get("type", ""),
-                addresses=existing_dest_ip_group.get("addresses", ""),
-                description=existing_dest_ip_group.get("description", ""),
-                ip_categories=existing_dest_ip_group.get("ip_categories", ""),
-                url_categories=existing_dest_ip_group.get("url_categories", ""),
-                countries=existing_dest_ip_group.get("countries", ""),
-            ).to_dict()
-            module.exit_json(changed=True, data=existing_dest_ip_group)
+            if differences_detected:
+                """Update"""
+                existing_dest_ip_group = client.firewall.update_ip_destination_group(
+                    group_id=existing_dest_ip_group.get("id", ""),
+                    name=existing_dest_ip_group.get("name", ""),
+                    type=existing_dest_ip_group.get("type", ""),
+                    addresses=existing_dest_ip_group.get("addresses", ""),
+                    description=existing_dest_ip_group.get("description", ""),
+                    ip_categories=existing_dest_ip_group.get("ip_categories", ""),
+                    url_categories=existing_dest_ip_group.get("url_categories", ""),
+                    countries=existing_dest_ip_group.get("countries", ""),
+                ).to_dict()
+                module.exit_json(changed=True, data=existing_dest_ip_group)
         else:
             """Create"""
             destination_group = client.firewall.add_ip_destination_group(

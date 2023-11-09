@@ -72,25 +72,39 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 )
 
 
+from traceback import format_exc
+
+from ansible.module_utils._text import to_native
+from ansible.module_utils.basic import AnsibleModule
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
+
+
 def core(module):
-    group_id = module.params.get("id", None)
-    group_name = module.params.get("name", None)
+    group_id = module.params.get("id")
+    group_name = module.params.get("name")
+    exclude_type = module.params.get("exclude_type")
     client = ZIAClientHelper(module)
     groups = []
+
     if group_id is not None:
         group = client.firewall.get_ip_destination_group(group_id).to_dict()
         groups = [group]
     else:
-        groups = client.firewall.list_ip_destination_groups().to_list()
+        # Pass the exclude_type parameter to the SDK method
+        groups = client.firewall.list_ip_destination_groups(
+            exclude_type=exclude_type
+        ).to_list()
         if group_name is not None:
             group = None
             for dest in groups:
-                if dest.get("name", None) == group_name:
+                if dest.get("name") == group_name:
                     group = dest
                     break
             if group is None:
                 module.fail_json(
-                    msg="Failed to retrieve destination ip group: '%s'" % (group_name)
+                    msg=f"Failed to retrieve destination ip group: '{group_name}'"
                 )
             groups = [group]
     module.exit_json(changed=False, data=groups)
@@ -101,8 +115,10 @@ def main():
     argument_spec.update(
         name=dict(type="str", required=False),
         id=dict(type="int", required=False),
+        exclude_type=dict(type="str", required=False),  # Add the exclude_type parameter
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+
     try:
         core(module)
     except Exception as e:

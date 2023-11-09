@@ -27,9 +27,9 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_dlp_dictionaries_facts
-short_description: "Custom and predefined DLP dictionaries."
-description: "Gets information on all custom and predefined DLP dictionaries."
+module: zia_cloud_firewall_time_windows_facts
+short_description: "List of time intervals"
+description: "Gets a list of time intervals used for by the Firewall policy or the URL Filtering policy."
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
@@ -40,22 +40,22 @@ extends_documentation_fragment:
     - zscaler.ziacloud.fragments.provider
 options:
   id:
-    description: "Unique identifier for the DLP dictionary"
+    description: "Unique identifier for Time Interval"
     required: false
     type: int
   name:
-    description: "Name of the DLP dictionary's name"
+    description: "Name of the Time Interval"
     required: true
     type: str
 """
 
 EXAMPLES = """
-- name: Gather Information Details of all ZIA DLP Dictionaries
-  zscaler.ziacloud.zia_dlp_dictionaries_facts:
+- name: Gather Information Details of all ZIA Time Intervals
+  zscaler.ziacloud.zia_cloud_firewall_time_windows_facts:
 
-- name: Gather Information Details of a ZIA DLP Dictionaries by Name
-  zscaler.ziacloud.zia_dlp_dictionaries_facts:
-    name: "Example"
+- name: Gather Information Details of a ZIA Time Interval by Name
+  zscaler.ziacloud.zia_cloud_firewall_time_windows_facts:
+    name: "Off hours"
 """
 
 RETURN = """
@@ -73,27 +73,32 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 
 def core(module):
-    dict_id = module.params.get("id", None)
-    dict_name = module.params.get("name", None)
+    time_window_id = module.params.get("id")
+    time_window_name = module.params.get("name")
     client = ZIAClientHelper(module)
-    dictionaries = []
-    if dict_id is not None:
-        dictionary = client.dlp.get_dict(dict_id).to_dict()
-        dictionaries = [dictionary]
+
+    time_windows = client.firewall.list_time_windows()
+    if time_windows is None:
+        module.fail_json(msg="Failed to retrieve time windows list")
+
+    if time_window_id is not None:
+        time_window = next(
+            (tw for tw in time_windows if str(tw.get("id")) == str(time_window_id)),
+            None,
+        )
+    elif time_window_name is not None:
+        time_window = next(
+            (tw for tw in time_windows if tw.get("name") == time_window_name), None
+        )
     else:
-        dictionaries = client.dlp.list_dicts().to_list()
-        if dict_name is not None:
-            dictionary = None
-            for dict in dictionaries:
-                if dict.get("name", None) == dict_name:
-                    dictionary = dict
-                    break
-            if dictionary is None:
-                module.fail_json(
-                    msg="Failed to retrieve dlp dictionary: '%s'" % (dict_name)
-                )
-            dictionaries = [dictionary]
-    module.exit_json(changed=False, data=dictionaries)
+        module.exit_json(changed=False, data=time_windows)
+        return
+
+    if time_window:
+        module.exit_json(changed=False, data=time_window)
+    else:
+        msg = f"Time window {'with ID ' + str(time_window_id) if time_window_id is not None else 'named ' + time_window_name} not found"
+        module.fail_json(msg=msg)
 
 
 def main():
