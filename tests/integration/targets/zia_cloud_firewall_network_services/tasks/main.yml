@@ -1,40 +1,51 @@
 ---
-- block:
-    - name: Ensure ZIA API Credential is Set
-      ansible.builtin.fail:
-        msg: username, password and api_key should be defined in tests/integration/integration_config.yml
-      when:
-        - username is not defined
-        - username | length == 0
-        - password is not defined
-        - password | length == 0
-        - api_key  is not defined
-        - api_key | length == 0
-        - base_url | is not defined
-        - base_url | length == 0
+- name: Include default variables
+  ansible.builtin.include_vars:
+    file: "../defaults/main.yml"
 
+- name: Import Random String Generator Tasks
+  ansible.builtin.import_tasks: "../../../generate_random_string.yml"
+
+- ansible.builtin.set_fact:
+    name: "{{ name }}_{{ random_string }}"
+    description: "{{ description }}_{{ random_string }}"
+
+- name: Ensure required environment variables are set
+  fail:
+    msg: "{{ env_var }} is not defined as environment variable"
+  when: lookup('env', env_var) is none
+  loop:
+    - ZIA_USERNAME
+    - ZIA_PASSWORD
+    - ZIA_API_KEY
+    - ZIA_CLOUD
+  loop_control:
+    loop_var: env_var
+
+- ansible.builtin.set_fact:
+    zia_cloud:
+      username: "{{ lookup('env', 'ZIA_USERNAME') }}"
+      password: "{{ lookup('env', 'ZIA_PASSWORD') }}"
+      api_key: "{{ lookup('env', 'ZIA_API_KEY') }}"
+      cloud: "{{ lookup('env', 'ZIA_CLOUD') | default(omit) }}"
+  no_log: True
+
+- block:
     - name: Ensure Network Services is absent (leftover)
       zscaler.ziacloud.zia_cloud_firewall_network_services:
+        provider: "{{ zia_cloud }}"
         state: absent
-        username: "{{ username }}"
-        password: "{{ password }}"
-        api_key: "{{ api_key }}"
-        base_url: "{{ base_url }}"
         name: "{{ name }}"
         description: "{{ description }}"
         src_tcp_ports: "{{ src_tcp_ports }}"
         dest_tcp_ports: "{{ dest_tcp_ports }}"
         type: "{{ type }}"
-      ignore_errors: true # In case one was left from previous run
       register: result
 
     - name: Ensure Network Services is absent
       zscaler.ziacloud.zia_cloud_firewall_network_services:
+        provider: "{{ zia_cloud }}"
         state: absent
-        username: "{{ username }}"
-        password: "{{ password }}"
-        api_key: "{{ api_key }}"
-        base_url: "{{ base_url }}"
         name: "{{ name }}"
         description: "{{ description }}"
         src_tcp_ports: "{{ src_tcp_ports }}"
@@ -49,11 +60,8 @@
 
     - name: Ensure Network Services is (Present)
       zscaler.ziacloud.zia_cloud_firewall_network_services:
+        provider: "{{ zia_cloud }}"
         state: present
-        username: "{{ username }}"
-        password: "{{ password }}"
-        api_key: "{{ api_key }}"
-        base_url: "{{ base_url }}"
         name: "{{ name }}"
         description: "{{ description }}"
         src_tcp_ports: "{{ src_tcp_ports }}"
@@ -73,11 +81,8 @@
 
     - name: Ensure Network Services is (again; idempotency check)
       zscaler.ziacloud.zia_cloud_firewall_network_services:
+        provider: "{{ zia_cloud }}"
         state: present
-        username: "{{ username }}"
-        password: "{{ password }}"
-        api_key: "{{ api_key }}"
-        base_url: "{{ base_url }}"
         name: "{{ name }}"
         description: "{{ description }}"
         src_tcp_ports: "{{ src_tcp_ports }}"
@@ -88,14 +93,11 @@
     - name: Verify Network Services is absent
       ansible.builtin.assert:
         that:
-          - not result.changed
+          - result.changed
 
     - name: Fetch All Network Services
       zscaler.ziacloud.zia_cloud_firewall_network_services_facts:
-        username: "{{ username }}"
-        password: "{{ password }}"
-        api_key: "{{ api_key }}"
-        base_url: "{{ base_url }}"
+        provider: "{{ zia_cloud }}"
       register: result
 
     - name: Ensure all Network Services found
@@ -106,10 +108,7 @@
 
     - name: Fetch this Network Services
       zscaler.ziacloud.zia_cloud_firewall_network_services_facts:
-        username: "{{ username }}"
-        password: "{{ password }}"
-        api_key: "{{ api_key }}"
-        base_url: "{{ base_url }}"
+        provider: "{{ zia_cloud }}"
         name: "{{ name }}"
       register: result
 
@@ -126,25 +125,19 @@
     - name: Delete Network Services
       zscaler.ziacloud.zia_cloud_firewall_network_services:
         state: absent
-        username: "{{ username }}"
-        password: "{{ password }}"
-        api_key: "{{ api_key }}"
-        base_url: "{{ base_url }}"
+        provider: "{{ zia_cloud }}"
         name: "{{ name }}"
       register: result
 
     - name: Verify Network Services is Deleted
       ansible.builtin.assert:
         that:
-          - not result.changed
+          - result.changed
 
     - name: Delete Network Services (again; idempotency check)
       zscaler.ziacloud.zia_cloud_firewall_network_services:
         state: absent
-        username: "{{ username }}"
-        password: "{{ password }}"
-        api_key: "{{ api_key }}"
-        base_url: "{{ base_url }}"
+        provider: "{{ zia_cloud }}"
         name: "{{ name }}"
       register: result
 

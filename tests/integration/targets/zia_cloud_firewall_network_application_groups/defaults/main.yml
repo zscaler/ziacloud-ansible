@@ -1,0 +1,8 @@
+---
+# Network Application Group
+name: test_zia_ansible
+description: test_zia_ansible
+network_applications:
+  - APNS
+  - APPSTORE
+  - DICT

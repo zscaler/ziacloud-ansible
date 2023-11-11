@@ -37,9 +37,9 @@ version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
-    - zscaler.zpacloud.fragments.credentials_set
-    - zscaler.zpacloud.fragments.provider
-    - zscaler.zpacloud.fragments.enabled_state
+    - zscaler.ziacloud.fragments.credentials_set
+    - zscaler.ziacloud.fragments.provider
+    - zscaler.ziacloud.fragments.enabled_state
 options:
   id:
     description: "A unique identifier of the network services groups"
@@ -88,6 +88,8 @@ def normalize_svc_group(group):
 
     computed_values = [
         "id",
+        "name",
+        "description",
         "service_ids",
     ]
     for attr in computed_values:

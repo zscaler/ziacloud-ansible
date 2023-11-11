@@ -1,0 +1,74 @@
+---
+- name: List all Rule Labels
+  zscaler.ziacloud.zia_rule_labels_facts:
+    provider: "{{ zia_cloud }}"
+  register: all_rule_labels
+
+- name: Delete all Rule Labels 💥
+  zscaler.ziacloud.zia_rule_labels:
+    provider: "{{ zia_cloud }}"
+    state: absent
+    name: "{{ item.name }}"
+  loop: "{{ all_rule_labels.data }}"
+  when: all_rule_labels.data is defined
+
+- name: List all IP Destination Groups
+  zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups_facts:
+    provider: "{{ zia_cloud }}"
+  register: all_ip_dest_groups
+
+- name: Delete all IP Destination Groups 💥
+  zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups:
+    provider: "{{ zia_cloud }}"
+    state: absent
+    name: "{{ item.name }}"
+  loop: "{{ all_ip_dest_groups.data }}"
+  when: all_ip_dest_groups.data is defined
+
+- name: List all IP Source Groups
+  zscaler.ziacloud.zia_cloud_firewall_ip_source_groups_facts:
+    provider: "{{ zia_cloud }}"
+  register: all_ip_source_groups
+
+- name: Delete all IP Source Groups 💥
+  zscaler.ziacloud.zia_cloud_firewall_ip_source_groups:
+    provider: "{{ zia_cloud }}"
+    state: absent
+    name: "{{ item.name }}"
+    ip_addresses: "{{ item.ip_addresses }}"
+  loop: "{{ all_ip_source_groups.data }}"
+  when: all_ip_source_groups.data is defined
+
+# - name: List all Network Services
+#   zscaler.ziacloud.zia_cloud_firewall_network_services_facts:
+#     provider: "{{ zia_cloud }}"
+#   register: all_network_services
+
+# - name: Delete all Network Services 💥
+#   zscaler.ziacloud.zia_cloud_firewall_ip_source_groups:
+#     provider: "{{ zia_cloud }}"
+#     state: absent
+#     name: "{{ item.name }}"
+#   loop: "{{ all_network_services.data }}"
+#   when: all_network_services.data is defined
+
+- name: Set fact for each task status
+  ansible.builtin.set_fact:
+    rule_labels_failed: "{{ all_rule_labels.failed | default(false) }}"
+    ip_dest_groups_failed: "{{ all_ip_dest_groups.failed | default(false) }}"
+    ip_source_groups_failed: "{{ all_ip_source_groups.failed | default(false) }}"
+    network_services_failed: "{{ all_network_services.failed | default(false) }}"
+
+- name: Set fact for overall status
+  ansible.builtin.set_fact:
+    sweep_successful: "{{ not ( rule_labels_failed or ip_dest_groups_failed or ip_source_groups_failed or network_services_failed ) }}"
+
+- name: Print success message ✅
+  ansible.builtin.debug:
+    msg: "Tenant sweep successfully completed!"
+  when: sweep_successful
+
+- name: Print failure message ❌
+  ansible.builtin.debug:
+    msg: "Tenant sweep incomplete. Please check the above logs for errors."
+  when: not sweep_successful

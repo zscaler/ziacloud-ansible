@@ -78,7 +78,9 @@ def core(module):
     rule_name = module.params.get("name", None)
     client = ZIAClientHelper(module)
     rules = []
+
     if rule_id is not None:
+        # Fetch rule by ID
         ruleBox = client.firewall.get_rule(rule_id=rule_id)
         if ruleBox is None:
             module.fail_json(
@@ -86,17 +88,23 @@ def core(module):
             )
         rules = [ruleBox.to_dict()]
     else:
-        rules = client.firewall.list_rules().to_list()
+        # Fetch all rules and search by name
+        all_rules = client.firewall.list_rules().to_list()
         if rule_name is not None:
-            ruleFound = False
-            for rule in rules:
+            # Iterate over rules to find the matching name
+            for rule in all_rules:
                 if rule.get("name") == rule_name:
-                    ruleFound = True
                     rules = [rule]
-            if not ruleFound:
+                    break
+            # Handle case where no rule with the given name is found
+            if not rules:
                 module.fail_json(
                     msg="Failed to retrieve Firewall Rule Name: '%s'" % (rule_name)
                 )
+        else:
+            # Return all rules if no specific name is provided
+            rules = all_rules
+
     module.exit_json(changed=False, data=rules)
 
 
