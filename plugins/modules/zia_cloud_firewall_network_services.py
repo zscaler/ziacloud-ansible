@@ -177,6 +177,29 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 )
 
 
+def normalize_service(service):
+    """
+    Normalize ip source group data by setting computed values.
+    """
+    normalized = service.copy()
+
+    computed_values = [
+        "id",
+        "name",
+        "description",
+        "tag",
+        "src_tcp_ports",
+        "dest_tcp_ports",
+        "src_udp_ports",
+        "dest_udp_ports",
+        "is_name_l10n_tag",
+    ]
+    for attr in computed_values:
+        normalized.pop(attr, None)
+
+    return normalized
+
+
 def core(module):
     state = module.params.get("state", None)
     client = ZIAClientHelper(module)
@@ -208,13 +231,34 @@ def core(module):
                 if svc.get("name", None) == service_name:
                     existing_network_service = svc
                     break
+
+    # Normalize and compare existing and desired data
+    normalized_service = normalize_service(network_service)
+    normalized_existing_service = (
+        normalize_service(existing_network_service) if existing_network_service else {}
+    )
+
+    fields_to_exclude = ["id"]
+    differences_detected = False
+    for key, value in normalized_service.items():
+        if (
+            key not in fields_to_exclude
+            and normalized_existing_service.get(key) != value
+        ):
+            differences_detected = True
+            module.warn(
+                f"Difference detected in {key}. Current: {normalized_existing_service.get(key)}, Desired: {value}"
+            )
+
     if existing_network_service is not None:
         id = existing_network_service.get("id")
-        existing_network_service.update(network_service)
+        existing_network_service.update(normalized_service)
         existing_network_service["id"] = id
+
     if state == "present":
         if existing_network_service is not None:
-            """Update"""
+            if differences_detected:
+                """Update"""
             existing_network_service = client.firewall.update_network_service(
                 service_id=existing_network_service.get("id", ""),
                 name=existing_network_service.get("name", ""),

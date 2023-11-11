@@ -1,9 +1,9 @@
-name: "network_service_test"
-description: "network_service_test"
+name: test_zia_ansible
+description: test_zia_ansible
 src_tcp_ports:
-    - start: 5002
-      end: 5005
+  - start: 5002
+    end: 5005
 dest_tcp_ports:
-    - start: 5003
-      end: 5005
+  - start: 5003
+    end: 5005
 type: "CUSTOM"

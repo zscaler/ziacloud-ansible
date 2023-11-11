@@ -1,0 +1,33 @@
+---
+# Common Variables
+name: test_zia_ansible
+description: test_zia_ansible
+
+# IP Destination Group of Type DSTN_IP
+type_dst_ip: "DSTN_IP"
+addresses_dst_ip:
+  - 3.217.228.0-3.217.231.255
+  - 3.235.112.0-3.235.119.255
+  - 52.23.61.0-52.23.62.25
+  - 35.80.88.0-35.80.95.255
+
+# IP Destination Group of Type DSTN_FQDN
+type_dst_fqdn: "DSTN_FQDN"
+addresses_dst_fqdn:
+  - test1.acme.com
+  - test2.acme.com
+  - test3.acme.com
+
+# IP Destination Group of Type DSTN_OTHER
+type_dst_other: "DSTN_OTHER"
+countries_dst_other:
+  - BR
+  - CA
+  - US
+
+# IP Destination Group of Type DSTN_DOMAIN
+type_dst_domain: "DSTN_DOMAIN"
+addresses_dst_domain:
+  - acme.com
+  - acme1.com
+  - "*.acme.com"

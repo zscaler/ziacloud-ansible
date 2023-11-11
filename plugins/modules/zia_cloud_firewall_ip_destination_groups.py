@@ -208,6 +208,7 @@ def core(module):
     group_id = destination_group.get("id", None)
     group_name = destination_group.get("name", None)
     existing_dest_ip_group = None
+
     if group_id is not None:
         existing_dest_ip_group = client.firewall.get_ip_destination_group(
             group_id

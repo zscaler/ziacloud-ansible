@@ -37,9 +37,9 @@ version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
-    - zscaler.zpacloud.fragments.credentials_set
-    - zscaler.zpacloud.fragments.provider
-    - zscaler.zpacloud.fragments.enabled_state
+    - zscaler.ziacloud.fragments.credentials_set
+    - zscaler.ziacloud.fragments.provider
+    - zscaler.ziacloud.fragments.enabled_state
 options:
   id:
     description: "A unique identifier of the source IP address group"
@@ -93,7 +93,10 @@ def normalize_ip_group(group):
 
     computed_values = [
         "id",
+        "name",
+        "description",
         "is_non_editable",
+        "ip_addresses",
     ]
     for attr in computed_values:
         normalized.pop(attr, None)
@@ -115,6 +118,7 @@ def core(module):
         source_group[param_name] = module.params.get(param_name, None)
     group_id = source_group.get("id", None)
     group_name = source_group.get("name", None)
+
     existing_src_ip_group = None
     if group_id is not None:
         existing_src_ip_group = client.firewall.get_ip_source_group(group_id).to_dict()

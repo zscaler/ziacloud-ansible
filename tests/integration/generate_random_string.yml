@@ -1,0 +1,3 @@
+- name: Generate a random string
+  set_fact:
+    random_string: "{{ lookup('password', '/dev/null length=6 chars=ascii_letters') }}"
