@@ -1,0 +1,36 @@
+---
+- name: Ensure required environment variables are set
+  fail:
+    msg: "{{ env_var }} is not defined as environment variable"
+  when: lookup('env', env_var) is none
+  loop:
+    - ZIA_USERNAME
+    - ZIA_PASSWORD
+    - ZIA_API_KEY
+    - ZIA_CLOUD
+  loop_control:
+    loop_var: env_var
+
+- ansible.builtin.set_fact:
+    zia_cloud:
+      username: "{{ lookup('env', 'ZIA_USERNAME') }}"
+      password: "{{ lookup('env', 'ZIA_PASSWORD') }}"
+      api_key: "{{ lookup('env', 'ZIA_API_KEY') }}"
+      cloud: "{{ lookup('env', 'ZIA_CLOUD') | default(omit) }}"
+  no_log: True
+
+- block:
+    - name: List all Static IP Address
+      zscaler.ziacloud.zia_traffic_forwarding_static_ip_facts:
+        provider: "{{ zia_cloud }}"
+      register: all_static_ips
+
+    - name: Delete all Static IP Address 💥
+      zscaler.ziacloud.zia_traffic_forwarding_static_ip:
+        provider: "{{ zia_cloud }}"
+        state: absent
+        ip_address: "{{ static.ip_address }}"
+      loop: "{{ all_static_ips.data }}"
+      when: all_static_ips.data is defined
+      loop_control:
+        loop_var: static

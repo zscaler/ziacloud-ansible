@@ -27,7 +27,7 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_traffic_forwarding_static_ips
+module: zia_traffic_forwarding_static_ip
 short_description: "Adds a static IP address."
 description:
   - "Adds a static IP address."
@@ -91,7 +91,7 @@ options:
 
 EXAMPLES = """
 - name: Create/Update/Delete a Static IP.
-  zscaler.ziacloud.zia_traffic_forwarding_static_ips:
+  zscaler.ziacloud.zia_traffic_forwarding_static_ip:
     ip_address: "1.1.1.1"
     routable_ip: true
     comment: "Created with Ansible"

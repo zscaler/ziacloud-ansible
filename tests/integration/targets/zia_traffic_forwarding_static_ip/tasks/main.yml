@@ -32,7 +32,7 @@
 - block:
     # Static IP Address
     - name: Ensure Static IP Address (leftover)
-      zscaler.ziacloud.zia_traffic_forwarding_static_ips:
+      zscaler.ziacloud.zia_traffic_forwarding_static_ip:
         provider: "{{ zia_cloud }}"
         state: absent
         ip_address: "{{ ip_address }}"
@@ -44,7 +44,7 @@
       register: result
 
     - name: Ensure Static IP Address is absent
-      zscaler.ziacloud.zia_traffic_forwarding_static_ips:
+      zscaler.ziacloud.zia_traffic_forwarding_static_ip:
         provider: "{{ zia_cloud }}"
         state: absent
         ip_address: "{{ ip_address }}"
@@ -62,7 +62,7 @@
           - result.data is defined
 
     - name: Ensure Static IP Address is (Present)
-      zscaler.ziacloud.zia_traffic_forwarding_static_ips:
+      zscaler.ziacloud.zia_traffic_forwarding_static_ip:
         provider: "{{ zia_cloud }}"
         state: present
         ip_address: "{{ ip_address }}"
@@ -80,7 +80,7 @@
           - result.data.ip_address is defined
 
     - name: Ensure Static IP Address (again; idempotency check)
-      zscaler.ziacloud.zia_traffic_forwarding_static_ips:
+      zscaler.ziacloud.zia_traffic_forwarding_static_ip:
         provider: "{{ zia_cloud }}"
         state: present
         ip_address: "{{ ip_address }}"
@@ -97,7 +97,7 @@
           - not result.changed
 
     - name: Fetch all Static IP Address
-      zscaler.ziacloud.zia_traffic_forwarding_static_ips_facts:
+      zscaler.ziacloud.zia_traffic_forwarding_static_ip_facts:
         provider: "{{ zia_cloud }}"
       register: result
 
@@ -108,7 +108,7 @@
           - result.data[0] is defined
 
     - name: Fetch this Static IP Address
-      zscaler.ziacloud.zia_traffic_forwarding_static_ips_facts:
+      zscaler.ziacloud.zia_traffic_forwarding_static_ip_facts:
         provider: "{{ zia_cloud }}"
         ip_address: "{{ ip_address }}"
       register: result
@@ -126,7 +126,7 @@
         seconds: 5
 
     - name: Delete Static IP Address
-      zscaler.ziacloud.zia_traffic_forwarding_static_ips:
+      zscaler.ziacloud.zia_traffic_forwarding_static_ip:
         provider: "{{ zia_cloud }}"
         state: absent
         ip_address: "{{ ip_address }}"
@@ -143,7 +143,7 @@
           - result.changed
 
     - name: Delete Static IP Address (again; idempotency check)
-      zscaler.ziacloud.zia_traffic_forwarding_static_ips:
+      zscaler.ziacloud.zia_traffic_forwarding_static_ip:
         provider: "{{ zia_cloud }}"
         state: absent
         ip_address: "{{ ip_address }}"

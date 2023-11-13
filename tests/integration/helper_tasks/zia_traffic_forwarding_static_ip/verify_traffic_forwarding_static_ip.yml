@@ -1,0 +1,34 @@
+---
+- name: Ensure required environment variables are set
+  fail:
+    msg: "{{ env_var }} is not defined as environment variable"
+  when: lookup('env', env_var) is none
+  loop:
+    - ZIA_USERNAME
+    - ZIA_PASSWORD
+    - ZIA_API_KEY
+    - ZIA_CLOUD
+  loop_control:
+    loop_var: env_var
+
+- ansible.builtin.set_fact:
+    zia_cloud:
+      username: "{{ lookup('env', 'ZIA_USERNAME') }}"
+      password: "{{ lookup('env', 'ZIA_PASSWORD') }}"
+      api_key: "{{ lookup('env', 'ZIA_API_KEY') }}"
+      cloud: "{{ lookup('env', 'ZIA_CLOUD') | default(omit) }}"
+  no_log: True
+
+- block:
+    - name: Fetch the created Static IP Address
+      zscaler.ziacloud.zia_traffic_forwarding_static_ip_facts:
+        provider: "{{ zia_cloud }}"
+        id: "{{ static_ip_id }}" # assuming you have the ID stored in this variable
+      register: fetched_static_ip
+
+    - name: Verify App Static IP Address attributes
+      assert:
+        that:
+          - "fetched_static_ip.data[0].ip_address == ip_address"
+        fail_msg: "Verification failed for Static IP Address!"
+        success_msg: "Verification successful for Static IP Address!"
