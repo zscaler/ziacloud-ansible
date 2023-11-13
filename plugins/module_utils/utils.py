@@ -35,3 +35,35 @@ def deleteNone(_dict):
     elif isinstance(_dict, (list, set, tuple)):
         _dict = type(_dict)(deleteNone(item) for item in _dict if item is not None)
     return _dict
+
+
+# Function to handle App Connector and Service Edge Group validations
+def validate_latitude(val):
+    try:
+        v = float(val)
+        if v < -90 or v > 90:
+            return (None, ["latitude must be between -90 and 90"])
+    except ValueError:
+        return (None, ["latitude value should be a valid float number or not empty"])
+    return (None, None)
+
+
+def validate_longitude(val):
+    try:
+        v = float(val)
+        if v < -180 or v > 180:
+            return (None, ["longitude must be between -180 and 180"])
+    except ValueError:
+        return (None, ["longitude value should be a valid float number or not empty"])
+    return (None, None)
+
+
+def diff_suppress_func_coordinate(old, new):
+    if old is None or new is None:
+        return old == new
+    try:
+        o = round(float(old) * 1000000) / 1000000
+        n = round(float(new) * 1000000) / 1000000
+        return o == n
+    except ValueError:
+        return False

@@ -1,6 +1,6 @@
-ip_address: "66.42.62.33"
+ip_address: "121.234.54.72"
 routable_ip: true
-comment: "Created with Ansible"
+comment: test_zia_ansible
 geo_override: true
-latitude: "1.3521"
-longitude: "103.8198"
+latitude: 22.5559
+longitude: 114.0577

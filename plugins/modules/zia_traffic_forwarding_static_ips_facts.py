@@ -65,7 +65,7 @@ EXAMPLES = """
 """
 
 RETURN = """
-# Returns information on a specified ZIA Admin User.
+# Returns information on ZIA Static IP Addresses.
 """
 
 

@@ -1,0 +1,4 @@
+type: "UFQDN"
+fqdn: testfqdn@bd-hashicorp.com
+comments: test_zia_ansible
+pre_shared_key: "newPassword1231"
