@@ -105,9 +105,26 @@ from traceback import format_exc
 
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
+    deleteNone,
+)
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
     ZIAClientHelper,
 )
+
+
+def normalize_vpn_creds(vpn, exclude_keys=None):
+    """
+    Normalize VPN credentials data by setting computed values.
+    """
+    if exclude_keys is None:
+        exclude_keys = []
+
+    normalized = vpn.copy()
+    for key in exclude_keys:
+        normalized.pop(key, None)
+
+    return normalized
 
 
 def core(module):
@@ -126,47 +143,68 @@ def core(module):
         vpn_credentials[param_name] = module.params.get(param_name, None)
     vpn_id = module.params.get("id", None)
     fqdn = module.params.get("fqdn", None)
+
     existing_vpn_credentials = None
     if vpn_id is not None or fqdn is not None:
-        if vpn_id is not None:
-            vpn_box = client.traffic.get_vpn_credential(credential_id=vpn_id)
-            if vpn_box is not None:
-                existing_vpn_credentials = vpn_box.to_dict()
-        else:
-            vpn_box = client.traffic.get_vpn_credential(fqdn=fqdn)
-            if vpn_box is not None:
-                existing_vpn_credentials = vpn_box.to_dict()
+        vpn_box = client.traffic.get_vpn_credential(credential_id=vpn_id) if vpn_id else client.traffic.get_vpn_credential(fqdn=fqdn)
+        existing_vpn_credentials = vpn_box.to_dict() if vpn_box else None
+
+    provided_keys = [key for key in params if vpn_credentials.get(key) is not None]
+
+    # Normalize and compare existing and desired VPN credentials data
+    desired_vpn_creds = normalize_vpn_creds(vpn_credentials, exclude_keys=provided_keys)
+    current_vpn_creds = normalize_vpn_creds(existing_vpn_credentials, exclude_keys=params) if existing_vpn_credentials else {}
+
+    differences_detected = False
+    for key, value in desired_vpn_creds.items():
+        if key == "pre_shared_key" and value is not None and current_vpn_creds.get(key) != value:
+            differences_detected = True
+        elif key != "id" and current_vpn_creds.get(key) != value:
+            differences_detected = True
+            module.warn(f"Difference detected in {key}. Current: {current_vpn_creds.get(key)}, Desired: {value}")
+
     if existing_vpn_credentials is not None:
         id = existing_vpn_credentials.get("id")
-        existing_vpn_credentials.update(vpn_credentials)
+        existing_vpn_credentials.update(desired_vpn_creds)
         existing_vpn_credentials["id"] = id
+
     if state == "present":
-        if existing_vpn_credentials is not None:
-            """Update"""
-            existing_vpn_credentials = client.traffic.update_vpn_credential(
-                credential_id=existing_vpn_credentials.get("id"),
-                pre_shared_key=existing_vpn_credentials.get("pre_shared_key"),
-                comments=existing_vpn_credentials.get("comments"),
-            ).to_dict()
-            module.exit_json(changed=True, data=existing_vpn_credentials)
+        if existing_vpn_credentials:
+            if differences_detected:
+                """Update"""
+                update_vpn = deleteNone({
+                    "credential_id": id,
+                    "authentication_type": vpn_credentials.get("type"),
+                    "fqdn": vpn_credentials.get("fqdn"),
+                    "ip_address": vpn_credentials.get("ip_address"),
+                    "pre_shared_key": vpn_credentials.get("pre_shared_key") if "pre_shared_key" in provided_keys else None,
+                    "comments": vpn_credentials.get("comments"),
+                })
+                updated_vpn = client.traffic.update_vpn_credential(**update_vpn).to_dict()
+                module.exit_json(changed=True, data=updated_vpn)
+            else:
+                """No changes needed"""
+                module.exit_json(changed=False, data=existing_vpn_credentials, msg="No changes detected.")
         else:
             """Create"""
-            vpn_credentials = client.traffic.add_vpn_credential(
-                authentication_type=vpn_credentials.get("type"),
-                pre_shared_key=vpn_credentials.get("pre_shared_key"),
-                ip_address=vpn_credentials.get("ip_address"),
-                fqdn=vpn_credentials.get("fqdn"),
-                comments=vpn_credentials.get("comments"),
-            ).to_dict()
-            module.exit_json(changed=True, data=vpn_credentials)
-    elif state == "absent":
-        if existing_vpn_credentials is not None:
-            code = client.traffic.delete_vpn_credential(
-                credential_id=existing_vpn_credentials.get("id")
-            )
-            if code > 299:
-                module.exit_json(changed=False, data=None)
-            module.exit_json(changed=True, data=existing_vpn_credentials)
+            create_vpn = deleteNone({
+                "authentication_type": vpn_credentials.get("type"),
+                "pre_shared_key": vpn_credentials.get("pre_shared_key"),
+                "ip_address": vpn_credentials.get("ip_address"),
+                "fqdn": vpn_credentials.get("fqdn"),
+                "comments": vpn_credentials.get("comments"),
+            })
+            new_vpn = client.traffic.add_vpn_credential(**create_vpn).to_dict()
+            module.exit_json(changed=True, data=new_vpn)
+    elif (
+        state == "absent"
+        and existing_vpn_credentials is not None
+        and existing_vpn_credentials.get("id") is not None
+    ):
+        code = client.traffic.delete_vpn_credential(credential_id=id)
+        if code > 299:
+            module.exit_json(changed=False, data=None)
+        module.exit_json(changed=True, data=existing_vpn_credentials)
     module.exit_json(changed=False, data={})
 
 
@@ -177,7 +215,7 @@ def main():
         type=dict(type="str", required=False, default="UFQDN", choices=["UFQDN", "IP"]),
         fqdn=dict(type="str", required=False),
         ip_address=dict(type="str", required=False),
-        pre_shared_key=dict(type="str", required=False),
+        pre_shared_key=dict(type="str", required=False, no_log=True),
         comments=dict(type="str", required=False),
         state=dict(type="str", choices=["present", "absent"], default="present"),
     )

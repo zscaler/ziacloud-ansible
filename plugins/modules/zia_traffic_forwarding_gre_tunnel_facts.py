@@ -27,9 +27,9 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_traffic_forwarding_static_ips_facts
-short_description: "Gets static IP address for the specified ID"
-description: "Gets static IP address for the specified ID"
+module: zia_traffic_forwarding_gre_tunnel_facts
+short_description: "Gets the GRE tunnel information for the specified ID.D"
+description: "Gets the GRE tunnel information for the specified ID."
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
@@ -39,33 +39,35 @@ extends_documentation_fragment:
     - zscaler.ziacloud.fragments.credentials_set
     - zscaler.ziacloud.fragments.provider
 options:
-  ip_address:
-    description:
-      - The static IP address
-    required: true
-    type: str
   id:
-    description: "Static IP ID to retrieve"
+    description: "Unique identifier of the static IP address that is associated to a GRE tunnel"
     required: false
     type: int
+  source_ip:
+    description:
+      - The source IP address of the GRE tunnel.
+      - This is typically a static IP address in the organization or SD-WAN.
+      - This IP address must be provisioned within the Zscaler service using the /staticIP endpoint.
+    required: true
+    type: str
 """
 
 EXAMPLES = """
-- name: Retrieve Details of All Static IPs.
-  zscaler.ziacloud.zia_traffic_forwarding_static_ips_facts:
+- name: Retrieve Details of All GRE Tunnels.
+  zscaler.ziacloud.zia_traffic_forwarding_gre_tunnel_facts:
 
-- name: Retrieve Details of Specific Static IPs By IP Address.
-  zscaler.ziacloud.zia_traffic_forwarding_static_ips_facts:
+- name: Retrieve Details of Specific GRE Tunnel By Source IP Address.
+  zscaler.ziacloud.zia_traffic_forwarding_gre_tunnel_facts:
     ip_address: 1.1.1.1
 
-- name: Retrieve Details of Specific Static IPs By ID.
-  zscaler.ziacloud.zia_traffic_forwarding_static_ips_facts:
+- name: Retrieve Details of Specific GRE Tunnel By ID.
+  zscaler.ziacloud.zia_traffic_forwarding_gre_tunnel_facts:
     id: 82709
 
 """
 
 RETURN = """
-# Returns information on a specified ZIA Admin User.
+# Returns information on GRE Tunnel.
 """
 
 
@@ -79,33 +81,33 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 
 def core(module):
-    static_ip_id = module.params.get("id", None)
-    ip_address = module.params.get("ip_address", None)
+    tunnel_id = module.params.get("id", None)
+    source_ip = module.params.get("source_ip", None)
     client = ZIAClientHelper(module)
-    static_ips = []
-    if static_ip_id is not None:
-        static_ip = client.traffic.get_static_ip(static_ip_id).to_dict()
-        static_ips = [static_ip]
+    gre_tunnels = []
+    if tunnel_id is not None:
+        gre_tunnel = client.traffic.get_gre_tunnel(tunnel_id).to_dict()
+        gre_tunnels = [gre_tunnel]
     else:
-        static_ips = client.traffic.list_static_ips().to_list()
-        if ip_address is not None:
-            static_ip = None
-            for ip in static_ips:
-                if ip.get("ip_address", None) == ip_address:
-                    static_ip = ip
-                    break
-            if static_ip is None:
+        all_gre_tunnels = client.traffic.list_gre_tunnels().to_list()
+        if source_ip is not None:
+            gre_tunnel = next((gre for gre in all_gre_tunnels if gre.get("source_ip", None) == source_ip), None)
+            if gre_tunnel is None:
                 module.fail_json(
-                    msg="Failed to retrieve static ip address: '%s'" % (ip_address)
+                    msg=f"Failed to retrieve GRE tunnel with source IP address: '{source_ip}'"
                 )
-            static_ips = [static_ip]
-    module.exit_json(changed=False, data=static_ips)
+            gre_tunnels = [gre_tunnel]
+        else:
+            gre_tunnels = all_gre_tunnels
+
+    module.exit_json(changed=False, data=gre_tunnels)
+
 
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
-        ip_address=dict(type="str", required=False),
+        source_ip=dict(type="str", required=False),
         id=dict(type="int", required=False),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)

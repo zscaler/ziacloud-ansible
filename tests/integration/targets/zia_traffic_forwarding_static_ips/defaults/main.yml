@@ -1,6 +1,0 @@
-ip_address: "66.42.62.33"
-routable_ip: true
-comment: "Created with Ansible"
-geo_override: true
-latitude: "1.3521"
-longitude: "103.8198"

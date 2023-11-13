@@ -274,7 +274,7 @@ def normalize_rule(rule):
         "source_countries",
         "exclude_src_countries",
         "capture_pcap",
-        "device_trust_levels"
+        "device_trust_levels",
     ]
     for attr in computed_values:
         normalized.pop(attr, None)
