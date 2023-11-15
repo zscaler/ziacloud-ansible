@@ -102,9 +102,9 @@ options:
         required: false
         description:
           - DLP dictionary pattern.
-  match_type:
+  dictionary_type:
     description:
-        - DLP threshold type
+        - The DLP dictionary type.
     required: false
     type: str
     choices:
@@ -226,13 +226,14 @@ options:
 """
 
 EXAMPLES = """
-
 - name: Create/Update/Delete dlp dictionary.
   zscaler.ziacloud.zia_dlp_dictionaries:
-    name: "Ansible_Test"
-    description: "Ansible_Test"
-    match_type: "all"
+    provider: '{{ zia_cloud }}'
+    # state: absent
+    name: "Example_Dictionary"
+    description: "Example_Dictionary"
     custom_phrase_match_type: "MATCH_ALL_CUSTOM_PHRASE_PATTERN_DICTIONARY"
+    dictionary_type: "PATTERNS_AND_PHRASES"
     phrases:
       - action: "PHRASE_COUNT_TYPE_UNIQUE"
         phrase: "YourPhrase"
@@ -257,11 +258,24 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 )
 
 
-# Helper function to transform match_type
-def transform_match_type(match_type):
-    if match_type == "all":
-        return "MATCH_ALL_CUSTOM_PHRASE_PATTERN_DICTIONARY"
-    return "MATCH_ANY_CUSTOM_PHRASE_PATTERN_DICTIONARY"
+def normalize_dlp_dictionary(dictionary):
+    """
+    Normalize dlp dictionary data by setting computed values.
+    """
+    normalized = dictionary.copy()
+
+    computed_values = [
+        "id",
+        "exact_data_match_details",
+        "ignore_exact_match_idm_dict",
+        "include_bin_numbers",
+        "dict_template_id",
+        "proximity",
+    ]
+    for attr in computed_values:
+        normalized.pop(attr, None)
+
+    return normalized
 
 
 def core(module):
@@ -275,123 +289,77 @@ def core(module):
         "confidence_threshold",
         "predefined_count_action_type",
         "custom_phrase_match_type",
-        "match_type",
+        "dictionary_type",
         "patterns",
         "phrases",
         "exact_data_match_details",
         "idm_profile_match_accuracy",
         "ignore_exact_match_idm_dict",
-        "hierarchical_identifiers" "include_bin_numbers",
+        "hierarchical_identifiers",
+        "include_bin_numbers",
         "bin_numbers",
         "dict_template_id",
         "proximity",
     ]
     for param_name in params:
         dictionary[param_name] = module.params.get(param_name, None)
+
     dict_id = dictionary.get("id", None)
-    dict_name = dictionary.get("name", None)
     existing_dictionary = None
     if dict_id is not None:
         dictBox = client.dlp.get_dict(dict_id=dict_id)
         if dictBox is not None:
             existing_dictionary = dictBox.to_dict()
-    elif dict_name is not None:
+    elif dictionary.get("name"):
         dictionaries = client.dlp.list_dicts().to_list()
         for dictionary_ in dictionaries:
-            if dictionary_.get("name") == dict_name:
+            if dictionary_.get("name") == dictionary.get("name"):
                 existing_dictionary = dictionary_
-    if dictionary.get("match_type"):
-        dictionary["custom_phrase_match_type"] = transform_match_type(
-            dictionary.pop("match_type")
-        )
+
+    # Normalize and compare existing and desired data
+    desired_dictionary = normalize_dlp_dictionary(dictionary)
+    current_dictionary = (
+        normalize_dlp_dictionary(existing_dictionary) if existing_dictionary else {}
+    )
+
+    fields_to_exclude = ["id"]
+    differences_detected = False
+    for key, value in desired_dictionary.items():
+        if key not in fields_to_exclude and current_dictionary.get(key) != value:
+            differences_detected = True
+            module.warn(
+                f"Difference detected in {key}. Current: {current_dictionary.get(key)}, Desired: {value}"
+            )
+
     if existing_dictionary is not None:
         id = existing_dictionary.get("id")
-        existing_dictionary.update(dictionary)
+        existing_dictionary.update(desired_dictionary)
         existing_dictionary["id"] = id
+
     if state == "present":
         if existing_dictionary is not None:
-            """Update"""
-            existing_dictionary = deleteNone(
-                dict(
-                    dict_id=existing_dictionary.get("id", ""),
-                    name=existing_dictionary.get("name", ""),
-                    description=existing_dictionary.get("description", ""),
-                    confidence_threshold=existing_dictionary.get(
-                        "confidence_threshold", ""
-                    ),
-                    predefined_count_action_type=existing_dictionary.get(
-                        "predefined_count_action_type", ""
-                    ),
-                    custom_phrase_match_type=existing_dictionary.get(
-                        "custom_phrase_match_type", ""
-                    ),
-                    match_type=existing_dictionary.get("match_type", ""),
-                    phrases=existing_dictionary.get("phrases", ""),
-                    patterns=existing_dictionary.get("patterns", ""),
-                    exact_data_match_details=existing_dictionary.get(
-                        "exact_data_match_details", ""
-                    ),
-                    idm_profile_match_accuracy=existing_dictionary.get(
-                        "idm_profile_match_accuracy", ""
-                    ),
-                    ignore_exact_match_idm_dict=existing_dictionary.get(
-                        "ignore_exact_match_idm_dict", ""
-                    ),
-                    hierarchical_identifiers=existing_dictionary.get(
-                        "hierarchical_identifiers", ""
-                    ),
-                    include_bin_numbers=existing_dictionary.get(
-                        "include_bin_numbers", ""
-                    ),
-                    bin_numbers=existing_dictionary.get("bin_numbers", ""),
-                    dict_template_id=existing_dictionary.get("dict_template_id", ""),
-                    proximity=existing_dictionary.get("proximity", ""),
+            if differences_detected:
+                updated_dict = deleteNone(dictionary)
+                updated_dict["dict_id"] = existing_dictionary.get("id")
+                updated_dictionary = client.dlp.update_dict(**updated_dict).to_dict()
+                module.exit_json(changed=True, data=updated_dictionary)
+            else:
+                # Existing dictionary found but no differences detected, so no changes are made
+                module.exit_json(
+                    changed=False,
+                    data=existing_dictionary,
+                    msg="No changes needed as the existing dictionary matches the desired state.",
                 )
-            )
-            existing_dictionary = client.dlp.update_dict(
-                **existing_dictionary
-            ).to_dict()
+        else:
+            created_dict = deleteNone(dictionary)
+            new_dictionary = client.dlp.add_dict(**created_dict).to_dict()
+            module.exit_json(changed=True, data=new_dictionary)
+    elif state == "absent":
+        if existing_dictionary:
+            client.dlp.delete_dict(dict_id=existing_dictionary.get("id"))
             module.exit_json(changed=True, data=existing_dictionary)
         else:
-            """Create"""
-            dictionary = deleteNone(
-                dict(
-                    name=dictionary.get("name", ""),
-                    description=dictionary.get("description", ""),
-                    confidence_threshold=dictionary.get("confidence_threshold", ""),
-                    phrases=dictionary.get("phrases", ""),
-                    patterns=dictionary.get("patterns", ""),
-                    custom_phrase_match_type=dictionary.get(
-                        "custom_phrase_match_type", ""
-                    ),
-                    match_type=dictionary.get("match_type", ""),
-                    exact_data_match_details=dictionary.get(
-                        "exact_data_match_details", ""
-                    ),
-                    idm_profile_match_accuracy=dictionary.get(
-                        "idm_profile_match_accuracy", ""
-                    ),
-                    ignore_exact_match_idm_dict=dictionary.get(
-                        "ignore_exact_match_idm_dict", ""
-                    ),
-                    hierarchical_identifiers=dictionary.get(
-                        "hierarchical_identifiers", ""
-                    ),
-                    include_bin_numbers=dictionary.get("include_bin_numbers", ""),
-                    bin_numbers=dictionary.get("bin_numbers", ""),
-                    dict_template_id=dictionary.get("dict_template_id", ""),
-                    proximity=dictionary.get("proximity", ""),
-                )
-            )
-            dictionary = client.dlp.add_dict(**dictionary).to_dict()
-            module.exit_json(changed=True, data=dictionary)
-    elif state == "absent":
-        if existing_dictionary is not None:
-            code = client.dlp.delete_dict(dict_id=existing_dictionary.get("id"))
-            if code > 299:
-                module.exit_json(changed=False, data=None)
-            module.exit_json(changed=True, data=existing_dictionary)
-    module.exit_json(changed=False, data={})
+            module.exit_json(changed=False, data={})
 
 
 def main():
@@ -412,16 +380,6 @@ def main():
                 "CONFIDENCE_LEVEL_LOW",
                 "CONFIDENCE_LEVEL_MEDIUM",
                 "CONFIDENCE_LEVEL_HIGH",
-            ],
-        ),
-        match_type=dict(
-            type="str",
-            required=False,
-            choices=[
-                "all",
-                "any"
-                # "EXACT_DATA_MATCH",
-                # "INDEXED_DATA_MATCH",
             ],
         ),
         predefined_count_action_type=dict(
@@ -450,6 +408,15 @@ def main():
             choices=[
                 "MATCH_ALL_CUSTOM_PHRASE_PATTERN_DICTIONARY",
                 "MATCH_ANY_CUSTOM_PHRASE_PATTERN_DICTIONARY",
+            ],
+        ),
+        dictionary_type=dict(
+            type="str",
+            required=False,
+            choices=[
+                "PATTERNS_AND_PHRASES",
+                "EXACT_DATA_MATCH",
+                "INDEXED_DATA_MATCH",
             ],
         ),
         patterns=dict(

@@ -27,7 +27,7 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_dlp_icap_servers_facts
+module: zia_dlp_icap_server_facts
 short_description: "Gets a the list of DLP servers using ICAP."
 description:
   - "Gets a the list of DLP servers using ICAP."
@@ -53,10 +53,10 @@ options:
 
 EXAMPLES = """
 - name: Gets all list of DLP ICAP Server
-  zscaler.ziacloud.zia_dlp_icap_servers_facts:
+  zscaler.ziacloud.zia_dlp_icap_server_facts:
 
 - name: Gets a list of DLP ICAP Server by name
-  zscaler.ziacloud.zia_dlp_icap_servers_facts:
+  zscaler.ziacloud.zia_dlp_icap_server_facts:
     name: "ZS_ICAP"
 """
 

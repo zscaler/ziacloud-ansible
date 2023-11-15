@@ -27,7 +27,7 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_dlp_engines_facts
+module: zia_dlp_engine_facts
 short_description: "Get a list of DLP engines."
 description:
   - "Get a list of DLP engines."
@@ -56,7 +56,7 @@ EXAMPLES = """
   zscaler.ziacloud.zia_dlp_engines_facts:
 
 - name: Gets a list of DLP Engines by name
-  zscaler.ziacloud.zia_dlp_engines_facts:
+  zscaler.ziacloud.zia_dlp_engine_facts:
     name: "PCI"
 """
 
