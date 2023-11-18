@@ -21,3 +21,24 @@ file_types:
   - "MATLAB_FILES"
   - "SAS"
   - "SCALA"
+
+# Web DLP Rule Update
+name_update: test_zia_ansible
+description_update: test_zia_ansible
+action_update: "BLOCK"
+order_update: 1
+rank_update: 7
+rule_state_update: false
+without_content_inspection_update: false
+zscaler_incident_receiver_update: true
+user_risk_score_levels_update:
+  - CRITICAL
+  - HIGH
+  - MEDIUM
+protocols_update:
+  - HTTPS_RULE
+  - HTTP_RULE
+file_types_update:
+  - "ASM"
+  - "MATLAB_FILES"
+  - "SAS"

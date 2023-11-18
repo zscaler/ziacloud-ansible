@@ -10,6 +10,10 @@
     name: "{{ name }}_{{ random_string }}"
     description: "{{ description }}_{{ random_string }}"
 
+- ansible.builtin.set_fact:
+    name_update: "{{ name_update }}_{{ random_string }}"
+    description_update: "{{ description_update }}_{{ random_string }}"
+
 - name: Ensure required environment variables are set
   fail:
     msg: "{{ env_var }} is not defined as environment variable"
@@ -61,6 +65,7 @@
         description: "{{ description }}"
         action: "{{ action }}"
         order: "{{ order }}"
+        rule_state: "{{ rule_state }}"
         enable_full_logging: "{{ enable_full_logging }}"
         exclude_src_countries: "{{ exclude_src_countries }}"
         source_countries: "{{ source_countries }}"
@@ -85,6 +90,7 @@
         description: "{{ description }}"
         action: "{{ action }}"
         order: "{{ order }}"
+        rule_state: "{{ rule_state }}"
         enable_full_logging: "{{ enable_full_logging }}"
         exclude_src_countries: "{{ exclude_src_countries }}"
         source_countries: "{{ source_countries }}"
@@ -94,7 +100,57 @@
         device_trust_levels: "{{ device_trust_levels }}"
       register: result
 
-    - name: Ensure Cloud Firewall Rule is absent (idempotency check)
+    - name: Ensure Cloud Firewall Rule is present (idempotency check)
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+
+    - name: Update Cloud Firewall Rule (Present)
+      zscaler.ziacloud.zia_cloud_firewall_filtering_rule:
+        provider: "{{ zia_cloud }}"
+        state: present
+        name: "{{ name }}"
+        description: "{{ description_update }}"
+        action: "{{ action_update }}"
+        order: "{{ order_update }}"
+        rule_state: "{{ rule_state_update }}"
+        enable_full_logging: "{{ enable_full_logging_update }}"
+        exclude_src_countries: "{{ exclude_src_countries_update }}"
+        source_countries: "{{ source_countries_update }}"
+        src_ips: "{{ src_ips_update }}"
+        dest_countries: "{{ dest_countries_update }}"
+        dest_addresses: "{{ dest_addresses_update }}"
+        device_trust_levels: "{{ device_trust_levels_update }}"
+      register: result
+
+    - name: Verify Cloud Firewall Rule is Updated
+      ansible.builtin.assert:
+        that:
+          - result.changed
+          - result.data is defined
+          - result.data.name == name
+          - result.data.description == description_update
+          - result.data.action == action_update
+
+    - name: Ensure Cloud Firewall Rule is Updated (again; idempotency check)
+      zscaler.ziacloud.zia_cloud_firewall_filtering_rule:
+        provider: "{{ zia_cloud }}"
+        state: present
+        name: "{{ name }}"
+        description: "{{ description_update }}"
+        action: "{{ action_update }}"
+        order: "{{ order_update }}"
+        rule_state: "{{ rule_state_update }}"
+        enable_full_logging: "{{ enable_full_logging_update }}"
+        exclude_src_countries: "{{ exclude_src_countries_update }}"
+        source_countries: "{{ source_countries_update }}"
+        src_ips: "{{ src_ips_update }}"
+        dest_countries: "{{ dest_countries_update }}"
+        dest_addresses: "{{ dest_addresses_update }}"
+        device_trust_levels: "{{ device_trust_levels_update }}"
+      register: result
+
+    - name: Ensure Cloud Firewall Rule update is idempotent
       ansible.builtin.assert:
         that:
           - not result.changed
@@ -113,7 +169,7 @@
     - name: Fetch this Cloud Firewall Rule
       zscaler.ziacloud.zia_cloud_firewall_filtering_rule_facts:
         provider: "{{ zia_cloud }}"
-        name: "{{ name }}"
+        name: "{{ name_update }}"
       register: result
 
     - name: Ensure this Cloud Firewall Rule is found
@@ -132,8 +188,8 @@
       zscaler.ziacloud.zia_cloud_firewall_filtering_rule:
         provider: "{{ zia_cloud }}"
         state: absent
-        name: "{{ name }}"
-        order: "{{ order }}"
+        name: "{{ name_update }}"
+        order: "{{ order_update }}"
       register: result
 
     - name: Verify Cloud Firewall Rule is Deleted
@@ -145,8 +201,8 @@
       zscaler.ziacloud.zia_cloud_firewall_filtering_rule:
         provider: "{{ zia_cloud }}"
         state: absent
-        name: "{{ name }}"
-        order: "{{ order }}"
+        name: "{{ name_update }}"
+        order: "{{ order_update }}"
       register: result
 
     - name: Verify Cloud Firewall Rule is absent

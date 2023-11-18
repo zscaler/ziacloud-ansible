@@ -196,16 +196,6 @@ options:
     type: list
     elements: str
     required: false
-  default_rule:
-    description: "If set to true, the default rule is applied"
-    type: bool
-    required: false
-    default: false
-  predefined:
-    description: "If set to true, a predefined rule is applied"
-    type: bool
-    required: false
-    default: false
 """
 
 EXAMPLES = """
@@ -243,38 +233,7 @@ def normalize_rule(rule):
 
     computed_values = [
         "id",
-        "name",
-        "order",
-        "rank",
-        "locations",
-        "location_groups",
-        "departments",
-        "groups",
-        "users",
-        "time_windows",
-        "action",
-        "state",
-        "description",
-        "enable_full_logging",
-        "src_ips",
-        "src_ip_groups",
-        "dest_addresses",
         "dest_ip_categories",
-        "dest_countries",
-        "dest_ip_groups",
-        "nw_services",
-        "nw_service_groups",
-        "nw_applications",
-        "nw_application_groups",
-        "app_services",
-        "app_service_groups",
-        "labels",
-        "default_rule",
-        "predefined",
-        "source_countries",
-        "exclude_src_countries",
-        "capture_pcap",
-        "device_trust_levels",
     ]
     for attr in computed_values:
         normalized.pop(attr, None)
@@ -298,7 +257,7 @@ def core(module):
         "users",
         "time_windows",
         "action",
-        "state",
+        "rule_state",
         "description",
         "enable_full_logging",
         "src_ips",
@@ -359,51 +318,79 @@ def core(module):
 
     rule_id = rule.get("id", None)
     rule_name = rule.get("name", None)
-    existing_rule = None
 
-    # Check for existing rule by ID or name
     existing_rule = None
-    if rule_id:
+    if rule_id is not None:
         ruleBox = client.firewall.get_rule(rule_id=rule_id)
         if ruleBox is not None:
             existing_rule = ruleBox.to_dict()
-    elif rule_name:
+    elif rule_name is not None:
         rules = client.firewall.list_rules().to_list()
         for rule_ in rules:
             if rule_.get("name") == rule_name:
                 existing_rule = rule_
-                break
 
     # Normalize and compare existing and desired data
     desired_rule = normalize_rule(rule)
     current_rule = normalize_rule(existing_rule) if existing_rule else {}
 
-    fields_to_exclude = ["id"]
+    def preprocess_rules(rule, attributes_to_preprocess):
+        """
+        Preprocess specific attributes in the rule.
+        :param rule: Dict containing the rule data.
+        :param attributes_to_preprocess: Dict of attributes that require preprocessing and their expected types.
+        :return: Preprocessed rule.
+        """
+        for attr, attr_type in attributes_to_preprocess.items():
+            if attr in rule and isinstance(rule[attr], attr_type):
+                if attr_type == list:
+                    # Sort lists for consistent order
+                    rule[attr] = sorted(rule[attr])
+                # Add more conditions here if needed for other types
+        return rule
+
+    attributes_to_handle = {
+        "order": int,
+        "action": str,
+        "device_trust_levels": list,
+    }
+
+    existing_rule_preprocessed = preprocess_rules(current_rule, attributes_to_handle)
+    desired_rule_preprocessed = preprocess_rules(desired_rule, attributes_to_handle)
+
+    # Then proceed with your comparison logic
     differences_detected = False
-    for key, value in desired_rule.items():
-        if key not in fields_to_exclude and current_rule.get(key) != value:
+    for key, value in desired_rule_preprocessed.items():
+        current_value = existing_rule_preprocessed.get(key)
+
+        # Convert 'state' in current_rule to boolean 'rule_state'
+        if key == "rule_state" and "state" in current_rule:
+            current_value = current_rule["state"] == "ENABLED"
+
+        if current_value != value:
             differences_detected = True
             module.warn(
-                f"Difference detected in {key}. Current: {current_rule.get(key)}, Desired: {value}"
+                f"Difference detected in {key}. Current: {current_value}, Desired: {value}"
             )
 
     if existing_rule is not None:
         id = existing_rule.get("id")
-        existing_rule.update(desired_rule)
+        existing_rule.update(rule)
         existing_rule["id"] = id
 
+    module.warn(f"Final payload being sent to SDK: {rule}")
     if state == "present":
-        if existing_rule:
+        if existing_rule is not None:
             if differences_detected:
                 """Update"""
-                update_data = deleteNone(
+                update_rule = deleteNone(
                     dict(
                         rule_id=existing_rule.get("id", None),
                         name=existing_rule.get("name", None),
                         order=existing_rule.get("order", None),
                         rank=existing_rule.get("rank", None),
                         action=existing_rule.get("action", None),
-                        state=existing_rule.get("rule_state", None),
+                        rule_state=existing_rule.get("rule_state", None),
                         description=existing_rule.get("description", None),
                         enable_full_logging=existing_rule.get(
                             "enable_full_logging", None
@@ -442,22 +429,19 @@ def core(module):
                         src_ip_groups=existing_rule.get("src_ip_groups", None),
                     )
                 )
-                updated_rule = client.firewall.update_rule(**update_data).to_dict()
+                module.warn("Payload Update for SDK: {}".format(update_rule))
+                updated_rule = client.firewall.update_rule(**update_rule).to_dict()
                 module.exit_json(changed=True, data=updated_rule)
-            else:
-                """No changes needed"""
-                module.exit_json(
-                    changed=False, data=existing_rule, msg="No changes detected."
-                )
         else:
+            module.warn("Creating new rule as no existing rule found")
             """Create"""
-            create_data = deleteNone(
+            create_rule = deleteNone(
                 dict(
                     name=rule.get("name", None),
                     order=rule.get("order", None),
                     rank=rule.get("rank", None),
                     action=rule.get("action", None),
-                    state=rule.get("rule_state", None),
+                    rule_state=rule.get("rule_state", None),
                     description=rule.get("description", None),
                     enable_full_logging=rule.get("enable_full_logging", None),
                     src_ips=rule.get("src_ips", None),
@@ -486,7 +470,8 @@ def core(module):
                     src_ipv6_groups=rule.get("src_ipv6_groups", None),
                 )
             )
-            new_rule = client.firewall.add_rule(**create_data).to_dict()
+            module.warn("Payload for SDK: {}".format(create_rule))
+            new_rule = client.firewall.add_rule(**create_rule).to_dict()
             module.exit_json(changed=True, data=new_rule)
     elif (
         state == "absent"
@@ -519,12 +504,7 @@ def main():
             choices=["ALLOW", "BLOCK_DROP", "BLOCK_RESET", "BLOCK_ICMP", "EVAL_NWAPP"],
         ),
         description=dict(type="str", required=False),
-        rule_state=dict(
-            type="str",
-            required=False,
-            default="ENABLED",
-            choices=["ENABLED", "DISABLED"],
-        ),
+        rule_state=dict(type="bool", required=False),
         device_trust_levels=dict(
             type="list",
             elements="str",

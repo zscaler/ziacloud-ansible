@@ -10,6 +10,10 @@
     name: "{{ name }}_{{ random_string }}"
     description: "{{ description }}_{{ random_string }}"
 
+- ansible.builtin.set_fact:
+    name_update: "{{ name_update }}_{{ random_string }}"
+    description_update: "{{ description_update }}_{{ random_string }}"
+
 - name: Ensure required environment variables are set
   fail:
     msg: "{{ env_var }} is not defined as environment variable"
@@ -110,6 +114,64 @@
           - not result.changed
           - result.data[0] is defined
 
+    - name: Update Cloud Web DLP Rule is (Present)
+      zscaler.ziacloud.zia_dlp_web_rules:
+        provider: "{{ zia_cloud }}"
+        state: present
+        name: "{{ name_update }}"
+        description: "{{ description_update }}"
+        action: "{{ action_update }}"
+        order: "{{ order_update }}"
+        rank: "{{ rank_update }}"
+        rule_state: "{{ rule_state_update }}"
+        without_content_inspection: "{{ without_content_inspection_update }}"
+        zscaler_incident_receiver: "{{ zscaler_incident_receiver_update }}"
+        user_risk_score_levels: "{{ user_risk_score_levels_update }}"
+        protocols: "{{ protocols_update }}"
+        file_types: "{{ file_types_update }}"
+      register: result
+
+    - name: Verify Cloud Web DLP Rule is present
+      ansible.builtin.assert:
+        that:
+          - result.changed
+          - result.data is defined
+          - result.data.name == name
+          - result.data.description == description_update
+          - result.data.action == action_update
+
+    - name: Ensure Cloud Web DLP Rule is Updated (again; idempotency check)
+      zscaler.ziacloud.zia_dlp_web_rules:
+        provider: "{{ zia_cloud }}"
+        state: present
+        name: "{{ name_update }}"
+        description: "{{ description_update }}"
+        action: "{{ action_update }}"
+        order: "{{ order_update }}"
+        rank: "{{ rank_update }}"
+        rule_state: "{{ rule_state_update }}"
+        without_content_inspection: "{{ without_content_inspection_update }}"
+        zscaler_incident_receiver: "{{ zscaler_incident_receiver_update }}"
+        user_risk_score_levels: "{{ user_risk_score_levels_update }}"
+        protocols: "{{ protocols_update }}"
+        file_types: "{{ file_types_update }}"
+      register: result
+
+    - name: Ensure Cloud Web DLP Rule is absent (idempotency check)
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+
+    - name: Fetch all Cloud Web DLP Rule
+      zscaler.ziacloud.zia_dlp_web_rules_facts:
+        provider: "{{ zia_cloud }}"
+      register: result
+
+    - name: Ensure all Cloud Web DLP Rule found
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+          - result.data[0] is defined
     - name: Fetch this Cloud Web DLP Rule
       zscaler.ziacloud.zia_dlp_web_rules_facts:
         provider: "{{ zia_cloud }}"
