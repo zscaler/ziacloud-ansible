@@ -27,10 +27,10 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_dlp_icap_servers_facts
-short_description: "Gets a the list of DLP servers using ICAP."
+module: zia_dlp_notification_template_facts
+short_description: "Get a list of DLP notification templates."
 description:
-  - "Gets a the list of DLP servers using ICAP."
+  - "Get a list of DLP notification templates."
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
@@ -41,27 +41,27 @@ extends_documentation_fragment:
     - zscaler.ziacloud.fragments.provider
 options:
   id:
-    description: "The unique identifier for a DLP ICAP server."
+    description: "The unique identifier for the DLP engine."
     required: false
     type: int
   name:
     type: str
     required: false
     description:
-      - The DLP ICAP server name.
+      - The DLP engine name as configured by the admin..
 """
 
 EXAMPLES = """
-- name: Gets all list of DLP ICAP Server
-  zscaler.ziacloud.zia_dlp_icap_servers_facts:
+- name: Gets all list of DLP Notification Template
+  zscaler.ziacloud.zia_dlp_notification_template_facts:
 
-- name: Gets a list of DLP ICAP Server by name
-  zscaler.ziacloud.zia_dlp_icap_servers_facts:
-    name: "ZS_ICAP"
+- name: Gets a list of DLP Notification Template by name
+  zscaler.ziacloud.zia_dlp_notification_template_facts:
+    name: "Standard_Template"
 """
 
 RETURN = """
-# Returns information about specific DLP ICAP Server.
+# Returns information about specific DLP Notification Template.
 """
 
 from traceback import format_exc
@@ -74,27 +74,29 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 
 def core(module):
-    icap_server_id = module.params.get("id", None)
-    icap_server_name = module.params.get("name", None)
+    template_id = module.params.get("id", None)
+    template_name = module.params.get("name", None)
     client = ZIAClientHelper(module)
-    icaps = []
-    if icap_server_id is not None:
-        icap = client.dlp.get_dlp_icap_servers(icap_server_id).to_dict()
-        icaps = [icap]
+    templates = []
+    if template_id is not None:
+        template = client.dlp.get_dlp_templates(template_id).to_dict()
+        templates = [template]
     else:
-        icaps = client.dlp.list_dlp_icap_servers().to_list()
-        if icap_server_name is not None:
-            icap = None
-            for dlp in icaps:
-                if dlp.get("name", None) == icap_server_name:
-                    icap = dlp
+        templates = client.dlp.list_dlp_templates().to_list()
+        if template_name is not None:
+            template = None
+            for dlp in templates:
+                if dlp.get("name", None) == template_name:
+                    template = dlp
                     break
-            if icap is None:
+
+            if template is None:
                 module.fail_json(
-                    msg="Failed to retrieve dlp icap server: '%s'" % (icap_server_name)
+                    msg="Failed to retrieve dlp notification template: '%s'"
+                    % (template_name)
                 )
-            icaps = [icap]
-    module.exit_json(changed=False, data=icaps)
+            templates = [template]
+    module.exit_json(changed=False, data=templates)
 
 
 def main():

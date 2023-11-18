@@ -177,21 +177,29 @@ def core(module):
         gre_tunnel[param_name] = module.params.get(param_name, None)
 
     # Automatically set primary and secondary VIP IDs if not provided
-    if not gre_tunnel.get("primary_dest_vip_id") or not gre_tunnel.get("secondary_dest_vip_id"):
+    if not gre_tunnel.get("primary_dest_vip_id") or not gre_tunnel.get(
+        "secondary_dest_vip_id"
+    ):
         if gre_tunnel.get("source_ip"):
-            closest_vips = client.traffic.get_closest_diverse_vip_ids(gre_tunnel["source_ip"])
+            closest_vips = client.traffic.get_closest_diverse_vip_ids(
+                gre_tunnel["source_ip"]
+            )
             gre_tunnel["primary_dest_vip_id"] = [closest_vips[0]]
             gre_tunnel["secondary_dest_vip_id"] = [closest_vips[1]]
         else:
             module.fail_json(msg="source_ip is required to determine closest VIPs.")
 
     # Check if ip_unnumbered is False and internal_ip_range is not set
-    if gre_tunnel.get("ip_unnumbered") is False and not gre_tunnel.get("internal_ip_range"):
+    if gre_tunnel.get("ip_unnumbered") is False and not gre_tunnel.get(
+        "internal_ip_range"
+    ):
         # Fetch the first available IP range
         available_ranges = client.traffic.list_gre_ranges(limit=1).to_list()
         if available_ranges:
             first_range = available_ranges[0]
-            gre_tunnel["internal_ip_range"] = f"{first_range['start_ip_address']}-{first_range['end_ip_address']}"
+            gre_tunnel[
+                "internal_ip_range"
+            ] = f"{first_range['start_ip_address']}-{first_range['end_ip_address']}"
         else:
             module.fail_json(msg="No available IP ranges found.")
 
@@ -232,34 +240,50 @@ def core(module):
         if existing_gre_tunnel is not None:
             if differences_detected:
                 """Update"""
-                update_gre = deleteNone({
-                    "tunnel_id": id,
-                    "source_ip": gre_tunnel.get("source_ip"),
-                    "comment": gre_tunnel.get("comment"),
-                    "internal_ip_range": gre_tunnel.get("internal_ip_range"),
-                    "ip_unnumbered": gre_tunnel.get("ip_unnumbered"),
-                    "within_country": gre_tunnel.get("within_country"),
-                    "primary_dest_vip_id": gre_tunnel.get("primary_dest_vip_id")[0] if gre_tunnel.get("primary_dest_vip_id") else None,
-                    "secondary_dest_vip_id": gre_tunnel.get("secondary_dest_vip_id")[0] if gre_tunnel.get("secondary_dest_vip_id") else None,
-                    "sub_cloud": gre_tunnel.get("sub_cloud"),
-                })
+                update_gre = deleteNone(
+                    {
+                        "tunnel_id": id,
+                        "source_ip": gre_tunnel.get("source_ip"),
+                        "comment": gre_tunnel.get("comment"),
+                        "internal_ip_range": gre_tunnel.get("internal_ip_range"),
+                        "ip_unnumbered": gre_tunnel.get("ip_unnumbered"),
+                        "within_country": gre_tunnel.get("within_country"),
+                        "primary_dest_vip_id": gre_tunnel.get("primary_dest_vip_id")[0]
+                        if gre_tunnel.get("primary_dest_vip_id")
+                        else None,
+                        "secondary_dest_vip_id": gre_tunnel.get(
+                            "secondary_dest_vip_id"
+                        )[0]
+                        if gre_tunnel.get("secondary_dest_vip_id")
+                        else None,
+                        "sub_cloud": gre_tunnel.get("sub_cloud"),
+                    }
+                )
                 updated_gre = client.traffic.update_gre_tunnel(**update_gre).to_dict()
                 module.exit_json(changed=True, data=updated_gre)
             else:
                 """No changes needed"""
-                module.exit_json(changed=False, data=existing_gre_tunnel, msg="No changes detected.")
+                module.exit_json(
+                    changed=False, data=existing_gre_tunnel, msg="No changes detected."
+                )
         else:
             """Create"""
-            create_tunnel = deleteNone({
+            create_tunnel = deleteNone(
+                {
                     "source_ip": gre_tunnel.get("source_ip"),
                     "comment": gre_tunnel.get("comment"),
                     "internal_ip_range": gre_tunnel.get("internal_ip_range"),
                     "ip_unnumbered": gre_tunnel.get("ip_unnumbered"),
                     "within_country": gre_tunnel.get("within_country"),
-                    "primary_dest_vip_id": gre_tunnel.get("primary_dest_vip_id")[0] if gre_tunnel.get("primary_dest_vip_id") else None,
-                    "secondary_dest_vip_id": gre_tunnel.get("secondary_dest_vip_id")[0] if gre_tunnel.get("secondary_dest_vip_id") else None,
+                    "primary_dest_vip_id": gre_tunnel.get("primary_dest_vip_id")[0]
+                    if gre_tunnel.get("primary_dest_vip_id")
+                    else None,
+                    "secondary_dest_vip_id": gre_tunnel.get("secondary_dest_vip_id")[0]
+                    if gre_tunnel.get("secondary_dest_vip_id")
+                    else None,
                     "sub_cloud": gre_tunnel.get("sub_cloud"),
-            })
+                }
+            )
             try:
                 new_tunnel = client.traffic.add_gre_tunnel(**create_tunnel).to_dict()
                 module.exit_json(changed=True, data=new_tunnel)

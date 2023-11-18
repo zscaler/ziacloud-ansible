@@ -30,7 +30,14 @@
         # - targets/zia_cloud_firewall_filtering_rule/tasks/main.yml
         # - targets/zia_traffic_forwarding_static_ips/tasks/main.yml
         # - targets/zia_traffic_forwarding_vpn_credentials/tasks/main.yml
-        - targets/zia_traffic_forwarding_gre_tunnels/tasks/main.yml
+        # - targets/zia_traffic_forwarding_gre_tunnels/tasks/main.yml
+        # - targets/zia_dlp_dictionaries/tasks/main.yml
+        # - targets/zia_dlp_engines/tasks/main.yml
+        # - targets/zia_dlp_icap_server_facts/tasks/main.yml
+        # - targets/zia_dlp_incident_receiver_facts/tasks/main.yml
+        # - targets/zia_dlp_web_rules/tasks/main.yml
+        - targets/zia_dlp_notification_template/tasks/main.yml
+
 
     # - name: Run final sweep to clean tenant
     #   ansible.builtin.include_tasks: ./sweep.yml

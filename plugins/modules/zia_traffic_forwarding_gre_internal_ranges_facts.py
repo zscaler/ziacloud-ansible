@@ -80,7 +80,10 @@ RETURN = """
 from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
+
 
 def core(module):
     # Retrieve parameters
@@ -95,14 +98,14 @@ def core(module):
     # Create a dictionary of query parameters
     query_params = {}
     if internal_ip_range:
-        query_params['internalIpRange'] = internal_ip_range
+        query_params["internalIpRange"] = internal_ip_range
     if static_ip:
-        query_params['staticIp'] = static_ip
+        query_params["staticIp"] = static_ip
     if start_ip_address:
-        query_params['startIpAddress'] = start_ip_address
+        query_params["startIpAddress"] = start_ip_address
     if end_ip_address:
-        query_params['endIpAddress'] = end_ip_address
-    query_params['limit'] = limit
+        query_params["endIpAddress"] = end_ip_address
+    query_params["limit"] = limit
 
     # Debugging: Print the query parameters to check if they are set correctly
     # module.warn("Query Parameters: {}".format(query_params))
@@ -115,7 +118,6 @@ def core(module):
 
     # Return the response
     module.exit_json(changed=False, data=gre_ranges)
-
 
 
 def main():
@@ -133,6 +135,7 @@ def main():
         core(module)
     except Exception as e:
         module.fail_json(msg=to_native(e), exception=format_exc())
+
 
 if __name__ == "__main__":
     main()

@@ -27,10 +27,10 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_dlp_incident_receiver_servers_facts
-short_description: "Gets a list of DLP Incident Receivers."
+module: zia_dlp_engine_facts
+short_description: "Get a list of DLP engines."
 description:
-  - "Gets a list of DLP Incident Receivers."
+  - "Get a list of DLP engines."
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
@@ -41,28 +41,27 @@ extends_documentation_fragment:
     - zscaler.ziacloud.fragments.provider
 options:
   id:
-    description: "The unique identifier for the Incident Receiver."
+    description: "The unique identifier for the DLP engine."
     required: false
     type: int
   name:
     type: str
     required: false
     description:
-      - The Incident Receiver server name.
+      - The DLP engine name as configured by the admin..
 """
 
 EXAMPLES = """
-- name: Gets all list of DLP Incident Receiver Server
-  zscaler.ziacloud.zia_dlp_incident_receiver_servers_facts:
+- name: Gets all list of DLP Engines
+  zscaler.ziacloud.zia_dlp_engines_facts:
 
-- name: Gets a list of DLP Incident Receiver Server by name
-  zscaler.ziacloud.zia_dlp_incident_receiver_servers_facts:
-    name: "ZIR_BD_SA01
-"
+- name: Gets a list of DLP Engines by name
+  zscaler.ziacloud.zia_dlp_engine_facts:
+    name: "PCI"
 """
 
 RETURN = """
-# Returns information about specific DLP Incident Receiver Server.
+# Returns information about specific DLP Engines.
 """
 
 from traceback import format_exc
@@ -75,28 +74,39 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 
 def core(module):
-    receiver_id = module.params.get("id", None)
-    receiver_name = module.params.get("name", None)
+    engine_id = module.params.get("id", None)
+    engine_name = module.params.get("name", None)
     client = ZIAClientHelper(module)
-    receivers = []
-    if receiver_id is not None:
-        receiver = client.dlp.get_dlp_incident_receiver(receiver_id).to_dict()
-        receivers = [receiver]
+
+    if engine_id is not None:
+        engine = client.dlp.get_dlp_engines(engine_id)
+        if engine:
+            module.exit_json(changed=False, data=engine.to_dict())
+        else:
+            module.fail_json(
+                msg=f"Failed to retrieve DLP engine with ID: '{engine_id}'"
+            )
+
+    engines = client.dlp.list_dlp_engines()
+    if engine_name:
+        # Search for both custom and predefined engine names
+        engine = next(
+            (
+                dlp
+                for dlp in engines
+                if dlp.get("name") == engine_name
+                or dlp.get("predefined_engine_name") == engine_name
+            ),
+            None,
+        )
+        if engine:
+            module.exit_json(changed=False, data=engine.to_dict())
+        else:
+            module.fail_json(
+                msg=f"Failed to retrieve DLP engine with name: '{engine_name}'"
+            )
     else:
-        receivers = client.dlp.list_dlp_incident_receiver().to_list()
-        if receiver_name is not None:
-            receiver = None
-            for dlp in receivers:
-                if dlp.get("name", None) == receiver_name:
-                    receiver = dlp
-                    break
-            if receiver is None:
-                module.fail_json(
-                    msg="Failed to retrieve dlp incident receiver server: '%s'"
-                    % (receiver_name)
-                )
-            receivers = [receiver]
-    module.exit_json(changed=False, data=receivers)
+        module.exit_json(changed=False, data=[engine.to_dict() for engine in engines])
 
 
 def main():

@@ -27,7 +27,7 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_dlp_idm_profiles_facts
+module: zia_dlp_idm_profile_facts
 short_description: "Get IDM template information"
 description:
   - "Get IDM template information for the specified ID or Name"
@@ -53,10 +53,10 @@ options:
 
 EXAMPLES = """
 - name: Gets all list of DLP IDM Profiles
-  zscaler.ziacloud.zia_dlp_idm_profiles_facts:
+  zscaler.ziacloud.zia_dlp_idm_profile_facts:
 
 - name: Gets a list of  DLP IDM Profiles by name
-  zscaler.ziacloud.zia_dlp_idm_profiles_facts:
+  zscaler.ziacloud.zia_dlp_idm_profile_facts:
     name: "IDM_PROFILE_TEMPLATE"
 """
 

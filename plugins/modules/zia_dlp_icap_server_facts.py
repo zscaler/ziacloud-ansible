@@ -27,10 +27,10 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_dlp_engines_facts
-short_description: "Get a list of DLP engines."
+module: zia_dlp_icap_server_facts
+short_description: "Gets a the list of DLP servers using ICAP."
 description:
-  - "Get a list of DLP engines."
+  - "Gets a the list of DLP servers using ICAP."
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
@@ -41,27 +41,27 @@ extends_documentation_fragment:
     - zscaler.ziacloud.fragments.provider
 options:
   id:
-    description: "The unique identifier for the DLP engine."
+    description: "The unique identifier for a DLP ICAP server."
     required: false
     type: int
   name:
     type: str
     required: false
     description:
-      - The DLP engine name as configured by the admin..
+      - The DLP ICAP server name.
 """
 
 EXAMPLES = """
-- name: Gets all list of DLP Engines
-  zscaler.ziacloud.zia_dlp_engines_facts:
+- name: Gets all list of DLP ICAP Server
+  zscaler.ziacloud.zia_dlp_icap_server_facts:
 
-- name: Gets a list of DLP Engines by name
-  zscaler.ziacloud.zia_dlp_engines_facts:
-    name: "PCI"
+- name: Gets a list of DLP ICAP Server by name
+  zscaler.ziacloud.zia_dlp_icap_server_facts:
+    name: "ZS_ICAP"
 """
 
 RETURN = """
-# Returns information about specific DLP Engines.
+# Returns information about specific DLP ICAP Server.
 """
 
 from traceback import format_exc
@@ -74,39 +74,27 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 
 def core(module):
-    engine_id = module.params.get("id", None)
-    engine_name = module.params.get("name", None)
+    icap_server_id = module.params.get("id", None)
+    icap_server_name = module.params.get("name", None)
     client = ZIAClientHelper(module)
-
-    if engine_id is not None:
-        engine = client.dlp.get_dlp_engines(engine_id)
-        if engine:
-            module.exit_json(changed=False, data=engine.to_dict())
-        else:
-            module.fail_json(
-                msg=f"Failed to retrieve DLP engine with ID: '{engine_id}'"
-            )
-
-    engines = client.dlp.list_dlp_engines()
-    if engine_name:
-        # Search for both custom and predefined engine names
-        engine = next(
-            (
-                dlp
-                for dlp in engines
-                if dlp.get("name") == engine_name
-                or dlp.get("predefined_engine_name") == engine_name
-            ),
-            None,
-        )
-        if engine:
-            module.exit_json(changed=False, data=engine.to_dict())
-        else:
-            module.fail_json(
-                msg=f"Failed to retrieve DLP engine with name: '{engine_name}'"
-            )
+    icaps = []
+    if icap_server_id is not None:
+        icap = client.dlp.get_dlp_icap_servers(icap_server_id).to_dict()
+        icaps = [icap]
     else:
-        module.exit_json(changed=False, data=[engine.to_dict() for engine in engines])
+        icaps = client.dlp.list_dlp_icap_servers().to_list()
+        if icap_server_name is not None:
+            icap = None
+            for dlp in icaps:
+                if dlp.get("name", None) == icap_server_name:
+                    icap = dlp
+                    break
+            if icap is None:
+                module.fail_json(
+                    msg="Failed to retrieve dlp icap server: '%s'" % (icap_server_name)
+                )
+            icaps = [icap]
+    module.exit_json(changed=False, data=icaps)
 
 
 def main():

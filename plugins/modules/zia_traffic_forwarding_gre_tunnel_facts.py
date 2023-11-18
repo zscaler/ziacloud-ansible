@@ -91,7 +91,14 @@ def core(module):
     else:
         all_gre_tunnels = client.traffic.list_gre_tunnels().to_list()
         if source_ip is not None:
-            gre_tunnel = next((gre for gre in all_gre_tunnels if gre.get("source_ip", None) == source_ip), None)
+            gre_tunnel = next(
+                (
+                    gre
+                    for gre in all_gre_tunnels
+                    if gre.get("source_ip", None) == source_ip
+                ),
+                None,
+            )
             if gre_tunnel is None:
                 module.fail_json(
                     msg=f"Failed to retrieve GRE tunnel with source IP address: '{source_ip}'"
@@ -101,7 +108,6 @@ def core(module):
             gre_tunnels = all_gre_tunnels
 
     module.exit_json(changed=False, data=gre_tunnels)
-
 
 
 def main():
