@@ -233,7 +233,6 @@ def normalize_rule(rule):
 
     computed_values = [
         "id",
-        "dest_ip_categories",
     ]
     for attr in computed_values:
         normalized.pop(attr, None)
