@@ -110,7 +110,7 @@ options:
         - "BLOCK"
         - "ALLOW"
         - "ICAP_RESPONSE"
-  rule_state:
+  enabled:
     description:
         - Enables or disables the DLP policy rule.
     required: false
@@ -214,35 +214,7 @@ def normalize_dlp_rule(rule):
     """
     normalized = rule.copy()
 
-    computed_values = [
-        "id",
-        "name",
-        "description",
-        "rank",
-        "locations",
-        "location_groups",
-        "groups",
-        "departments",
-        "users",
-        "dlp_engines",
-        "cloud_applications",
-        "min_size",
-        "time_windows",
-        "auditor",
-        "external_auditor_email",
-        "notification_template",
-        "match_only",
-        "icap_server",
-        "without_content_inspection",
-        "labels",
-        "ocr_enabled",
-        "excluded_groups",
-        "excluded_departments",
-        "excluded_users",
-        "zscaler_incident_receiver",
-        "dlp_download_scan_enabled",
-        "zcc_notifications_enabled",
-    ]
+    computed_values = []
     for attr in computed_values:
         normalized.pop(attr, None)
 
@@ -271,7 +243,7 @@ def core(module):
         "cloud_applications",
         "min_size",
         "action",
-        "rule_state",
+        "enabled",
         "time_windows",
         "auditor",
         "external_auditor_email",
@@ -340,47 +312,78 @@ def core(module):
     desired_rule = normalize_dlp_rule(rule)
     current_rule = normalize_dlp_rule(existing_rule) if existing_rule else {}
 
-    def preprocess_rules(rule, attributes_to_preprocess):
+    def preprocess_rules(rule, params):
         """
-        Preprocess specific attributes in the rule.
+        Preprocess specific attributes in the rule based on their type and structure.
         :param rule: Dict containing the rule data.
-        :param attributes_to_preprocess: Dict of attributes that require preprocessing and their expected types.
+        :param params: List of attribute names to be processed.
         :return: Preprocessed rule.
         """
-        for attr, attr_type in attributes_to_preprocess.items():
-            if attr in rule and isinstance(rule[attr], attr_type):
-                if attr_type == list:
-                    # Sort lists for consistent order
-                    rule[attr] = sorted(rule[attr])
-                # Add more conditions here if needed for other types
+        for attr in params:
+            if attr in rule:
+                value = rule[attr]
+
+                # Handle list attributes
+                if isinstance(value, list):
+                    # Extract IDs if list contains dictionaries with 'id'
+                    if all(isinstance(item, dict) and 'id' in item for item in value):
+                        rule[attr] = [item['id'] for item in value]
+                    else:
+                        # Sort lists for consistent order
+                        rule[attr] = sorted(value)
+
+                # Handle dictionary attributes, specifically icap_server
+                elif isinstance(value, dict) and attr == 'icap_server':
+                    # Extract ID if present, else set to empty dictionary
+                    rule[attr] = value.get('id', {})
+
+                # Handle attributes that should default to a certain value if not provided
+                elif attr in ['min_size', 'match_only', 'dlp_download_scan_enabled', 'zcc_notifications_enabled', 'zscaler_incident_receiver']:
+                    if value is None:
+                        # Set to default value if not provided
+                        if attr == 'min_size':
+                            rule[attr] = 0
+                        elif attr in ['match_only', 'dlp_download_scan_enabled', 'zcc_notifications_enabled', 'zscaler_incident_receiver']:
+                            rule[attr] = False
+
         return rule
 
-    # Usage in your core function
-    attributes_to_handle = {
-        "user_risk_score_levels": list,
-        "protocols": list,
-        "file_types": list,
-        "url_categories": list,
-        "order": int,
-        "action": str,
-    }
-
-    existing_rule_preprocessed = preprocess_rules(current_rule, attributes_to_handle)
-    desired_rule_preprocessed = preprocess_rules(desired_rule, attributes_to_handle)
+    existing_rule_preprocessed = preprocess_rules(current_rule, params)
+    desired_rule_preprocessed = preprocess_rules(desired_rule, params)
 
     # Then proceed with your comparison logic
     differences_detected = False
-    for key, value in desired_rule_preprocessed.items():
+    for key in params:
+        desired_value = desired_rule_preprocessed.get(key)
         current_value = existing_rule_preprocessed.get(key)
 
-        # Convert 'state' in current_rule to boolean 'rule_state'
-        if key == "rule_state" and "state" in current_rule:
+        # Handling for list attributes where None should be treated as an empty list
+        if isinstance(current_value, list) and desired_value is None:
+            desired_value = []
+
+        # Skip comparison for 'id' if it's not in the desired rule but present in the existing rule
+        if key == "id" and desired_value is None and current_value is not None:
+            continue
+
+        # Convert 'state' in current_rule to boolean 'enabled'
+        if key == "enabled" and "state" in current_rule:
             current_value = current_rule["state"] == "ENABLED"
 
-        if current_value != value:
+        # Handling None values for all attributes
+        if desired_value is None and key != "enabled":
+            # Explicitly setting to empty list or empty value based on type
+            rule[key] = [] if isinstance(current_value, list) else None
+
+        # Special handling for lists of IDs like locations and others
+        if isinstance(desired_value, list) and isinstance(current_value, list):
+            if all(isinstance(x, int) for x in desired_value) and all(isinstance(x, int) for x in current_value):
+                desired_value = sorted(desired_value)
+                current_value = sorted(current_value)
+
+        if current_value != desired_value:
             differences_detected = True
             module.warn(
-                f"Difference detected in {key}. Current: {current_value}, Desired: {value}"
+                f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
             )
 
     if existing_rule is not None:
@@ -388,9 +391,8 @@ def core(module):
         existing_rule.update(rule)
         existing_rule["id"] = id
 
-        # Log the final payload for debugging
-        # module.warn(f"Final payload being sent to SDK: {rule}")
-
+    # Log the final payload for debugging
+    module.warn(f"Final payload being sent to SDK: {rule}")
     if state == "present":
         if existing_rule is not None:
             if differences_detected:
@@ -404,7 +406,7 @@ def core(module):
                         protocols=existing_rule.get("protocols"),
                         rank=existing_rule.get("rank"),
                         action=existing_rule.get("action"),
-                        rule_state=existing_rule.get("rule_state"),
+                        enabled=existing_rule.get("enabled"),
                         locations=existing_rule.get("locations"),
                         location_groups=existing_rule.get("location_groups"),
                         groups=existing_rule.get("groups"),
@@ -441,12 +443,12 @@ def core(module):
                         ),
                     )
                 )
-                # module.warn("Payload Update for SDK: {}".format(update_rule))
+                module.warn("Payload Update for SDK: {}".format(update_rule))
                 updated_rule = client.web_dlp.update_rule(**update_rule).to_dict()
                 module.exit_json(changed=True, data=updated_rule)
         else:
             # Log to check if we are attempting to create a new rule
-            # module.warn("Creating new rule as no existing rule found")
+            module.warn("Creating new rule as no existing rule found")
             """Create"""
             create_rule = deleteNone(
                 dict(
@@ -455,7 +457,7 @@ def core(module):
                     order=rule.get("order"),
                     rank=rule.get("rank"),
                     action=rule.get("action"),
-                    rule_state=rule.get("rule_state"),
+                    enabled=rule.get("enabled"),
                     protocols=rule.get("protocols"),
                     locations=rule.get("locations"),
                     location_groups=rule.get("location_groups"),
@@ -485,7 +487,7 @@ def core(module):
                     user_risk_score_levels=rule.get("user_risk_score_levels"),
                 )
             )
-            # module.warn("Payload for SDK: {}".format(create_rule))
+            module.warn("Payload for SDK: {}".format(create_rule))
             new_rule = client.web_dlp.add_rule(**create_rule).to_dict()
             module.exit_json(changed=True, data=new_rule)
     elif (
@@ -504,30 +506,53 @@ def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     id_spec = dict(
         type="list",
-        elements="str",
+        elements="int",
         required=False,
     )
     argument_spec.update(
-        id=dict(type="int", required=False),
+        id=dict(type="str", required=False),
         name=dict(type="str", required=True),
         description=dict(type="str", required=False),
+        enabled=dict(type="bool", required=False),
         order=dict(type="int", required=False),
         rank=dict(type="int", required=False, default=7),
+        locations=id_spec,
+        location_groups=id_spec,
+        groups=id_spec,
+        departments=id_spec,
+        users=id_spec,
+        labels=id_spec,
+        time_windows=id_spec,
+        dlp_engines=id_spec,
+        auditor=id_spec,
+        notification_template=id_spec,
+        excluded_groups=id_spec,
+        excluded_departments=id_spec,
+        excluded_users=id_spec,
         protocols=dict(type="list", elements="str", required=False),
+        url_categories=dict(type="list", elements="str", required=False),
+        cloud_applications=dict(type="list", elements="str", required=False),
+        external_auditor_email=dict(type="str", required=False),
+        min_size=dict(type="int", required=False),
+        match_only=dict(type="bool", required=False),
+        without_content_inspection=dict(type="bool", required=False),
+        ocr_enabled=dict(type="bool", required=False),
+        zscaler_incident_receiver=dict(type="bool", required=False),
+        zcc_notifications_enabled=dict(type="bool", required=False),
+        dlp_download_scan_enabled=dict(type="bool",required=False),
+        icap_server=dict(
+            type="dict",
+            options=dict(
+                id=dict(type="int", required=True)
+            ),
+            required=False
+        ),
         action=dict(
             type="str",
             required=False,
             default="NONE",
             choices=["ANY", "NONE", "BLOCK", "ALLOW", "ICAP_RESPONSE"],
         ),
-        rule_state=dict(type="bool", required=False),
-        min_size=dict(type="int", required=False),
-        match_only=dict(type="bool", required=False),
-        without_content_inspection=dict(type="bool", required=False),
-        ocr_enabled=dict(type="bool", required=False),
-        zscaler_incident_receiver=dict(type="bool", required=False),
-        external_auditor_email=dict(type="str", required=False),
-        url_categories=dict(type="list", elements="str", required=False),
         user_risk_score_levels=dict(
             type="list",
             elements="str",
@@ -623,21 +648,6 @@ def main():
                 "IFC",
             ],
         ),
-        cloud_applications=dict(type="list", elements="str", required=False),
-        locations=id_spec,
-        location_groups=id_spec,
-        groups=id_spec,
-        departments=id_spec,
-        users=id_spec,
-        labels=id_spec,
-        time_windows=id_spec,
-        dlp_engines=id_spec,
-        auditor=id_spec,
-        notification_template=id_spec,
-        icap_server=id_spec,
-        excluded_groups=id_spec,
-        excluded_departments=id_spec,
-        excluded_users=id_spec,
         state=dict(type="str", choices=["present", "absent"], default="present"),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)

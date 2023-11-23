@@ -102,7 +102,7 @@ options:
     type: list
     elements: str
     required: false
-  rule_state:
+  enabled:
     description:
         - Determines whether the URL Filtering rule is enabled or disabled
     required: false
@@ -244,7 +244,7 @@ EXAMPLES = """
   zscaler.ziacloud.zia_url_filtering_rules:
     name: "URL_Ansible_Example"
     description: "URL_Ansible_Example"
-    rule_state: "ENABLED"
+    enabled: "ENABLED"
     action: "ALLOW"
     order: 1
     protocols:
@@ -332,10 +332,7 @@ def normalize_rule(rule):
     """
     normalized = rule.copy()
 
-    computed_values = [
-        "id",
-
-    ]
+    computed_values = []
     for attr in computed_values:
         normalized.pop(attr, None)
 
@@ -355,7 +352,7 @@ def core(module):
         "departments",
         "users",
         "url_categories",
-        "rule_state",
+        "enabled",
         "time_windows",
         "rank",
         "request_methods",
@@ -374,6 +371,9 @@ def core(module):
         "enforce_time_validity",
         "action",
         "ciparule",
+        "user_agent_types",
+        "device_groups",
+        "user_risk_score_levels",
     ]
     for param_name in params:
         rule[param_name] = module.params.get(param_name, None)
@@ -431,14 +431,24 @@ def core(module):
         desired_value = desired_rule_preprocessed.get(key)
         current_value = existing_rule_preprocessed.get(key)
 
-        # Convert 'state' in current_rule to boolean 'rule_state'
-        if key == "rule_state" and "state" in current_rule:
+        # Skip comparison for 'id' if it's not in the desired rule but present in the existing rule
+        if key == "id" and desired_value is None and current_value is not None:
+            continue
+
+        # Convert 'state' in current_rule to boolean 'enabled'
+        if key == "enabled" and "state" in current_rule:
             current_value = current_rule["state"] == "ENABLED"
 
         # Handling None values for all attributes
-        if desired_value is None and key != "rule_state":
+        if desired_value is None and key != "enabled":
             # Explicitly setting to empty list or empty value based on type
             rule[key] = [] if isinstance(current_value, list) else None
+
+        # Special handling for lists of IDs like device_groups
+        if isinstance(desired_value, list) and isinstance(current_value, list):
+            if all(isinstance(x, int) for x in desired_value) and all(isinstance(x, int) for x in current_value):
+                desired_value = sorted(desired_value)
+                current_value = sorted(current_value)
 
         if current_value != desired_value:
             differences_detected = True
@@ -466,8 +476,9 @@ def core(module):
                     groups=existing_rule.get("groups"),
                     departments=existing_rule.get("departments"),
                     users=existing_rule.get("users"),
+                    device_groups=existing_rule.get("device_groups"),
                     url_categories=existing_rule.get("url_categories"),
-                    rule_state=existing_rule.get("rule_state"),
+                    enabled=existing_rule.get("enabled"),
                     time_windows=existing_rule.get("time_windows"),
                     rank=existing_rule.get("rank"),
                     request_methods=existing_rule.get("request_methods"),
@@ -488,6 +499,8 @@ def core(module):
                     enforce_time_validity=existing_rule.get("enforce_time_validity"),
                     action=existing_rule.get("action"),
                     cipa_rule=existing_rule.get("cipa_rule"),
+                    user_agent_types=existing_rule.get("user_agent_types"),
+                    user_risk_score_levels=existing_rule.get("user_risk_score_levels"),
                 )
             )
 
@@ -506,8 +519,9 @@ def core(module):
                     groups=rule.get("groups"),
                     departments=rule.get("departments"),
                     users=rule.get("users"),
+                    device_groups=rule.get("device_groups"),
                     url_categories=rule.get("url_categories"),
-                    rule_state=rule.get("rule_state"),
+                    enabled=rule.get("enabled"),
                     time_windows=rule.get("time_windows"),
                     rank=rule.get("rank"),
                     request_methods=rule.get("request_methods"),
@@ -526,6 +540,8 @@ def core(module):
                     enforce_time_validity=rule.get("enforce_time_validity"),
                     action=rule.get("action"),
                     cipa_rule=rule.get("cipa_rule"),
+                    user_agent_types=rule.get("user_agent_types"),
+                    user_risk_score_levels=rule.get("user_risk_score_levels"),
                 )
             )
             module.warn("Payload for SDK: {}".format(create_rule))
@@ -543,6 +559,7 @@ def core(module):
     module.exit_json(changed=False, data={})
 
 
+
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     id_spec = dict(
@@ -551,9 +568,38 @@ def main():
         required=False,
     )
     argument_spec.update(
-        id=dict(type="int", required=False),
+        id=dict(type="str", required=False),
         name=dict(type="str", required=True),
+        description=dict(type="str", required=False),
+        enabled=dict(type="bool", required=False),
         order=dict(type="int", required=True),
+        rank=dict(type="int", required=False, default=7),
+        locations=id_spec,
+        groups=id_spec,
+        departments=id_spec,
+        device_groups=id_spec,
+        users=id_spec,
+        override_users=id_spec,
+        override_groups=id_spec,
+        time_windows=id_spec,
+        location_groups=id_spec,
+        labels=id_spec,
+        end_user_notification_url=dict(type="str", required=False),
+        block_override=dict(type="bool", required=False),
+        time_quota=dict(type="int", required=False),
+        size_quota=dict(type="int", required=False),
+        validity_start_time=dict(type="str", required=False),
+        validity_end_time=dict(type="str", required=False),
+        validity_time_zone_id=dict(type="str", required=False),
+        enforce_time_validity=dict(type="bool", required=False),
+        url_categories=dict(type="list", elements="str", required=False),
+        cipa_rule=dict(type="bool", required=False),
+        action=dict(
+            type="str",
+            required=False,
+            default="ANY",
+            choices=["ANY", "NONE", "BLOCK", "CAUTION", "ALLOW", "ICAP_RESPONSE"],
+        ),
         protocols=dict(
             type="list",
             elements="str",
@@ -576,16 +622,6 @@ def main():
                 "WEBSOCKET_RULE",
             ],
         ),
-        locations=id_spec,
-        groups=id_spec,
-        departments=id_spec,
-        users=id_spec,
-        override_users=id_spec,
-        override_groups=id_spec,
-        url_categories=dict(type="list", elements="str", required=False),
-        rule_state=dict(type="bool", required=False),
-        time_windows=id_spec,
-        rank=dict(type="int", required=False, default=7),
         request_methods=dict(
             type="list",
             elements="str",
@@ -602,24 +638,44 @@ def main():
                 "OTHER",
             ],
         ),
-        end_user_notification_url=dict(type="str", required=False),
-        block_override=dict(type="bool", required=False),
-        time_quota=dict(type="int", required=False),
-        size_quota=dict(type="int", required=False),
-        description=dict(type="str", required=False),
-        location_groups=id_spec,
-        labels=id_spec,
-        validity_start_time=dict(type="str", required=False),
-        validity_end_time=dict(type="str", required=False),
-        validity_time_zone_id=dict(type="str", required=False),
-        enforce_time_validity=dict(type="bool", required=False),
-        action=dict(
-            type="str",
-            required=False,
-            default="ANY",
-            choices=["ANY", "NONE", "BLOCK", "CAUTION", "ALLOW", "ICAP_RESPONSE"],
+        user_agent_types=dict(
+            type="list",
+            elements="str",
+            required=True,
+            choices=[
+              "OPERA",
+              "FIREFOX",
+              "MSIE",
+              "MSEDGE",
+              "CHROME",
+              "SAFARI",
+              "OTHER",
+              "MSCHREDGE"
+            ],
         ),
-        cipa_rule=dict(type="bool", required=False),
+        device_trust_levels=dict(
+            type="list",
+            elements="str",
+            required=False,
+            choices=[
+                "ANY",
+                "UNKNOWN_DEVICETRUSTLEVEL",
+                "LOW_TRUST",
+                "MEDIUM_TRUST",
+                "HIGH_TRUST",
+            ],
+        ),
+        user_risk_score_levels=dict(
+            type="list",
+            elements="str",
+            required=False,
+            choices=[
+              "LOW",
+              "MEDIUM",
+              "HIGH",
+              "CRITICAL"
+            ],
+        ),
         state=dict(type="str", choices=["present", "absent"], default="present"),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)

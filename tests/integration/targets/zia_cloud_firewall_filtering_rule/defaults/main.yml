@@ -3,7 +3,7 @@ name: test_zia_ansible
 description: test_zia_ansible
 action: "ALLOW"
 order: 1
-rule_state: true
+enabled: true
 enable_full_logging: true
 exclude_src_countries: true
 source_countries:
@@ -39,7 +39,7 @@ name_update: test_zia_ansible
 description_update: test_zia_ansible_update
 action_update: "BLOCK_DROP"
 order_update: 2
-rule_state_update: false
+enabled_update: false
 enable_full_logging_update: true
 exclude_src_countries_update: true
 source_countries_update:
