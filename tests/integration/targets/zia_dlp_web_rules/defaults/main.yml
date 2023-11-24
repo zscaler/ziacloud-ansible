@@ -4,7 +4,7 @@ description: test_zia_ansible
 action: "BLOCK"
 order: 1
 rank: 7
-rule_state: true
+enabled: true
 without_content_inspection: false
 zscaler_incident_receiver: true
 user_risk_score_levels:
@@ -28,7 +28,7 @@ description_update: test_zia_ansible
 action_update: "BLOCK"
 order_update: 1
 rank_update: 7
-rule_state_update: false
+enabled_update: false
 without_content_inspection_update: false
 zscaler_incident_receiver_update: true
 user_risk_score_levels_update:

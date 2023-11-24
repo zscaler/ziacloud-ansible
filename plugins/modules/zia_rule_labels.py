@@ -116,6 +116,7 @@ def core(module):
     ]
     for param_name in params:
         rule_label[param_name] = module.params.get(param_name, None)
+
     label_id = rule_label.get("id", None)
     label_name = rule_label.get("name", None)
 

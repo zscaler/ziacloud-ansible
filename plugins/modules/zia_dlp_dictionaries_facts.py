@@ -76,6 +76,7 @@ def core(module):
     dict_id = module.params.get("id", None)
     dict_name = module.params.get("name", None)
     client = ZIAClientHelper(module)
+
     dictionaries = []
     if dict_id is not None:
         dictionary = client.dlp.get_dict(dict_id).to_dict()

@@ -35,8 +35,8 @@
         # - targets/zia_dlp_engines/tasks/main.yml
         # - targets/zia_dlp_icap_server_facts/tasks/main.yml
         # - targets/zia_dlp_incident_receiver_facts/tasks/main.yml
-        # - targets/zia_dlp_web_rules/tasks/main.yml
-        - targets/zia_dlp_notification_template/tasks/main.yml
+        - targets/zia_dlp_web_rules/tasks/main.yml
+        # - targets/zia_dlp_notification_template/tasks/main.yml
 
 
     # - name: Run final sweep to clean tenant

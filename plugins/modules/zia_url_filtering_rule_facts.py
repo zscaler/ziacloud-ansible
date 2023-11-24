@@ -27,7 +27,7 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_url_filtering_rules_facts
+module: zia_url_filtering_rule_facts
 short_description: "Gets all url filtering rules."
 description: "Gets all rules in the URL filtering policy."
 author:
@@ -51,10 +51,10 @@ options:
 
 EXAMPLES = """
 - name: Gather Information Details of all URL filtering rules
-  zscaler.ziacloud.zia_url_filtering_rules_facts:
+  zscaler.ziacloud.zia_url_filtering_rule_facts:
 
 - name: Gather Information Details of of a URL filtering rules
-  zscaler.ziacloud.zia_firewall_filtering_rules_facts:
+  zscaler.ziacloud.zia_url_filtering_rule_facts:
     name: "Example"
 """
 
@@ -75,16 +75,17 @@ def core(module):
     rule_id = module.params.get("id", None)
     rule_name = module.params.get("name", None)
     client = ZIAClientHelper(module)
+
     rules = []
     if rule_id is not None:
-        ruleBox = client.url_filters.get_rule(rule_id=rule_id)
+        ruleBox = client.url_filtering.get_rule(rule_id=rule_id)
         if ruleBox is None:
             module.fail_json(
                 msg="Failed to retrieve URL Filtering Rule ID: '%s'" % (rule_id)
             )
         rules = [ruleBox.to_dict()]
     else:
-        rules = client.url_filters.list_rules().to_list()
+        rules = client.url_filtering.list_rules().to_list()
         if rule_name is not None:
             ruleFound = False
             for rule in rules:

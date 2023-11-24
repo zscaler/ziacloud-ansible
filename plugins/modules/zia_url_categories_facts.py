@@ -64,36 +64,42 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 def core(module):
     category_id = module.params.get("id", None)
-    # category_name = module.params.get("name", None)
+    configured_name = module.params.get("configured_name", None)
     client = ZIAClientHelper(module)
-    categories = []
+
+    # Retrieve all categories
+    categories = client.url_categories.list_categories().to_list()
+
+    # Search by ID
     if category_id is not None:
-        categoryBox = client.url_categories.get_category(category_id=category_id)
-        if categoryBox is None:
-            module.fail_json(
-                msg="Failed to retrieve url category ID: '%s'" % (category_id)
-            )
-        categories = [categoryBox.to_dict()]
+        for category in categories:
+            if category.get("id") == category_id:
+                module.exit_json(changed=False, data=[category])
+        module.fail_json(msg="Failed to retrieve URL category ID: '%s'" % (category_id))
+
+    # Search by Configured Name for Custom Categories
+    elif configured_name is not None:
+        for category in categories:
+            if (
+                category.get("custom_category")
+                and category.get("configured_name") == configured_name
+            ):
+                module.exit_json(changed=False, data=[category])
+        module.fail_json(
+            msg="Failed to retrieve URL category with configured name: '%s'"
+            % (configured_name)
+        )
+
+    # If neither ID nor Configured Name is provided, return all categories
     else:
-        categories = client.url_categories.list_categories().to_list()
-        if category_id is not None:
-            categoryFound = False
-            for category in categories:
-                if category.get("id") == category_id:
-                    categoryFound = True
-                    categories = [category]
-            if not categoryFound:
-                module.fail_json(
-                    msg="Failed to retrieve url category name: '%s'" % (category_id)
-                )
-    module.exit_json(changed=False, data=categories)
+        module.exit_json(changed=False, data=categories)
 
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
-        name=dict(type="str", required=False),
         id=dict(type="str", required=False),
+        configured_name=dict(type="str", required=False),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
     try:

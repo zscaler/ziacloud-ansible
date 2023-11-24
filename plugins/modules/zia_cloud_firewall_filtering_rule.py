@@ -98,7 +98,7 @@ options:
         - BLOCK_RESET
         - BLOCK_ICMP
         - EVAL_NWAPP
-  rule_state:
+  enabled:
     description:
         - Determines whether the Firewall Filtering policy rule is enabled or disabled
     required: false
@@ -199,12 +199,30 @@ options:
 """
 
 EXAMPLES = """
-- name: Gather Information Details of a ZIA User Role
-  zscaler.ziacloud.zia_device_group_facts:
-
-- name: Gather Information Details of a ZIA Admin User by Name
-  zscaler.ziacloud.zia_device_group_facts:
-    name: "IOS"
+- name: Create/update  firewall filtering rule
+  zscaler.ziacloud.zia_cloud_firewall_filtering_rule:
+    provider: '{{ zia_cloud }}'
+    state: present
+    name: "Ansible_Example_Rule"
+    description: "TT#1965232865"
+    action: "ALLOW"
+    enabled: true
+    order: 1
+    enable_full_logging: true
+    exclude_src_countries: true
+    source_countries:
+      - BR
+      - CA
+      - US
+    dest_countries:
+      - BR
+      - CA
+      - US
+    device_trust_levels:
+      - "UNKNOWN_DEVICETRUSTLEVEL"
+      - "LOW_TRUST"
+      - "MEDIUM_TRUST"
+      - "HIGH_TRUST"
 """
 
 RETURN = """
@@ -231,10 +249,7 @@ def normalize_rule(rule):
     """
     normalized = rule.copy()
 
-    computed_values = [
-        "id",
-        "dest_ip_categories",
-    ]
+    computed_values = []
     for attr in computed_values:
         normalized.pop(attr, None)
 
@@ -257,8 +272,9 @@ def core(module):
         "users",
         "time_windows",
         "action",
-        "rule_state",
+        "enabled",
         "description",
+        "device_groups",
         "enable_full_logging",
         "src_ips",
         "src_ip_groups",
@@ -334,43 +350,66 @@ def core(module):
     desired_rule = normalize_rule(rule)
     current_rule = normalize_rule(existing_rule) if existing_rule else {}
 
-    def preprocess_rules(rule, attributes_to_preprocess):
+    def preprocess_rules(rule, params):
         """
-        Preprocess specific attributes in the rule.
+        Preprocess specific attributes in the rule based on their type and structure.
         :param rule: Dict containing the rule data.
-        :param attributes_to_preprocess: Dict of attributes that require preprocessing and their expected types.
+        :param params: List of attribute names to be processed.
         :return: Preprocessed rule.
         """
-        for attr, attr_type in attributes_to_preprocess.items():
-            if attr in rule and isinstance(rule[attr], attr_type):
-                if attr_type == list:
-                    # Sort lists for consistent order
-                    rule[attr] = sorted(rule[attr])
+        for attr in params:
+            if attr in rule and rule[attr] is not None:
+                # Process list attributes
+                if isinstance(rule[attr], list):
+                    # If list contains dictionaries with 'id', extract IDs
+                    if all(
+                        isinstance(item, dict) and "id" in item for item in rule[attr]
+                    ):
+                        rule[attr] = [item["id"] for item in rule[attr]]
+                    else:
+                        # Sort lists for consistent order
+                        rule[attr] = sorted(rule[attr])
                 # Add more conditions here if needed for other types
         return rule
 
-    attributes_to_handle = {
-        "order": int,
-        "action": str,
-        "device_trust_levels": list,
-    }
-
-    existing_rule_preprocessed = preprocess_rules(current_rule, attributes_to_handle)
-    desired_rule_preprocessed = preprocess_rules(desired_rule, attributes_to_handle)
+    existing_rule_preprocessed = preprocess_rules(current_rule, params)
+    desired_rule_preprocessed = preprocess_rules(desired_rule, params)
 
     # Then proceed with your comparison logic
     differences_detected = False
-    for key, value in desired_rule_preprocessed.items():
+    for key in params:
+        desired_value = desired_rule_preprocessed.get(key)
         current_value = existing_rule_preprocessed.get(key)
 
-        # Convert 'state' in current_rule to boolean 'rule_state'
-        if key == "rule_state" and "state" in current_rule:
+        # Handling for list attributes where None should be treated as an empty list
+        if isinstance(current_value, list) and desired_value is None:
+            desired_value = []
+
+        # Skip comparison for 'id' if it's not in the desired rule but present in the existing rule
+        if key == "id" and desired_value is None and current_value is not None:
+            continue
+
+        # Convert 'state' in current_rule to boolean 'enabled'
+        if key == "enabled" and "state" in current_rule:
             current_value = current_rule["state"] == "ENABLED"
 
-        if current_value != value:
+        # Handling None values for all attributes
+        if desired_value is None and key != "enabled":
+            # Explicitly setting to empty list or empty value based on type
+            rule[key] = [] if isinstance(current_value, list) else None
+
+        # Special handling for lists of IDs like device_groups
+        if isinstance(desired_value, list) and isinstance(current_value, list):
+            if all(isinstance(x, int) for x in desired_value) and all(
+                isinstance(x, int) for x in current_value
+            ):
+                desired_value = sorted(desired_value)
+                current_value = sorted(current_value)
+
+        if current_value != desired_value:
             differences_detected = True
             module.warn(
-                f"Difference detected in {key}. Current: {current_value}, Desired: {value}"
+                f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
             )
 
     if existing_rule is not None:
@@ -385,48 +424,41 @@ def core(module):
                 """Update"""
                 update_rule = deleteNone(
                     dict(
-                        rule_id=existing_rule.get("id", None),
-                        name=existing_rule.get("name", None),
-                        order=existing_rule.get("order", None),
-                        rank=existing_rule.get("rank", None),
-                        action=existing_rule.get("action", None),
-                        rule_state=existing_rule.get("rule_state", None),
-                        description=existing_rule.get("description", None),
-                        enable_full_logging=existing_rule.get(
-                            "enable_full_logging", None
-                        ),
-                        src_ips=existing_rule.get("src_ips", None),
-                        dest_addresses=existing_rule.get("dest_addresses", None),
-                        dest_ip_categories=existing_rule.get(
-                            "dest_ip_categories", None
-                        ),
-                        dest_countries=existing_rule.get("dest_countries", None),
-                        source_countries=existing_rule.get("source_countries", None),
+                        rule_id=existing_rule.get("id"),
+                        name=existing_rule.get("name"),
+                        order=existing_rule.get("order"),
+                        rank=existing_rule.get("rank"),
+                        action=existing_rule.get("action"),
+                        enabled=existing_rule.get("enabled"),
+                        description=existing_rule.get("description"),
+                        enable_full_logging=existing_rule.get("enable_full_logging"),
+                        src_ips=existing_rule.get("src_ips"),
+                        dest_addresses=existing_rule.get("dest_addresses"),
+                        dest_ip_categories=existing_rule.get("dest_ip_categories"),
+                        dest_countries=existing_rule.get("dest_countries"),
+                        source_countries=existing_rule.get("source_countries"),
                         exclude_src_countries=existing_rule.get(
-                            "exclude_src_countries", None
+                            "exclude_src_countries"
                         ),
-                        device_trust_levels=existing_rule.get(
-                            "device_trust_levels", None
-                        ),
-                        nw_applications=existing_rule.get("nw_applications", None),
-                        dest_ip_groups=existing_rule.get("dest_ip_groups", None),
-                        nw_services=existing_rule.get("nw_services", None),
-                        nw_service_groups=existing_rule.get("nw_service_groups", None),
+                        device_trust_levels=existing_rule.get("device_trust_levels"),
+                        device_groups=existing_rule.get("device_groups"),
+                        nw_applications=existing_rule.get("nw_applications"),
+                        dest_ip_groups=existing_rule.get("dest_ip_groups"),
+                        nw_services=existing_rule.get("nw_services"),
+                        nw_service_groups=existing_rule.get("nw_service_groups"),
                         nw_application_groups=existing_rule.get(
-                            "nw_application_groups", None
+                            "nw_application_groups"
                         ),
-                        app_services=existing_rule.get("app_services", None),
-                        app_service_groups=existing_rule.get(
-                            "app_service_groups", None
-                        ),
-                        labels=existing_rule.get("labels", None),
-                        locations=existing_rule.get("locations", None),
-                        location_groups=existing_rule.get("location_groups", None),
-                        departments=existing_rule.get("departments", None),
-                        groups=existing_rule.get("groups", None),
-                        users=existing_rule.get("users", None),
-                        time_windows=existing_rule.get("time_windows", None),
-                        src_ip_groups=existing_rule.get("src_ip_groups", None),
+                        app_services=existing_rule.get("app_services"),
+                        app_service_groups=existing_rule.get("app_service_groups"),
+                        labels=existing_rule.get("labels"),
+                        locations=existing_rule.get("locations"),
+                        location_groups=existing_rule.get("location_groups"),
+                        departments=existing_rule.get("departments"),
+                        groups=existing_rule.get("groups"),
+                        users=existing_rule.get("users"),
+                        time_windows=existing_rule.get("time_windows"),
+                        src_ip_groups=existing_rule.get("src_ip_groups"),
                     )
                 )
                 module.warn("Payload Update for SDK: {}".format(update_rule))
@@ -437,37 +469,38 @@ def core(module):
             """Create"""
             create_rule = deleteNone(
                 dict(
-                    name=rule.get("name", None),
-                    order=rule.get("order", None),
-                    rank=rule.get("rank", None),
-                    action=rule.get("action", None),
-                    rule_state=rule.get("rule_state", None),
-                    description=rule.get("description", None),
-                    enable_full_logging=rule.get("enable_full_logging", None),
-                    src_ips=rule.get("src_ips", None),
-                    dest_addresses=rule.get("dest_addresses", None),
-                    dest_ip_categories=rule.get("dest_ip_categories", None),
-                    dest_countries=rule.get("dest_countries", None),
-                    source_countries=rule.get("source_countries", None),
-                    exclude_src_countries=rule.get("exclude_src_countries", None),
-                    device_trust_levels=rule.get("device_trust_levels", None),
-                    nw_applications=rule.get("nw_applications", None),
-                    dest_ip_groups=rule.get("dest_ip_groups", None),
-                    dest_ipv6_groups=rule.get("dest_ipv6_groups", None),
-                    nw_services=rule.get("nw_services", None),
-                    nw_service_groups=rule.get("nw_service_groups", None),
-                    nw_application_groups=rule.get("nw_application_groups", None),
-                    app_services=rule.get("app_services", None),
-                    app_service_groups=rule.get("app_service_groups", None),
-                    labels=rule.get("labels", None),
-                    locations=rule.get("locations", None),
-                    location_groups=rule.get("location_groups", None),
-                    departments=rule.get("departments", None),
-                    groups=rule.get("groups", None),
-                    users=rule.get("users", None),
-                    time_windows=rule.get("time_windows", None),
-                    src_ip_groups=rule.get("src_ip_groups", None),
-                    src_ipv6_groups=rule.get("src_ipv6_groups", None),
+                    name=rule.get("name"),
+                    order=rule.get("order"),
+                    rank=rule.get("rank"),
+                    action=rule.get("action"),
+                    enabled=rule.get("enabled"),
+                    description=rule.get("description"),
+                    enable_full_logging=rule.get("enable_full_logging"),
+                    src_ips=rule.get("src_ips"),
+                    dest_addresses=rule.get("dest_addresses"),
+                    dest_ip_categories=rule.get("dest_ip_categories"),
+                    dest_countries=rule.get("dest_countries"),
+                    source_countries=rule.get("source_countries"),
+                    exclude_src_countries=rule.get("exclude_src_countries"),
+                    device_trust_levels=rule.get("device_trust_levels"),
+                    device_groups=rule.get("device_groups"),
+                    nw_applications=rule.get("nw_applications"),
+                    dest_ip_groups=rule.get("dest_ip_groups"),
+                    dest_ipv6_groups=rule.get("dest_ipv6_groups"),
+                    nw_services=rule.get("nw_services"),
+                    nw_service_groups=rule.get("nw_service_groups"),
+                    nw_application_groups=rule.get("nw_application_groups"),
+                    app_services=rule.get("app_services"),
+                    app_service_groups=rule.get("app_service_groups"),
+                    labels=rule.get("labels"),
+                    locations=rule.get("locations"),
+                    location_groups=rule.get("location_groups"),
+                    departments=rule.get("departments"),
+                    groups=rule.get("groups"),
+                    users=rule.get("users"),
+                    time_windows=rule.get("time_windows"),
+                    src_ip_groups=rule.get("src_ip_groups"),
+                    src_ipv6_groups=rule.get("src_ipv6_groups"),
                 )
             )
             module.warn("Payload for SDK: {}".format(create_rule))
@@ -489,41 +522,17 @@ def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     id_spec = dict(
         type="list",
-        elements="str",
+        elements="int",
         required=False,
     )
     argument_spec.update(
-        id=dict(type="int", required=False),
+        id=dict(type="str", required=False),
         name=dict(type="str", required=True),
+        description=dict(type="str", required=False),
+        enabled=dict(type="bool", required=False),
         order=dict(type="int", required=True),
         rank=dict(type="int", required=False, default=7),
-        action=dict(
-            type="str",
-            required=False,
-            default="ALLOW",
-            choices=["ALLOW", "BLOCK_DROP", "BLOCK_RESET", "BLOCK_ICMP", "EVAL_NWAPP"],
-        ),
-        description=dict(type="str", required=False),
-        rule_state=dict(type="bool", required=False),
-        device_trust_levels=dict(
-            type="list",
-            elements="str",
-            required=False,
-            choices=[
-                "ANY",
-                "UNKNOWN_DEVICETRUSTLEVEL",
-                "LOW_TRUST",
-                "MEDIUM_TRUST",
-                "HIGH_TRUST",
-            ],
-        ),
-        src_ips=dict(type="list", elements="str", required=False),
-        dest_addresses=dict(type="list", elements="str", required=False),
-        dest_ip_categories=dict(type="list", elements="str", required=False),
-        dest_countries=dict(type="list", elements="str", required=False),
-        source_countries=dict(type="list", elements="str", required=False),
-        exclude_src_countries=dict(type="bool", required=False),
-        enable_full_logging=dict(type="bool", required=False),
+        device_groups=id_spec,
         nw_applications=id_spec,
         dest_ip_groups=id_spec,
         dest_ipv6_groups=id_spec,
@@ -541,6 +550,31 @@ def main():
         time_windows=id_spec,
         src_ip_groups=id_spec,
         src_ipv6_groups=id_spec,
+        src_ips=dict(type="list", elements="str", required=False),
+        dest_addresses=dict(type="list", elements="str", required=False),
+        dest_ip_categories=dict(type="list", elements="str", required=False),
+        dest_countries=dict(type="list", elements="str", required=False),
+        source_countries=dict(type="list", elements="str", required=False),
+        exclude_src_countries=dict(type="bool", required=False),
+        enable_full_logging=dict(type="bool", required=False),
+        action=dict(
+            type="str",
+            required=False,
+            default="ALLOW",
+            choices=["ALLOW", "BLOCK_DROP", "BLOCK_RESET", "BLOCK_ICMP", "EVAL_NWAPP"],
+        ),
+        device_trust_levels=dict(
+            type="list",
+            elements="str",
+            required=False,
+            choices=[
+                "ANY",
+                "UNKNOWN_DEVICETRUSTLEVEL",
+                "LOW_TRUST",
+                "MEDIUM_TRUST",
+                "HIGH_TRUST",
+            ],
+        ),
         state=dict(type="str", choices=["present", "absent"], default="present"),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
