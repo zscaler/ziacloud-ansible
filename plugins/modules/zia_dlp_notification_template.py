@@ -113,18 +113,32 @@ def normalize_dlp_template(template):
 def core(module):
     state = module.params.get("state")
     client = ZIAClientHelper(module)
-    params = ["id", "name", "subject", "attach_content", "plain_text_message", "html_message", "tls_enabled"]
+    params = [
+        "id",
+        "name",
+        "subject",
+        "attach_content",
+        "plain_text_message",
+        "html_message",
+        "tls_enabled",
+    ]
     template = {param: module.params.get(param) for param in params}
 
     template_id = template.get("id")
-    existing_template = client.dlp.get_dlp_templates(template_id).to_dict() if template_id else None
+    existing_template = (
+        client.dlp.get_dlp_templates(template_id).to_dict() if template_id else None
+    )
     if not existing_template and template.get("name"):
         templates = client.dlp.list_dlp_templates().to_list()
-        existing_template = next((t for t in templates if t.get("name") == template.get("name")), None)
+        existing_template = next(
+            (t for t in templates if t.get("name") == template.get("name")), None
+        )
 
     if existing_template:
         updated_template = {k: v for k, v in template.items() if v is not None}
-        differences_detected = any(existing_template.get(k) != v for k, v in updated_template.items())
+        differences_detected = any(
+            existing_template.get(k) != v for k, v in updated_template.items()
+        )
 
         if state == "present" and differences_detected:
             updated_template["template_id"] = existing_template["id"]

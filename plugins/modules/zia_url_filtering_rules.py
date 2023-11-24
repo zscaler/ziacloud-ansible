@@ -279,6 +279,7 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
     ZIAClientHelper,
 )
 
+
 def validate_and_convert_time_fields(rule):
     """
     Validate time-related fields and convert start and end times to epoch if enforce_time_validity is True.
@@ -286,9 +287,15 @@ def validate_and_convert_time_fields(rule):
     enforce_time_validity = rule.get("enforce_time_validity")
     if enforce_time_validity:
         # Mandatory fields check
-        for field in ["validity_start_time", "validity_end_time", "validity_time_zone_id"]:
+        for field in [
+            "validity_start_time",
+            "validity_end_time",
+            "validity_time_zone_id",
+        ]:
             if not rule.get(field):
-                raise ValueError(f"'{field}' must be set when 'enforce_time_validity' is True")
+                raise ValueError(
+                    f"'{field}' must be set when 'enforce_time_validity' is True"
+                )
 
         # Validate and convert time zone
         timezone_id = rule["validity_time_zone_id"]
@@ -303,6 +310,7 @@ def validate_and_convert_time_fields(rule):
                 timezone = pytz.timezone(timezone_id)
                 time_with_tz = timezone.localize(time_obj)
                 rule[time_field] = int(time.mktime(time_with_tz.timetuple()))
+
 
 def validate_additional_fields(rule):
     """
@@ -322,9 +330,12 @@ def validate_additional_fields(rule):
     size_quota_mb = rule.get("size_quota")
     if size_quota_mb:
         if size_quota_mb < 10 or size_quota_mb > 100000:
-            raise ValueError("size_quota must be within the range of 10 MB to 100000 MB")
+            raise ValueError(
+                "size_quota must be within the range of 10 MB to 100000 MB"
+            )
         # Convert MB to KB for API
         rule["size_quota"] = size_quota_mb * 1024
+
 
 def normalize_rule(rule):
     """
@@ -337,6 +348,7 @@ def normalize_rule(rule):
         normalized.pop(attr, None)
 
     return normalized
+
 
 def core(module):
     state = module.params.get("state", None)
@@ -414,8 +426,10 @@ def core(module):
                 # Process list attributes
                 if isinstance(rule[attr], list):
                     # If list contains dictionaries with 'id', extract IDs
-                    if all(isinstance(item, dict) and 'id' in item for item in rule[attr]):
-                        rule[attr] = [item['id'] for item in rule[attr]]
+                    if all(
+                        isinstance(item, dict) and "id" in item for item in rule[attr]
+                    ):
+                        rule[attr] = [item["id"] for item in rule[attr]]
                     else:
                         # Sort lists for consistent order
                         rule[attr] = sorted(rule[attr])
@@ -446,7 +460,9 @@ def core(module):
 
         # Special handling for lists of IDs like device_groups
         if isinstance(desired_value, list) and isinstance(current_value, list):
-            if all(isinstance(x, int) for x in desired_value) and all(isinstance(x, int) for x in current_value):
+            if all(isinstance(x, int) for x in desired_value) and all(
+                isinstance(x, int) for x in current_value
+            ):
                 desired_value = sorted(desired_value)
                 current_value = sorted(current_value)
 
@@ -464,49 +480,55 @@ def core(module):
     module.warn(f"Final payload being sent to SDK: {rule}")
     if state == "present":
         if existing_rule is not None:
-          if differences_detected:
-            """Update"""
-            update_rule = deleteNone(
-                dict(
-                    rule_id=existing_rule.get("id"),
-                    name=existing_rule.get("name"),
-                    order=existing_rule.get("order"),
-                    protocols=existing_rule.get("protocols"),
-                    locations=existing_rule.get("locations"),
-                    groups=existing_rule.get("groups"),
-                    departments=existing_rule.get("departments"),
-                    users=existing_rule.get("users"),
-                    device_groups=existing_rule.get("device_groups"),
-                    url_categories=existing_rule.get("url_categories"),
-                    enabled=existing_rule.get("enabled"),
-                    time_windows=existing_rule.get("time_windows"),
-                    rank=existing_rule.get("rank"),
-                    request_methods=existing_rule.get("request_methods"),
-                    end_user_notification_url=existing_rule.get(
-                        "end_user_notification_url"
-                    ),
-                    override_users=existing_rule.get("override_users"),
-                    override_groups=existing_rule.get("override_groups"),
-                    block_override=existing_rule.get("block_override"),
-                    time_quota=existing_rule.get("time_quota"),
-                    size_quota=existing_rule.get("size_quota"),
-                    description=existing_rule.get("description"),
-                    location_groups=existing_rule.get("location_groups"),
-                    labels=existing_rule.get("labels"),
-                    validity_start_time=existing_rule.get("validity_start_time"),
-                    validity_end_time=existing_rule.get("validity_end_time"),
-                    validity_time_zone_id=existing_rule.get("validity_time_zone_id"),
-                    enforce_time_validity=existing_rule.get("enforce_time_validity"),
-                    action=existing_rule.get("action"),
-                    cipa_rule=existing_rule.get("cipa_rule"),
-                    user_agent_types=existing_rule.get("user_agent_types"),
-                    user_risk_score_levels=existing_rule.get("user_risk_score_levels"),
+            if differences_detected:
+                """Update"""
+                update_rule = deleteNone(
+                    dict(
+                        rule_id=existing_rule.get("id"),
+                        name=existing_rule.get("name"),
+                        order=existing_rule.get("order"),
+                        protocols=existing_rule.get("protocols"),
+                        locations=existing_rule.get("locations"),
+                        groups=existing_rule.get("groups"),
+                        departments=existing_rule.get("departments"),
+                        users=existing_rule.get("users"),
+                        device_groups=existing_rule.get("device_groups"),
+                        url_categories=existing_rule.get("url_categories"),
+                        enabled=existing_rule.get("enabled"),
+                        time_windows=existing_rule.get("time_windows"),
+                        rank=existing_rule.get("rank"),
+                        request_methods=existing_rule.get("request_methods"),
+                        end_user_notification_url=existing_rule.get(
+                            "end_user_notification_url"
+                        ),
+                        override_users=existing_rule.get("override_users"),
+                        override_groups=existing_rule.get("override_groups"),
+                        block_override=existing_rule.get("block_override"),
+                        time_quota=existing_rule.get("time_quota"),
+                        size_quota=existing_rule.get("size_quota"),
+                        description=existing_rule.get("description"),
+                        location_groups=existing_rule.get("location_groups"),
+                        labels=existing_rule.get("labels"),
+                        validity_start_time=existing_rule.get("validity_start_time"),
+                        validity_end_time=existing_rule.get("validity_end_time"),
+                        validity_time_zone_id=existing_rule.get(
+                            "validity_time_zone_id"
+                        ),
+                        enforce_time_validity=existing_rule.get(
+                            "enforce_time_validity"
+                        ),
+                        action=existing_rule.get("action"),
+                        cipa_rule=existing_rule.get("cipa_rule"),
+                        user_agent_types=existing_rule.get("user_agent_types"),
+                        user_risk_score_levels=existing_rule.get(
+                            "user_risk_score_levels"
+                        ),
+                    )
                 )
-            )
 
-            module.warn("Payload Update for SDK: {}".format(update_rule))
-            updated_rule = client.url_filtering.update_rule(**update_rule).to_dict()
-            module.exit_json(changed=True, data=updated_rule)
+                module.warn("Payload Update for SDK: {}".format(update_rule))
+                updated_rule = client.url_filtering.update_rule(**update_rule).to_dict()
+                module.exit_json(changed=True, data=updated_rule)
         else:
             module.warn("Creating new rule as no existing rule found")
             """Create"""
@@ -557,7 +579,6 @@ def core(module):
             module.exit_json(changed=False, data=None)
         module.exit_json(changed=True, data=existing_rule)
     module.exit_json(changed=False, data={})
-
 
 
 def main():
@@ -643,14 +664,14 @@ def main():
             elements="str",
             required=True,
             choices=[
-              "OPERA",
-              "FIREFOX",
-              "MSIE",
-              "MSEDGE",
-              "CHROME",
-              "SAFARI",
-              "OTHER",
-              "MSCHREDGE"
+                "OPERA",
+                "FIREFOX",
+                "MSIE",
+                "MSEDGE",
+                "CHROME",
+                "SAFARI",
+                "OTHER",
+                "MSCHREDGE",
             ],
         ),
         device_trust_levels=dict(
@@ -669,12 +690,7 @@ def main():
             type="list",
             elements="str",
             required=False,
-            choices=[
-              "LOW",
-              "MEDIUM",
-              "HIGH",
-              "CRITICAL"
-            ],
+            choices=["LOW", "MEDIUM", "HIGH", "CRITICAL"],
         ),
         state=dict(type="str", choices=["present", "absent"], default="present"),
     )

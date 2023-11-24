@@ -362,8 +362,10 @@ def core(module):
                 # Process list attributes
                 if isinstance(rule[attr], list):
                     # If list contains dictionaries with 'id', extract IDs
-                    if all(isinstance(item, dict) and 'id' in item for item in rule[attr]):
-                        rule[attr] = [item['id'] for item in rule[attr]]
+                    if all(
+                        isinstance(item, dict) and "id" in item for item in rule[attr]
+                    ):
+                        rule[attr] = [item["id"] for item in rule[attr]]
                     else:
                         # Sort lists for consistent order
                         rule[attr] = sorted(rule[attr])
@@ -398,7 +400,9 @@ def core(module):
 
         # Special handling for lists of IDs like device_groups
         if isinstance(desired_value, list) and isinstance(current_value, list):
-            if all(isinstance(x, int) for x in desired_value) and all(isinstance(x, int) for x in current_value):
+            if all(isinstance(x, int) for x in desired_value) and all(
+                isinstance(x, int) for x in current_value
+            ):
                 desired_value = sorted(desired_value)
                 current_value = sorted(current_value)
 
@@ -427,22 +431,16 @@ def core(module):
                         action=existing_rule.get("action"),
                         enabled=existing_rule.get("enabled"),
                         description=existing_rule.get("description"),
-                        enable_full_logging=existing_rule.get(
-                            "enable_full_logging"
-                        ),
+                        enable_full_logging=existing_rule.get("enable_full_logging"),
                         src_ips=existing_rule.get("src_ips"),
                         dest_addresses=existing_rule.get("dest_addresses"),
-                        dest_ip_categories=existing_rule.get(
-                            "dest_ip_categories"
-                        ),
+                        dest_ip_categories=existing_rule.get("dest_ip_categories"),
                         dest_countries=existing_rule.get("dest_countries"),
                         source_countries=existing_rule.get("source_countries"),
                         exclude_src_countries=existing_rule.get(
                             "exclude_src_countries"
                         ),
-                        device_trust_levels=existing_rule.get(
-                            "device_trust_levels"
-                        ),
+                        device_trust_levels=existing_rule.get("device_trust_levels"),
                         device_groups=existing_rule.get("device_groups"),
                         nw_applications=existing_rule.get("nw_applications"),
                         dest_ip_groups=existing_rule.get("dest_ip_groups"),
@@ -452,9 +450,7 @@ def core(module):
                             "nw_application_groups"
                         ),
                         app_services=existing_rule.get("app_services"),
-                        app_service_groups=existing_rule.get(
-                            "app_service_groups"
-                        ),
+                        app_service_groups=existing_rule.get("app_service_groups"),
                         labels=existing_rule.get("labels"),
                         locations=existing_rule.get("locations"),
                         location_groups=existing_rule.get("location_groups"),

@@ -67,6 +67,21 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 )
 
 
+def normalize_url_category(category):
+    """
+    Normalize url category by setting computed values.
+    """
+    normalized = category.copy()
+
+    computed_values = [
+        "super_category",
+    ]
+    for attr in computed_values:
+        normalized.pop(attr, None)
+
+    return normalized
+
+
 def core(module):
     state = module.params.get("state", None)
     client = ZIAClientHelper(module)
@@ -74,184 +89,194 @@ def core(module):
     params = [
         "id",
         "configured_name",
+        "description",
+        "super_category",
+        "custom_category",
         "keywords",
         "keywords_retaining_parent_category",
         "urls",
         "db_categorized_urls",
-        "ip_ranges",
-        "ip_ranges_retaining_parent_category",
-        "custom_category",
+        # "ip_ranges",
+        # "ip_ranges_retaining_parent_category",
         "scopes",
         "editable",
-        "description",
         "type",
-        "url_keyword_counts",
-        "custom_urls_count",
-        "urls_retaining_parent_category_count",
-        "custom_ip_ranges_count",
-        "ip_ranges_retaining_parent_category_count",
+        # "custom_urls_count",
+        # "urls_retaining_parent_category_count",
+        # "custom_ip_ranges_count",
+        # "ip_ranges_retaining_parent_category_count",
     ]
     for param_name in params:
         category[param_name] = module.params.get(param_name, None)
+
     category_id = category.get("id", None)
-    category_name = category.get("name", None)
     existing_category = None
     if category_id is not None:
         categoryBox = client.url_categories.get_category(category_id=category_id)
         if categoryBox is not None:
             existing_category = categoryBox.to_dict()
-    elif category_name is not None:
-        rules = client.url_categories.list_categories().to_list()
-        for category_ in rules:
-            if category_.get("name") == category_name:
+    elif category.get("configured_name"):
+        categories = client.url_categories.list_categories().to_list()
+        for category_ in categories:
+            if category_.get("configured_name") == category.get("configured_name"):
                 existing_category = category_
+
+    # Normalize and compare existing and desired data
+    desired_category = normalize_url_category(category)
+    current_category = (
+        normalize_url_category(existing_category) if existing_category else {}
+    )
+
+    def preprocess_category(category, params):
+        """
+        Preprocess specific attributes in the category based on their type and structure.
+        :param category: Dict containing the category data.
+        :param params: List of attribute names to be processed.
+        :return: Preprocessed category.
+        """
+        preprocessed = {}
+        for attr in params:
+            if attr in category:
+                value = category[attr]
+
+                # Handling the 'editable' attribute, default to False if not provided
+                if attr == "editable":
+                    preprocessed[attr] = False if value is None else value
+
+                # 'super_category' is required, so it should be directly assigned
+                elif attr == "super_category":
+                    preprocessed[attr] = value
+
+                # Handle list attributes
+                elif isinstance(value, list):
+                    preprocessed[attr] = sorted(value) if value else []
+
+                else:
+                    preprocessed[attr] = value
+
+            else:
+                # Assign default values for missing keys
+                if attr == "editable":
+                    preprocessed[attr] = False
+                elif attr == "super_category":
+                    # Assuming 'super_category' must be provided by the user
+                    preprocessed[attr] = category.get(attr, "")
+                else:
+                    preprocessed[attr] = None
+
+        return preprocessed
+
+    existing_category_preprocessed = preprocess_category(current_category, params)
+    desired_category_preprocessed = preprocess_category(desired_category, params)
+
+    # Comparison logic
+    differences_detected = False
+    for key in params:
+        desired_value = desired_category_preprocessed.get(key)
+        current_value = existing_category_preprocessed.get(key)
+
+        # Handling for list attributes where None should be treated as an empty list
+        if isinstance(current_value, list) and desired_value is None:
+            desired_value = []
+
+        # Skip comparison for 'id' if it's not in the desired category but present in the existing category
+        if key == "id" and desired_value is None and current_value is not None:
+            continue
+
+        if isinstance(desired_value, list) and isinstance(current_value, list):
+            if all(isinstance(x, int) for x in desired_value) and all(
+                isinstance(x, int) for x in current_value
+            ):
+                desired_value = sorted(desired_value)
+                current_value = sorted(current_value)
+
+        if current_value != desired_value:
+            differences_detected = True
+            module.warn(
+                f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
+            )
+
     if existing_category is not None:
         id = existing_category.get("id")
         existing_category.update(category)
         existing_category["id"] = id
+
+    module.warn(f"Final payload being sent to SDK: {category}")
     if state == "present":
         if existing_category is not None:
-            """Update"""
-            existing_category = deleteNone(
-                dict(
-                    category_id=existing_category.get("id"),
-                    name=existing_category.get("name"),
-                    order=existing_category.get("order"),
-                    protocols=existing_category.get("protocols"),
-                    locations=existing_category.get("locations"),
-                    groups=existing_category.get("groups"),
-                    departments=existing_category.get("departments"),
-                    users=existing_category.get("users"),
-                    url_categories=existing_category.get("url_categories"),
-                    state=existing_category.get("rule_state"),
-                    time_windows=existing_category.get("time_windows"),
-                    rank=existing_category.get("rank"),
-                    request_methods=existing_category.get("request_methods"),
-                    end_user_notification_url=existing_category.get(
-                        "end_user_notification_url"
-                    ),
-                    override_users=existing_category.get("override_users"),
-                    override_groups=existing_category.get("override_users"),
-                    block_override=existing_category.get("block_override"),
-                    time_quota=existing_category.get("time_quota"),
-                    size_quota=existing_category.get("size_quota"),
-                    description=existing_category.get("description"),
-                    location_groups=existing_category.get("location_groups"),
-                    labels=existing_category.get("labels"),
-                    validity_start_time=existing_category.get("validity_start_time"),
-                    validity_end_time=existing_category.get("validity_end_time"),
-                    validity_time_zone_id=existing_category.get(
-                        "validity_time_zone_id"
-                    ),
-                    last_modified_time=existing_category.get("last_modified_time"),
-                    last_modified_by=existing_category.get("last_modified_by"),
-                    enforce_time_validity=existing_category.get(
-                        "enforce_time_validity"
-                    ),
-                    action=existing_category.get("action"),
-                    cipa_rule=existing_category.get("cipa_rule"),
+            if differences_detected:
+                updated_category = deleteNone(category)
+                updated_category["category_id"] = existing_category.get("id")
+                updated_category = client.url_categories.update_url_category(
+                    **updated_category
+                ).to_dict()
+                module.exit_json(changed=True, data=updated_category)
+            else:
+                # Existing category found but no differences detected, so no changes are made
+                module.exit_json(
+                    changed=False,
+                    data=existing_category,
+                    msg="No changes needed as the existing category matches the desired state.",
                 )
-            )
-            existing_category = client.url_categories.update_url_category(
-                **existing_category
-            ).to_dict()
-            module.exit_json(changed=True, data=existing_category)
         else:
-            """Create"""
-            category = deleteNone(
-                dict(
-                    name=rule.get("name"),
-                    order=rule.get("order"),
-                    protocols=rule.get("protocols"),
-                    locations=rule.get("locations"),
-                    groups=rule.get("groups"),
-                    departments=rule.get("departments"),
-                    users=rule.get("users"),
-                    url_categories=rule.get("url_categories"),
-                    state=rule.get("rule_state"),
-                    time_windows=rule.get("time_windows"),
-                    rank=rule.get("rank"),
-                    request_methods=rule.get("request_methods"),
-                    end_user_notification_url=rule.get("end_user_notification_url"),
-                    override_users=rule.get("override_users"),
-                    override_groups=rule.get("override_users"),
-                    block_override=rule.get("block_override"),
-                    time_quota=rule.get("time_quota"),
-                    size_quota=rule.get("size_quota"),
-                    description=rule.get("description"),
-                    location_groups=rule.get("location_groups"),
-                    labels=rule.get("labels"),
-                    validity_start_time=rule.get("validity_start_time"),
-                    validity_end_time=rule.get("validity_end_time"),
-                    validity_time_zone_id=rule.get("validity_time_zone_id"),
-                    last_modified_time=rule.get("last_modified_time"),
-                    last_modified_by=rule.get("last_modified_by"),
-                    enforce_time_validity=rule.get("enforce_time_validity"),
-                    action=rule.get("action"),
-                    cipa_rule=rule.get("cipa_rule"),
-                )
-            )
-            rule = client.url_categories.add_url_category(**rule).to_dict()
-            module.exit_json(changed=True, data=rule)
+            created_category = deleteNone(category)
+            module.warn("Payload for SDK: {}".format(created_category))
+            new_category = client.url_categories.add_url_category(
+                **created_category
+            ).to_dict()
+            module.exit_json(changed=True, data=new_category)
     elif state == "absent":
-        if existing_category is not None:
-            code = client.url_filters.delete_rule(
+        if existing_category:
+            client.url_categories.delete_category(
                 category_id=existing_category.get("id")
             )
-            if code > 299:
-                module.exit_json(changed=False, data=None)
             module.exit_json(changed=True, data=existing_category)
-    module.exit_json(changed=False, data={})
+        else:
+            module.exit_json(changed=False, data={})
 
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
-        id=dict(type="int"),
-        configured_name=dict(type="str", required=True),
-        description=dict(type="str", required=True),
+        id=dict(type="str"),
+        configured_name=dict(type="str", required=False),
+        description=dict(type="str", required=False),
         custom_category=dict(type="bool", required=False),
-        editable=dict(type="bool", required=False),
-        type=dict(
-            type="str",
-            required=True,
-            default="ALL",
-            choices=["URL_CATEGORY", "TLD_CATEGORY"],
-        ),
-        custom_urls_count=dict(type="int", required=False),
-        urls_retaining_parent_category_count=dict(type="int", required=False),
-        custom_ip_ranges_count=dict(type="int", required=False),
-        ip_ranges_retaining_parent_category_count=dict(type="int", required=False),
         keywords=dict(type="list", elements="str", required=False),
         keywords_retaining_parent_category=dict(
             type="list", elements="str", required=False
         ),
         urls=dict(type="list", elements="str", required=False),
         db_categorized_urls=dict(type="list", elements="str", required=False),
-        ip_ranges=dict(type="list", elements="str", required=False),
-        ip_ranges_retaining_parent_category=dict(
-            type="list", elements="str", required=False
+        # ip_ranges=dict(type="list", elements="str", required=False),
+        # ip_ranges_retaining_parent_category=dict(
+        #     type="list", elements="str", required=False
+        # ),
+        editable=dict(type="bool", required=False),
+        # custom_urls_count=dict(type="int", required=False),
+        # urls_retaining_parent_category_count=dict(type="int", required=False),
+        # custom_ip_ranges_count=dict(type="int", required=False),
+        # ip_ranges_retaining_parent_category_count=dict(type="int", required=False),
+        type=dict(
+            type="str",
+            required=False,
+            choices=["ALL", "URL_CATEGORY", "TLD_CATEGORY"],
         ),
         scopes=dict(
             type="list",
             elements="dict",
             options=dict(
-                scope_group_member_entities=dict(type="str"),
-                id=dict(type="int", required=False),
-                extensions=dict(type="list", elements="str", required=False),
                 scope_entities=dict(
                     type="list",
                     elements="dict",
                     options=dict(
-                        id=dict(type="int"),
-                        extensions=dict(type="list", elements="str", required=False),
+                        id=dict(type="int", required=False),
                     ),
                     required=False,
                 ),
                 type=dict(
                     type="str",
-                    required=True,
-                    default="ORGANIZATION",
+                    required=False,
                     choices=[
                         "ORGANIZATION",
                         "DEPARTMENT",
@@ -261,6 +286,51 @@ def main():
                 ),
             ),
             required=False,
+        ),
+        super_category=dict(
+            type="str",
+            required=False,
+            choices=[
+                "ANY",
+                "ADVANCED_SECURITY",
+                "ENTERTAINMENT_AND_RECREATION",
+                "NEWS_AND_MEDIA",
+                "USER_DEFINED",
+                "EDUCATION",
+                "BUSINESS_AND_ECONOMY",
+                "JOB_SEARCH",
+                "INFORMATION_TECHNOLOGY",
+                "INTERNET_COMMUNICATION",
+                "OFFICE_365",
+                "CUSTOM_SUPERCATEGORY",
+                "CUSTOM_BP",
+                "CUSTOM_BW",
+                "MISCELLANEOUS",
+                "TRAVEL",
+                "VEHICLES",
+                "GOVERNMENT_AND_POLITICS",
+                "GLOBAL_INT",
+                "GLOBAL_INT_BP",
+                "GLOBAL_INT_BW",
+                "GLOBAL_INT_OFC365",
+                "ADULT_MATERIAL",
+                "DRUGS",
+                "GAMBLING",
+                "VIOLENCE",
+                "WEAPONS_AND_BOMBS",
+                "TASTELESS",
+                "MILITANCY_HATE_AND_EXTREMISM",
+                "ILLEGAL_OR_QUESTIONABLE",
+                "SOCIETY_AND_LIFESTYLE",
+                "HEALTH",
+                "SPORTS",
+                "SPECIAL_INTERESTS_SOCIAL_ORGANIZATIONS",
+                "GAMES",
+                "SHOPPING_AND_AUCTIONS",
+                "SOCIAL_AND_FAMILY_ISSUES",
+                "RELIGION",
+                "SECURITY",
+            ],
         ),
         state=dict(type="str", choices=["present", "absent"], default="present"),
     )

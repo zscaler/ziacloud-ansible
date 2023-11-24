@@ -326,24 +326,35 @@ def core(module):
                 # Handle list attributes
                 if isinstance(value, list):
                     # Extract IDs if list contains dictionaries with 'id'
-                    if all(isinstance(item, dict) and 'id' in item for item in value):
-                        rule[attr] = [item['id'] for item in value]
+                    if all(isinstance(item, dict) and "id" in item for item in value):
+                        rule[attr] = [item["id"] for item in value]
                     else:
                         # Sort lists for consistent order
                         rule[attr] = sorted(value)
 
                 # Handle dictionary attributes, specifically icap_server
-                elif isinstance(value, dict) and attr == 'icap_server':
+                elif isinstance(value, dict) and attr == "icap_server":
                     # Extract ID if present, else set to empty dictionary
-                    rule[attr] = value.get('id', {})
+                    rule[attr] = value.get("id", {})
 
                 # Handle attributes that should default to a certain value if not provided
-                elif attr in ['min_size', 'match_only', 'dlp_download_scan_enabled', 'zcc_notifications_enabled', 'zscaler_incident_receiver']:
+                elif attr in [
+                    "min_size",
+                    "match_only",
+                    "dlp_download_scan_enabled",
+                    "zcc_notifications_enabled",
+                    "zscaler_incident_receiver",
+                ]:
                     if value is None:
                         # Set to default value if not provided
-                        if attr == 'min_size':
+                        if attr == "min_size":
                             rule[attr] = 0
-                        elif attr in ['match_only', 'dlp_download_scan_enabled', 'zcc_notifications_enabled', 'zscaler_incident_receiver']:
+                        elif attr in [
+                            "match_only",
+                            "dlp_download_scan_enabled",
+                            "zcc_notifications_enabled",
+                            "zscaler_incident_receiver",
+                        ]:
                             rule[attr] = False
 
         return rule
@@ -376,7 +387,9 @@ def core(module):
 
         # Special handling for lists of IDs like locations and others
         if isinstance(desired_value, list) and isinstance(current_value, list):
-            if all(isinstance(x, int) for x in desired_value) and all(isinstance(x, int) for x in current_value):
+            if all(isinstance(x, int) for x in desired_value) and all(
+                isinstance(x, int) for x in current_value
+            ):
                 desired_value = sorted(desired_value)
                 current_value = sorted(current_value)
 
@@ -539,13 +552,11 @@ def main():
         ocr_enabled=dict(type="bool", required=False),
         zscaler_incident_receiver=dict(type="bool", required=False),
         zcc_notifications_enabled=dict(type="bool", required=False),
-        dlp_download_scan_enabled=dict(type="bool",required=False),
+        dlp_download_scan_enabled=dict(type="bool", required=False),
         icap_server=dict(
             type="dict",
-            options=dict(
-                id=dict(type="int", required=True)
-            ),
-            required=False
+            options=dict(id=dict(type="int", required=True)),
+            required=False,
         ),
         action=dict(
             type="str",
