@@ -256,10 +256,46 @@ from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
     deleteNone,
+    validate_location_mgmt,
 )
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
     ZIAClientHelper,
 )
+
+def normalize_location(location):
+    """
+    Normalize location data by setting computed values.
+    """
+    normalized = location.copy()
+
+    computed_values = [
+        "id",
+    ]
+    for attr in computed_values:
+        normalized.pop(attr, None)
+
+    return normalized
+
+def normalize_vpn_credentials(vpn_creds):
+    """
+    Normalize the VPN credentials list to have consistent keys for comparison.
+    If vpn_creds is None, return an empty list.
+    """
+    if vpn_creds is None:
+        return []
+
+    normalized_creds = []
+    for cred in vpn_creds:
+        # Ensure all required keys are present, set to None if missing
+        normalized_cred = {
+            'id': cred.get('id'),
+            'type': cred.get('type'),
+            'fqdn': cred.get('fqdn'),
+            'ip_address': cred.get('ip_address'),
+            'pre_shared_key': cred.get('pre_shared_key'),
+        }
+        normalized_creds.append(normalized_cred)
+    return normalized_creds
 
 
 def core(module):
@@ -299,8 +335,23 @@ def core(module):
     ]
     for param_name in params:
         location_mgmt[param_name] = module.params.get(param_name, None)
+
+    validate_location_mgmt(location_mgmt)
+
+    # Set default values for attributes that have system defaults
+    if location_mgmt['parent_id'] is None:
+        location_mgmt['parent_id'] = 0  # Assuming 0 is the system default
+    if location_mgmt['aup_enabled'] is None:
+        location_mgmt['aup_enabled'] = False  # Default behavior if not specified
+    if location_mgmt['aup_timeout_in_days'] is None:
+        location_mgmt['aup_timeout_in_days'] = 0  # Default value
+    if location_mgmt['profile'] is None:
+        location_mgmt['profile'] = 'CORPORATE'  # Default or retain current state
+
+
     location_name = location_mgmt.get("name", None)
     location_id = location_mgmt.get("id", None)
+
     existing_location_mgmt = None
     if location_id is not None:
         locationBox = client.locations.get_location(location_id=location_id)
@@ -310,14 +361,48 @@ def core(module):
         locationBox = client.locations.get_location(location_name=location_name)
         if locationBox is not None:
             existing_location_mgmt = locationBox.to_dict()
+
+    # Normalize and compare existing and desired data
+    desired_location = normalize_location(location_mgmt)
+    current_location = normalize_location(existing_location_mgmt) if existing_location_mgmt else {}
+
+    # Adjusted Comparison Logic
+    differences_detected = False
+    for key, desired_value in desired_location.items():
+        current_value = current_location.get(key)
+
+        # Special handling for lists/dictionaries
+        if key == "vpn_credentials":
+            # Normalize vpn_credentials for comparison
+            normalized_current_creds = normalize_vpn_credentials(current_value)
+            normalized_desired_creds = normalize_vpn_credentials(desired_value)
+
+            if normalized_current_creds != normalized_desired_creds:
+                differences_detected = True
+                module.warn(f"Difference detected in {key}. Current: {normalized_current_creds}, Desired: {normalized_desired_creds}")
+
+        # Special handling for specific attributes
+        if key in ["aup_enabled", "aup_timeout_in_days", "profile"]:
+            # Your comparison logic for these attributes
+            pass
+        elif desired_value is None:
+            # Skip updating this attribute if it's None (not specified)
+            continue
+        elif desired_value != current_value:
+            differences_detected = True
+            module.warn(f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}")
+
     if existing_location_mgmt is not None:
         id = existing_location_mgmt.get("id")
-        existing_location_mgmt.update(location_mgmt)
+        existing_location_mgmt.update(desired_location)
         existing_location_mgmt["id"] = id
+
+    module.warn(f"Final payload being sent to SDK: {location_mgmt}")
     if state == "present":
         if existing_location_mgmt is not None:
+          if differences_detected:
             """Update"""
-            obj = deleteNone(
+            update_location = deleteNone(
                 dict(
                     location_id=existing_location_mgmt.get("id"),
                     name=existing_location_mgmt.get("name"),
@@ -369,11 +454,13 @@ def core(module):
                     description=existing_location_mgmt.get("description"),
                 )
             )
-            existing_location_mgmt = client.locations.update_location(**obj).to_dict()
-            module.exit_json(changed=True, data=existing_location_mgmt)
+            module.warn("Payload Update for SDK: {}".format(update_location))
+            updated_location = client.locations.update_location(**update_location).to_dict()
+            module.exit_json(changed=True, data=updated_location)
         else:
+            module.warn("Creating new location as no existing location found")
             """Create"""
-            obj = deleteNone(
+            create_location = deleteNone(
                 dict(
                     name=location_mgmt.get("name"),
                     parent_id=location_mgmt.get("parent_id"),
@@ -411,22 +498,24 @@ def core(module):
                         "aup_force_ssl_inspection"
                     ),
                     aup_timeout_in_days=location_mgmt.get("aup_timeout_in_days"),
-                    managed_by=location_mgmt.get("managed_by"),
                     profile=location_mgmt.get("profile"),
                     description=location_mgmt.get("description"),
                 )
             )
-            location_mgmt = client.locations.add_location(**obj)
-            module.exit_json(changed=True, data=location_mgmt)
-    elif state == "absent":
-        if existing_location_mgmt is not None:
-            code = client.locations.delete_location(
-                location_id=existing_location_mgmt.get("id")
-            )
-            if code > 299:
-                module.exit_json(changed=False, data=existing_location_mgmt)
-            module.exit_json(changed=True, data=existing_location_mgmt)
+            module.warn("Payload for SDK: {}".format(create_location))
+            new_location = client.locations.add_location(**create_location)
+            module.exit_json(changed=True, data=new_location)
+    elif (
+        state == "absent"
+        and existing_location_mgmt is not None
+        and existing_location_mgmt.get("id") is not None
+    ):
+        code = client.locations.delete_location(location_id=existing_location_mgmt.get("id"))
+        if code > 299:
+            module.exit_json(changed=False, data=None)
+        module.exit_json(changed=True, data=existing_location_mgmt)
     module.exit_json(changed=False, data={})
+
 
 
 def main():
@@ -447,9 +536,13 @@ def main():
         xff_forward_enabled=dict(type="bool", required=False),
         surrogate_ip=dict(type="bool", required=False),
         idle_time_in_minutes=dict(type="int", required=False),
-        display_time_unit=dict(type="str", required=False),
         surrogate_ip_enforced_for_known_browsers=dict(type="bool", required=False),
         surrogate_refresh_time_in_minutes=dict(type="int", required=False),
+        display_time_unit=dict(
+            type="str",
+            required=False,
+            choices=["MINUTE", "HOUR", "DAY"],
+        ),
         surrogate_refresh_time_unit=dict(
             type="str",
             required=False,
