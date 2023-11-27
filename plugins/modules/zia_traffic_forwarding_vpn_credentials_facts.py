@@ -81,24 +81,38 @@ def core(module):
     client = ZIAClientHelper(module)
     vpn_id = module.params.get("id", None)
     fqdn = module.params.get("fqdn", None)
+    ip_address = module.params.get("ip_address", None)
+
     credentials = []
-    if vpn_id is not None or fqdn is not None:
-        if vpn_id is not None:
-            credentialBox = client.traffic.get_vpn_credential(credential_id=vpn_id)
-        else:
-            credentialBox = client.traffic.get_vpn_credential(fqdn=fqdn)
+    if vpn_id is not None:
+        credentialBox = client.traffic.get_vpn_credential(credential_id=vpn_id)
         if credentialBox is None:
-            module.fail_json(msg="Failed to retrieve vpn credential ID: '%s'" % (id))
+            module.fail_json(msg="Failed to retrieve VPN credential with ID: '%s'" % vpn_id)
         credentials = [credentialBox.to_dict()]
+    elif fqdn is not None:
+        credentialBox = client.traffic.get_vpn_credential(fqdn=fqdn)
+        if credentialBox is None:
+            module.fail_json(msg="Failed to retrieve VPN credential with FQDN: '%s'" % fqdn)
+        credentials = [credentialBox.to_dict()]
+    elif ip_address is not None:
+        all_credentials = client.traffic.list_vpn_credentials().to_list()
+        for cred in all_credentials:
+            if cred.get("ip_address") == ip_address:
+                credentials.append(cred)
+        if not credentials:
+            module.fail_json(msg="Failed to retrieve VPN credential with IP address: '%s'" % ip_address)
     else:
         credentials = client.traffic.list_vpn_credentials().to_list()
+
     module.exit_json(changed=False, data=credentials)
+
 
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         fqdn=dict(type="str", required=False),
+        ip_address=dict(type="str", required=False),
         id=dict(type="int", required=False),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)

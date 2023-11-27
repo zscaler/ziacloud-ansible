@@ -9,6 +9,12 @@
 - ansible.builtin.set_fact:
     comments: "{{ comments }}_{{ random_string }}"
 
+- name: Create Static IP Address
+  ansible.builtin.include_tasks: "../../../helper_tasks/zia_traffic_forwarding_static_ip/create_traffic_forwarding_static_ip.yml"
+
+- name: Verify Static IP Address
+  ansible.builtin.include_tasks: "../../../helper_tasks/zia_traffic_forwarding_static_ip/verify_traffic_forwarding_static_ip.yml"
+
 - name: Ensure required environment variables are set
   fail:
     msg: "{{ env_var }} is not defined as environment variable"
@@ -30,7 +36,8 @@
   no_log: True
 
 - block:
-    - name: Ensure VPN Credentials (leftover)
+    ################################ Test Type "UFQDN" VPN Credentials ################################
+    - name: Ensure Type "UFQDN" VPN Credentials (leftover)
       zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials:
         provider: "{{ zia_cloud }}"
         state: absent
@@ -40,7 +47,7 @@
         pre_shared_key: "{{ pre_shared_key }}"
       register: result
 
-    - name: Ensure VPN Credentials is absent
+    - name: Ensure Type "UFQDN" VPN Credentials is absent
       zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials:
         provider: "{{ zia_cloud }}"
         state: absent
@@ -50,13 +57,13 @@
         pre_shared_key: "{{ pre_shared_key }}"
       register: result
 
-    - name: Verify VPN Credentials is absent
+    - name: Verify Type "UFQDN" VPN Credentials is absent
       ansible.builtin.assert:
         that:
           - not result.changed
           - result.data is defined
 
-    - name: Ensure VPN Credentials is (Present)
+    - name: Ensure Type "UFQDN" VPN Credentials is (Present)
       zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials:
         provider: "{{ zia_cloud }}"
         state: present
@@ -66,13 +73,14 @@
         pre_shared_key: "{{ pre_shared_key }}"
       register: result
 
-    - name: Verify VPN Credentials is present
+    - name: Verify Type "UFQDN" VPN Credentials is present
       ansible.builtin.assert:
         that:
           - result.changed
+          - result.data is defined
           - result.data.type is defined
 
-    - name: Ensure VPN Credentials (again; idempotency check)
+    - name: Ensure Type "UFQDN" VPN Credentials (again; idempotency check)
       zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials:
         provider: "{{ zia_cloud }}"
         state: present
@@ -82,29 +90,63 @@
         pre_shared_key: "{{ pre_shared_key }}"
       register: result
 
-    - name: Ensure VPN Credentials is absent (idempotency check)
+    - name: Ensure Type "UFQDN" VPN Credentials is present (idempotency check)
       ansible.builtin.assert:
         that:
           - not result.changed
 
-    - name: Fetch all VPN Credentials
+    - name: Update Type "UFQDN" VPN Credentials (Present)
+      zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials:
+        provider: "{{ zia_cloud }}"
+        state: present
+        type: "{{ type }}"
+        fqdn: "{{ fqdn }}"
+        comments: "{{ comments }}"
+        update_psk: "{{ update_psk }}"
+        pre_shared_key: "{{ update_pre_shared_key }}"
+      register: result
+
+    - name: Verify Type "UFQDN" VPN Credentials is Updated
+      ansible.builtin.assert:
+        that:
+          - result.changed
+          - result.data is defined
+          - result.data.fqdn == fqdn
+
+    - name: Update Type "UFQDN" VPN Credentials (again; idempotency check)
+      zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials:
+        provider: "{{ zia_cloud }}"
+        state: present
+        type: "{{ type }}"
+        fqdn: "{{ fqdn }}"
+        comments: "{{ comments }}"
+        update_psk: false
+        pre_shared_key: "{{ update_pre_shared_key }}"
+      register: result
+
+    - name: Ensure Type "UFQDN" VPN Credentials update is idempotent
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+
+    - name: Fetch all Type "UFQDN" VPN Credentials
       zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_facts:
         provider: "{{ zia_cloud }}"
       register: result
 
-    - name: Ensure all VPN Credentials found
+    - name: Ensure all Type "UFQDN" VPN Credentials found
       ansible.builtin.assert:
         that:
           - not result.changed
           - result.data[0] is defined
 
-    - name: Fetch this VPN Credentials
+    - name: Fetch this Type "UFQDN" VPN Credentials
       zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_facts:
         provider: "{{ zia_cloud }}"
         fqdn: "{{ fqdn }}"
       register: result
 
-    - name: Ensure this VPN Credentials is found
+    - name: Ensure this Type "UFQDN" VPN Credentials is found
       ansible.builtin.assert:
         that:
           - not result.changed
@@ -116,33 +158,189 @@
       ansible.builtin.pause:
         seconds: 5
 
-    - name: Delete VPN Credentials
+    - name: Delete Type "UFQDN" VPN Credentials
       zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials:
         provider: "{{ zia_cloud }}"
         state: absent
         type: "{{ type }}"
         fqdn: "{{ fqdn }}"
         comments: "{{ comments }}"
-        pre_shared_key: "{{ pre_shared_key }}"
+        pre_shared_key: "{{ update_pre_shared_key }}"
       register: result
 
-    - name: Verify Destination Group of Type DSTN_IP is Deleted
+    - name: Verify Type "UFQDN" VPN Credential is Deleted
       ansible.builtin.assert:
         that:
           - result.changed
 
-    - name: Delete VPN Credentials (again; idempotency check)
+    - name: Delete Type "UFQDN" VPN Credentials (again; idempotency check)
       zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials:
         provider: "{{ zia_cloud }}"
         state: absent
         type: "{{ type }}"
         fqdn: "{{ fqdn }}"
         comments: "{{ comments }}"
-        pre_shared_key: "{{ pre_shared_key }}"
+        pre_shared_key: "{{ update_pre_shared_key }}"
       register: result
 
-    - name: Verify VPN Credentials is absent
+    - name: Verify Type "UFQDN" VPN Credentials is absent
       ansible.builtin.assert:
         that:
           - not result.changed
           - result.data is defined
+
+################################ Test Type "IP" VPN Credentials ################################
+- name: Ensure Type "IP" VPN Credentials (leftover)
+  zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials:
+    provider: "{{ zia_cloud }}"
+    state: absent
+    type: "{{ new_type }}"
+    ip_address: "{{ static_ip_address }}"
+    comments: "{{ comments }}"
+    pre_shared_key: "{{ pre_shared_key }}"
+  register: result
+
+- name: Ensure Type "IP" VPN Credentials is absent
+  zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials:
+    provider: "{{ zia_cloud }}"
+    state: absent
+    type: "{{ new_type }}"
+    ip_address: "{{ static_ip_address }}"
+    comments: "{{ comments }}"
+    pre_shared_key: "{{ pre_shared_key }}"
+  register: result
+
+- name: Verify Type "IP" VPN Credentials is absent
+  ansible.builtin.assert:
+    that:
+      - not result.changed
+      - result.data is defined
+
+- name: Ensure Type "IP" VPN Credentials is (Present)
+  zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials:
+    provider: "{{ zia_cloud }}"
+    state: present
+    type: "{{ new_type }}"
+    ip_address: "{{ static_ip_address }}"
+    comments: "{{ comments }}"
+    pre_shared_key: "{{ pre_shared_key }}"
+  register: result
+
+- name: Verify Type "IP" VPN Credentials is present
+  ansible.builtin.assert:
+    that:
+      - result.changed
+      - result.data is defined
+      - result.data.type is defined
+
+- name: Ensure Type "IP" VPN Credentials (again; idempotency check)
+  zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials:
+    provider: "{{ zia_cloud }}"
+    state: present
+    type: "{{ new_type }}"
+    ip_address: "{{ static_ip_address }}"
+    comments: "{{ comments }}"
+    pre_shared_key: "{{ pre_shared_key }}"
+  register: result
+
+- name: Ensure Type "IP" VPN Credentials is present (idempotency check)
+  ansible.builtin.assert:
+    that:
+      - not result.changed
+
+- name: Update Type "IP" VPN Credentials (Present)
+  zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials:
+    provider: "{{ zia_cloud }}"
+    state: present
+    type: "{{ new_type }}"
+    ip_address: "{{ static_ip_address }}"
+    comments: "{{ comments }}"
+    update_psk: "{{ update_psk }}"
+    pre_shared_key: "{{ update_pre_shared_key }}"
+  register: result
+
+- name: Verify Type "IP"  VPN Credentials is Updated
+  ansible.builtin.assert:
+    that:
+      - result.changed
+      - result.data is defined
+      - result.data.ip_address == ip_address
+
+- name: Update Type "IP" VPN Credentials (again; idempotency check)
+  zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials:
+    provider: "{{ zia_cloud }}"
+    state: present
+    type: "{{ new_type }}"
+    ip_address: "{{ static_ip_address }}"
+    comments: "{{ comments }}"
+    update_psk: false
+    pre_shared_key: "{{ update_pre_shared_key }}"
+  register: result
+
+- name: Ensure Type "IP" VPN Credentials update is idempotent
+  ansible.builtin.assert:
+    that:
+      - not result.changed
+
+- name: Fetch all Type "IP" VPN Credentials
+  zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_facts:
+    provider: "{{ zia_cloud }}"
+  register: result
+
+- name: Ensure all VPN Credentials found
+  ansible.builtin.assert:
+    that:
+      - not result.changed
+      - result.data[0] is defined
+
+- name: Fetch this Type "IP" VPN Credential
+  zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_facts:
+    provider: "{{ zia_cloud }}"
+    ip_address: "{{ static_ip_address }}"
+  register: result
+
+- name: Ensure this Type "IP" VPN Credentials is found
+  ansible.builtin.assert:
+    that:
+      - not result.changed
+      - result.data is defined
+      - result.data[0].ip_address is defined
+      - result.data[0].ip_address == ip_address
+
+- name: Give the ZIA Cloud a 5 seconds to settle
+  ansible.builtin.pause:
+    seconds: 5
+
+- name: Delete VPN Credentials
+  zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials:
+    provider: "{{ zia_cloud }}"
+    state: absent
+    type: "{{ new_type }}"
+    ip_address: "{{ static_ip_address }}"
+    comments: "{{ comments }}"
+    pre_shared_key: "{{ update_pre_shared_key }}"
+  register: result
+
+- name: Verify Type "IP" VPN Credential is Deleted
+  ansible.builtin.assert:
+    that:
+      - result.changed
+
+- name: Delete Type "IP" VPN Credentials (again; idempotency check)
+  zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials:
+    provider: "{{ zia_cloud }}"
+    state: absent
+    type: "{{ new_type }}"
+    ip_address: "{{ static_ip_address }}"
+    comments: "{{ comments }}"
+    pre_shared_key: "{{ update_pre_shared_key }}"
+  register: result
+
+- name: Verify Type "IP" VPN Credentials is absent
+  ansible.builtin.assert:
+    that:
+      - not result.changed
+      - result.data is defined
+
+- name: Clean up Static IP Address
+  include_tasks: "../../../helper_tasks/zia_traffic_forwarding_static_ip/delete_traffic_forwarding_static_ip.yml"

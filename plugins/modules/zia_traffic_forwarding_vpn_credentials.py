@@ -127,6 +127,20 @@ def normalize_vpn_creds(vpn, exclude_keys=None):
     return normalized
 
 
+def validate_vpn_credential_type(vpn_credentials):
+    """
+    Validate the VPN credential type and ensure required attributes are provided.
+    """
+    vpn_type = vpn_credentials.get("type")
+    ip_address = vpn_credentials.get("ip_address")
+    fqdn = vpn_credentials.get("fqdn")
+
+    if vpn_type == "IP" and not ip_address:
+        raise ValueError("Invalid input argument, ip_address is required for VPN credentials of type 'IP'.")
+    if vpn_type == "UFQDN" and not fqdn:
+        raise ValueError("Invalid input argument, fqdn attribute is required for VPN credentials of type 'UFQDN'.")
+
+
 def core(module):
     client = ZIAClientHelper(module)
     state = module.params.get("state", None)
@@ -141,11 +155,19 @@ def core(module):
     ]
     for param_name in params:
         vpn_credentials[param_name] = module.params.get(param_name, None)
-    vpn_id = module.params.get("id", None)
-    fqdn = module.params.get("fqdn", None)
+
+    # Validate VPN credential type
+    validate_vpn_credential_type(vpn_credentials)
+
+    update_psk_flag = module.params.get("update_psk", False)
 
     existing_vpn_credentials = None
-    if vpn_id is not None or fqdn is not None:
+    vpn_id = module.params.get("id", None)
+    fqdn = module.params.get("fqdn", None)
+    ip_address = module.params.get("ip_address", None)
+
+    if vpn_id is not None or fqdn is not None or ip_address is not None:
+        # Try to find the VPN credential by ID or FQDN
         vpn_box = (
             client.traffic.get_vpn_credential(credential_id=vpn_id)
             if vpn_id
@@ -153,84 +175,78 @@ def core(module):
         )
         existing_vpn_credentials = vpn_box.to_dict() if vpn_box else None
 
+    if vpn_id is not None or fqdn is not None or ip_address is not None:
+        # If not found, list all VPN credentials and check again
+        all_vpn_credentials = client.traffic.list_vpn_credentials()
+        for vpn_cred in all_vpn_credentials:
+            if vpn_id and vpn_cred.get("id") == vpn_id:
+                existing_vpn_credentials = vpn_cred
+                break
+            if fqdn and vpn_cred.get("fqdn") == fqdn:
+                existing_vpn_credentials = vpn_cred
+                break
+            if ip_address and vpn_cred.get("ip_address") == ip_address:
+                existing_vpn_credentials = vpn_cred
+                break
+
     provided_keys = [key for key in params if vpn_credentials.get(key) is not None]
 
     # Normalize and compare existing and desired VPN credentials data
     desired_vpn_creds = normalize_vpn_creds(vpn_credentials, exclude_keys=provided_keys)
-    current_vpn_creds = (
-        normalize_vpn_creds(existing_vpn_credentials, exclude_keys=params)
-        if existing_vpn_credentials
-        else {}
-    )
+    current_vpn_creds = normalize_vpn_creds(existing_vpn_credentials, exclude_keys=params) if existing_vpn_credentials else {}
 
     differences_detected = False
     for key, value in desired_vpn_creds.items():
-        if (
-            key == "pre_shared_key"
-            and value is not None
-            and current_vpn_creds.get(key) != value
-        ):
+        current_value = current_vpn_creds.get(key)
+        if key != "pre_shared_key" and current_value != value:
             differences_detected = True
-        elif key != "id" and current_vpn_creds.get(key) != value:
-            differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {current_vpn_creds.get(key)}, Desired: {value}"
-            )
+            module.warn(f"Difference detected in {key}. Current: {current_value}, Desired: {value}")
 
-    if existing_vpn_credentials is not None:
-        id = existing_vpn_credentials.get("id")
-        existing_vpn_credentials.update(desired_vpn_creds)
-        existing_vpn_credentials["id"] = id
+    # Check if the pre_shared_key needs to be updated
+    if update_psk_flag and "pre_shared_key" in vpn_credentials:
+        differences_detected = True
 
     if state == "present":
         if existing_vpn_credentials:
+            # Building the payload for the update API call
+            update_payload = {key: vpn_credentials[key] for key in provided_keys if key != "update_psk"}
+
+            # Set the credential_id for the update
+            update_payload["credential_id"] = existing_vpn_credentials.get("id")
+
+            # Include pre_shared_key in the payload only if update_psk_flag is True
+            if update_psk_flag and "pre_shared_key" in vpn_credentials:
+                update_payload["pre_shared_key"] = vpn_credentials["pre_shared_key"]
+
+            module.warn(f"Final payload being sent to SDK: {update_payload}")
             if differences_detected:
-                """Update"""
-                update_vpn = deleteNone(
-                    {
-                        "credential_id": id,
-                        "authentication_type": vpn_credentials.get("type"),
-                        "fqdn": vpn_credentials.get("fqdn"),
-                        "ip_address": vpn_credentials.get("ip_address"),
-                        "pre_shared_key": vpn_credentials.get("pre_shared_key")
-                        if "pre_shared_key" in provided_keys
-                        else None,
-                        "comments": vpn_credentials.get("comments"),
-                    }
-                )
-                updated_vpn = client.traffic.update_vpn_credential(
-                    **update_vpn
-                ).to_dict()
+                updated_vpn = client.traffic.update_vpn_credential(**update_payload).to_dict()
                 module.exit_json(changed=True, data=updated_vpn)
             else:
-                """No changes needed"""
-                module.exit_json(
-                    changed=False,
-                    data=existing_vpn_credentials,
-                    msg="No changes detected.",
-                )
+                module.exit_json(changed=False, data=existing_vpn_credentials, msg="No changes detected.")
         else:
-            """Create"""
             create_vpn = deleteNone(
                 {
                     "authentication_type": vpn_credentials.get("type"),
-                    "pre_shared_key": vpn_credentials.get("pre_shared_key"),
-                    "ip_address": vpn_credentials.get("ip_address"),
                     "fqdn": vpn_credentials.get("fqdn"),
+                    "ip_address": vpn_credentials.get("ip_address"),
+                    "pre_shared_key": vpn_credentials.get("pre_shared_key"),
                     "comments": vpn_credentials.get("comments"),
                 }
             )
+            module.warn("Payload for SDK: {}".format(create_vpn))
             new_vpn = client.traffic.add_vpn_credential(**create_vpn).to_dict()
             module.exit_json(changed=True, data=new_vpn)
-    elif (
-        state == "absent"
-        and existing_vpn_credentials is not None
-        and existing_vpn_credentials.get("id") is not None
-    ):
-        code = client.traffic.delete_vpn_credential(credential_id=id)
-        if code > 299:
-            module.exit_json(changed=False, data=None)
-        module.exit_json(changed=True, data=existing_vpn_credentials)
+    elif state == "absent":
+        if existing_vpn_credentials and existing_vpn_credentials.get("id"):
+            code = client.traffic.delete_vpn_credential(credential_id=existing_vpn_credentials.get("id"))
+            if code == 204:
+                module.exit_json(changed=True, data=existing_vpn_credentials)
+            else:
+                module.fail_json(msg="Failed to delete the VPN credential", code=code)
+        else:
+            module.exit_json(changed=False, data={}, msg="VPN credential not found or already deleted.")
+
     module.exit_json(changed=False, data={})
 
 
@@ -238,10 +254,11 @@ def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         id=dict(type="int", required=False),
-        type=dict(type="str", required=False, default="UFQDN", choices=["UFQDN", "IP"]),
+        type=dict(type="str", required=False, default="UFQDN", choices=["UFQDN", "IP", "CN", "XAUTH"]),
         fqdn=dict(type="str", required=False),
         ip_address=dict(type="str", required=False),
         pre_shared_key=dict(type="str", required=False, no_log=True),
+        update_psk=dict(type="bool", required=False, Default=False),
         comments=dict(type="str", required=False),
         state=dict(type="str", choices=["present", "absent"], default="present"),
     )

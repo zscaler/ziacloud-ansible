@@ -127,10 +127,7 @@ def normalize_static_ip(static):
     normalized = static.copy()
 
     computed_values = [
-        "id",
-        "ip_address",
-        "routable_ip",
-        "comment",
+        "id"
     ]
     for attr in computed_values:
         normalized.pop(attr, None)
