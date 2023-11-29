@@ -41,7 +41,10 @@ return:
 from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
+
 
 def core(module):
     client = ZIAClientHelper(module)
@@ -56,7 +59,7 @@ def core(module):
         # Preparing the results to be returned
         results = {
             "behavioral_analysis": behavioral_analysis_data,
-            "file_hash_count": file_hash_count_data
+            "file_hash_count": file_hash_count_data,
         }
 
         # Returning the results
@@ -65,11 +68,13 @@ def core(module):
     except Exception as e:
         module.fail_json(msg=to_native(e), exception=format_exc())
 
+
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
 
     core(module)
+
 
 if __name__ == "__main__":
     main()

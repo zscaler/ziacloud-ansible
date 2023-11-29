@@ -87,12 +87,16 @@ def core(module):
     if vpn_id is not None:
         credentialBox = client.traffic.get_vpn_credential(credential_id=vpn_id)
         if credentialBox is None:
-            module.fail_json(msg="Failed to retrieve VPN credential with ID: '%s'" % vpn_id)
+            module.fail_json(
+                msg="Failed to retrieve VPN credential with ID: '%s'" % vpn_id
+            )
         credentials = [credentialBox.to_dict()]
     elif fqdn is not None:
         credentialBox = client.traffic.get_vpn_credential(fqdn=fqdn)
         if credentialBox is None:
-            module.fail_json(msg="Failed to retrieve VPN credential with FQDN: '%s'" % fqdn)
+            module.fail_json(
+                msg="Failed to retrieve VPN credential with FQDN: '%s'" % fqdn
+            )
         credentials = [credentialBox.to_dict()]
     elif ip_address is not None:
         all_credentials = client.traffic.list_vpn_credentials().to_list()
@@ -100,12 +104,14 @@ def core(module):
             if cred.get("ip_address") == ip_address:
                 credentials.append(cred)
         if not credentials:
-            module.fail_json(msg="Failed to retrieve VPN credential with IP address: '%s'" % ip_address)
+            module.fail_json(
+                msg="Failed to retrieve VPN credential with IP address: '%s'"
+                % ip_address
+            )
     else:
         credentials = client.traffic.list_vpn_credentials().to_list()
 
     module.exit_json(changed=False, data=credentials)
-
 
 
 def main():
