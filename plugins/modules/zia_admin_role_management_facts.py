@@ -74,11 +74,14 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 
 def core(module):
-    # role_id = module.params.get("id", None)
+    role_id = module.params.get("id", None)
     role_name = module.params.get("name", None)
     client = ZIAClientHelper(module)
     roles = []
-    if role_name is not None:
+    if role_id is not None:
+        role = client.admin_and_role_management.get_role(role_id).to_dict()
+        roles = [role]
+    else:
         roles = client.admin_and_role_management.list_roles().to_list()
         if role_name is not None:
             role = None
@@ -88,7 +91,7 @@ def core(module):
                     break
             if role is None:
                 module.fail_json(
-                    msg="Failed to retrieve admin role management: '%s'" % (role_name)
+                    msg="Failed to retrieve admin role: '%s'" % (role_name)
                 )
             roles = [role]
     module.exit_json(changed=False, data=roles)

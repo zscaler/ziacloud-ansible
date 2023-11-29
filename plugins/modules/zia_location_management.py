@@ -262,6 +262,7 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
     ZIAClientHelper,
 )
 
+
 def normalize_location(location):
     """
     Normalize location data by setting computed values.
@@ -276,6 +277,7 @@ def normalize_location(location):
 
     return normalized
 
+
 def normalize_vpn_credentials(vpn_creds):
     """
     Normalize the VPN credentials list to have consistent keys for comparison.
@@ -288,11 +290,11 @@ def normalize_vpn_credentials(vpn_creds):
     for cred in vpn_creds:
         # Ensure all required keys are present, set to None if missing
         normalized_cred = {
-            'id': cred.get('id'),
-            'type': cred.get('type'),
-            'fqdn': cred.get('fqdn'),
-            'ip_address': cred.get('ip_address'),
-            'pre_shared_key': cred.get('pre_shared_key'),
+            "id": cred.get("id"),
+            "type": cred.get("type"),
+            "fqdn": cred.get("fqdn"),
+            "ip_address": cred.get("ip_address"),
+            "pre_shared_key": cred.get("pre_shared_key"),
         }
         normalized_creds.append(normalized_cred)
     return normalized_creds
@@ -339,15 +341,14 @@ def core(module):
     validate_location_mgmt(location_mgmt)
 
     # Set default values for attributes that have system defaults
-    if location_mgmt['parent_id'] is None:
-        location_mgmt['parent_id'] = 0  # Assuming 0 is the system default
-    if location_mgmt['aup_enabled'] is None:
-        location_mgmt['aup_enabled'] = False  # Default behavior if not specified
-    if location_mgmt['aup_timeout_in_days'] is None:
-        location_mgmt['aup_timeout_in_days'] = 0  # Default value
-    if location_mgmt['profile'] is None:
-        location_mgmt['profile'] = 'CORPORATE'  # Default or retain current state
-
+    if location_mgmt["parent_id"] is None:
+        location_mgmt["parent_id"] = 0  # Assuming 0 is the system default
+    if location_mgmt["aup_enabled"] is None:
+        location_mgmt["aup_enabled"] = False  # Default behavior if not specified
+    if location_mgmt["aup_timeout_in_days"] is None:
+        location_mgmt["aup_timeout_in_days"] = 0  # Default value
+    if location_mgmt["profile"] is None:
+        location_mgmt["profile"] = "CORPORATE"  # Default or retain current state
 
     location_name = location_mgmt.get("name", None)
     location_id = location_mgmt.get("id", None)
@@ -364,7 +365,9 @@ def core(module):
 
     # Normalize and compare existing and desired data
     desired_location = normalize_location(location_mgmt)
-    current_location = normalize_location(existing_location_mgmt) if existing_location_mgmt else {}
+    current_location = (
+        normalize_location(existing_location_mgmt) if existing_location_mgmt else {}
+    )
 
     # Adjusted Comparison Logic
     differences_detected = False
@@ -379,7 +382,9 @@ def core(module):
 
             if normalized_current_creds != normalized_desired_creds:
                 differences_detected = True
-                module.warn(f"Difference detected in {key}. Current: {normalized_current_creds}, Desired: {normalized_desired_creds}")
+                module.warn(
+                    f"Difference detected in {key}. Current: {normalized_current_creds}, Desired: {normalized_desired_creds}"
+                )
 
         # Special handling for specific attributes
         if key in ["aup_enabled", "aup_timeout_in_days", "profile"]:
@@ -390,7 +395,9 @@ def core(module):
             continue
         elif desired_value != current_value:
             differences_detected = True
-            module.warn(f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}")
+            module.warn(
+                f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
+            )
 
     if existing_location_mgmt is not None:
         id = existing_location_mgmt.get("id")
@@ -400,63 +407,67 @@ def core(module):
     module.warn(f"Final payload being sent to SDK: {location_mgmt}")
     if state == "present":
         if existing_location_mgmt is not None:
-          if differences_detected:
-            """Update"""
-            update_location = deleteNone(
-                dict(
-                    location_id=existing_location_mgmt.get("id"),
-                    name=existing_location_mgmt.get("name"),
-                    parent_id=existing_location_mgmt.get("parent_id"),
-                    up_bandwidth=existing_location_mgmt.get("up_bandwidth"),
-                    dn_bandwidth=existing_location_mgmt.get("dn_bandwidth"),
-                    country=existing_location_mgmt.get("country"),
-                    tz=existing_location_mgmt.get("tz"),
-                    ip_addresses=existing_location_mgmt.get("ip_addresses"),
-                    ports=existing_location_mgmt.get("ports"),
-                    vpn_credentials=existing_location_mgmt.get("vpn_credentials"),
-                    auth_required=existing_location_mgmt.get("auth_required"),
-                    ssl_scan_enabled=existing_location_mgmt.get("ssl_scan_enabled"),
-                    zapp_ssl_scan_enabled=existing_location_mgmt.get(
-                        "zapp_ssl_scan_enabled"
-                    ),
-                    xff_forward_enabled=existing_location_mgmt.get(
-                        "xff_forward_enabled"
-                    ),
-                    surrogate_ip=existing_location_mgmt.get("surrogate_ip"),
-                    idle_time_in_minutes=existing_location_mgmt.get(
-                        "idle_time_in_minutes"
-                    ),
-                    display_time_unit=existing_location_mgmt.get("display_time_unit"),
-                    surrogate_ip_enforced_for_known_browsers=existing_location_mgmt.get(
-                        "surrogate_ip_enforced_for_known_browsers"
-                    ),
-                    surrogate_refresh_time_in_minutes=existing_location_mgmt.get(
-                        "surrogate_refresh_time_in_minutes"
-                    ),
-                    surrogate_refresh_time_unit=existing_location_mgmt.get(
-                        "surrogate_refresh_time_unit"
-                    ),
-                    ofw_enabled=existing_location_mgmt.get("ofw_enabled"),
-                    ips_control=existing_location_mgmt.get("ips_control"),
-                    aup_enabled=existing_location_mgmt.get("aup_enabled"),
-                    caution_enabled=existing_location_mgmt.get("caution_enabled"),
-                    aup_block_internet_until_accepted=existing_location_mgmt.get(
-                        "aup_block_internet_until_accepted"
-                    ),
-                    aup_force_ssl_inspection=existing_location_mgmt.get(
-                        "aup_force_ssl_inspection"
-                    ),
-                    aup_timeout_in_days=existing_location_mgmt.get(
-                        "aup_timeout_in_days"
-                    ),
-                    managed_by=existing_location_mgmt.get("managed_by"),
-                    profile=existing_location_mgmt.get("profile"),
-                    description=existing_location_mgmt.get("description"),
+            if differences_detected:
+                """Update"""
+                update_location = deleteNone(
+                    dict(
+                        location_id=existing_location_mgmt.get("id"),
+                        name=existing_location_mgmt.get("name"),
+                        parent_id=existing_location_mgmt.get("parent_id"),
+                        up_bandwidth=existing_location_mgmt.get("up_bandwidth"),
+                        dn_bandwidth=existing_location_mgmt.get("dn_bandwidth"),
+                        country=existing_location_mgmt.get("country"),
+                        tz=existing_location_mgmt.get("tz"),
+                        ip_addresses=existing_location_mgmt.get("ip_addresses"),
+                        ports=existing_location_mgmt.get("ports"),
+                        vpn_credentials=existing_location_mgmt.get("vpn_credentials"),
+                        auth_required=existing_location_mgmt.get("auth_required"),
+                        ssl_scan_enabled=existing_location_mgmt.get("ssl_scan_enabled"),
+                        zapp_ssl_scan_enabled=existing_location_mgmt.get(
+                            "zapp_ssl_scan_enabled"
+                        ),
+                        xff_forward_enabled=existing_location_mgmt.get(
+                            "xff_forward_enabled"
+                        ),
+                        surrogate_ip=existing_location_mgmt.get("surrogate_ip"),
+                        idle_time_in_minutes=existing_location_mgmt.get(
+                            "idle_time_in_minutes"
+                        ),
+                        display_time_unit=existing_location_mgmt.get(
+                            "display_time_unit"
+                        ),
+                        surrogate_ip_enforced_for_known_browsers=existing_location_mgmt.get(
+                            "surrogate_ip_enforced_for_known_browsers"
+                        ),
+                        surrogate_refresh_time_in_minutes=existing_location_mgmt.get(
+                            "surrogate_refresh_time_in_minutes"
+                        ),
+                        surrogate_refresh_time_unit=existing_location_mgmt.get(
+                            "surrogate_refresh_time_unit"
+                        ),
+                        ofw_enabled=existing_location_mgmt.get("ofw_enabled"),
+                        ips_control=existing_location_mgmt.get("ips_control"),
+                        aup_enabled=existing_location_mgmt.get("aup_enabled"),
+                        caution_enabled=existing_location_mgmt.get("caution_enabled"),
+                        aup_block_internet_until_accepted=existing_location_mgmt.get(
+                            "aup_block_internet_until_accepted"
+                        ),
+                        aup_force_ssl_inspection=existing_location_mgmt.get(
+                            "aup_force_ssl_inspection"
+                        ),
+                        aup_timeout_in_days=existing_location_mgmt.get(
+                            "aup_timeout_in_days"
+                        ),
+                        managed_by=existing_location_mgmt.get("managed_by"),
+                        profile=existing_location_mgmt.get("profile"),
+                        description=existing_location_mgmt.get("description"),
+                    )
                 )
-            )
-            module.warn("Payload Update for SDK: {}".format(update_location))
-            updated_location = client.locations.update_location(**update_location).to_dict()
-            module.exit_json(changed=True, data=updated_location)
+                module.warn("Payload Update for SDK: {}".format(update_location))
+                updated_location = client.locations.update_location(
+                    **update_location
+                ).to_dict()
+                module.exit_json(changed=True, data=updated_location)
         else:
             module.warn("Creating new location as no existing location found")
             """Create"""
@@ -510,12 +521,13 @@ def core(module):
         and existing_location_mgmt is not None
         and existing_location_mgmt.get("id") is not None
     ):
-        code = client.locations.delete_location(location_id=existing_location_mgmt.get("id"))
+        code = client.locations.delete_location(
+            location_id=existing_location_mgmt.get("id")
+        )
         if code > 299:
             module.exit_json(changed=False, data=None)
         module.exit_json(changed=True, data=existing_location_mgmt)
     module.exit_json(changed=False, data={})
-
 
 
 def main():

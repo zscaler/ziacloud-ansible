@@ -82,6 +82,7 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 import re
 
+
 def hash_type_and_validate(hash_string):
     """
     Validates the hash string and identifies its type.
@@ -113,7 +114,6 @@ def hash_type_and_validate(hash_string):
     return False, "Invalid Format"
 
 
-
 def core(module):
     state = module.params.get("state", None)
     file_hashes_to_be_blocked = module.params.get("file_hashes_to_be_blocked", [])
@@ -123,9 +123,13 @@ def core(module):
         is_valid, hash_type = hash_type_and_validate(hash_string)
         if not is_valid:
             if hash_type in ["SHA1", "SHA256"]:
-                module.fail_json(msg=f"Error: {hash_type} hashes are not supported. Please provide a valid MD5 hash.")
+                module.fail_json(
+                    msg=f"Error: {hash_type} hashes are not supported. Please provide a valid MD5 hash."
+                )
             else:
-                module.fail_json(msg=f"Error: The provided string '{hash_string}' is not a valid MD5 hash.")
+                module.fail_json(
+                    msg=f"Error: The provided string '{hash_string}' is not a valid MD5 hash."
+                )
 
     client = ZIAClientHelper(module)
     sandbox_api = client.sandbox
@@ -153,11 +157,19 @@ def core(module):
 
         # After updating, get the file hash count
         file_hash_count_data = sandbox_api.get_file_hash_count().to_dict()
-        module.exit_json(changed=True, msg="MD5 hash list updated.", file_hash_count=file_hash_count_data)
+        module.exit_json(
+            changed=True,
+            msg="MD5 hash list updated.",
+            file_hash_count=file_hash_count_data,
+        )
     else:
         # If no change is needed, just return the file hash count
         file_hash_count_data = sandbox_api.get_file_hash_count().to_dict()
-        module.exit_json(changed=False, msg="No change needed for MD5 hash list.", file_hash_count=file_hash_count_data)
+        module.exit_json(
+            changed=False,
+            msg="No change needed for MD5 hash list.",
+            file_hash_count=file_hash_count_data,
+        )
 
 
 def main():
@@ -173,6 +185,7 @@ def main():
         core(module)
     except Exception as e:
         module.fail_json(msg=to_native(e), exception=format_exc())
+
 
 if __name__ == "__main__":
     main()

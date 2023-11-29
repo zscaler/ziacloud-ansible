@@ -136,9 +136,13 @@ def validate_vpn_credential_type(vpn_credentials):
     fqdn = vpn_credentials.get("fqdn")
 
     if vpn_type == "IP" and not ip_address:
-        raise ValueError("Invalid input argument, ip_address is required for VPN credentials of type 'IP'.")
+        raise ValueError(
+            "Invalid input argument, ip_address is required for VPN credentials of type 'IP'."
+        )
     if vpn_type == "UFQDN" and not fqdn:
-        raise ValueError("Invalid input argument, fqdn attribute is required for VPN credentials of type 'UFQDN'.")
+        raise ValueError(
+            "Invalid input argument, fqdn attribute is required for VPN credentials of type 'UFQDN'."
+        )
 
 
 def core(module):
@@ -193,14 +197,20 @@ def core(module):
 
     # Normalize and compare existing and desired VPN credentials data
     desired_vpn_creds = normalize_vpn_creds(vpn_credentials, exclude_keys=provided_keys)
-    current_vpn_creds = normalize_vpn_creds(existing_vpn_credentials, exclude_keys=params) if existing_vpn_credentials else {}
+    current_vpn_creds = (
+        normalize_vpn_creds(existing_vpn_credentials, exclude_keys=params)
+        if existing_vpn_credentials
+        else {}
+    )
 
     differences_detected = False
     for key, value in desired_vpn_creds.items():
         current_value = current_vpn_creds.get(key)
         if key != "pre_shared_key" and current_value != value:
             differences_detected = True
-            module.warn(f"Difference detected in {key}. Current: {current_value}, Desired: {value}")
+            module.warn(
+                f"Difference detected in {key}. Current: {current_value}, Desired: {value}"
+            )
 
     # Check if the pre_shared_key needs to be updated
     if update_psk_flag and "pre_shared_key" in vpn_credentials:
@@ -209,7 +219,11 @@ def core(module):
     if state == "present":
         if existing_vpn_credentials:
             # Building the payload for the update API call
-            update_payload = {key: vpn_credentials[key] for key in provided_keys if key != "update_psk"}
+            update_payload = {
+                key: vpn_credentials[key]
+                for key in provided_keys
+                if key != "update_psk"
+            }
 
             # Set the credential_id for the update
             update_payload["credential_id"] = existing_vpn_credentials.get("id")
@@ -220,10 +234,16 @@ def core(module):
 
             module.warn(f"Final payload being sent to SDK: {update_payload}")
             if differences_detected:
-                updated_vpn = client.traffic.update_vpn_credential(**update_payload).to_dict()
+                updated_vpn = client.traffic.update_vpn_credential(
+                    **update_payload
+                ).to_dict()
                 module.exit_json(changed=True, data=updated_vpn)
             else:
-                module.exit_json(changed=False, data=existing_vpn_credentials, msg="No changes detected.")
+                module.exit_json(
+                    changed=False,
+                    data=existing_vpn_credentials,
+                    msg="No changes detected.",
+                )
         else:
             create_vpn = deleteNone(
                 {
@@ -239,13 +259,19 @@ def core(module):
             module.exit_json(changed=True, data=new_vpn)
     elif state == "absent":
         if existing_vpn_credentials and existing_vpn_credentials.get("id"):
-            code = client.traffic.delete_vpn_credential(credential_id=existing_vpn_credentials.get("id"))
+            code = client.traffic.delete_vpn_credential(
+                credential_id=existing_vpn_credentials.get("id")
+            )
             if code == 204:
                 module.exit_json(changed=True, data=existing_vpn_credentials)
             else:
                 module.fail_json(msg="Failed to delete the VPN credential", code=code)
         else:
-            module.exit_json(changed=False, data={}, msg="VPN credential not found or already deleted.")
+            module.exit_json(
+                changed=False,
+                data={},
+                msg="VPN credential not found or already deleted.",
+            )
 
     module.exit_json(changed=False, data={})
 
@@ -254,7 +280,12 @@ def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         id=dict(type="int", required=False),
-        type=dict(type="str", required=False, default="UFQDN", choices=["UFQDN", "IP", "CN", "XAUTH"]),
+        type=dict(
+            type="str",
+            required=False,
+            default="UFQDN",
+            choices=["UFQDN", "IP", "CN", "XAUTH"],
+        ),
         fqdn=dict(type="str", required=False),
         ip_address=dict(type="str", required=False),
         pre_shared_key=dict(type="str", required=False, no_log=True),

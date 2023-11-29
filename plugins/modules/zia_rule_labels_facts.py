@@ -132,7 +132,7 @@ def core(module):
                     break
             if label is None:
                 module.fail_json(
-                    msg="Failed to retrieve ip source group: '%s'" % (label_name)
+                    msg="Failed to retrieve rule label: '%s'" % (label_name)
                 )
             labels = [label]
     module.exit_json(changed=False, data=labels)
