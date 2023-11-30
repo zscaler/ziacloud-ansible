@@ -36,7 +36,6 @@
         provider: "{{ zia_cloud }}"
         state: absent
         name: "{{ name }}"
-        # order: "{{ order }}"
       register: result
 
     - name: Ensure Cloud Web DLP Rule is absent
@@ -44,7 +43,6 @@
         provider: "{{ zia_cloud }}"
         state: absent
         name: "{{ name }}"
-        # order: "{{ order }}"
       register: result
 
     - name: Verify Cloud Web DLP Rule is absent

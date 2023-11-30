@@ -11,7 +11,6 @@
     description: "{{ description }}_{{ random_string }}"
 
 - ansible.builtin.set_fact:
-    name_update: "{{ name_update }}_{{ random_string }}"
     description_update: "{{ description_update }}_{{ random_string }}"
 
 - name: Ensure required environment variables are set
@@ -112,7 +111,7 @@
         name: "{{ name }}"
         description: "{{ description_update }}"
         action: "{{ action_update }}"
-        order: "{{ order_update }}"
+        order: "{{ order }}"
         enabled: "{{ enabled_update }}"
         enable_full_logging: "{{ enable_full_logging_update }}"
         exclude_src_countries: "{{ exclude_src_countries_update }}"
@@ -139,7 +138,7 @@
         name: "{{ name }}"
         description: "{{ description_update }}"
         action: "{{ action_update }}"
-        order: "{{ order_update }}"
+        order: "{{ order }}"
         enabled: "{{ enabled_update }}"
         enable_full_logging: "{{ enable_full_logging_update }}"
         exclude_src_countries: "{{ exclude_src_countries_update }}"
@@ -169,7 +168,7 @@
     - name: Fetch this Cloud Firewall Rule
       zscaler.ziacloud.zia_cloud_firewall_filtering_rule_facts:
         provider: "{{ zia_cloud }}"
-        name: "{{ name_update }}"
+        name: "{{ name }}"
       register: result
 
     - name: Ensure this Cloud Firewall Rule is found
@@ -188,8 +187,8 @@
       zscaler.ziacloud.zia_cloud_firewall_filtering_rule:
         provider: "{{ zia_cloud }}"
         state: absent
-        name: "{{ name_update }}"
-        order: "{{ order_update }}"
+        name: "{{ name }}"
+        order: "{{ order }}"
       register: result
 
     - name: Verify Cloud Firewall Rule is Deleted
@@ -201,8 +200,8 @@
       zscaler.ziacloud.zia_cloud_firewall_filtering_rule:
         provider: "{{ zia_cloud }}"
         state: absent
-        name: "{{ name_update }}"
-        order: "{{ order_update }}"
+        name: "{{ name }}"
+        order: "{{ order }}"
       register: result
 
     - name: Verify Cloud Firewall Rule is absent
