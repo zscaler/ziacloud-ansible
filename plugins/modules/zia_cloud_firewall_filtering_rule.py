@@ -40,7 +40,6 @@ extends_documentation_fragment:
     - zscaler.zpacloud.fragments.provider
     - zscaler.zpacloud.fragments.enabled_state
 options:
-
   id:
     description: "Unique identifier for the Firewall Filtering policy rule"
     required: false
@@ -226,7 +225,7 @@ EXAMPLES = """
 """
 
 RETURN = """
-# Returns information on a specified ZIA Admin User.
+# Returns information on the newly created cloud firewall filtering rule.
 """
 
 

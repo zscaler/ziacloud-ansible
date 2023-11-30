@@ -27,10 +27,10 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_location_groups_facts
-short_description: "Gets locations only, not sub-locations."
+module: zia_ip_source_anchoring_zpa_gateway_facts
+short_description: "Gets the list of Zscaler Private Access (ZPA) gateways."
 description:
-  - "Gets locations only, not sub-locations."
+  - "Gets the list of Zscaler Private Access (ZPA) gateways."
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
@@ -41,25 +41,25 @@ extends_documentation_fragment:
     - zscaler.ziacloud.fragments.provider
 options:
   id:
-    description: "Unique identifier for the location group"
+    description: "A unique identifier assigned to the ZPA gateway"
     required: false
     type: int
   name:
-    description: "Location group name"
+    description: "The name of the ZPA gateway"
     required: false
     type: str
 """
 
 EXAMPLES = """
-- name: Gather Information Details of all ZIA Locations
-  zscaler.ziacloud.zia_location_groups_facts:
+- name: Gather Information Details of all ZPA Gateways
+  zscaler.ziacloud.zia_ip_source_anchoring_zpa_gateway_facts:
 
-- name: Gather Information Details of ZIA Location Group By ID
-  zscaler.ziacloud.zia_location_groups_facts:
-    name: "845875645"
+- name: Gather Information Details of ZPA Gateways By ID
+  zscaler.ziacloud.zia_ip_source_anchoring_zpa_gateway_facts:
+    id: "845875645"
 
-- name: Gather Information Details of ZIA Location Group By Name
-  zscaler.ziacloud.zia_location_groups_facts:
+- name: Gather Information Details of ZPA Gateways By Name
+  zscaler.ziacloud.zia_ip_source_anchoring_zpa_gateway_facts:
     name: "USA-SJC37"
 """
 
@@ -78,27 +78,27 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 
 def core(module):
-    group_id = module.params.get("id", None)
-    group_name = module.params.get("name", None)
+    gateway_id = module.params.get("id", None)
+    gateway_name = module.params.get("name", None)
     client = ZIAClientHelper(module)
-    locations = []
-    if group_id is not None:
-        location = client.locations.get_location_group_lite_by_id(group_id).to_dict()
-        locations = [location]
+    gateways = []
+    if gateway_id is not None:
+        gateway = client.zpa_gateway.get_gateway(gateway_id).to_dict()
+        gateways = [gateway]
     else:
-        locations = client.locations.list_location_groups_lite().to_list()
-        if group_name is not None:
-            location = None
-            for loc in locations:
-                if loc.get("name", None) == group_name:
-                    location = loc
+        gateways = client.zpa_gateway.list_gateways().to_list()
+        if gateway_name is not None:
+            gateway = None
+            for gw in gateways:
+                if gw.get("name", None) == gateway_name:
+                    gateway = gw
                     break
-            if location is None:
+            if gateway is None:
                 module.fail_json(
-                    msg="Failed to retrieve ip source group: '%s'" % (group_name)
+                    msg="Failed to retrieve zpa gateway: '%s'" % (gateway_name)
                 )
-            locations = [location]
-    module.exit_json(changed=False, data=locations)
+            gateways = [gateway]
+    module.exit_json(changed=False, data=gateways)
 
 
 def main():

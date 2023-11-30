@@ -112,6 +112,7 @@ def core(module):
         service_group[param_name] = module.params.get(param_name, None)
     group_id = service_group.get("id", None)
     group_name = service_group.get("name", None)
+
     existing_service_group = None
     if group_id is not None:
         existing_service_group = client.firewall.get_network_svc_group(
