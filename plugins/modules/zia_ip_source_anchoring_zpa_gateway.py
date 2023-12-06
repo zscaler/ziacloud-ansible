@@ -129,6 +129,7 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
     ZIAClientHelper,
 )
 
+
 def normalize_gateway(gateway):
     """
     Normalize zpa gateway data by ensuring consistent data types for external_id.
@@ -136,26 +137,25 @@ def normalize_gateway(gateway):
     normalized = gateway.copy()
 
     # Remove 'id' from the top level
-    normalized.pop('id', None)
+    normalized.pop("id", None)
 
     # Ensure external_id is a string for 'zpa_server_group'
-    if 'zpa_server_group' in normalized:
-        sg = normalized['zpa_server_group']
-        normalized['zpa_server_group'] = {
-            'external_id': str(sg.get('external_id')),
-            'name': sg.get('name')
+    if "zpa_server_group" in normalized:
+        sg = normalized["zpa_server_group"]
+        normalized["zpa_server_group"] = {
+            "external_id": str(sg.get("external_id")),
+            "name": sg.get("name"),
         }
 
     # Ensure external_id is a string for each item in 'zpa_app_segments'
-    if normalized.get('zpa_app_segments'):
-        normalized['zpa_app_segments'] = [
-            {
-                'external_id': str(seg.get('external_id')),
-                'name': seg.get('name')
-            } for seg in normalized['zpa_app_segments']
+    if normalized.get("zpa_app_segments"):
+        normalized["zpa_app_segments"] = [
+            {"external_id": str(seg.get("external_id")), "name": seg.get("name")}
+            for seg in normalized["zpa_app_segments"]
         ]
 
     return normalized
+
 
 def compare_nested_structures(current, desired):
     """
@@ -163,12 +163,13 @@ def compare_nested_structures(current, desired):
     Assumes that each dictionary has a unique identifier 'external_id'.
     """
     if isinstance(current, list) and isinstance(desired, list):
-        current_sorted = sorted(current, key=lambda x: x.get('external_id'))
-        desired_sorted = sorted(desired, key=lambda x: x.get('external_id'))
+        current_sorted = sorted(current, key=lambda x: x.get("external_id"))
+        desired_sorted = sorted(desired, key=lambda x: x.get("external_id"))
         return all(compare_dicts(c, d) for c, d in zip(current_sorted, desired_sorted))
     elif isinstance(current, dict) and isinstance(desired, dict):
         return compare_dicts(current, desired)
     return False
+
 
 def compare_dicts(dict1, dict2):
     """
@@ -177,10 +178,9 @@ def compare_dicts(dict1, dict2):
     if dict1.keys() != dict2.keys():
         return False
     for key in dict1:
-        if key != 'id' and dict1[key] != dict2[key]:
+        if key != "id" and dict1[key] != dict2[key]:
             return False
     return True
-
 
 
 def core(module):
@@ -228,19 +228,24 @@ def core(module):
         if key == "type" and current_value is None:
             if value != "ZPA":
                 differences_detected = True
-                module.warn(f"Difference detected in {key}. Current: {current_value}, Desired: {value}")
+                module.warn(
+                    f"Difference detected in {key}. Current: {current_value}, Desired: {value}"
+                )
 
         # Custom comparison for nested fields
         elif key in ["zpa_server_group", "zpa_app_segments"]:
             if not compare_nested_structures(current_value, value):
                 differences_detected = True
-                module.warn(f"Difference detected in {key}. Current: {current_value}, Desired: {value}")
+                module.warn(
+                    f"Difference detected in {key}. Current: {current_value}, Desired: {value}"
+                )
 
         # Regular comparison for other fields
         elif key not in fields_to_exclude and current_value != value:
             differences_detected = True
-            module.warn(f"Difference detected in {key}. Current: {current_value}, Desired: {value}")
-
+            module.warn(
+                f"Difference detected in {key}. Current: {current_value}, Desired: {value}"
+            )
 
     if existing_gateway is not None:
         id = existing_gateway.get("id")
@@ -257,16 +262,18 @@ def core(module):
                         gateway_id=existing_gateway.get("id"),
                         name=existing_gateway.get("name"),
                         description=existing_gateway.get("description"),
-                        type=existing_gateway.get(
-                            "type"
-                        ),
+                        type=existing_gateway.get("type"),
                         zpa_server_group=existing_gateway.get("zpa_server_group"),
                         zpa_app_segments=existing_gateway.get("zpa_app_segments"),
                     )
                 )
-                updated_gateway_response = client.zpa_gateway.update_gateway(**update_gateway)
+                updated_gateway_response = client.zpa_gateway.update_gateway(
+                    **update_gateway
+                )
                 if updated_gateway_response is None:
-                    module.fail_json(msg="Failed to update gateway, received no response from SDK.")
+                    module.fail_json(
+                        msg="Failed to update gateway, received no response from SDK."
+                    )
 
                 # Use the updated gateway data directly in the module's response
                 module.exit_json(changed=True, data=updated_gateway_response.to_dict())
@@ -309,7 +316,7 @@ def main():
     # Define the spec for a dictionary with external_id and name
     external_id_name_dict_spec = dict(
         external_id=dict(type="int", required=True),
-        name=dict(type="str", required=True)
+        name=dict(type="str", required=True),
     )
 
     argument_spec.update(
@@ -342,6 +349,7 @@ def main():
         core(module)
     except Exception as e:
         module.fail_json(msg=to_native(e), exception=format_exc())
+
 
 if __name__ == "__main__":
     main()
