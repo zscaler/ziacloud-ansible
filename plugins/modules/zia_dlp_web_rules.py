@@ -194,18 +194,75 @@ options:
     elements: int
     required: false
   zscaler_incident_receiver:
-    description: "Indicates whether a Zscaler Incident Receiver is associated to the DLP policy rule.."
+    description: "Indicates whether a Zscaler Incident Receiver is associated to the DLP policy rule."
     required: false
     type: bool
+  severity:
+    description: Indicates the severity selected for the DLP rule violation.
+    required: false
+    type: str
+    choices:
+        - RULE_SEVERITY_HIGH
+        - RULE_SEVERITY_MEDIUM
+        - RULE_SEVERITY_LOW
+        - RULE_SEVERITY_INFO
+  parent_rule:
+    description:
+      - The unique identifier of the parent rule under which an exception rule is added
+      - Note: Exception rules can be configured only when the inline DLP rule evaluation type is set to evaluate all DLP rules in the DLP Advanced Settings.
+    required: false
+    type: int
+  sub_rules:
+    description:
+      - The list of exception rules added to a parent rule
+      - All attributes within the WebDlpRule model are applicable to the sub-rules. Values for each rule are specified by using the WebDlpRule object.
+      - Exception rules can be configured only when the inline DLP rule evaluation type is set to evaluate all DLP rules in the DLP Advanced Settings.
+    type: list
+    elements: str
+    required: false
 """
 
 EXAMPLES = """
-- name: Gather Information Details of a ZIA User Role
+- name: Create/Update/Delete DLP Web Rules
   zscaler.ziacloud.zia_dlp_web_rules:
-
-- name: Gather Information Details of a ZIA Admin User by Name
-  zscaler.ziacloud.zia_device_group_facts:
-    name: "IOS"
+    provider: '{{ zia_cloud }}'
+    name: "Example"
+    description: "Example"
+    action: "ALLOW"
+    enabled: true
+    without_content_inspection: false
+    zscaler_incident_receiver: false
+    order: 1
+    rank: 7
+    user_risk_score_levels:
+      - CRITICAL
+      - HIGH
+      - LOW
+      - MEDIUM
+    protocols:
+      - FTP_RULE
+      - HTTPS_RULE
+      - HTTP_RULE
+    min_size: 0
+    cloud_applications:
+      - WINDOWS_LIVE_HOTMAIL
+    file_types:
+      - "ASM"
+      - "MATLAB_FILES"
+      - "SAS"
+      - "SCALA"
+    locations:
+      - 61188118
+      - 61188119
+    groups:
+      - 76662385
+      - 76662401
+    users:
+      - 45513075
+      - 76676944
+    departments:
+      - 45513014
+      - 76676875
 """
 
 RETURN = """
@@ -277,6 +334,9 @@ def core(module):
         "dlp_download_scan_enabled",
         "zcc_notifications_enabled",
         "user_risk_score_levels",
+        "severity",
+        "parent_rule",
+        "sub_rules",
     ]
     for param_name in params:
         rule[param_name] = module.params.get(param_name, None)
@@ -471,6 +531,9 @@ def core(module):
                         user_risk_score_levels=existing_rule.get(
                             "user_risk_score_levels"
                         ),
+                        severity=existing_rule.get("severity"),
+                        parent_rule=existing_rule.get("parent_rule"),
+                        sub_rules=existing_rule.get("sub_rules"),
                     )
                 )
                 module.warn("Payload Update for SDK: {}".format(update_rule))
@@ -515,6 +578,9 @@ def core(module):
                     dlp_download_scan_enabled=rule.get("dlp_download_scan_enabled"),
                     zcc_notifications_enabled=rule.get("zcc_notifications_enabled"),
                     user_risk_score_levels=rule.get("user_risk_score_levels"),
+                    severity=rule.get("severity"),
+                    parent_rule=rule.get("parent_rule"),
+                    sub_rules=rule.get("sub_rules"),
                 )
             )
             module.warn("Payload for SDK: {}".format(create_rule))
@@ -562,8 +628,10 @@ def main():
         protocols=dict(type="list", elements="str", required=False),
         url_categories=dict(type="list", elements="str", required=False),
         cloud_applications=dict(type="list", elements="str", required=False),
+        sub_rules=dict(type="list", elements="str", required=False),
         external_auditor_email=dict(type="str", required=False),
         min_size=dict(type="int", required=False),
+        parent_rule=dict(type="int", required=False),
         match_only=dict(type="bool", required=False),
         without_content_inspection=dict(type="bool", required=False),
         ocr_enabled=dict(type="bool", required=False),
@@ -586,6 +654,17 @@ def main():
             elements="str",
             required=False,
             choices=["LOW", "MEDIUM", "HIGH", "CRITICAL"],
+        ),
+        severity=dict(
+            type="list",
+            elements="str",
+            required=False,
+            choices=[
+                "RULE_SEVERITY_HIGH",
+                "RULE_SEVERITY_MEDIUM",
+                "RULE_SEVERITY_LOW",
+                "RULE_SEVERITY_INFO",
+            ],
         ),
         file_types=dict(
             type="list",
