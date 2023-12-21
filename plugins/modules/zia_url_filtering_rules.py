@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = """"
 
 ---
 module: zia_url_filtering_rules
@@ -236,7 +236,27 @@ options:
     description: "If set to true, the CIPA Compliance rule is enabled"
     type: bool
     default: false
-
+cbi_profile:
+    description:
+      - The cloud browser isolation profile to which the ISOLATE action is applied in the URL Filtering Policy rules.
+      - This parameter is required for the ISOLATE action and is not applicable to other actions.
+    type: dict
+    suboptions:
+        id:
+            description:
+                - The universally unique identifier (UUID) for the browser isolation profile.
+            type: str
+            required: True
+        name:
+            description:
+                - Name of the browser isolation profile.
+            type: str
+            required: True
+        url:
+            description:
+                - The browser isolation profile URL.
+            type: str
+            required: True
 """
 
 EXAMPLES = """
@@ -343,9 +363,11 @@ def normalize_rule(rule):
     """
     normalized = rule.copy()
 
-    computed_values = []
+    # Add 'profile_seq' to the list of computed values to be removed
+    computed_values = ["profile_seq"]
     for attr in computed_values:
-        normalized.pop(attr, None)
+        if "cbi_profile" in normalized and attr in normalized["cbi_profile"]:
+            normalized["cbi_profile"].pop(attr, None)
 
     return normalized
 
@@ -384,8 +406,11 @@ def core(module):
         "action",
         "ciparule",
         "user_agent_types",
+        "device_trust_levels",
         "device_groups",
+        "devices",
         "user_risk_score_levels",
+        "cbi_profile",
     ]
     for param_name in params:
         rule[param_name] = module.params.get(param_name, None)
@@ -445,6 +470,14 @@ def core(module):
         desired_value = desired_rule_preprocessed.get(key)
         current_value = existing_rule_preprocessed.get(key)
 
+        # Handle 'block_override' and 'enforce_time_validity' specifically
+        if key in ["block_override", "enforce_time_validity"]:
+            if desired_value is None:
+                if current_value is False:  # Assuming 'False' is the default value
+                    continue  # Skip as it's the default value
+            elif desired_value == current_value:
+                continue  # Skip as values are the same
+
         # Skip comparison for 'id' if it's not in the desired rule but present in the existing rule
         if key == "id" and desired_value is None and current_value is not None:
             continue
@@ -493,6 +526,7 @@ def core(module):
                         departments=existing_rule.get("departments"),
                         users=existing_rule.get("users"),
                         device_groups=existing_rule.get("device_groups"),
+                        devices=existing_rule.get("devices"),
                         url_categories=existing_rule.get("url_categories"),
                         enabled=existing_rule.get("enabled"),
                         time_windows=existing_rule.get("time_windows"),
@@ -523,6 +557,8 @@ def core(module):
                         user_risk_score_levels=existing_rule.get(
                             "user_risk_score_levels"
                         ),
+                        device_trust_levels=existing_rule.get("device_trust_levels"),
+                        cbi_profile=existing_rule.get("cbi_profile"),
                     )
                 )
 
@@ -542,6 +578,7 @@ def core(module):
                     departments=rule.get("departments"),
                     users=rule.get("users"),
                     device_groups=rule.get("device_groups"),
+                    devices=rule.get("devices"),
                     url_categories=rule.get("url_categories"),
                     enabled=rule.get("enabled"),
                     time_windows=rule.get("time_windows"),
@@ -564,6 +601,8 @@ def core(module):
                     cipa_rule=rule.get("cipa_rule"),
                     user_agent_types=rule.get("user_agent_types"),
                     user_risk_score_levels=rule.get("user_risk_score_levels"),
+                    device_trust_levels=rule.get("device_trust_levels"),
+                    cbi_profile=rule.get("cbi_profile"),
                 )
             )
             module.warn("Payload for SDK: {}".format(create_rule))
@@ -588,6 +627,11 @@ def main():
         elements="int",
         required=False,
     )
+    id_name_url_dict_spec = dict(
+        id=dict(type="str", required=True),
+        name=dict(type="str", required=True),
+        url=dict(type="str", required=True),
+    )
     argument_spec.update(
         id=dict(type="str", required=False),
         name=dict(type="str", required=True),
@@ -599,6 +643,7 @@ def main():
         groups=id_spec,
         departments=id_spec,
         device_groups=id_spec,
+        devices=id_spec,
         users=id_spec,
         override_users=id_spec,
         override_groups=id_spec,
@@ -615,11 +660,15 @@ def main():
         enforce_time_validity=dict(type="bool", required=False),
         url_categories=dict(type="list", elements="str", required=False),
         cipa_rule=dict(type="bool", required=False),
+        cbi_profile=dict(
+            type="dict",
+            options=id_name_url_dict_spec,
+            required=True,
+        ),
         action=dict(
             type="str",
             required=False,
-            default="ANY",
-            choices=["ANY", "NONE", "BLOCK", "CAUTION", "ALLOW", "ICAP_RESPONSE"],
+            choices=["BLOCK", "CAUTION", "ALLOW", "ISOLATE", "ICAP_RESPONSE"],
         ),
         protocols=dict(
             type="list",

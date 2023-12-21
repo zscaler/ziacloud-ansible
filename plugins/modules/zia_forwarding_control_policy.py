@@ -325,6 +325,7 @@ def normalize_rule(rule):
 
     return normalized
 
+
 def validate_forwarding_rule_constraints(module):
     forward_method = module.params.get("forward_method")
     rule_type = module.params.get("type")
@@ -338,23 +339,43 @@ def validate_forwarding_rule_constraints(module):
             missing_attrs = [attr for attr in required_attrs if not is_set(attr)]
             if missing_attrs:
                 missing_attrs_str = ", ".join(missing_attrs)
-                module.fail_json(msg=f"The {missing_attrs_str} are required for ZPA forwarding")
+                module.fail_json(
+                    msg=f"The {missing_attrs_str} are required for ZPA forwarding"
+                )
 
         elif forward_method == "DIRECT":
-            prohibited_attrs = ["zpa_gateway", "proxy_gateway", "zpa_app_segments", "zpa_application_segments", "zpa_application_segment_groups"]
+            prohibited_attrs = [
+                "zpa_gateway",
+                "proxy_gateway",
+                "zpa_app_segments",
+                "zpa_application_segments",
+                "zpa_application_segment_groups",
+            ]
             for attr in prohibited_attrs:
                 if is_set(attr):
-                    module.fail_json(msg=f"{attr} attribute cannot be set when type is 'FORWARDING' and forward_method is 'DIRECT'")
+                    module.fail_json(
+                        msg=f"{attr} attribute cannot be set when type is 'FORWARDING' and forward_method is 'DIRECT'"
+                    )
 
         elif forward_method == "PROXYCHAIN":
             if not is_set("proxy_gateway"):
-                module.fail_json(msg="Proxy gateway is mandatory for Proxy Chaining forwarding")
-            prohibited_attrs = ["zpa_gateway", "zpa_app_segments", "zpa_application_segments", "zpa_application_segment_groups"]
+                module.fail_json(
+                    msg="Proxy gateway is mandatory for Proxy Chaining forwarding"
+                )
+            prohibited_attrs = [
+                "zpa_gateway",
+                "zpa_app_segments",
+                "zpa_application_segments",
+                "zpa_application_segment_groups",
+            ]
             for attr in prohibited_attrs:
                 if is_set(attr):
-                    module.fail_json(msg=f"{attr} attribute cannot be set when type is 'FORWARDING' and forward_method is 'PROXYCHAIN'")
+                    module.fail_json(
+                        msg=f"{attr} attribute cannot be set when type is 'FORWARDING' and forward_method is 'PROXYCHAIN'"
+                    )
 
     return None  # Return None to indicate no error
+
 
 def core(module):
     state = module.params.get("state", None)
