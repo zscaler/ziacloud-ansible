@@ -28,18 +28,18 @@ __metaclass__ = type
 DOCUMENTATION = """
 ---
 module: zia_security_policy_settings
-short_description: "Adds a URL to or removes a URL from the denylist"
+short_description: "Adds a URL to or removes a URL from the Denylist"
 description:
-  - Adds a URL to or removes a URL from the denylist.
+  - Adds a URL to or removes a URL from the Denylist.
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
-    - zscaler.ziacloud.fragments.credentials_set
-    - zscaler.ziacloud.fragments.provider
-    - zscaler.ziacloud.fragments.enabled_state
+  - zscaler.ziacloud.fragments.provider
+  - zscaler.ziacloud.fragments.credentials_set
+  - zscaler.ziacloud.fragments.state
 options:
   urls:
     description:

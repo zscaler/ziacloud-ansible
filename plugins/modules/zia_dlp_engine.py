@@ -25,21 +25,20 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_dlp_engine
-short_description: "Adds a new custom DLP engine.
-description:
-  - "Adds a new custom DLP engine.
+short_description: "Adds a new custom DLP engine."
+description: "Adds a new custom DLP engine."
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
-    - zscaler.ziacloud.fragments.credentials_set
-    - zscaler.ziacloud.fragments.provider
-    - zscaler.ziacloud.fragments.enabled_state
+  - zscaler.ziacloud.fragments.provider
+  - zscaler.ziacloud.fragments.credentials_set
+  - zscaler.ziacloud.fragments.state
 options:
   id:
     description: "The unique identifier for the DLP engine."
@@ -47,44 +46,43 @@ options:
     type: str
   name:
     description:
-        - The DLP engine name as configured by the admin
-        - This attribute is required in POST and PUT requests for custom DLP engines."
+        - The DLP engine name as configured by the admin.
+        - This attribute is required in POST and PUT requests for custom DLP engines.
     required: true
     type: str
   description:
-    description: "The DLP engine's description."
+    description: "The DLP engine description."
     required: true
     type: str
   engine_expression:
     description:
-        - The logical expression that defines a DLP engine by combining DLP dictionaries using logical operators, namely All (AND), Any (OR), Exclude (NOT), and Sum (the total number of content matches).
-        - ((D63.S > 1))
-        - ((D38.S > 1) AND (D63.S > 1))
-        - ((D38.S > 1) OR (D63.S > 1))
-        - ((D38.S > 0) AND ( NOT ( (D61.S > 0) ) )
-        - (SUM(D63.S, D38.S) > 3)
-        - In the preceding examples, 63 represents the ID of the Credit Cards dictionary ID, 61 is the Financial Statements ID, and 38 is the ABA Bank Routing Numbers dictionary ID.
+        - The logical expression that defines a DLP engine by combining DLP dictionaries using logical operators.
+        - Namely All (AND), Any (OR), Exclude (NOT), and Sum (the total number of content matches).
+        - ((D63.S > 1)).
+        - ((D38.S > 1) AND (D63.S > 1)).
+        - ((D38.S > 1) OR (D63.S > 1)).
+        - (SUM(D63.S, D38.S) > 3).
+        - In the preceding examples, 63 represents the ID of the Credit Cards dictionary ID.
+        - 61 is the Financial Statements ID, and 38 is the ABA Bank Routing Numbers dictionary ID.
         - Each dictionary ID is wrapped around by a prefix (D) and a suffix (.S).
     type: str
     required: true
   custom_dlp_engine:
-    description: "The DLP engine's description."
+    description: "The DLP engine description."
     required: true
     type: bool
 """
 
-EXAMPLES = """
-
+EXAMPLES = r"""
 - name: Create/Update/Delete custom dlp engine.
   zscaler.ziacloud.zia_dlp_engine:
     name: "Example"
     description: "Example"
     engine_expression: "((D63.S > 1))"
     custom_dlp_engine: true
-
 """
 
-RETURN = """
+RETURN = r"""
 # The newly created dlp engine resource record.
 """
 

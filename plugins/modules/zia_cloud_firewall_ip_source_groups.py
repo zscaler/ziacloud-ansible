@@ -37,9 +37,9 @@ version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
-    - zscaler.ziacloud.fragments.credentials_set
-    - zscaler.ziacloud.fragments.provider
-    - zscaler.ziacloud.fragments.enabled_state
+  - zscaler.ziacloud.fragments.provider
+  - zscaler.ziacloud.fragments.credentials_set
+  - zscaler.ziacloud.fragments.state
 options:
   id:
     description: "A unique identifier of the source IP address group"
@@ -63,7 +63,7 @@ options:
 EXAMPLES = """
 
 - name: Create/Update/Delete ip source group.
-  zscaler.ziacloud.zia_fw_filtering_ip_source_groups:
+  zscaler.ziacloud.zia_cloud_firewall_ip_source_groups:
     name: "Example"
     description: "Example"
     ip_addresses:

@@ -24,8 +24,8 @@ sys.path.insert(0, os.path.abspath("../../plugins/modules"))
 # -- Project information -----------------------------------------------------
 
 project = "Zscaler Internet Access Ansible Collection"
-copyright = "2022, William Guilherme"
-author = "William Guilherme"
+copyright = "2023, Zscaler Inc."
+author = "Zscaler Inc."
 html_title = ""
 
 # The short X.Y version
@@ -67,7 +67,7 @@ master_doc = "index"
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = "en"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -85,7 +85,7 @@ pygments_style = None
 html_theme = "sphinx_rtd_theme"
 html_context = {
     "display_github": True,
-    "github_user": "willguibr",
+    "github_user": "zscaler",
     "github_repo": "ziacloud-ansible",
     "github_version": "master",
     "conf_py_path": "/docs/source/",

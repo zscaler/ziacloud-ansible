@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_dlp_dictionaries
 short_description: "Adds a new custom DLP dictionary."
@@ -37,9 +37,9 @@ version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
-    - zscaler.ziacloud.fragments.credentials_set
-    - zscaler.ziacloud.fragments.provider
-    - zscaler.ziacloud.fragments.enabled_state
+  - zscaler.ziacloud.fragments.provider
+  - zscaler.ziacloud.fragments.credentials_set
+  - zscaler.ziacloud.fragments.state
 options:
   id:
     description: "Unique identifier for the DLP dictionary"
@@ -231,7 +231,8 @@ options:
     description:
       - ID of the predefined dictionary (original source dictionary) that is used for cloning.
       - This field is applicable only to cloned dictionaries.
-      - Only a limited set of identification-based predefined dictionaries (e.g., Credit Cards, Social Security Numbers, National Identification Numbers, etc.) can be cloned.
+      - Only a limited set of identification-based predefined dictionaries
+      - (e.g., Credit Cards, Social Security Numbers, National Identification Numbers, etc.) can be cloned.
       - Up to 4 clones can be created from a predefined dictionary.
     required: false
     type: int
@@ -242,11 +243,10 @@ options:
     type: int
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Create/Update/Delete dlp dictionary.
   zscaler.ziacloud.zia_dlp_dictionaries:
     provider: '{{ zia_cloud }}'
-    # state: absent
     name: "Example_Dictionary"
     description: "Example_Dictionary"
     custom_phrase_match_type: "MATCH_ALL_CUSTOM_PHRASE_PATTERN_DICTIONARY"
@@ -259,7 +259,7 @@ EXAMPLES = """
         pattern: "YourPattern"
 """
 
-RETURN = """
+RETURN = r"""
 # The newly created DLP Dictionary record.
 """
 

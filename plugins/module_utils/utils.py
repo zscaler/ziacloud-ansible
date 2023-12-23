@@ -71,17 +71,6 @@ def diff_suppress_func_coordinate(old, new):
         return False
 
 
-# def diff_suppress_func_coordinate(old, new):
-#     if old is None or new is None:
-#         return old == new
-#     try:
-#         o = round(float(old) * 1000000) / 1000000
-#         n = round(float(new) * 1000000) / 1000000
-#         return o == n
-#     except ValueError:
-#         return False
-
-
 def is_valid_ipv4_or_range(value):
     try:
         if "-" in value:  # If it's a range
@@ -150,7 +139,9 @@ def validate_location_mgmt(location_mgmt):
     ):
         if surrogate_refresh_time_unit is None:
             raise ValueError(
-                "When 'surrogate_ip_enforced_for_known_browsers' and 'surrogate_refresh_time_in_minutes' are set, 'surrogate_refresh_time_unit' must also be set."
+                "When 'surrogate_ip_enforced_for_known_browsers' and "
+                "'surrogate_refresh_time_in_minutes' are set, 'surrogate_refresh_time_unit' "
+                "must also be set."
             )
         if not 1 <= surrogate_refresh_time_in_minutes <= 720:
             raise ValueError(

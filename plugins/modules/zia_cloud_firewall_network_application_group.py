@@ -27,53 +27,55 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_cloud_firewall_ip_source_groups
-short_description: "Cloud Firewall IP source groups"
+module: zia_cloud_firewall_network_application_group
+short_description: "Cloud Firewall Network Application Group"
 description:
-  - "List of Cloud Firewall IP source groups"
+  - "Creates a new custom network application group."
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
-    - zscaler.ziacloud.fragments.credentials_set
-    - zscaler.ziacloud.fragments.provider
-    - zscaler.ziacloud.fragments.enabled_state
+  - zscaler.ziacloud.fragments.provider
+  - zscaler.ziacloud.fragments.credentials_set
+  - zscaler.ziacloud.fragments.state
 options:
   id:
-    description: "A unique identifier of the source IP address group"
+    description: "A unique identifier of the network application groups"
     required: false
     type: str
   name:
-    description: "The name of the source IP address group"
+    description: "The name of the network application groups"
     required: true
     type: str
-  description:
-    description: "The description of the source IP address group"
-    required: true
-    type: str
-  ip_addresses:
-    description: "Source IP addresses added to the group"
+  network_applications:
+    description: "List of applications in the network application group"
     type: list
     elements: str
     required: true
 """
 
 EXAMPLES = """
-
-- name: Create/Update/Delete ip source group.
-  zscaler.ziacloud.zia_fw_filtering_ip_source_groups:
-    name: "Example"
-    description: "Example"
-    ip_addresses:
-        - 192.168.1.1
-        - 192.168.1.2
-        - 192.168.1.3
+- name: Create/Update/Delete network application group.
+  zscaler.ziacloud.zia_cloud_firewall_network_application_group:
+    name: "sampleNetworkApplicationGroup"
+    network_applications:
+        - 'YAMMER'
+        - 'OFFICE365'
+        - 'SKYPE_FOR_BUSINESS'
+        - 'OUTLOOK'
+        - 'SHAREPOINT'
+        - 'SHAREPOINT_ADMIN'
+        - 'SHAREPOINT_BLOG'
+        - 'SHAREPOINT_CALENDAR'
+        - 'SHAREPOINT_DOCUMENT'
+        - 'SHAREPOINT_ONLINE'
+        - 'ONEDRIVE'
 """
 
 RETURN = """
-# The newly created ip source group resource record.
+# The newly created network application group resource record.
 """
 
 from traceback import format_exc

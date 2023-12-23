@@ -10,7 +10,7 @@ profile: production
 # and not relative to the CWD of execution. CLI arguments passed to the --exclude
 # option are parsed relative to the CWD of execution.
 exclude_paths:
-  #   - .cache/ # implicit unless exclude_paths is defined in config
+#   - .cache/ # implicit unless exclude_paths is defined in config
   - .github/
 #   - test/fixtures/formatting-before/
 #   - test/fixtures/formatting-prettier/
@@ -72,10 +72,10 @@ enable_list:
 
 # Ansible-lint does not fail on warnings from the rules or tags listed below
 # warn_list:
-# - skip_this_tag
-# - experimental # experimental is included in the implicit list
-# - role-name
-# - yaml[document-start]  # you can also use sub-rule matches
+  # - skip_this_tag
+  # - experimental # experimental is included in the implicit list
+  # - role-name
+  # - yaml[document-start]  # you can also use sub-rule matches
 
 # Some rules can transform files to fix (or make it easier to fix) identified
 # errors. `ansible-lint --write` will reformat YAML files and run these transforms.
@@ -108,12 +108,12 @@ enable_list:
 # List of additional kind:pattern to be added at the top of the default
 # match list, first match determines the file kind.
 # kinds:
-# - playbook: "**/examples/*.{yml,yaml}"
-# - galaxy: "**/folder/galaxy.yml"
-# - tasks: "**/tasks/*.yml"
-# - vars: "**/vars/*.yml"
-# - meta: "**/meta/main.yml"
-# - yaml: "**/*.yaml-too"
+  # - playbook: "**/examples/*.{yml,yaml}"
+  # - galaxy: "**/folder/galaxy.yml"
+  # - tasks: "**/tasks/*.yml"
+  # - vars: "**/vars/*.yml"
+  # - meta: "**/meta/main.yml"
+  # - yaml: "**/*.yaml-too"
 
 # List of additional collections to allow in only-builtins rule.
 # only_builtins_allow_collections:
