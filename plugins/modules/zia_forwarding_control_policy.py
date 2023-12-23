@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_forwarding_control_policy
 short_description: "Forwarding Control policy rule."
@@ -122,7 +122,7 @@ options:
   enabled:
     description: Determines whether the Forwarding Control policy rule is enabled or disabled
     required: false
-    type: str
+    type: bool
     choices:
         - true
         - false
@@ -279,23 +279,22 @@ options:
     required: false
 """
 
-EXAMPLES = """
-- name: Create/update Forwarding Control ZPA Forward Method
-    zscaler.ziacloud.zia_forwarding_control_policy:
-      provider: '{{ zia_cloud }}'
-      state: absent
-      name: Example
-      description: TT#1965232865
-      type: FORWARDING
-      forward_method: DIRECT
-      enabled: true
-      order: 1
-      zpa_gateway
-        - id: 2590247
-          name: ZPA_GW01
+EXAMPLES = r"""
+- name: Create/Update Forwarding Control ZPA Forward Method
+  zscaler.ziacloud.zia_forwarding_control_policy:
+    provider: '{{ zia_cloud }}'
+    name: 'Example'
+    description: 'TT#1965232865'
+    type: 'FORWARDING'
+    forward_method: 'DIRECT'
+    enabled: true
+    order: 1
+    zpa_gateway:
+      - id: 2590247
+        name: 'ZPA_GW01'
 """
 
-RETURN = """
+RETURN = r"""
 # Returns information on the newly created cloud Forwarding Control rule.
 """
 
