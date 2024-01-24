@@ -37,9 +37,8 @@ version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
-    - zscaler.ziacloud.fragments.credentials_set
-    - zscaler.ziacloud.fragments.provider
-    - zscaler.ziacloud.fragments.enabled_state
+  - zscaler.ziacloud.fragments.provider
+  - zscaler.ziacloud.fragments.credentials_set
 
 """
 
@@ -48,12 +47,8 @@ EXAMPLES = """
   zscaler.ziacloud.zia_sandbox_advanced_settings_facts:
 """
 
-RETURN = """
-return:
-  description: The response information from ZIA Cloud Sandbox submission.
-  type: dict
-  returned: always
-  sample: {"file_hash_count": {"blocked_file_hashes_count": 23, "remaining_file_hashes": 9977}}
+RETURN = r"""
+# Default return values
 """
 
 from traceback import format_exc

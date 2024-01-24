@@ -25,8 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """"
-
+DOCUMENTATION = """
 ---
 module: zia_url_filtering_rules
 short_description: "Adds a new URL Filtering rule."
@@ -37,28 +36,29 @@ version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
-    - zscaler.ziacloud.fragments.credentials_set
-    - zscaler.ziacloud.fragments.provider
-    - zscaler.ziacloud.fragments.enabled_state
+  - zscaler.ziacloud.fragments.provider
+  - zscaler.ziacloud.fragments.credentials_set
+  - zscaler.ziacloud.fragments.state
 options:
   id:
-    description: "URL Filtering Rule ID"
+    description: "Unique identifier for the URL Filtering policy rule"
     required: false
     type: int
   name:
-    description: "Name of the URL Filtering rule"
+    description: "Name of the URL Filtering policy rule"
     required: true
     type: str
   description:
-    description: "Additional information about the URL Filtering rule"
+    description: "Additional information about the rule"
     required: false
     type: str
   order:
-    description: "Order of execution of rule with respect to other URL Filtering rules"
+    description: "Rule order number of the URL Filtering policy rule"
     required: true
     type: int
   protocols:
-    description: "Protocol criteria"
+    description:
+        - Protocol criteria
     required: false
     type: str
     choices:
@@ -78,27 +78,32 @@ options:
         - WEBSOCKETSSL_RULE
         - WEBSOCKET_RULE
   locations:
-    description: "Name-ID pairs of locations for which rule must be applied"
+    description:
+        - Name-ID pairs of locations for which rule must be applied
     type: list
     elements: str
     required: false
   groups:
-    description: "Name-ID pairs of groups for which rule must be applied"
+    description:
+        - Name-ID pairs of groups for which rule must be applied
     type: list
     elements: str
     required: false
   departments:
-    description: "Name-ID pairs of departments for which rule will be applied"
+    description:
+        - Name-ID pairs of departments for which rule will be applied
     type: list
     elements: str
     required: false
   users:
-    description: "Name-ID pairs of users for which rule must be applied"
+    description:
+        - Name-ID pairs of users for which rule must be applied
     type: list
     elements: str
     required: false
   url_categories:
-    description: "List of URL categories for which rule must be applied"
+    description:
+        - List of URL categories for which rule must be applied
     type: list
     elements: str
     required: false
@@ -112,12 +117,14 @@ options:
         - ENABLED
     default: ENABLED
   time_windows:
-    description: "Name-ID pairs of time interval during which rule must be enforced."
+    description:
+        - Name-ID pairs of time interval during which rule must be enforced.
     type: list
     elements: str
     required: false
   rank:
-    description: "Admin rank of the admin who creates this rule"
+    description:
+        - Admin rank of the admin who creates this rule
     required: false
     default: 7
     type: int
@@ -141,88 +148,84 @@ options:
   end_user_notification_url:
     description:
       - URL of end user notification page to be displayed when the rule is matched.
-      - Not applicable if either 'overrideUsers' or 'overrideGroups' is specified.
+      - Not applicable if either override_users or override_groups is specified.
     required: false
     type: str
   override_users:
     description:
         - Name-ID pairs of users for which this rule can be overridden.
-        - Applicable only if blockOverride is set to 'true', action is 'BLOCK' and overrideGroups is not set.
-        - If this overrideUsers is not set, 'BLOCK' action can be overridden for any user.
+        - Applicable only if block_override is set to true, action is BLOCK and override_groups is not set.
+        - If this override_users is not set, BLOCK action can be overridden for any user.
     type: list
     elements: str
     required: false
   override_groups:
     description:
         - Name-ID pairs of groups for which this rule can be overridden.
-        - Applicable only if blockOverride is set to 'true' and action is 'BLOCK'.
-        - If this overrideGroups is not set, 'BLOCK' action can be overridden for any group.
+        - Applicable only if block_override is set to true and action is BLOCK.
+        - If this override_groups is not set, BLOCK action can be overridden for any group.
     type: list
     elements: str
     required: false
   block_override:
     description:
-        - When set to true, a 'BLOCK' action triggered by the rule could be overridden.
-        - If true and both overrideGroup and overrideUsers are not set, the BLOCK triggered by this rule could be overridden for any users.
-        - If blockOverride is not set, 'BLOCK' action cannot be overridden.
+        - When set to true, a BLOCK action triggered by the rule could be overridden.
+        - If true and both override_group and override_users are not set, the BLOCK triggered by this rule could be overridden for any users.
+        - If block_override is not set, BLOCK action cannot be overridden.
     type: bool
     required: false
     default: false
   time_quota:
     description:
-        - Action must be set to "CAUTION"
+        - Action must be set to CAUTION
         - Time quota in minutes, after which the URL Filtering rule is applied.
         - The allowed range is between 15 minutes and 600 minutes.
-        - If not set, no quota is enforced. If a policy rule action is set to 'BLOCK', this field is not applicable.
+        - If not set, no quota is enforced. If a policy rule action is set to BLOCK, this field is not applicable.
     required: false
     type: int
   size_quota:
     description:
-        - Action must be set to "CAUTION"
+        - Action must be set to CAUTION
         - Size quota in MB beyond which the URL Filtering rule is applied.
         - The allowed range is between 10 MB and 100000 MB
-        - If not set, no quota is enforced. If a policy rule action is set to 'BLOCK', this field is not applicable.
+        - If not set, no quota is enforced. If a policy rule action is set to BLOCK, this field is not applicable.
     required: false
     type: int
   location_groups:
-    description: "Name-ID pairs of the location groups to which the rule must be applied."
+    description:
+        - Name-ID pairs of the location groups to which the rule must be applied.
     type: list
     elements: str
     required: false
   labels:
     description:
-        - The URL Filtering rule's label. Rule labels allow you to logically group your organization's policy rules.
+        - The URL Filtering rule label. Rule labels allow you to logically group your organization policy rules.
         - Policy rules that are not associated with a rule label are grouped under the Untagged label.
     type: list
     elements: str
     required: false
   enforce_time_validity:
-    description: "Enforce a set a validity time period for the URL Filtering rule."
+    description:
+        - Enforce a set a validity time period for the URL Filtering rule.
     type: bool
     default: false
   validity_start_time:
     description:
-      - If enforceTimeValidity is set to true, the URL Filtering rule will be valid starting on this date and time.
-      - Example: "11/20/2023 11:59 PM"
+      - If enforce_time_validity is set to true, the URL Filtering rule will be valid starting on this date and time.
+      - Example ( 11/20/2023 11:59 PM )
       - Notice that validity_start_time cannot be in the past
     required: false
     type: str
   validity_end_time:
     description:
-      - If enforceTimeValidity is set to true, the URL Filtering rule will cease to be valid on this end date and time.
-      - - Example: "12/21/2023 12:00 AM"
-    required: false
-    type: str
-  validity_time_zone_id:
-    description:
-      - If enforceTimeValidity is set to true, the URL Filtering rule date and time will be valid based on this time zone ID.
-      - Example: "US/Pacific"
+      - If enforce_time_validity is set to true, the URL Filtering rule will cease to be valid on this end date and time.
+      - Example ( 12/21/2023 12:00 AM )
     required: false
     type: str
   action:
     description:
       - Action taken when traffic matches rule criteria
-      - When the action is set to "CAUTION" the attribute request_methods accepts only the following values: CONNECT; GET; HEAD
+      - When the action is set to CAUTION the attribute request_methods accepts only the following values are CONNECT GET HEAD
     required: false
     type: str
     choices:
@@ -233,33 +236,33 @@ options:
         - ALLOW
         - ICAP_RESPONSE
   cipa_rule:
-    description: "If set to true, the CIPA Compliance rule is enabled"
-    type: bool
-    default: false
-cbi_profile:
     description:
-      - The cloud browser isolation profile to which the ISOLATE action is applied in the URL Filtering Policy rules.
-      - This parameter is required for the ISOLATE action and is not applicable to other actions.
-    type: dict
-    suboptions:
-        id:
-            description:
-                - The universally unique identifier (UUID) for the browser isolation profile.
-            type: str
-            required: True
-        name:
-            description:
-                - Name of the browser isolation profile.
-            type: str
-            required: True
-        url:
-            description:
-                - The browser isolation profile URL.
-            type: str
-            required: True
+        - If set to true, the CIPA Compliance rule is enabled
+    type: bool
+  cbi_profile:
+      description:
+        - The cloud browser isolation profile to which the ISOLATE action is applied in the URL Filtering Policy rules.
+        - This parameter is required for the ISOLATE action and is not applicable to other actions.
+      type: dict
+      suboptions:
+          id:
+              description:
+                  - The universally unique identifier (UUID) for the browser isolation profile.
+              type: str
+              required: True
+          name:
+              description:
+                  - Name of the browser isolation profile.
+              type: str
+              required: True
+          url:
+              description:
+                  - The browser isolation profile URL.
+              type: str
+              required: True
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Create/Update/Delete a URL Filtering Rule.
   zscaler.ziacloud.zia_url_filtering_rules:
     name: "URL_Ansible_Example"
@@ -282,7 +285,7 @@ EXAMPLES = """
         - "TRACE"
 """
 
-RETURN = """
+RETURN = r"""
 # The newly created URL Filtering Rule resource record.
 """
 

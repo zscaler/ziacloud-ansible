@@ -29,6 +29,8 @@ help:
 
 .PHONY: docs
 docs:		## Build collection documentation
+	sudo make install
+	rm -rf antsibull
 	mkdir antsibull
 	poetry run antsibull-docs collection --use-current --dest-dir antsibull --no-indexes collections zscaler.ziacloud
 	mkdir -p docs/source/modules

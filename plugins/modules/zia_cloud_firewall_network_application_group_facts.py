@@ -27,7 +27,7 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-module: zia_cloud_firewall_network_application_groups_facts
+module: zia_cloud_firewall_network_application_group_facts
 short_description: "Gets a list of all network application groups."
 description:
   - "Gets a list of all network application groups."
@@ -37,8 +37,8 @@ version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
-    - zscaler.ziacloud.fragments.credentials_set
-    - zscaler.ziacloud.fragments.provider
+  - zscaler.ziacloud.fragments.provider
+  - zscaler.ziacloud.fragments.credentials_set
 options:
   id:
     description: "A unique identifier of the network application groups"

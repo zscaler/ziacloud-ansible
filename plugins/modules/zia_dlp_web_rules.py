@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_dlp_web_rules
 short_description: "Adds a new DLP policy rule."
@@ -36,9 +36,9 @@ version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
-    - zscaler.ziacloud.fragments.credentials_set
-    - zscaler.ziacloud.fragments.provider
-    - zscaler.ziacloud.fragments.enabled_state
+  - zscaler.ziacloud.fragments.provider
+  - zscaler.ziacloud.fragments.credentials_set
+  - zscaler.ziacloud.fragments.state
 options:
   id:
     description: "The unique identifier for the DLP policy rule."
@@ -206,12 +206,6 @@ options:
         - RULE_SEVERITY_MEDIUM
         - RULE_SEVERITY_LOW
         - RULE_SEVERITY_INFO
-  parent_rule:
-    description:
-      - The unique identifier of the parent rule under which an exception rule is added
-      - Note: Exception rules can be configured only when the inline DLP rule evaluation type is set to evaluate all DLP rules in the DLP Advanced Settings.
-    required: false
-    type: int
   sub_rules:
     description:
       - The list of exception rules added to a parent rule
@@ -220,9 +214,14 @@ options:
     type: list
     elements: str
     required: false
+  parent_rule:
+    description:
+      - The unique identifier of the parent rule under which an exception rule is added.
+    required: false
+    type: int
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Create/Update/Delete DLP Web Rules
   zscaler.ziacloud.zia_dlp_web_rules:
     provider: '{{ zia_cloud }}'
@@ -265,7 +264,7 @@ EXAMPLES = """
       - 76676875
 """
 
-RETURN = """
+RETURN = r"""
 # Returns information on a specified ZIA Admin User.
 """
 

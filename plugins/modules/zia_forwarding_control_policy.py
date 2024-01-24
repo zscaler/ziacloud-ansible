@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_forwarding_control_policy
 short_description: "Forwarding Control policy rule."
@@ -36,9 +36,9 @@ version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
-    - zscaler.zpacloud.fragments.credentials_set
-    - zscaler.zpacloud.fragments.provider
-    - zscaler.zpacloud.fragments.enabled_state
+  - zscaler.ziacloud.fragments.provider
+  - zscaler.ziacloud.fragments.credentials_set
+  - zscaler.ziacloud.fragments.state
 options:
   id:
     description: "Unique identifier for the Forwarding Control policy rule"
@@ -92,7 +92,7 @@ options:
     elements: str
     required: false
   type:
-        description: "The rule type selected from the available options"
+    description: "The rule type selected from the available options"
     required: false
     type: str
     choices:
@@ -122,7 +122,7 @@ options:
   enabled:
     description: Determines whether the Forwarding Control policy rule is enabled or disabled
     required: false
-    type: str
+    type: bool
     choices:
         - true
         - false
@@ -279,23 +279,22 @@ options:
     required: false
 """
 
-EXAMPLES = """
-- name: Create/update Forwarding Control ZPA Forward Method
-    zscaler.ziacloud.zia_forwarding_control_policy:
-      provider: '{{ zia_cloud }}'
-      state: absent
-      name: Example
-      description: TT#1965232865
-      type: FORWARDING
-      forward_method: DIRECT
-      enabled: true
-      order: 1
-      zpa_gateway
-        - id: 2590247
-          name: ZPA_GW01
+EXAMPLES = r"""
+- name: Create/Update Forwarding Control ZPA Forward Method
+  zscaler.ziacloud.zia_forwarding_control_policy:
+    provider: '{{ zia_cloud }}'
+    name: 'Example'
+    description: 'TT#1965232865'
+    type: 'FORWARDING'
+    forward_method: 'DIRECT'
+    enabled: true
+    order: 1
+    zpa_gateway:
+      - id: 2590247
+        name: 'ZPA_GW01'
 """
 
-RETURN = """
+RETURN = r"""
 # Returns information on the newly created cloud Forwarding Control rule.
 """
 
@@ -436,7 +435,11 @@ def core(module):
                 validated_source_countries.append(f"COUNTRY_{country_code}")
             else:
                 module.fail_json(
-                    msg=f"The source country code '{country_code}' is not a valid ISO3166 Alpha2 code. Please visit the following site for reference: https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes"
+                    msg=(
+                        f"The source country code '{country_code}' is not a valid ISO3166 Alpha2 code. "
+                        "Please visit the following site for reference: "
+                        "https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes"
+                    )
                 )
         rule["source_countries"] = validated_source_countries
 
@@ -449,7 +452,11 @@ def core(module):
                 validated_dest_countries.append(f"COUNTRY_{country_code}")
             else:
                 module.fail_json(
-                    msg=f"The destination country code '{country_code}' is not a valid ISO3166 Alpha2 code. Please visit the following site for reference: https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes"
+                    msg=(
+                        f"The destination country code '{country_code}' is not a valid ISO3166 Alpha2 code. "
+                        "Please visit the following site for reference: "
+                        "https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes"
+                    )
                 )
         rule["dest_countries"] = validated_dest_countries
 

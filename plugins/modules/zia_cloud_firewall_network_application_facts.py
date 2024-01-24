@@ -37,12 +37,24 @@ version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
-    - zscaler.ziacloud.fragments.credentials_set
-    - zscaler.ziacloud.fragments.provider
+  - zscaler.ziacloud.fragments.provider
+  - zscaler.ziacloud.fragments.credentials_set
 options:
+  app_id:
+    description:
+        - The unique identifier for the network application
+    required: false
+    type: str
   name:
-    description: ""
-    required: true
+    description:
+        - The search string used to match against a network application's description attribute."
+    required: false
+    type: str
+  locale:
+    description:
+        - When set to one of the supported locales (i.e., en-US, de-DE, es-ES, fr-FR, ja-JP, zh-CN).
+        - The network application's description is localized into the requested language.
+    required: false
     type: str
 """
 

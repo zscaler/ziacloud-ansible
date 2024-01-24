@@ -38,9 +38,9 @@ author: William Guilherme (@willguibr)
 requirements:
   - Zscaler SDK Python (obtainable from PyPI U(https://pypi.org/project/zscaler-sdk-python/))
 extends_documentation_fragment:
-  - zscaler.ziacloud.fragments.credentials_set
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.enabled_state
+  - zscaler.ziacloud.fragments.credentials_set
+  - zscaler.ziacloud.fragments.state
 options:
   id:
     description:
@@ -97,8 +97,8 @@ EXAMPLES = """
     state: "absent"
 """
 
-RETURN = """
-  - A dictionary containing the details of the DLP Notification Template.
+RETURN = r"""
+# Default return values
 """
 
 
