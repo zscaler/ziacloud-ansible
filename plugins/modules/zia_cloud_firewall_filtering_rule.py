@@ -87,6 +87,11 @@ options:
     type: list
     elements: str
     required: false
+  workload_groups:
+    description: "The list of preconfigured workload groups to which the policy must be applied."
+    type: list
+    elements: int
+    required: false
   action:
     description: "The action the Firewall Filtering policy rule takes when packets match the rule"
     required: false
@@ -294,6 +299,7 @@ def core(module):
         "app_service_groups",
         "labels",
         "device_trust_levels",
+        "workload_groups",
     ]
     for param_name in params:
         rule[param_name] = module.params.get(param_name, None)
@@ -468,6 +474,7 @@ def core(module):
                         users=existing_rule.get("users"),
                         time_windows=existing_rule.get("time_windows"),
                         src_ip_groups=existing_rule.get("src_ip_groups"),
+                        workload_groups=existing_rule.get("workload_groups"),
                     )
                 )
                 module.warn("Payload Update for SDK: {}".format(update_rule))
@@ -511,6 +518,7 @@ def core(module):
                     time_windows=rule.get("time_windows"),
                     src_ip_groups=rule.get("src_ip_groups"),
                     src_ipv6_groups=rule.get("src_ipv6_groups"),
+                    workload_groups=rule.get("workload_groups"),
                 )
             )
             module.warn("Payload for SDK: {}".format(create_rule))
@@ -561,6 +569,7 @@ def main():
         time_windows=id_spec,
         src_ip_groups=id_spec,
         src_ipv6_groups=id_spec,
+        workload_groups=id_spec,
         src_ips=dict(type="list", elements="str", required=False),
         dest_addresses=dict(type="list", elements="str", required=False),
         dest_ip_categories=dict(type="list", elements="str", required=False),

@@ -105,6 +105,25 @@ options:
     type: list
     elements: int
     required: false
+  workload_groups:
+    description: "The list of preconfigured workload groups to which the policy must be applied."
+    type: list
+    elements: int
+    required: false
+  include_domain_profiles:
+    description:
+      - The list of domain profiles that must be added to the DLP rule criteria in order to apply the DLP rules only to domains that are part of the specified profiles.
+      - A maximum of 8 profiles can be selected.
+    type: list
+    elements: int
+    required: false
+  exclude_domain_profiles:
+    description:
+      - The list of domain profiles that must be added to the DLP rule criteria in order to apply the DLP rules to all domains excluding the domains that are part of the specified profiles.
+      - A maximum of 8 profiles can be selected.
+    type: list
+    elements: int
+    required: false
   file_types:
     description: "The list of file types to which the DLP policy rule must be applied."
     required: false
@@ -336,6 +355,9 @@ def core(module):
         "severity",
         "parent_rule",
         "sub_rules",
+        "workload_groups",
+        "include_domain_profiles",
+        "exclude_domain_profiles",
     ]
     for param_name in params:
         rule[param_name] = module.params.get(param_name, None)
@@ -533,6 +555,9 @@ def core(module):
                         severity=existing_rule.get("severity"),
                         parent_rule=existing_rule.get("parent_rule"),
                         sub_rules=existing_rule.get("sub_rules"),
+                        workload_groups=existing_rule.get("workload_groups"),
+                        include_domain_profiles=existing_rule.get("include_domain_profiles"),
+                        exclude_domain_profiles=existing_rule.get("exclude_domain_profiles"),
                     )
                 )
                 module.warn("Payload Update for SDK: {}".format(update_rule))
@@ -580,6 +605,9 @@ def core(module):
                     severity=rule.get("severity"),
                     parent_rule=rule.get("parent_rule"),
                     sub_rules=rule.get("sub_rules"),
+                    workload_groups=rule.get("workload_groups"),
+                    include_domain_profiles=rule.get("include_domain_profiles"),
+                    exclude_domain_profiles=rule.get("exclude_domain_profiles"),
                 )
             )
             module.warn("Payload for SDK: {}".format(create_rule))
@@ -624,6 +652,9 @@ def main():
         excluded_groups=id_spec,
         excluded_departments=id_spec,
         excluded_users=id_spec,
+        workload_groups=id_spec,
+        include_domain_profiles=id_spec,
+        exclude_domain_profiles=id_spec,
         protocols=dict(type="list", elements="str", required=False),
         url_categories=dict(type="list", elements="str", required=False),
         cloud_applications=dict(type="list", elements="str", required=False),

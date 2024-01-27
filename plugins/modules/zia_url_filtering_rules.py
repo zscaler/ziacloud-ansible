@@ -101,6 +101,11 @@ options:
     type: list
     elements: str
     required: false
+  workload_groups:
+    description: "The list of preconfigured workload groups to which the policy must be applied."
+    type: list
+    elements: int
+    required: false
   url_categories:
     description:
         - List of URL categories for which rule must be applied
@@ -414,6 +419,7 @@ def core(module):
         "devices",
         "user_risk_score_levels",
         "cbi_profile",
+        "workload_groups"
     ]
     for param_name in params:
         rule[param_name] = module.params.get(param_name, None)
@@ -562,6 +568,7 @@ def core(module):
                         ),
                         device_trust_levels=existing_rule.get("device_trust_levels"),
                         cbi_profile=existing_rule.get("cbi_profile"),
+                        workload_groups=existing_rule.get("workload_groups"),
                     )
                 )
 
@@ -606,6 +613,7 @@ def core(module):
                     user_risk_score_levels=rule.get("user_risk_score_levels"),
                     device_trust_levels=rule.get("device_trust_levels"),
                     cbi_profile=rule.get("cbi_profile"),
+                    workload_groups=rule.get("workload_groups"),
                 )
             )
             module.warn("Payload for SDK: {}".format(create_rule))
@@ -653,6 +661,7 @@ def main():
         time_windows=id_spec,
         location_groups=id_spec,
         labels=id_spec,
+        workload_groups=id_spec,
         end_user_notification_url=dict(type="str", required=False),
         block_override=dict(type="bool", required=False),
         time_quota=dict(type="int", required=False),
