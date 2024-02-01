@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_dlp_notification_template
 short_description: Manage Zscaler Internet Access (ZIA) DLP Notification Templates
@@ -39,7 +39,7 @@ requirements:
   - Zscaler SDK Python (obtainable from PyPI U(https://pypi.org/project/zscaler-sdk-python/))
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
   - zscaler.ziacloud.fragments.state
 options:
   id:
@@ -73,9 +73,10 @@ options:
     type: bool
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Create a new DLP Notification Template
   zia_dlp_notification_template:
+    provider: '{{ provider }}'
     name: "Standard_DLP_Template"
     subject: "DLP Violation Alert"
     attach_content: true
@@ -87,12 +88,14 @@ EXAMPLES = """
 
 - name: Update an existing DLP Notification Template
   zia_dlp_notification_template:
+    provider: '{{ provider }}'
     name: "Updated_DLP_Template"
     subject: "Updated DLP Violation Alert"
     state: "present"
 
 - name: Delete a DLP Notification Template
   zia_dlp_notification_template:
+    provider: '{{ provider }}'
     name: Updated_DLP_Template
     state: "absent"
 """

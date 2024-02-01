@@ -25,10 +25,10 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_sandbox_advanced_settings_facts
-short_description: "Gets the custom list of MD5 file hashes that are blocked by Sandbox"
+short_description: "Gets the custom list of MD5 file hashes"
 description:
   - Gets the custom list of MD5 file hashes that are blocked by Sandbox.
 author:
@@ -38,13 +38,12 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
-
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Retrieves the custom list of MD5 file hashes that are blocked by Sandbox.
   zscaler.ziacloud.zia_sandbox_advanced_settings_facts:
+    provider: '{{ provider }}'
 """
 
 RETURN = r"""

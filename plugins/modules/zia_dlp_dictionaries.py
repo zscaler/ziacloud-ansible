@@ -38,7 +38,7 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
   - zscaler.ziacloud.fragments.state
 options:
   id:
@@ -246,7 +246,7 @@ options:
 EXAMPLES = r"""
 - name: Create/Update/Delete dlp dictionary.
   zscaler.ziacloud.zia_dlp_dictionaries:
-    provider: '{{ zia_cloud }}'
+    provider: '{{ provider }}'
     name: "Example_Dictionary"
     description: "Example_Dictionary"
     custom_phrase_match_type: "MATCH_ALL_CUSTOM_PHRASE_PATTERN_DICTIONARY"

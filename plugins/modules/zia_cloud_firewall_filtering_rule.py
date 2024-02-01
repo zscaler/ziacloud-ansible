@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_cloud_firewall_filtering_rule
 short_description: "Firewall Filtering policy rule."
@@ -37,7 +37,7 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
   - zscaler.ziacloud.fragments.state
 options:
   id:
@@ -202,10 +202,10 @@ options:
     required: false
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Create/update  firewall filtering rule
   zscaler.ziacloud.zia_cloud_firewall_filtering_rule:
-    provider: '{{ zia_cloud }}'
+    provider: '{{ provider }}'
     state: present
     name: "Ansible_Example_Rule"
     description: "TT#1965232865"
@@ -229,7 +229,7 @@ EXAMPLES = """
       - "HIGH_TRUST"
 """
 
-RETURN = """
+RETURN = r"""
 # Returns information on the newly created cloud firewall filtering rule.
 """
 

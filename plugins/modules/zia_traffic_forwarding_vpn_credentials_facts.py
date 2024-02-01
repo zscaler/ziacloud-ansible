@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_traffic_forwarding_vpn_credentials_facts
 short_description: "Gets VPN credentials that can be associated to locations"
@@ -38,7 +38,7 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
 options:
   id:
     description:
@@ -52,17 +52,20 @@ options:
 
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 
 - name: Retrieve Details of All ZPN Credentials.
   zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_facts:
+    provider: '{{ provider }}'
 
 - name: Retrieve Details of Specific ZPN Credentials By fqdn.
   zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_facts:
+    provider: '{{ provider }}'
     fqdn: "sjc-1-37@acme.com"
 
 - name: Retrieve Details of Specific ZPN Credentials By ID.
   zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_facts:
+    provider: '{{ provider }}'
     id: 222
 
 """

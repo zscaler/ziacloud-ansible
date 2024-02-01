@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_dlp_idm_profile_facts
 short_description: "Get IDM template information"
@@ -38,11 +38,10 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
 options:
   profile_id:
     description: "The identifier (1-64) for the IDM template (i.e., IDM profile) that is unique within the organization"
-    required: false
     type: int
   profile_name:
     type: str
@@ -51,16 +50,18 @@ options:
       - The IDM template name, which is unique per Index Tool.
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Gets all list of DLP IDM Profiles
   zscaler.ziacloud.zia_dlp_idm_profile_facts:
+    provider: '{{ provider }}'
 
 - name: Gets a list of  DLP IDM Profiles by name
   zscaler.ziacloud.zia_dlp_idm_profile_facts:
+    provider: '{{ provider }}'
     name: "IDM_PROFILE_TEMPLATE"
 """
 
-RETURN = """
+RETURN = r"""
 # Returns information about specific DLP IDM Profiles.
 """
 

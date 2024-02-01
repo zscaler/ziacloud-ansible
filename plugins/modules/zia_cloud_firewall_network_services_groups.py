@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_cloud_firewall_network_services_groups
 short_description: "Adds a new network service group."
@@ -38,7 +38,7 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
   - zscaler.ziacloud.fragments.state
 options:
   id:
@@ -52,14 +52,15 @@ options:
   service_ids:
     type: list
     elements: dict
-    description: ""
+    description: "List of network service IDs"
     required: false
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 
 - name: Create/Update/Delete Network Services Groups.
   zscaler.ziacloud.zia_cloud_firewall_network_services_groups:
+    provider: '{{ provider }}'
     name: "example"
     description: "example"
     services:
@@ -67,7 +68,7 @@ EXAMPLES = """
 
 """
 
-RETURN = """
+RETURN = r"""
 # The newly created network services groups resource record.
 """
 

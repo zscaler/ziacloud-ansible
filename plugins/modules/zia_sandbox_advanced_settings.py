@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_sandbox_advanced_settings
 short_description: Manage ZIA Advanced Cloud Sandbox MD5 hash blocklist.
@@ -39,7 +39,6 @@ requirements:
   - Zscaler SDK Python (obtainable from PyPI U(https://pypi.org/project/zscaler-sdk-python/))
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
   - zscaler.ziacloud.fragments.state
 options:
   file_hashes_to_be_blocked:
@@ -52,17 +51,15 @@ options:
 
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Add MD5 Hashes to Sandbox Blocklist
   zscaler.ziacloud.zia_sandbox_advanced_settings:
+    provider: '{{ provider }}'
     file_hashes_to_be_blocked:
       - "42914d6d213a20a2684064be5c80ffa9"
       - "c0202cf6aeab8437c638533d14563d35"
       - "1ca31319721740ecb79f4b9ee74cd9b0"
   register: result
-
-- debug:
-    msg: "{{ result }}"
 
 - name: Read MD5 Hashes from file
 set_fact:
@@ -70,14 +67,13 @@ set_fact:
 
 - name: Add MD5 Hashes to Custom List
 zscaler.ziacloud.zia_sandbox_advanced_settings:
+    provider: '{{ provider }}'
     state: absent
     file_hashes_to_be_blocked: "{{ md5_hashes }}"
 register: result
-- debug:
-    msg: "{{ result }}"
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Retrieves the custom list of MD5 file hashes that are blocked by Sandbox.
   zscaler.ziacloud.zia_sandbox_advanced_settings_facts:
 """

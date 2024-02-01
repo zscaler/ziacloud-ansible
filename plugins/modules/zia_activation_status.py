@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_activation_status
 short_description: "Activates the saved configuration changes."
@@ -37,7 +37,7 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
   - zscaler.ziacloud.fragments.state
 options:
   status:
@@ -46,18 +46,17 @@ options:
     required: true
     type: str
     choices:
-        - "ACTIVE"
-        - "PENDING"
-        - "INPROGRESS"
+        - 'ACTIVE'
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Activates the saved configuration changes
   zscaler.ziacloud.zia_activation_status:
-    status: "ACTIVE"
+    provider: '{{ provider }}'
+    status: 'ACTIVE'
 """
 
-RETURN = """
+RETURN = r"""
 # Activates the saved configuration changes.
 """
 

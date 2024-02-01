@@ -25,11 +25,11 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_cloud_firewall_filtering_rule_facts
-short_description: "Gets all rules in the Firewall Filtering policy."
-description: "Gets all rules in the Firewall Filtering policy."
+short_description: Retrieves rules in the Cloud Firewall module.
+description: Retrieves rules in the Cloud Firewall module.
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
@@ -37,28 +37,31 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
 options:
   id:
-    description: "Unique identifier for the Firewall Filtering policy rule"
-    required: false
+    description:
+        - Unique identifier for the Firewall Filtering policy rule.
     type: int
   name:
-    description: "Name of the Firewall Filtering policy rule"
+    description:
+        - Name of the Firewall Filtering policy rule
     required: true
     type: str
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Gather Information Details of a ZIA Cloud Firewall Rule
   zscaler.ziacloud.zia_firewall_filtering_rules_facts:
+    provider: '{{ provider }}'
 
 - name: Gather Information Details of a ZIA Cloud Firewall Rule by Name
   zscaler.ziacloud.zia_firewall_filtering_rules_facts:
+    provider: '{{ provider }}'
     name: "Example"
 """
 
-RETURN = """
+RETURN = r"""
 # Returns information on a specified ZIA Cloud Firewall Rule.
 """
 

@@ -37,12 +37,11 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
   - zscaler.ziacloud.fragments.state
 options:
   id:
     description: "The unique identifier for the DLP engine."
-    required: false
     type: str
   name:
     description:
@@ -76,6 +75,7 @@ options:
 EXAMPLES = r"""
 - name: Create/Update/Delete custom dlp engine.
   zscaler.ziacloud.zia_dlp_engine:
+    provider: '{{ provider }}'
     name: "Example"
     description: "Example"
     engine_expression: "((D63.S > 1))"

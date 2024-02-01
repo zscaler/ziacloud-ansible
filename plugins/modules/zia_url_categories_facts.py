@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_url_categories_facts
 short_description: "Gets information about all or custom URL categories."
@@ -37,19 +37,21 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Gather Information Details of all URL Categories
   zscaler.ziacloud.zia_url_categories_facts:
+    provider: '{{ provider }}'
 
 - name: Gather Information Details of a specific URL Category by ID
   zscaler.ziacloud.zia_url_categories_facts:
+    provider: '{{ provider }}'
     id: "OTHER_ADULT_MATERIAL"
 """
 
-RETURN = """
+RETURN = r"""
 # Returns information on a specified url category.
 """
 

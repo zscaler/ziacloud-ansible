@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_traffic_forwarding_static_ip
 short_description: "Adds a static IP address."
@@ -38,7 +38,7 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
   - zscaler.ziacloud.fragments.state
 options:
   id:
@@ -89,9 +89,10 @@ options:
     default: present
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Create/Update/Delete a Static IP.
   zscaler.ziacloud.zia_traffic_forwarding_static_ip:
+    provider: '{{ provider }}'
     ip_address: "1.1.1.1"
     routable_ip: true
     comment: "Created with Ansible"
@@ -100,7 +101,7 @@ EXAMPLES = """
     longitude: "174.763336"
 """
 
-RETURN = """
+RETURN = r"""
 # The newly created static ip resource record.
 """
 

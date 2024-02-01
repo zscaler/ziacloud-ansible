@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_ip_source_anchoring_zpa_gateway
 short_description: "Manages ZPA Gateways within Zscaler Internet Access"
@@ -39,7 +39,7 @@ requirements:
   - Zscaler SDK Python (available on PyPI at https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
   - zscaler.ziacloud.fragments.state
 options:
   id:
@@ -87,10 +87,10 @@ options:
         required: true
         type: str
 """
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Create or update a ZPA Gateway with application segments
   zscaler.ziacloud.zia_ip_source_anchoring_zpa_gateway:
-    provider: '{{ zia_cloud }}'
+    provider: '{{ provider }}'
     name: "ZPA_GW02"
     description: "ZPA Gateway for internal apps"
     type: "ZPA"
@@ -105,7 +105,7 @@ EXAMPLES = """
 
 - name: Update a ZPA Gateway without specifying application segments
   zscaler.ziacloud.zia_ip_source_anchoring_zpa_gateway:
-    provider: '{{ zia_cloud }}'
+    provider: '{{ provider }}'
     name: "ZPA_GW02"
     description: "ZPA Gateway update"
     type: "ZPA"
@@ -113,7 +113,7 @@ EXAMPLES = """
       external_id: 216196257331370454
       name: "Updated Server Group"
 """
-RETURN = """
+RETURN = r"""
 # Returns information on the newly created ZPA Gateway.
 """
 

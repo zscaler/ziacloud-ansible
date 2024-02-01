@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_traffic_forwarding_static_ip_facts
 short_description: "Gets static IP address for the specified ID"
@@ -37,7 +37,7 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
 options:
   ip_address:
     description:
@@ -50,21 +50,24 @@ options:
     type: int
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Retrieve Details of All Static IPs.
   zscaler.ziacloud.zia_traffic_forwarding_static_ip_facts:
+    provider: '{{ provider }}'
 
 - name: Retrieve Details of Specific Static IPs By IP Address.
   zscaler.ziacloud.zia_traffic_forwarding_static_ip_facts:
+    provider: '{{ provider }}'
     ip_address: 1.1.1.1
 
 - name: Retrieve Details of Specific Static IPs By ID.
   zscaler.ziacloud.zia_traffic_forwarding_static_ip_facts:
+    provider: '{{ provider }}'
     id: 82709
 
 """
 
-RETURN = """
+RETURN = r"""
 # Returns information on ZIA Static IP Addresses.
 """
 

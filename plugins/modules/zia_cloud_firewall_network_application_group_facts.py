@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_cloud_firewall_network_application_group_facts
 short_description: "Gets a list of all network application groups."
@@ -38,7 +38,7 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
 options:
   id:
     description: "A unique identifier of the network application groups"
@@ -50,16 +50,18 @@ options:
     type: str
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Gather Information Details of all application groups
-  zscaler.ziacloud.zia_fw_filtering_network_application_groups_facts:
+  zscaler.ziacloud.zia_cloud_firewall_network_application_group_facts:
+    provider: '{{ provider }}'
 
 - name: Gather Information of an Application Group by Name
-  zscaler.ziacloud.zia_fw_filtering_network_application_groups_facts:
+  zscaler.ziacloud.zia_cloud_firewall_network_application_group_facts:
+    provider: '{{ provider }}'
     name: "Microsoft Office365"
 """
 
-RETURN = """
+RETURN = r"""
 # Returns information on a specific or all application groups.
 """
 

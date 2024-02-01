@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_admin_role_management_facts
 short_description: "Gets a list of admin roles"
@@ -38,29 +38,31 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
-options:
 
+options:
   id:
-    description: "Admin role ID."
-    required: false
+    description:
+      - Admin role ID.
     type: int
   name:
-    description: "Name of the admin role."
+    description:
+      - Name of the admin role.
     required: true
     type: str
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Gets a list of all admin roles
   zscaler.ziacloud.zia_admin_role_management_facts:
+  provider: '{{ provider }}'
 
 - name: Gets a list of an admin roles
   zscaler.ziacloud.zia_admin_role_management_facts:
+    provider: '{{ provider }}'
     name: "marketing"
 """
 
-RETURN = """
+RETURN = r"""
 # Returns information of all admin roles.
 """
 

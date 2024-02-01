@@ -25,21 +25,20 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_authentication_settings
-short_description: "Adds a URL to or removes a URL from the cookie authentication exempt list."
-description:
-  - Adds a URL to or removes a URL from the cookie authentication exempt list.
+short_description: Adds or removes URLs authentication exempt list.
+description: Adds or removes URLs from the cookie authentication exempt list.
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
-  - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
-  - zscaler.ziacloud.fragments.state
+    - zscaler.ziacloud.fragments.provider
+
+    - zscaler.ziacloud.fragments.state
 options:
   urls:
     description:
@@ -49,10 +48,11 @@ options:
     required: true
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 
 - name: Create/Update/Delete URLs.
   zscaler.ziacloud.zia_authentication_settings:
+    provider: '{{ provider }}'
     urls:
         - .okta.com,
         - .oktacdn.com,
@@ -60,7 +60,7 @@ EXAMPLES = """
         - .mtls.okta.com,
 """
 
-RETURN = """
+RETURN = r"""
 # The list of exempted URLs.
 """
 

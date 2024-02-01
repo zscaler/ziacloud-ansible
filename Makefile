@@ -32,7 +32,7 @@ docs:		## Build collection documentation
 	sudo make install
 	rm -rf antsibull
 	mkdir antsibull
-	poetry run antsibull-docs collection --use-current --dest-dir antsibull --no-indexes collections zscaler.ziacloud
+	poetry run antsibull-docs collection --use-current --dest-dir antsibull --no-indexes zscaler.ziacloud
 	mkdir -p docs/source/modules
 	mv antsibull/collections/zscaler/ziacloud/* docs/source/modules
 	rm -rf antsibull

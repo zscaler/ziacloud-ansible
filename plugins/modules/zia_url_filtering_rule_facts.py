@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_url_filtering_rule_facts
 short_description: "Gets all url filtering rules."
@@ -37,7 +37,7 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
 options:
   id:
     description: "URL Filtering Rule ID"
@@ -49,16 +49,18 @@ options:
     type: str
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Gather Information Details of all URL filtering rules
   zscaler.ziacloud.zia_url_filtering_rule_facts:
+    provider: '{{ provider }}'
 
 - name: Gather Information Details of of a URL filtering rules
   zscaler.ziacloud.zia_url_filtering_rule_facts:
+    provider: '{{ provider }}'
     name: "Example"
 """
 
-RETURN = """
+RETURN = r"""
 # Returns information on a specified URL filtering rule
 """
 

@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_security_policy_settings
 short_description: "Adds a URL to or removes a URL from the Denylist"
@@ -38,7 +38,7 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
   - zscaler.ziacloud.fragments.state
 options:
   urls:
@@ -57,10 +57,11 @@ options:
         - "blacklist"
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 
 - name: ADD and REMOVE URLs from Blacklist or Whitelist
   zscaler.ziacloud.zia_security_policy_settings:
+    provider: '{{ provider }}'
     urls:
       - test1.acme.com
       - test2.acme.com
@@ -69,7 +70,7 @@ EXAMPLES = """
     url_type: "blacklist"
 """
 
-RETURN = """
+RETURN = r"""
 # The newly whitelisted or blacklisted URL resource record.
 """
 

@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_dlp_engine_facts
 short_description: "Get a list of DLP engines."
@@ -38,29 +38,30 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
 options:
   id:
     description: "The unique identifier for the DLP engine."
-    required: false
     type: int
   name:
     type: str
-    required: false
+    required: true
     description:
-      - The DLP engine name as configured by the admin..
+      - The DLP engine name as configured by the admin.
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Gets all list of DLP Engines
   zscaler.ziacloud.zia_dlp_engines_facts:
+    provider: '{{ provider }}'
 
 - name: Gets a list of DLP Engines by name
   zscaler.ziacloud.zia_dlp_engine_facts:
+    provider: '{{ provider }}'
     name: "PCI"
 """
 
-RETURN = """
+RETURN = r"""
 # Returns information about specific DLP Engines.
 """
 
