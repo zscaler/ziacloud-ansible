@@ -12,26 +12,26 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-from __future__ import absolute_import, division, print_function
+# from __future__ import absolute_import, division, print_function
 
-__metaclass__ = type
+# __metaclass__ = type
 
-import os
-import sys
+# import os
+# import sys
 
-sys.path.insert(0, os.path.abspath("../../plugins/modules"))
+# sys.path.insert(0, os.path.abspath("../../plugins/modules"))
 
 # -- Project information -----------------------------------------------------
 
 project = "Zscaler Internet Access Ansible Collection"
 copyright = "2023, Zscaler Inc."
 author = "Zscaler Inc."
-html_title = ""
+html_title = "Ansible Collections Documentation"
 
 # The short X.Y version
-version = "1.0"
+# version = "1.0"
 # The full version, including alpha/beta/rc tags
-release = "1.0.0"
+# release = "1.0.0"
 
 # -- General configuration ---------------------------------------------------
 
@@ -44,10 +44,12 @@ release = "1.0.0"
 # ones.
 extensions = [
     "sphinx.ext.intersphinx",
+    "sphinx.ext.autodoc",
+    "sphinx_antsibull_ext",
     "sphinx.ext.todo",
     "sphinx.ext.githubpages",
     "sphinx.ext.napoleon",
-    "sphinx_rtd_theme",
+    "sphinx_ansible_theme"
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -82,7 +84,7 @@ pygments_style = None
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "sphinx_rtd_theme"
+html_theme = "sphinx_ansible_theme"
 html_context = {
     "display_github": True,
     "github_user": "zscaler",

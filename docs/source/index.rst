@@ -13,7 +13,10 @@ framework.
 Installation
 ============
 
-Ansible 2.9 is **required** for using collections.
+This collection has the following environment requirements:
+
+* Python 3.8 or higher
+* Ansible 2.9 or higher
 
 Install the collection using `ansible-galaxy`:
 
