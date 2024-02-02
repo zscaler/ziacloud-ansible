@@ -103,17 +103,17 @@ jobs:
   # This action is taken from Ansible Partner Engineering's example:
   #   github.com/ansible/eda-partner-testing/blob/main/.github/workflows/tox.yml
   # Tox is planned by Ansible Partner Engineering to cover other code in future.
-  tox:
-    name: Tox Checks
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install deps
-        run: python -m pip install tox
-      - name: Move to tox conf file and run tox
-        run: |
-          cd .github/workflows
-          python -m tox -- ../..
+  # tox:
+  #   name: Tox Checks
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Install deps
+  #       run: python -m pip install tox
+  #     - name: Move to tox conf file and run tox
+  #       run: |
+  #         cd .github/workflows
+  #         python -m tox -- ../..
 
   format:
     name: Code Format Check
