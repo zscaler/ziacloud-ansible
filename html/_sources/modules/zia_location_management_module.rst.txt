@@ -116,14 +116,16 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      For First Time AUP Behavior, Block Internet Access.
+
+      When set, all internet access (including non-HTTP traffic) is disabled until the user accepts the AUP.
 
 
       .. rst-class:: ansible-option-line
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
       - :ansible-option-choices-entry:`true`
 
 
@@ -158,14 +160,16 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      Enable AUP. When set to true, AUP is enabled for the location.
+
+      To Learn More, see Deploying SSL Inspection \ https://help.zscaler.com/zia/about-end-user-notifications\ 
 
 
       .. rst-class:: ansible-option-line
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
       - :ansible-option-choices-entry:`true`
 
 
@@ -200,14 +204,16 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      For First Time AUP Behavior, Force SSL Inspection.
+
+      When set, Zscaler forces SSL Inspection in order to enforce AUP for HTTPS traffic.
 
 
       .. rst-class:: ansible-option-line
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
       - :ansible-option-choices-entry:`true`
 
 
@@ -242,7 +248,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      Custom AUP Frequency. Refresh time (in days) to re-validate the AUP.
 
 
       .. raw:: html
@@ -276,14 +282,14 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      Enforce Authentication. Required when ports are enabled, IP Surrogate is enabled, or Kerberos Authentication is enabled.
 
 
       .. rst-class:: ansible-option-line
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
       - :ansible-option-choices-entry:`true`
 
 
@@ -318,14 +324,16 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      Enable Caution. When set to true, a caution notifcation is enabled for the location.
+
+      To Learn More, see Deploying SSL Inspection \ https://help.zscaler.com/zia/configuring-caution-notification#caution-interval\ 
 
 
       .. rst-class:: ansible-option-line
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
       - :ansible-option-choices-entry:`true`
 
 
@@ -360,7 +368,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      Country Name
 
 
       .. raw:: html
@@ -394,7 +402,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      Additional notes or information regarding the location or sub-location. The description cannot exceed 1024 characters.
 
 
       .. raw:: html
@@ -428,7 +436,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      Display Time Unit. The time unit to display for IP Surrogate idle time to disassociation.
 
 
       .. raw:: html
@@ -462,7 +470,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      Download bandwidth in kbps. The value 0 implies no Bandwidth Control enforcement.
 
 
       .. raw:: html
@@ -496,7 +504,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      Location ID
 
 
       .. raw:: html
@@ -530,7 +538,49 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      Idle Time to Disassociation. The user mapping idle time (in minutes) is required if a Surrogate IP is enabled.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-iot_discovery_enabled"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_location_management_module__parameter-iot_discovery_enabled:
+
+      .. rst-class:: ansible-option-title
+
+      **iot_discovery_enabled**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-iot_discovery_enabled" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      If this field is set to true, IoT discovery is enabled for this location.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
 
 
       .. raw:: html
@@ -564,7 +614,13 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      For locations: IP addresses of the egress points that are provisioned in the Zscaler Cloud.
+
+      Each entry is a single IP address (e.g., 238.10.33.9).
+
+      For sublocations: Egress, internal, or GRE tunnel IP addresses.
+
+      Each entry is either a single IP address, CIDR (e.g., 10.10.33.0/24), or range (e.g., 10.10.33.1-10.10.33.10)).
 
 
       .. raw:: html
@@ -598,14 +654,14 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      Enable IPS Control. When set to true, IPS Control is enabled for the location if Firewall is enabled.
 
 
       .. rst-class:: ansible-option-line
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
       - :ansible-option-choices-entry:`true`
 
 
@@ -640,7 +696,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      Location Name
 
 
       .. raw:: html
@@ -674,14 +730,14 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      Enable Firewall. When set to true, Firewall is enabled for the location.
 
 
       .. rst-class:: ansible-option-line
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
       - :ansible-option-choices-entry:`true`
 
 
@@ -716,7 +772,11 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      Parent Location ID.
+
+      If this ID does not exist or is 0, it is implied that it is a parent location.
+
+      Otherwise it is a sub-location whose parent has this ID. x-applicableTo: SUB
 
 
       .. raw:: html
@@ -750,7 +810,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      IP ports that are associated with the location.
 
 
       .. raw:: html
@@ -784,7 +844,19 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      (Optional) Profile tag that specifies the location traffic type.
+
+      The criteria used for setting best possible value is as follows:
+
+      When invoked with a partner API key, it automatically sets the profile attribute to CORPORATE.
+
+      When invoked using public API, it automatically sets the profile attribute based on the following criteria:
+
+      If the location has authentication enabled, then it sets profile to CORPORATE.
+
+      If the location has authentication disabled and name contains guest, then it sets profile to GUESTWIFI.
+
+      For all other locations with authentication disabled, it sets profile to SERVER.
 
 
       .. rst-class:: ansible-option-line
@@ -1046,14 +1118,20 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      This parameter was deprecated and no longer has an effect on SSL policy.
+
+      It remains supported in the API payload in order to maintain backwards compatibility with existing scripts, but it will be removed in future.
+
+      Enable SSL Inspection. Set to true in order to apply your SSL Inspection policy to HTTPS traffic in the location and inspect HTTPS transactions for data leakage, malicious content, and viruses.
+
+      To Learn More, see Deploying SSL Inspection \ https://help.zscaler.com/zia/deploying-ssl-inspection\ 
 
 
       .. rst-class:: ansible-option-line
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
       - :ansible-option-choices-entry:`true`
 
 
@@ -1088,7 +1166,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      The state.
 
 
       .. rst-class:: ansible-option-line
@@ -1130,14 +1208,16 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      Enable Surrogate IP. When set to true, users are mapped to internal device IP addresses.
+
+      To Learn More, see Deploying SSL Inspection \ https://help.zscaler.com/zia/about-surrogate-ip\ 
 
 
       .. rst-class:: ansible-option-line
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
       - :ansible-option-choices-entry:`true`
 
 
@@ -1172,14 +1252,16 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      Enforce Surrogate IP for Known Browsers. When set to true, IP Surrogate is enforced for all known browsers.
+
+      To Learn More, see Deploying SSL Inspection \ https://help.zscaler.com/zia/about-surrogate-ip\ 
 
 
       .. rst-class:: ansible-option-line
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
       - :ansible-option-choices-entry:`true`
 
 
@@ -1214,7 +1296,9 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      Refresh Time for re-validation of Surrogacy.
+
+      The surrogate refresh time (in minutes) to re-validate the IP surrogates.
 
 
       .. raw:: html
@@ -1238,7 +1322,7 @@ Parameters
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`integer`
+        :ansible-option-type:`string`
 
       .. raw:: html
 
@@ -1248,7 +1332,18 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      Display Refresh Time Unit.
+
+      The time unit to display for refresh time for re-validation of surrogacy.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"MINUTE"`
+      - :ansible-option-choices-entry:`"HOUR"`
+      - :ansible-option-choices-entry:`"DAY"`
 
 
       .. raw:: html
@@ -1282,7 +1377,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      Timezone of the location. If not specified, it defaults to GMT.
 
 
       .. raw:: html
@@ -1316,7 +1411,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      Upload bandwidth in kbps. The value 0 implies no Bandwidth Control enforcement.
 
 
       .. raw:: html
@@ -1350,7 +1445,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      VPN User Credentials that are associated with the location.
 
 
       .. raw:: html
@@ -1392,7 +1487,7 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      
+      Fully Qualified Domain Name. Applicable only to UFQDN (or HOSTED\_MOBILE\_USERS) auth type.
 
 
       .. raw:: html
@@ -1434,7 +1529,7 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      
+      VPN credential id
 
 
       .. raw:: html
@@ -1476,49 +1571,11 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      
+      Static IP address for VPN that is self-provisioned or provisioned by Zscaler.
 
+      This is a required field for IP auth type and is not applicable to other auth types.
 
-      .. raw:: html
-
-        </div>
-
-  * - .. raw:: html
-
-        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
-        <div class="ansibleOptionAnchor" id="parameter-vpn_credentials/pre_shared_key"></div>
-
-      .. raw:: latex
-
-        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
-
-      .. _ansible_collections.zscaler.ziacloud.zia_location_management_module__parameter-vpn_credentials/pre_shared_key:
-
-      .. rst-class:: ansible-option-title
-
-      **pre_shared_key**
-
-      .. raw:: html
-
-        <a class="ansibleOptionLink" href="#parameter-vpn_credentials/pre_shared_key" title="Permalink to this option"></a>
-
-      .. ansible-option-type-line::
-
-        :ansible-option-type:`string`
-
-      .. raw:: html
-
-        </div>
-
-      .. raw:: latex
-
-        \end{minipage}
-
-    - .. raw:: html
-
-        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
-
-      
+      Note: If you want Zscaler to provision static IP addresses for your organization, contact Zscaler Support.
 
 
       .. raw:: html
@@ -1560,7 +1617,9 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      
+      VPN authentication type (i.e., how the VPN credential is sent to the server).
+
+      It is not modifiable after VpnCredential is created."
 
 
       .. rst-class:: ansible-option-line
@@ -1603,14 +1662,16 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      Enable XFF Forwarding for a location. When set to true, traffic is passed to Zscaler Cloud via the X-Forwarded-For (XFF) header.
+
+      Note: For sublocations, this attribute is a read-only field as the value is inherited from the parent location.
 
 
       .. rst-class:: ansible-option-line
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
       - :ansible-option-choices-entry:`true`
 
 
@@ -1645,14 +1706,20 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      This parameter was deprecated and no longer has an effect on SSL policy.
+
+      It remains supported in the API payload in order to maintain backwards compatibility with existing scripts, but it will be removed in future.
+
+      Enable Zscaler App SSL Setting. When set to true, the Zscaler App SSL Scan Setting takes effect, irrespective of the SSL policy that is configured for the location.
+
+      To Learn More, see Deploying SSL Inspection \ https://help.zscaler.com/z-app/configuring-ssl-inspection-zscaler-app#configure-SSL-Zscaler-App\ 
 
 
       .. rst-class:: ansible-option-line
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
       - :ansible-option-choices-entry:`true`
 
 
