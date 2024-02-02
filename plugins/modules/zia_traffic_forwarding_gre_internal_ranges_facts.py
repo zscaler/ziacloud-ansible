@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_traffic_forwarding_gre_internal_ranges_facts
 short_description: "available GRE tunnel internal IP address ranges"
@@ -37,7 +37,7 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
 options:
   start_ip_address:
     description: Starting IP address in the range
@@ -62,17 +62,19 @@ options:
     default: 10
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Retrieve Details of All GRE Internal Ranges.
   zscaler.ziacloud.zia_traffic_forwarding_gre_internal_ranges_facts:
+    provider: '{{ provider }}'
 
 - name: Retrieve Details of Specific GRE Internal Range.
   zscaler.ziacloud.zia_traffic_forwarding_gre_internal_ranges_facts:
+    provider: '{{ provider }}'
     start_ip_address: 1.1.1.1
     end_ip_address:
 """
 
-RETURN = """
+RETURN = r"""
 # Returns information about GRE Internal Ranges.
 """
 

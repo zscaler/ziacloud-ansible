@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_ip_source_anchoring_zpa_gateway_facts
 short_description: "Gets the list of Zscaler Private Access (ZPA) gateways."
@@ -38,11 +38,10 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
 options:
   id:
     description: "A unique identifier assigned to the ZPA gateway"
-    required: false
     type: int
   name:
     description: "The name of the ZPA gateway"
@@ -50,20 +49,23 @@ options:
     type: str
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Gather Information Details of all ZPA Gateways
   zscaler.ziacloud.zia_ip_source_anchoring_zpa_gateway_facts:
+    provider: '{{ provider }}'
 
 - name: Gather Information Details of ZPA Gateways By ID
   zscaler.ziacloud.zia_ip_source_anchoring_zpa_gateway_facts:
+    provider: '{{ provider }}'
     id: "845875645"
 
 - name: Gather Information Details of ZPA Gateways By Name
   zscaler.ziacloud.zia_ip_source_anchoring_zpa_gateway_facts:
+    provider: '{{ provider }}'
     name: "USA-SJC37"
 """
 
-RETURN = """
+RETURN = r"""
 # Returns information on a specified ZIA Location.
 """
 

@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_url_filtering_rules
 short_description: "Adds a new URL Filtering rule."
@@ -37,7 +37,7 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
   - zscaler.ziacloud.fragments.state
 options:
   id:
@@ -270,6 +270,7 @@ options:
 EXAMPLES = r"""
 - name: Create/Update/Delete a URL Filtering Rule.
   zscaler.ziacloud.zia_url_filtering_rules:
+    provider: '{{ provider }}'
     name: "URL_Ansible_Example"
     description: "URL_Ansible_Example"
     enabled: "ENABLED"

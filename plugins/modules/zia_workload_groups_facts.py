@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_workload_groups_facts
 short_description: "Get a list of workload groups."
@@ -38,7 +38,7 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
 options:
   id:
     description: "A unique identifier assigned to the workload group"
@@ -51,20 +51,23 @@ options:
       - The name of the workload group
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Gets list of all workload groups
   zscaler.ziacloud.zia_workload_groups_facts:
+    provider: '{{ provider }}'
 
 - name: Gets a workload group by name
   zscaler.ziacloud.zia_workload_groups_facts:
+    provider: '{{ provider }}'
     name: "Example"
 
 - name: Gets a workload group by ID
   zscaler.ziacloud.zia_workload_groups_facts:
+    provider: '{{ provider }}'
     name: "12345676"
 """
 
-RETURN = """
+RETURN = r"""
 # Returns information about Workload groups.
 """
 

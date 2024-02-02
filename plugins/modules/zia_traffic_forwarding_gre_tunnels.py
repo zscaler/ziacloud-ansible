@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_traffic_forwarding_gre_tunnels
 short_description: "GRE tunnel information"
@@ -37,7 +37,7 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
   - zscaler.ziacloud.fragments.state
 options:
   id:
@@ -97,9 +97,10 @@ options:
         type: str
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Create/Update/Delete GRE Numbered Tunnel.
   zscaler.ziacloud.zia_traffic_forwarding_gre_tunnels:
+    provider: '{{ provider }}'
     source_ip: "1.1.1.1"
     comment: "Created with Ansible"
     ip_unnumbered: false
@@ -107,6 +108,7 @@ EXAMPLES = """
 
 - name: Create/Update/Delete GRE Unnumbered Tunnel.
   zscaler.ziacloud.zia_traffic_forwarding_gre_tunnels:
+    provider: '{{ provider }}'
     source_ip: "1.1.1.1"
     comment: "Created with Ansible"
     ip_unnumbered: true
@@ -119,7 +121,7 @@ EXAMPLES = """
           virtual_ip:
 """
 
-RETURN = """
+RETURN = r"""
 # The newly created static ip resource record.
 """
 

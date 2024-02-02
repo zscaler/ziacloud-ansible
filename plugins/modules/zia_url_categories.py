@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_url_categories
 short_description: "Adds a new custom URL category."
@@ -38,21 +38,23 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
   - zscaler.ziacloud.fragments.state
 """
 
-EXAMPLES = """
-- name: Gather Information Details of a ZIA User Role
+EXAMPLES = r"""
+- name: Gather Information Details of all custom URL Categories
   zscaler.ziacloud.zia_url_categories:
+    provider: '{{ provider }}'
 
-- name: Gather Information Details of a ZIA Admin User by Name
+- name: Gather Information Details of a custom URL Categories by Name
   zscaler.ziacloud.zia_url_categories:
+    provider: '{{ provider }}'
     name: "IOS"
 """
 
-RETURN = """
-# Returns information on a specified ZIA Admin User.
+RETURN = r"""
+# Returns information on a specified custom URL Categories.
 """
 
 from traceback import format_exc

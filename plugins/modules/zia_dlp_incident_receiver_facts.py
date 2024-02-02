@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_dlp_incident_receiver_facts
 short_description: "Gets a list of DLP Incident Receivers."
@@ -38,11 +38,10 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
 options:
   id:
     description: "The unique identifier for the Incident Receiver."
-    required: false
     type: int
   name:
     type: str
@@ -51,16 +50,18 @@ options:
       - "The Incident Receiver server name."
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Gets all list of DLP Incident Receivers
   zscaler.ziacloud.zia_dlp_icident_receiver_facts:
+    provider: '{{ provider }}'
 
 - name: Gets a list of DLP Incident Receivers by name
   zscaler.ziacloud.zia_dlp_icident_receiver_facts:
+    provider: '{{ provider }}'
     name: "ZS_INC_RECEIVER_01"
 """
 
-RETURN = """
+RETURN = r"""
 # Returns information about specific DLP Incident Receivers.
 """
 

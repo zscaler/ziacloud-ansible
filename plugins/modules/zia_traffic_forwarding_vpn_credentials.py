@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_traffic_forwarding_vpn_credentials
 short_description: "Adds VPN credentials that can be associated to locations."
@@ -38,7 +38,7 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
   - zscaler.ziacloud.fragments.state
 options:
   id:
@@ -79,10 +79,11 @@ options:
 
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 
 - name: Create/Update/Delete VPN Credentials Type IP.
   zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials:
+    provider: '{{ provider }}'
     type: "IP"
     ip_address: "1.1.1.1"
     comments: "Created via Ansible"
@@ -90,13 +91,14 @@ EXAMPLES = """
 
 - name: Create/Update/Delete VPN Credentials Type UFQDN.
   zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials:
+    provider: '{{ provider }}'
     type: "UFQDN"
     ip_address: "sjc-1-37@acme.com"
     comments: "Created via Ansible"
     pre_shared_key: "newPassword123!"
 """
 
-RETURN = """
+RETURN = r"""
 # The newly created vpn credential resource record.
 """
 

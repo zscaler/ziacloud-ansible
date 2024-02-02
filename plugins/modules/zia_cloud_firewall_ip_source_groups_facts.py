@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_cloud_firewall_ip_source_groups_facts
 short_description: "Cloud Firewall IP source groups"
@@ -38,28 +38,29 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
 options:
   id:
-    description: ""
-    required: false
+    description: "A unique identifier of the source IP address group"
     type: int
   name:
-    description: ""
+    description: "The name of the source IP address group"
     required: true
     type: str
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Gather Information Details of all ip source groups
   zscaler.ziacloud.zia_fw_filtering_ip_source_groups_facts:
+    provider: '{{ provider }}'
 
 - name: Gather Information of an ip source group by name
   zscaler.ziacloud.zia_fw_filtering_ip_source_groups_facts:
+    provider: '{{ provider }}'
     name: "example"
 """
 
-RETURN = """
+RETURN = r"""
 # Returns information a specific ip source group or groups.
 """
 

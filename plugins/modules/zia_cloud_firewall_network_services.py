@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_cloud_firewall_network_services
 short_description: "Adds a new network service."
@@ -37,7 +37,7 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
   - zscaler.ziacloud.fragments.state
 options:
   id:
@@ -148,10 +148,11 @@ options:
           - List of valid TCP ports.
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 
 - name: Create/Update/Delete Network Services.
   zscaler.ziacloud.zia_cloud_firewall_network_services:
+    provider: '{{ provider }}'
     name: "example"
     description: "example"
     src_tcp_ports:
@@ -164,7 +165,7 @@ EXAMPLES = """
 
 """
 
-RETURN = """
+RETURN = r"""
 # The newly created network services resource record.
 """
 

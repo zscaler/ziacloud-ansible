@@ -37,7 +37,7 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
   - zscaler.ziacloud.fragments.state
 options:
   id:
@@ -282,7 +282,7 @@ options:
 EXAMPLES = r"""
 - name: Create/Update Forwarding Control ZPA Forward Method
   zscaler.ziacloud.zia_forwarding_control_policy:
-    provider: '{{ zia_cloud }}'
+    provider: '{{ provider }}'
     name: 'Example'
     description: 'TT#1965232865'
     type: 'FORWARDING'

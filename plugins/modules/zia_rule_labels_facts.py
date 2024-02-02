@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_rule_labels_facts
 short_description: "Gets a list of rule labels"
@@ -38,70 +38,29 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
 options:
   id:
     description: "The unique identifier for the rule label."
-    required: false
     type: int
   name:
     description: "The rule label name."
     required: true
     type: str
-  description:
-    description: "The rule label description."
-    required: true
-    type: str
-  last_modified_time:
-    description: "Timestamp when the rule lable was last modified. This is a read-only field. Ignored by PUT and DELETE requests."
-    required: true
-    type: int
-  last_modified_by:
-    description: "The admin that modified the rule label last. This is a read-only field. Ignored by PUT requests."
-    type: list
-    elements: dict
-    suboptions:
-      id:
-        type: int
-        required: false
-        description:
-          - Identifier that uniquely identifies an entity.
-      name:
-        type: str
-        required: false
-        description:
-          - The configured name of the entity.
-  created_by:
-    description: "The admin that created the rule label. This is a read-only field. Ignored by PUT requests"
-    type: list
-    elements: dict
-    suboptions:
-      id:
-        type: int
-        required: false
-        description:
-          - Identifier that uniquely identifies an entity.
-      name:
-        type: str
-        required: false
-        description:
-          - The configured name of the entity.
-  referenced_rule_count:
-    description: "The rule label name."
-    required: true
-    type: str
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Gets all list of rule label
   zscaler.ziacloud.zia_rule_labels_facts:
+    provider: '{{ provider }}'
 
 - name: Gets a list of rule label by name
   zscaler.ziacloud.zia_rule_labels_facts:
+    provider: '{{ provider }}'
     name: "example"
 """
 
-RETURN = """
+RETURN = r"""
 # Returns information specific Gets rule labels.
 """
 

@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_dlp_icap_server_facts
 short_description: "Gets a the list of DLP servers using ICAP."
@@ -38,11 +38,10 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
 options:
   id:
     description: "The unique identifier for a DLP ICAP server."
-    required: false
     type: int
   name:
     type: str
@@ -51,16 +50,18 @@ options:
       - The DLP ICAP server name.
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Gets all list of DLP ICAP Server
   zscaler.ziacloud.zia_dlp_icap_server_facts:
+    provider: '{{ provider }}'
 
 - name: Gets a list of DLP ICAP Server by name
   zscaler.ziacloud.zia_dlp_icap_server_facts:
+    provider: '{{ provider }}'
     name: "ZS_ICAP"
 """
 
-RETURN = """
+RETURN = r"""
 # Returns information about specific DLP ICAP Server.
 """
 

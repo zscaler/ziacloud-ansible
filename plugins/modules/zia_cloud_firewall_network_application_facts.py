@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_cloud_firewall_network_application_facts
 short_description: "Gets a list of all network application groups."
@@ -38,7 +38,7 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
 options:
   app_id:
     description:
@@ -58,16 +58,18 @@ options:
     type: str
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Gather Information Details of all Network Applicactions
-  zscaler.ziacloud.zia_fw_network_application_facts:
+  zscaler.ziacloud.zia_cloud_firewall_network_application_facts:
+    provider: '{{ provider }}'
 
 - name: Gather Information Details of a Network Applicaction
-  zscaler.ziacloud.zia_fw_network_application_facts:
+  zscaler.ziacloud.zia_cloud_firewall_network_application_facts:
+    provider: '{{ provider }}'
     name: "APNS"
 """
 
-RETURN = """
+RETURN = r"""
 # Returns information on a specified Network Application(s).
 """
 

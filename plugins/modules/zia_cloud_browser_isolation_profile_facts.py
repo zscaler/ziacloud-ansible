@@ -25,11 +25,11 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_cloud_browser_isolation_profile_facts
-short_description: "Gets all cloud browser isolation profiles"
-description: "Gets all cloud browser isolation profiles"
+short_description: Retrieves cloud browser isolation profile.
+description: Retrieves a cloud browser isolation profile.
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
@@ -37,32 +37,36 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
 options:
   id:
-    description: "The universally unique identifier (UUID) for the browser isolation profile"
-    required: false
+    description:
+        - The universally unique identifier (UUID) for the browser isolation profile.
     type: str
   name:
-    description: "Name of the browser isolation profile"
+    description:
+        - Name of the browser isolation profile.
     required: true
     type: str
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Gather Information Details of a Cloud Browser Isolation Profiles
   zscaler.ziacloud.zia_cloud_browser_isolation_profile_facts:
+    provider: '{{ provider }}'
 
 - name: Gather Information Details of a Cloud Browser Isolation Profiles by Name
   zscaler.ziacloud.zia_cloud_browser_isolation_profile_facts:
+    provider: '{{ provider }}'
     name: "Example"
 
 - name: Gather Information Details of a Cloud Browser Isolation Profiles by ID
   zscaler.ziacloud.zia_cloud_browser_isolation_profile_facts:
+    provider: '{{ provider }}'
     name: "791c2d14-e9a7-4c47-8a3c-8988caad925b"
 """
 
-RETURN = """
+RETURN = r"""
 # Returns information on a specified ZIA Cloud Browser Isolation Profile.
 """
 

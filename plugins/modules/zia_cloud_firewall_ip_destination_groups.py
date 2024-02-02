@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_cloud_firewall_ip_destination_groups
 short_description: "Create IP destination groups."
@@ -38,7 +38,7 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
   - zscaler.ziacloud.fragments.state
 options:
   id:
@@ -90,15 +90,17 @@ options:
       - Destination IP address countries.
       - You can identify destinations based on the location of a server.
       - Supports 2-letter ISO3166 Alpha2 Country i.e BR, CA, US.
+      - Please visit the following site for reference U(https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes)
     type: list
     elements: str
     required: false
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 
 - name: Create/Update/Delete ip destination group - DSTN_FQDN.
   zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups:
+    provider: '{{ provider }}'
     name: "Example"
     description: "Example"
     type: "DSTN_FQDN"
@@ -106,6 +108,7 @@ EXAMPLES = """
 
 - name: Create/Update/Delete ip destination group - DSTN_IP by Country.
   zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups:
+    provider: '{{ provider }}'
     name: "example"
     description: "example"
     type: "DSTN_IP"
@@ -114,6 +117,7 @@ EXAMPLES = """
 
 - name: Create/Update/Delete ip destination group - DSTN_IP.
   zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups:
+    provider: '{{ provider }}'
     name: "Example - IP Ranges"
     description: "Example - IP Ranges"
     type: "DSTN_IP"
@@ -123,7 +127,7 @@ EXAMPLES = """
         "35.80.88.0-35.80.95.255" ]
 """
 
-RETURN = """
+RETURN = r"""
 # The newly created ip destination group resource record.
 """
 

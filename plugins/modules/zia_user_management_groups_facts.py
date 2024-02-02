@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_user_management_groups_facts
 short_description: "Gets a list of user groups. "
@@ -38,7 +38,7 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
 options:
   id:
     description: "Group ID."
@@ -50,16 +50,18 @@ options:
     type: str
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Gets a list of all groups
   zscaler.ziacloud.zia_user_management_groups_facts:
+    provider: '{{ provider }}'
 
 - name: Gets a list of a single group
   zscaler.ziacloud.zia_user_management_groups_facts:
+    provider: '{{ provider }}'
     name: "marketing"
 """
 
-RETURN = """
+RETURN = r"""
 # Returns information of all groups.
 """
 

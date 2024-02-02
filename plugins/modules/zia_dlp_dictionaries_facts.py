@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_dlp_dictionaries_facts
 short_description: "Custom and predefined DLP dictionaries."
@@ -37,11 +37,10 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
 options:
   id:
     description: "Unique identifier for the DLP dictionary"
-    required: false
     type: int
   name:
     description: "Name of the DLP dictionary's name"
@@ -49,16 +48,18 @@ options:
     type: str
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Gather Information Details of all ZIA DLP Dictionaries
   zscaler.ziacloud.zia_dlp_dictionaries_facts:
+    provider: '{{ provider }}'
 
 - name: Gather Information Details of a ZIA DLP Dictionaries by Name
   zscaler.ziacloud.zia_dlp_dictionaries_facts:
+    provider: '{{ provider }}'
     name: "Example"
 """
 
-RETURN = """
+RETURN = r"""
 # Returns information on a specified ZIA DLP Dictionaries.
 """
 

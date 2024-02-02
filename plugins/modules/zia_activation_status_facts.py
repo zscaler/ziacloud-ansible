@@ -25,40 +25,44 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+
+DOCUMENTATION = '''
 ---
 module: zia_activation_status_facts
-short_description: "Gets the activation status."
-description: "Gets the activation status for the saved configuration changes."
+
+version_added: "1.0.0"
+
+short_description: Gets the activation status
+
+description:
+    - Gets the activation status for the saved configuration changes
+
 author:
   - William Guilherme (@willguibr)
-version_added: "1.0.0"
+
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
+
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
 options:
   status:
+    type: str
     description:
         - Organization Policy Edit/Update Activation status
-    required: false
-    type: str
-    choices:
-        - "ACTIVE"
-        - "PENDING"
-        - "INPROGRESS"
-"""
+'''
 
-EXAMPLES = """
+EXAMPLES = '''
 - name: Gets the activation status for the saved configuration changes
   zscaler.ziacloud.zia_activation_status:
-    status: "ACTIVE"
-"""
+    provider: '{{ provider }}'
+    status: 'ACTIVE'
+'''
 
-RETURN = """
+RETURN = '''
 # Gets the activation status for the saved configuration changes.
-"""
+'''
 
 from traceback import format_exc
 

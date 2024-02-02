@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_cloud_firewall_ip_destination_groups_facts
 short_description: "Gets a list of all IP destination groups"
@@ -38,7 +38,7 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
 options:
   id:
     description: "Unique identifer for the destination IP group"
@@ -50,16 +50,18 @@ options:
     type: str
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Gather Information of all Destination Group
   zscaler.ziacloud.zia_fw_filtering_ip_destination_groups_facts:
+    provider: '{{ provider }}'
 
 - name: Gather Information of a Destination Group by Name
   zscaler.ziacloud.zia_fw_filtering_ip_destination_groups_facts:
+    provider: '{{ provider }}'
     name: "example"
 """
 
-RETURN = """
+RETURN = r"""
 # Returns information on a specific or all destination groups.
 """
 

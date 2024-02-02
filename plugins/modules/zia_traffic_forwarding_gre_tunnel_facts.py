@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_traffic_forwarding_gre_tunnel_facts
 short_description: "Gets the GRE tunnel information for the specified ID.D"
@@ -37,7 +37,7 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
 options:
   id:
     description: "Unique identifier of the static IP address that is associated to a GRE tunnel"
@@ -52,21 +52,24 @@ options:
     type: str
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Retrieve Details of All GRE Tunnels.
   zscaler.ziacloud.zia_traffic_forwarding_gre_tunnel_facts:
+    provider: '{{ provider }}'
 
 - name: Retrieve Details of Specific GRE Tunnel By Source IP Address.
   zscaler.ziacloud.zia_traffic_forwarding_gre_tunnel_facts:
+    provider: '{{ provider }}'
     ip_address: 1.1.1.1
 
 - name: Retrieve Details of Specific GRE Tunnel By ID.
   zscaler.ziacloud.zia_traffic_forwarding_gre_tunnel_facts:
+    provider: '{{ provider }}'
     id: 82709
 
 """
 
-RETURN = """
+RETURN = r"""
 # Returns information on GRE Tunnel.
 """
 

@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_location_management_facts
 short_description: "Gets locations only, not sub-locations."
@@ -38,11 +38,10 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
 options:
   id:
     description: "The unique identifier for the location"
-    required: false
     type: int
   name:
     description: "The location name"
@@ -50,16 +49,18 @@ options:
     type: str
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Gather Information Details of all ZIA Locations
   zscaler.ziacloud.zia_location_management_facts:
+    provider: '{{ provider }}'
 
 - name: Gather Information Details of ZIA Location By Name
   zscaler.ziacloud.zia_location_management_facts:
+    provider: '{{ provider }}'
     name: "USA-SJC37"
 """
 
-RETURN = """
+RETURN = r"""
 # Returns information on a specified ZIA Location.
 """
 

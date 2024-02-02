@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_sandbox_submit
 short_description: "Submits a file to the ZIA Advanced Cloud Sandbox for analysis."
@@ -38,7 +38,7 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
   - zscaler.ziacloud.fragments.state
 options:
   file_path:
@@ -48,17 +48,18 @@ options:
   force:
     description: "Force ZIA to analyse the file even if it has been submitted previously."
     type: bool
-    default: False
+    default: false
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Submit a file for analysis.
   zscaler.ziacloud.zia_sandbox_submit:
+    provider: '{{ provider }}'
     file_path: "/path/to/malware.exe"
     force: True
 """
 
-RETURN = """
+RETURN = r"""
 # The Cloud Sandbox submission response information.
 """
 

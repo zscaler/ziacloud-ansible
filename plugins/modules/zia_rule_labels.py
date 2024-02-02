@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_rule_labels
 short_description: "Adds a rule label."
@@ -38,12 +38,10 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
   - zscaler.ziacloud.fragments.state
 options:
   id:
-    description: ""
-    required: false
+    description: "The unique identifier for the rule label."
     type: int
   name:
     description: "The rule label name."
@@ -56,15 +54,16 @@ options:
     type: str
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 
 - name: Create/Update/Delete rule label.
   zscaler.ziacloud.zia_rule_labels:
+    provider: '{{ provider }}'
     name: "Example"
     description: "Example"
 """
 
-RETURN = """
+RETURN = r"""
 # The newly created rule label resource record.
 """
 

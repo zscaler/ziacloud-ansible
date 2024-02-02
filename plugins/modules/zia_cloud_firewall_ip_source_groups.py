@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_cloud_firewall_ip_source_groups
 short_description: "Cloud Firewall IP source groups"
@@ -38,7 +38,7 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
   - zscaler.ziacloud.fragments.state
 options:
   id:
@@ -60,10 +60,11 @@ options:
     required: true
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 
 - name: Create/Update/Delete ip source group.
   zscaler.ziacloud.zia_cloud_firewall_ip_source_groups:
+    provider: '{{ provider }}'
     name: "Example"
     description: "Example"
     ip_addresses:
@@ -72,7 +73,7 @@ EXAMPLES = """
         - 192.168.1.3
 """
 
-RETURN = """
+RETURN = r"""
 # The newly created ip source group resource record.
 """
 

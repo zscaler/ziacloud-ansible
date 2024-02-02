@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_cloud_firewall_network_application_group
 short_description: "Cloud Firewall Network Application Group"
@@ -38,7 +38,6 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
   - zscaler.ziacloud.fragments.state
 options:
   id:
@@ -56,9 +55,10 @@ options:
     required: true
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Create/Update/Delete network application group.
   zscaler.ziacloud.zia_cloud_firewall_network_application_group:
+    provider: '{{ provider }}'
     name: "sampleNetworkApplicationGroup"
     network_applications:
         - 'YAMMER'
@@ -74,7 +74,7 @@ EXAMPLES = """
         - 'ONEDRIVE'
 """
 
-RETURN = """
+RETURN = r"""
 # The newly created network application group resource record.
 """
 

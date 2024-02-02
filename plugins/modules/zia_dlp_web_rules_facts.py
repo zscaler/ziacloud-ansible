@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_dlp_web_rules_facts
 short_description: "Gets a list of DLP policy rules, excluding SaaS Security API DLP policy rules"
@@ -37,11 +37,10 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
 options:
   id:
     description: "Unique identifier for the DLP Web rule"
-    required: false
     type: int
   name:
     description: "Name of the DLP Web rule"
@@ -49,16 +48,18 @@ options:
     type: str
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Gather Information Details of all ZIA DLP Web Rule
   zscaler.ziacloud.zia_firewall_filtering_rules_facts:
+    provider: '{{ provider }}'
 
 - name: Gather Information Details of a ZIA DLP Web Rule by Name
   zscaler.ziacloud.zia_firewall_filtering_rules_facts:
+    provider: '{{ provider }}'
     name: "Example"
 """
 
-RETURN = """
+RETURN = r"""
 # Returns information on a specified ZIA DLP Web Rule.
 """
 

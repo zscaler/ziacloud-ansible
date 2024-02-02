@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 ---
 module: zia_dlp_notification_template_facts
 short_description: "Get a list of DLP notification templates."
@@ -38,11 +38,10 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
 options:
   id:
     description: "The unique identifier for the DLP engine."
-    required: false
     type: int
   name:
     type: str
@@ -51,16 +50,18 @@ options:
       - The DLP engine name as configured by the admin..
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Gets all list of DLP Notification Template
   zscaler.ziacloud.zia_dlp_notification_template_facts:
+    provider: '{{ provider }}'
 
 - name: Gets a list of DLP Notification Template by name
   zscaler.ziacloud.zia_dlp_notification_template_facts:
+    provider: '{{ provider }}'
     name: "Standard_Template"
 """
 
-RETURN = """
+RETURN = r"""
 # Returns information about specific DLP Notification Template.
 """
 

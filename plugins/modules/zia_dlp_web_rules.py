@@ -37,12 +37,11 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-  - zscaler.ziacloud.fragments.credentials_set
+
   - zscaler.ziacloud.fragments.state
 options:
   id:
     description: "The unique identifier for the DLP policy rule."
-    required: false
     type: int
   name:
     description: "The DLP policy rule name."
@@ -243,7 +242,7 @@ options:
 EXAMPLES = r"""
 - name: Create/Update/Delete DLP Web Rules
   zscaler.ziacloud.zia_dlp_web_rules:
-    provider: '{{ zia_cloud }}'
+    provider: '{{ provider }}'
     name: "Example"
     description: "Example"
     action: "ALLOW"
