@@ -1,9 +1,0 @@
-ip_address: "121.234.54.72"
-routable_ip: true
-comment: test_zia_ansible
-geo_override: true
-latitude: 22.5559
-longitude: 114.0577
-
-# Static IP Update
-comment_update: test_zia_ansible

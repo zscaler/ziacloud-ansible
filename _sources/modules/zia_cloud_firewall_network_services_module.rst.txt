@@ -1,0 +1,1184 @@
+
+.. Document meta
+
+:orphan:
+
+.. |antsibull-internal-nbsp| unicode:: 0xA0
+    :trim:
+
+.. meta::
+  :antsibull-docs: 2.7.0
+
+.. Anchors
+
+.. _ansible_collections.zscaler.ziacloud.zia_cloud_firewall_network_services_module:
+
+.. Anchors: short name for ansible.builtin
+
+.. Title
+
+zscaler.ziacloud.zia_cloud_firewall_network_services module -- Adds a new network service.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+.. Collection note
+
+.. note::
+    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 1.0.0).
+
+    It is not included in ``ansible-core``.
+    To check whether it is installed, run :code:`ansible-galaxy collection list`.
+
+    To install it, use: :code:`ansible-galaxy collection install zscaler.ziacloud`.
+    You need further requirements to be able to use this module,
+    see :ref:`Requirements <ansible_collections.zscaler.ziacloud.zia_cloud_firewall_network_services_module_requirements>` for details.
+
+    To use it in a playbook, specify: :code:`zscaler.ziacloud.zia_cloud_firewall_network_services`.
+
+.. version_added
+
+.. rst-class:: ansible-version-added
+
+New in zscaler.ziacloud 1.0.0
+
+.. contents::
+   :local:
+   :depth: 1
+
+.. Deprecated
+
+
+Synopsis
+--------
+
+.. Description
+
+- Adds a new network service.
+
+
+.. Aliases
+
+
+.. Requirements
+
+.. _ansible_collections.zscaler.ziacloud.zia_cloud_firewall_network_services_module_requirements:
+
+Requirements
+------------
+The below requirements are needed on the host that executes this module.
+
+- Zscaler SDK Python can be obtained from PyPI \ https://pypi.org/project/zscaler-sdk-python/\ 
+
+
+
+
+
+
+.. Options
+
+Parameters
+----------
+
+.. tabularcolumns:: \X{1}{3}\X{2}{3}
+
+.. list-table::
+  :width: 100%
+  :widths: auto
+  :header-rows: 1
+  :class: longtable ansible-option-table
+
+  * - Parameter
+    - Comments
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-description"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_firewall_network_services_module__parameter-description:
+
+      .. rst-class:: ansible-option-title
+
+      **description**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-description" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-dest_tcp_ports"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_firewall_network_services_module__parameter-dest_tcp_ports:
+
+      .. rst-class:: ansible-option-title
+
+      **dest_tcp_ports**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-dest_tcp_ports" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=dictionary`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      List of tcp port range pairs, e.g. ['35000', '35000'] for port 35000.
+
+
+      .. raw:: html
+
+        </div>
+    
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-dest_tcp_ports/end"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_firewall_network_services_module__parameter-dest_tcp_ports/end:
+
+      .. rst-class:: ansible-option-title
+
+      **end**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-dest_tcp_ports/end" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`integer`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      List of valid TCP ports.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-dest_tcp_ports/start"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_firewall_network_services_module__parameter-dest_tcp_ports/start:
+
+      .. rst-class:: ansible-option-title
+
+      **start**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-dest_tcp_ports/start" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`integer`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      List of valid TCP ports.
+
+
+      .. raw:: html
+
+        </div>
+
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-dest_udp_ports"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_firewall_network_services_module__parameter-dest_udp_ports:
+
+      .. rst-class:: ansible-option-title
+
+      **dest_udp_ports**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-dest_udp_ports" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=dictionary`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      List of tcp port range pairs, e.g. ['35000', '35000'] for port 35000.
+
+
+      .. raw:: html
+
+        </div>
+    
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-dest_udp_ports/end"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_firewall_network_services_module__parameter-dest_udp_ports/end:
+
+      .. rst-class:: ansible-option-title
+
+      **end**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-dest_udp_ports/end" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`integer`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      List of valid TCP ports.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-dest_udp_ports/start"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_firewall_network_services_module__parameter-dest_udp_ports/start:
+
+      .. rst-class:: ansible-option-title
+
+      **start**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-dest_udp_ports/start" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`integer`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      List of valid TCP ports.
+
+
+      .. raw:: html
+
+        </div>
+
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-id"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_firewall_network_services_module__parameter-id:
+
+      .. rst-class:: ansible-option-title
+
+      **id**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-id" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The unique identifier for the network service
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-is_name_l10n_tag"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_firewall_network_services_module__parameter-is_name_l10n_tag:
+
+      .. rst-class:: ansible-option-title
+
+      **is_name_l10n_tag**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-is_name_l10n_tag" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-name"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_firewall_network_services_module__parameter-name:
+
+      .. rst-class:: ansible-option-title
+
+      **name**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-name" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string` / :ansible-option-required:`required`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The network service name
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_firewall_network_services_module__parameter-provider:
+
+      .. rst-class:: ansible-option-title
+
+      **provider**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`dictionary` / :ansible-option-required:`required`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A dict object containing connection details.
+
+
+      .. raw:: html
+
+        </div>
+    
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/api_key"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_firewall_network_services_module__parameter-provider/api_key:
+
+      .. rst-class:: ansible-option-title
+
+      **api_key**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/api_key" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string` / :ansible-option-required:`required`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      A string that contains the obfuscated API key
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/cloud"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_firewall_network_services_module__parameter-provider/cloud:
+
+      .. rst-class:: ansible-option-title
+
+      **cloud**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/cloud" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string` / :ansible-option-required:`required`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      The Zscaler cloud name was provisioned for your organization
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"zscloud"`
+      - :ansible-option-choices-entry:`"zscaler"`
+      - :ansible-option-choices-entry:`"zscalerone"`
+      - :ansible-option-choices-entry:`"zscalertwo"`
+      - :ansible-option-choices-entry:`"zscalerthree"`
+      - :ansible-option-choices-entry:`"zscalerbeta"`
+      - :ansible-option-choices-entry:`"zscalergov"`
+      - :ansible-option-choices-entry:`"zscalerten"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/password"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_firewall_network_services_module__parameter-provider/password:
+
+      .. rst-class:: ansible-option-title
+
+      **password**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/password" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string` / :ansible-option-required:`required`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      A string that contains the password for the API admin
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/username"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_firewall_network_services_module__parameter-provider/username:
+
+      .. rst-class:: ansible-option-title
+
+      **username**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/username" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string` / :ansible-option-required:`required`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      A string that contains the email ID of the API admin
+
+
+      .. raw:: html
+
+        </div>
+
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-src_tcp_ports"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_firewall_network_services_module__parameter-src_tcp_ports:
+
+      .. rst-class:: ansible-option-title
+
+      **src_tcp_ports**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-src_tcp_ports" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=dictionary`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      List of tcp port range pairs, e.g. ['35000', '35000'] for port 35000.
+
+
+      .. raw:: html
+
+        </div>
+    
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-src_tcp_ports/end"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_firewall_network_services_module__parameter-src_tcp_ports/end:
+
+      .. rst-class:: ansible-option-title
+
+      **end**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-src_tcp_ports/end" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`integer`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      List of valid TCP ports.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-src_tcp_ports/start"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_firewall_network_services_module__parameter-src_tcp_ports/start:
+
+      .. rst-class:: ansible-option-title
+
+      **start**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-src_tcp_ports/start" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`integer`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      List of valid TCP ports.
+
+
+      .. raw:: html
+
+        </div>
+
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-src_udp_ports"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_firewall_network_services_module__parameter-src_udp_ports:
+
+      .. rst-class:: ansible-option-title
+
+      **src_udp_ports**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-src_udp_ports" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=dictionary`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      List of tcp port range pairs, e.g. ['35000', '35000'] for port 35000.
+
+
+      .. raw:: html
+
+        </div>
+    
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-src_udp_ports/end"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_firewall_network_services_module__parameter-src_udp_ports/end:
+
+      .. rst-class:: ansible-option-title
+
+      **end**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-src_udp_ports/end" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`integer`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      List of valid TCP ports.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-src_udp_ports/start"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_firewall_network_services_module__parameter-src_udp_ports/start:
+
+      .. rst-class:: ansible-option-title
+
+      **start**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-src_udp_ports/start" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`integer`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      List of valid TCP ports.
+
+
+      .. raw:: html
+
+        </div>
+
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-state"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_firewall_network_services_module__parameter-state:
+
+      .. rst-class:: ansible-option-title
+
+      **state**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-state" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The state.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry-default:`"present"` :ansible-option-choices-default-mark:`← (default)`
+      - :ansible-option-choices-entry:`"absent"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-tag"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_firewall_network_services_module__parameter-tag:
+
+      .. rst-class:: ansible-option-title
+
+      **tag**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-tag" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The network service tag
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"ICMP\_ANY"`
+      - :ansible-option-choices-entry:`"UDP\_ANY"`
+      - :ansible-option-choices-entry:`"TCP\_ANY"`
+      - :ansible-option-choices-entry:`"OTHER\_NETWORK\_SERVICE"`
+      - :ansible-option-choices-entry:`"DNS"`
+      - :ansible-option-choices-entry:`"NETBIOS"`
+      - :ansible-option-choices-entry:`"FTP"`
+      - :ansible-option-choices-entry:`"GNUTELLA"`
+      - :ansible-option-choices-entry:`"H\_323"`
+      - :ansible-option-choices-entry:`"HTTP"`
+      - :ansible-option-choices-entry:`"HTTPS"`
+      - :ansible-option-choices-entry:`"IKE"`
+      - :ansible-option-choices-entry:`"IMAP"`
+      - :ansible-option-choices-entry:`"ILS"`
+      - :ansible-option-choices-entry:`"IKE\_NAT"`
+      - :ansible-option-choices-entry:`"IRC"`
+      - :ansible-option-choices-entry:`"LDAP"`
+      - :ansible-option-choices-entry:`"QUIC"`
+      - :ansible-option-choices-entry:`"TDS"`
+      - :ansible-option-choices-entry:`"NETMEETING"`
+      - :ansible-option-choices-entry:`"NFS"`
+      - :ansible-option-choices-entry:`"NTP"`
+      - :ansible-option-choices-entry:`"SIP"`
+      - :ansible-option-choices-entry:`"SNMP"`
+      - :ansible-option-choices-entry:`"SMB"`
+      - :ansible-option-choices-entry:`"SMTP"`
+      - :ansible-option-choices-entry:`"SSH"`
+      - :ansible-option-choices-entry:`"SYSLOG"`
+      - :ansible-option-choices-entry:`"TELNET"`
+      - :ansible-option-choices-entry:`"TRACEROUTE"`
+      - :ansible-option-choices-entry:`"POP3"`
+      - :ansible-option-choices-entry:`"PPTP"`
+      - :ansible-option-choices-entry:`"RADIUS"`
+      - :ansible-option-choices-entry:`"REAL\_MEDIA"`
+      - :ansible-option-choices-entry:`"RTSP"`
+      - :ansible-option-choices-entry:`"VNC"`
+      - :ansible-option-choices-entry:`"WHOIS"`
+      - :ansible-option-choices-entry:`"KERBEROS\_SEC"`
+      - :ansible-option-choices-entry:`"TACACS"`
+      - :ansible-option-choices-entry:`"SNMPTRAP"`
+      - :ansible-option-choices-entry:`"NMAP"`
+      - :ansible-option-choices-entry:`"RSYNC"`
+      - :ansible-option-choices-entry:`"L2TP"`
+      - :ansible-option-choices-entry:`"HTTP\_PROXY"`
+      - :ansible-option-choices-entry:`"PC\_ANYWHERE"`
+      - :ansible-option-choices-entry:`"MSN"`
+      - :ansible-option-choices-entry:`"ECHO"`
+      - :ansible-option-choices-entry:`"AIM"`
+      - :ansible-option-choices-entry:`"IDENT"`
+      - :ansible-option-choices-entry:`"YMSG"`
+      - :ansible-option-choices-entry:`"SCCP"`
+      - :ansible-option-choices-entry:`"MGCP\_UA"`
+      - :ansible-option-choices-entry:`"MGCP\_CA"`
+      - :ansible-option-choices-entry:`"VDO\_LIVE"`
+      - :ansible-option-choices-entry:`"OPENVPN"`
+      - :ansible-option-choices-entry:`"TFTP"`
+      - :ansible-option-choices-entry:`"FTPS\_IMPLICIT"`
+      - :ansible-option-choices-entry:`"ZSCALER\_PROXY\_NW\_SERVICES"`
+      - :ansible-option-choices-entry:`"GRE\_PROTOCOL"`
+      - :ansible-option-choices-entry:`"ESP\_PROTOCOL, DHCP"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-type"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_firewall_network_services_module__parameter-type:
+
+      .. rst-class:: ansible-option-title
+
+      **type**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-type" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry-default:`"STANDARD"` :ansible-option-choices-default-mark:`← (default)`
+      - :ansible-option-choices-entry:`"PREDEFINED"`
+      - :ansible-option-choices-entry:`"CUSTOM"`
+
+
+      .. raw:: html
+
+        </div>
+
+
+.. Attributes
+
+
+.. Notes
+
+
+.. Seealso
+
+
+.. Examples
+
+Examples
+--------
+
+.. code-block:: yaml+jinja
+
+    
+
+    - name: Create/Update/Delete Network Services.
+      zscaler.ziacloud.zia_cloud_firewall_network_services:
+        provider: '{{ provider }}'
+        name: "example"
+        description: "example"
+        src_tcp_ports:
+            - start: 5002
+              end: 5005
+        dest_tcp_ports:
+            - start: 5003
+              end: 5005
+        type: "CUSTOM"
+
+
+
+
+
+.. Facts
+
+
+.. Return values
+
+
+..  Status (Presently only deprecated)
+
+
+.. Authors
+
+Authors
+~~~~~~~
+
+- William Guilherme (@willguibr)
+
+
+
+.. Extra links
+
+Collection links
+~~~~~~~~~~~~~~~~
+
+.. ansible-links::
+
+  - title: "Issue Tracker"
+    url: "https://github.com/zscaler/ziacloud-ansible/issues"
+    external: true
+  - title: "Repository (Sources)"
+    url: "https://github.com/zscaler/ziacloud-ansible"
+    external: true
+
+
+.. Parsing errors
+
