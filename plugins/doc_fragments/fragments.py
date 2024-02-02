@@ -11,7 +11,7 @@ __metaclass__ = type
 class ModuleDocFragment(object):
     # Standard files documentation fragment
 
-    DOCUMENTATION = r'''
+    DOCUMENTATION = r"""
 options:
     username:
         description:
@@ -42,9 +42,9 @@ options:
             - zscalerbeta
             - zscalergov
             - zscalerten
-'''
+"""
 
-    PROVIDER = r'''
+    PROVIDER = r"""
 options:
     provider:
         description:
@@ -81,9 +81,9 @@ options:
                     - zscalerbeta
                     - zscalergov
                     - zscalerten
-'''
+"""
 
-    STATE = r'''
+    STATE = r"""
     options:
         state:
             description:
@@ -93,9 +93,9 @@ options:
             choices:
                 - present
                 - absent
-'''
+"""
 
-    ENABLED_STATE = r'''
+    ENABLED_STATE = r"""
     options:
         state:
             description:
@@ -107,4 +107,4 @@ options:
                 - absent
                 - enabled
                 - disabled
-'''
+"""

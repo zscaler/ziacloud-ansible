@@ -79,11 +79,12 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
     ZIAClientHelper,
 )
 
+
 def serialize_complex_data(group):
-    if 'expression_json' in group:
-        group['expression_json'] = json.dumps(group['expression_json'])
-    if 'last_modified_by' in group:
-        group['last_modified_by'] = json.dumps(group['last_modified_by'])
+    if "expression_json" in group:
+        group["expression_json"] = json.dumps(group["expression_json"])
+    if "last_modified_by" in group:
+        group["last_modified_by"] = json.dumps(group["last_modified_by"])
     return group
 
 
@@ -102,15 +103,19 @@ def core(module):
             if groups is None:
                 module.fail_json(msg="No workload groups found")
             else:
-                result['workload_groups'] = [serialize_complex_data(group) for group in groups]
+                result["workload_groups"] = [
+                    serialize_complex_data(group) for group in groups
+                ]
 
         # Case 2: Return group by name
         elif group_name is not None:
             group = client.workload_groups.get_group_by_name(group_name)
             if group is None:
-                module.fail_json(msg=f"No workload group found with name '{group_name}'")
+                module.fail_json(
+                    msg=f"No workload group found with name '{group_name}'"
+                )
             else:
-                result['workload_group'] = group
+                result["workload_group"] = group
 
         # Case 3: Return group by ID
         elif group_id is not None:
@@ -118,20 +123,25 @@ def core(module):
             if group is None:
                 module.fail_json(msg=f"No workload group found with id '{group_id}'")
             else:
-                result['workload_group'] = group
+                result["workload_group"] = group
 
         # Serialize complex data structures for Ansible compatibility
-        if 'workload_group' in result:
-            if 'expression_json' in result['workload_group']:
-                result['workload_group']['expression_json'] = json.dumps(result['workload_group']['expression_json'])
+        if "workload_group" in result:
+            if "expression_json" in result["workload_group"]:
+                result["workload_group"]["expression_json"] = json.dumps(
+                    result["workload_group"]["expression_json"]
+                )
 
-            if 'last_modified_by' in result['workload_group']:
-                result['workload_group']['last_modified_by'] = json.dumps(result['workload_group']['last_modified_by'])
+            if "last_modified_by" in result["workload_group"]:
+                result["workload_group"]["last_modified_by"] = json.dumps(
+                    result["workload_group"]["last_modified_by"]
+                )
 
     except Exception as e:
         module.fail_json(msg=to_native(e), exception=format_exc())
 
     module.exit_json(**result)
+
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
@@ -144,6 +154,7 @@ def main():
         core(module)
     except Exception as e:
         module.fail_json(msg=to_native(e), exception=format_exc())
+
 
 if __name__ == "__main__":
     main()

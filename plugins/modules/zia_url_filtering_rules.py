@@ -420,7 +420,7 @@ def core(module):
         "devices",
         "user_risk_score_levels",
         "cbi_profile",
-        "workload_groups"
+        "workload_groups",
     ]
     for param_name in params:
         rule[param_name] = module.params.get(param_name, None)

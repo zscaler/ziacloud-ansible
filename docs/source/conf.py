@@ -44,12 +44,12 @@ extensions = [
     "sphinx.ext.todo",
     "sphinx.ext.githubpages",
     "sphinx.ext.napoleon",
-    "sphinx_ansible_theme"
+    "sphinx_ansible_theme",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
 # This sites template is ../templates/module.rst.j2
-templates_path = ['../templates']
+templates_path = ["../templates"]
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -101,7 +101,7 @@ html_context = {
 # Sort versions by one or more values. Valid values are semver, alpha, and time.
 # Semantic is referred to as 'semver', this would ensure our latest VRM is
 # the first in the list of documentation links.
-scv_sort = ('semver',)
+scv_sort = ("semver",)
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
