@@ -238,9 +238,11 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 <div class="ansibleOptionAnchor" id="parameter-aup_block_internet_until_accepted"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-aup-block-internet-until-accepted"><strong>aup_block_internet_until_accepted</strong></p>
 <a class="ansibleOptionLink" href="#parameter-aup_block_internet_until_accepted" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<td><div class="ansible-option-cell"><p>For First Time AUP Behavior, Block Internet Access.</p>
+<p>When set, all internet access (including non-HTTP traffic) is disabled until the user accepts the AUP.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
 </ul>
 </div></td>
@@ -249,9 +251,11 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 <div class="ansibleOptionAnchor" id="parameter-aup_enabled"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-aup-enabled"><strong>aup_enabled</strong></p>
 <a class="ansibleOptionLink" href="#parameter-aup_enabled" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<td><div class="ansible-option-cell"><p>Enable AUP. When set to true, AUP is enabled for the location.</p>
+<p>To Learn More, see Deploying SSL Inspection <a class="reference external" href="https://help.zscaler.com/zia/about-end-user-notifications">https://help.zscaler.com/zia/about-end-user-notifications</a></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
 </ul>
 </div></td>
@@ -260,9 +264,11 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 <div class="ansibleOptionAnchor" id="parameter-aup_force_ssl_inspection"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-aup-force-ssl-inspection"><strong>aup_force_ssl_inspection</strong></p>
 <a class="ansibleOptionLink" href="#parameter-aup_force_ssl_inspection" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<td><div class="ansible-option-cell"><p>For First Time AUP Behavior, Force SSL Inspection.</p>
+<p>When set, Zscaler forces SSL Inspection in order to enforce AUP for HTTPS traffic.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
 </ul>
 </div></td>
@@ -271,15 +277,17 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 <div class="ansibleOptionAnchor" id="parameter-aup_timeout_in_days"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-aup-timeout-in-days"><strong>aup_timeout_in_days</strong></p>
 <a class="ansibleOptionLink" href="#parameter-aup_timeout_in_days" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
-<td><div class="ansible-option-cell"></div></td>
+<td><div class="ansible-option-cell"><p>Custom AUP Frequency. Refresh time (in days) to re-validate the AUP.</p>
+</div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-auth_required"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-auth-required"><strong>auth_required</strong></p>
 <a class="ansibleOptionLink" href="#parameter-auth_required" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<td><div class="ansible-option-cell"><p>Enforce Authentication. Required when ports are enabled, IP Surrogate is enabled, or Kerberos Authentication is enabled.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
 </ul>
 </div></td>
@@ -288,9 +296,11 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 <div class="ansibleOptionAnchor" id="parameter-caution_enabled"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-caution-enabled"><strong>caution_enabled</strong></p>
 <a class="ansibleOptionLink" href="#parameter-caution_enabled" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<td><div class="ansible-option-cell"><p>Enable Caution. When set to true, a caution notifcation is enabled for the location.</p>
+<p>To Learn More, see Deploying SSL Inspection <a class="reference external" href="https://help.zscaler.com/zia/configuring-caution-notification#caution-interval">https://help.zscaler.com/zia/configuring-caution-notification#caution-interval</a></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
 </ul>
 </div></td>
@@ -299,89 +309,125 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 <div class="ansibleOptionAnchor" id="parameter-country"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-country"><strong>country</strong></p>
 <a class="ansibleOptionLink" href="#parameter-country" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
-<td><div class="ansible-option-cell"></div></td>
+<td><div class="ansible-option-cell"><p>Country Name</p>
+</div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-description"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-description"><strong>description</strong></p>
 <a class="ansibleOptionLink" href="#parameter-description" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
-<td><div class="ansible-option-cell"></div></td>
+<td><div class="ansible-option-cell"><p>Additional notes or information regarding the location or sub-location. The description cannot exceed 1024 characters.</p>
+</div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-display_time_unit"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-display-time-unit"><strong>display_time_unit</strong></p>
 <a class="ansibleOptionLink" href="#parameter-display_time_unit" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
-<td><div class="ansible-option-cell"></div></td>
+<td><div class="ansible-option-cell"><p>Display Time Unit. The time unit to display for IP Surrogate idle time to disassociation.</p>
+</div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-dn_bandwidth"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-dn-bandwidth"><strong>dn_bandwidth</strong></p>
 <a class="ansibleOptionLink" href="#parameter-dn_bandwidth" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
-<td><div class="ansible-option-cell"></div></td>
+<td><div class="ansible-option-cell"><p>Download bandwidth in kbps. The value 0 implies no Bandwidth Control enforcement.</p>
+</div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-id"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-id"><strong>id</strong></p>
 <a class="ansibleOptionLink" href="#parameter-id" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
-<td><div class="ansible-option-cell"></div></td>
+<td><div class="ansible-option-cell"><p>Location ID</p>
+</div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-idle_time_in_minutes"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-idle-time-in-minutes"><strong>idle_time_in_minutes</strong></p>
 <a class="ansibleOptionLink" href="#parameter-idle_time_in_minutes" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
-<td><div class="ansible-option-cell"></div></td>
+<td><div class="ansible-option-cell"><p>Idle Time to Disassociation. The user mapping idle time (in minutes) is required if a Surrogate IP is enabled.</p>
+</div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-iot_discovery_enabled"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-iot-discovery-enabled"><strong>iot_discovery_enabled</strong></p>
+<a class="ansibleOptionLink" href="#parameter-iot_discovery_enabled" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>If this field is set to true, IoT discovery is enabled for this location.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-ip_addresses"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-ip-addresses"><strong>ip_addresses</strong></p>
 <a class="ansibleOptionLink" href="#parameter-ip_addresses" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
 </div></td>
-<td><div class="ansible-option-cell"></div></td>
+<td><div class="ansible-option-cell"><p>For locations: IP addresses of the egress points that are provisioned in the Zscaler Cloud.</p>
+<p>Each entry is a single IP address (e.g., 238.10.33.9).</p>
+<p>For sublocations: Egress, internal, or GRE tunnel IP addresses.</p>
+<p>Each entry is either a single IP address, CIDR (e.g., 10.10.33.0/24), or range (e.g., 10.10.33.1-10.10.33.10)).</p>
+</div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-ips_control"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-ips-control"><strong>ips_control</strong></p>
 <a class="ansibleOptionLink" href="#parameter-ips_control" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<td><div class="ansible-option-cell"><p>Enable IPS Control. When set to true, IPS Control is enabled for the location if Firewall is enabled.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-name"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-name"><strong>name</strong></p>
 <a class="ansibleOptionLink" href="#parameter-name" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span> / <span class="ansible-option-required">required</span></p>
 </div></td>
-<td><div class="ansible-option-cell"></div></td>
+<td><div class="ansible-option-cell"><p>Location Name</p>
+</div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-ofw_enabled"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-ofw-enabled"><strong>ofw_enabled</strong></p>
 <a class="ansibleOptionLink" href="#parameter-ofw_enabled" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<td><div class="ansible-option-cell"><p>Enable Firewall. When set to true, Firewall is enabled for the location.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-parent_id"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-parent-id"><strong>parent_id</strong></p>
 <a class="ansibleOptionLink" href="#parameter-parent_id" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
-<td><div class="ansible-option-cell"></div></td>
+<td><div class="ansible-option-cell"><p>Parent Location ID.</p>
+<p>If this ID does not exist or is 0, it is implied that it is a parent location.</p>
+<p>Otherwise it is a sub-location whose parent has this ID. x-applicableTo: SUB</p>
+</div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-ports"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-ports"><strong>ports</strong></p>
 <a class="ansibleOptionLink" href="#parameter-ports" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=integer</span></p>
 </div></td>
-<td><div class="ansible-option-cell"></div></td>
+<td><div class="ansible-option-cell"><p>IP ports that are associated with the location.</p>
+</div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-profile"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-profile"><strong>profile</strong></p>
 <a class="ansibleOptionLink" href="#parameter-profile" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<td><div class="ansible-option-cell"><p>(Optional) Profile tag that specifies the location traffic type.</p>
+<p>The criteria used for setting best possible value is as follows:</p>
+<p>When invoked with a partner API key, it automatically sets the profile attribute to CORPORATE.</p>
+<p>When invoked using public API, it automatically sets the profile attribute based on the following criteria:</p>
+<p>If the location has authentication enabled, then it sets profile to CORPORATE.</p>
+<p>If the location has authentication disabled and name contains guest, then it sets profile to GUESTWIFI.</p>
+<p>For all other locations with authentication disabled, it sets profile to SERVER.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">&quot;NONE&quot;</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;CORPORATE&quot;</span></code></p></li>
@@ -391,21 +437,21 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-provider"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-provider"><strong>provider</strong></p>
 <a class="ansibleOptionLink" href="#parameter-provider" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span> / <span class="ansible-option-required">required</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>A dict object containing connection details.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-provider/api_key"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-provider-api-key"><strong>api_key</strong></p>
 <a class="ansibleOptionLink" href="#parameter-provider/api_key" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span> / <span class="ansible-option-required">required</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>A string that contains the obfuscated API key</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-provider/cloud"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-provider-cloud"><strong>cloud</strong></p>
 <a class="ansibleOptionLink" href="#parameter-provider/cloud" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span> / <span class="ansible-option-required">required</span></p>
 </div></td>
@@ -423,123 +469,146 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-provider/password"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-provider-password"><strong>password</strong></p>
 <a class="ansibleOptionLink" href="#parameter-provider/password" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span> / <span class="ansible-option-required">required</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>A string that contains the password for the API admin</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-provider/username"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-provider-username"><strong>username</strong></p>
 <a class="ansibleOptionLink" href="#parameter-provider/username" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span> / <span class="ansible-option-required">required</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>A string that contains the email ID of the API admin</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-ssl_scan_enabled"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-ssl-scan-enabled"><strong>ssl_scan_enabled</strong></p>
 <a class="ansibleOptionLink" href="#parameter-ssl_scan_enabled" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<td><div class="ansible-option-cell"><p>This parameter was deprecated and no longer has an effect on SSL policy.</p>
+<p>It remains supported in the API payload in order to maintain backwards compatibility with existing scripts, but it will be removed in future.</p>
+<p>Enable SSL Inspection. Set to true in order to apply your SSL Inspection policy to HTTPS traffic in the location and inspect HTTPS transactions for data leakage, malicious content, and viruses.</p>
+<p>To Learn More, see Deploying SSL Inspection <a class="reference external" href="https://help.zscaler.com/zia/deploying-ssl-inspection">https://help.zscaler.com/zia/deploying-ssl-inspection</a></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-state"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-state"><strong>state</strong></p>
 <a class="ansibleOptionLink" href="#parameter-state" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<td><div class="ansible-option-cell"><p>The state.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">&quot;present&quot;</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;absent&quot;</span></code></p></li>
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-surrogate_ip"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-surrogate-ip"><strong>surrogate_ip</strong></p>
 <a class="ansibleOptionLink" href="#parameter-surrogate_ip" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<td><div class="ansible-option-cell"><p>Enable Surrogate IP. When set to true, users are mapped to internal device IP addresses.</p>
+<p>To Learn More, see Deploying SSL Inspection <a class="reference external" href="https://help.zscaler.com/zia/about-surrogate-ip">https://help.zscaler.com/zia/about-surrogate-ip</a></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-surrogate_ip_enforced_for_known_browsers"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-surrogate-ip-enforced-for-known-browsers"><strong>surrogate_ip_enforced_for_known_browsers</strong></p>
 <a class="ansibleOptionLink" href="#parameter-surrogate_ip_enforced_for_known_browsers" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<td><div class="ansible-option-cell"><p>Enforce Surrogate IP for Known Browsers. When set to true, IP Surrogate is enforced for all known browsers.</p>
+<p>To Learn More, see Deploying SSL Inspection <a class="reference external" href="https://help.zscaler.com/zia/about-surrogate-ip">https://help.zscaler.com/zia/about-surrogate-ip</a></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-surrogate_refresh_time_in_minutes"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-surrogate-refresh-time-in-minutes"><strong>surrogate_refresh_time_in_minutes</strong></p>
 <a class="ansibleOptionLink" href="#parameter-surrogate_refresh_time_in_minutes" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
-<td><div class="ansible-option-cell"></div></td>
-</tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="parameter-surrogate_refresh_time_unit"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-surrogate-refresh-time-unit"><strong>surrogate_refresh_time_unit</strong></p>
-<a class="ansibleOptionLink" href="#parameter-surrogate_refresh_time_unit" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
+<td><div class="ansible-option-cell"><p>Refresh Time for re-validation of Surrogacy.</p>
+<p>The surrogate refresh time (in minutes) to re-validate the IP surrogates.</p>
 </div></td>
-<td><div class="ansible-option-cell"></div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-surrogate_refresh_time_unit"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-surrogate-refresh-time-unit"><strong>surrogate_refresh_time_unit</strong></p>
+<a class="ansibleOptionLink" href="#parameter-surrogate_refresh_time_unit" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Display Refresh Time Unit.</p>
+<p>The time unit to display for refresh time for re-validation of surrogacy.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;MINUTE&quot;</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;HOUR&quot;</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;DAY&quot;</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-tz"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-tz"><strong>tz</strong></p>
 <a class="ansibleOptionLink" href="#parameter-tz" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
-<td><div class="ansible-option-cell"></div></td>
+<td><div class="ansible-option-cell"><p>Timezone of the location. If not specified, it defaults to GMT.</p>
+</div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-up_bandwidth"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-up-bandwidth"><strong>up_bandwidth</strong></p>
 <a class="ansibleOptionLink" href="#parameter-up_bandwidth" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
-<td><div class="ansible-option-cell"></div></td>
+<td><div class="ansible-option-cell"><p>Upload bandwidth in kbps. The value 0 implies no Bandwidth Control enforcement.</p>
+</div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-vpn_credentials"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-vpn-credentials"><strong>vpn_credentials</strong></p>
 <a class="ansibleOptionLink" href="#parameter-vpn_credentials" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=dictionary</span></p>
 </div></td>
-<td><div class="ansible-option-cell"></div></td>
+<td><div class="ansible-option-cell"><p>VPN User Credentials that are associated with the location.</p>
+</div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-vpn_credentials/fqdn"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-vpn-credentials-fqdn"><strong>fqdn</strong></p>
 <a class="ansibleOptionLink" href="#parameter-vpn_credentials/fqdn" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"></div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Fully Qualified Domain Name. Applicable only to UFQDN (or HOSTED_MOBILE_USERS) auth type.</p>
+</div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-vpn_credentials/id"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-vpn-credentials-id"><strong>id</strong></p>
 <a class="ansibleOptionLink" href="#parameter-vpn_credentials/id" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"></div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>VPN credential id</p>
+</div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-vpn_credentials/ip_address"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-vpn-credentials-ip-address"><strong>ip_address</strong></p>
 <a class="ansibleOptionLink" href="#parameter-vpn_credentials/ip_address" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"></div></td>
-</tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="parameter-vpn_credentials/pre_shared_key"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-vpn-credentials-pre-shared-key"><strong>pre_shared_key</strong></p>
-<a class="ansibleOptionLink" href="#parameter-vpn_credentials/pre_shared_key" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Static IP address for VPN that is self-provisioned or provisioned by Zscaler.</p>
+<p>This is a required field for IP auth type and is not applicable to other auth types.</p>
+<p>Note: If you want Zscaler to provision static IP addresses for your organization, contact Zscaler Support.</p>
 </div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"></div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-vpn_credentials/type"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-vpn-credentials-type"><strong>type</strong></p>
 <a class="ansibleOptionLink" href="#parameter-vpn_credentials/type" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>VPN authentication type (i.e., how the VPN credential is sent to the server).</p>
+<p>It is not modifiable after VpnCredential is created.”</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">&quot;UFQDN&quot;</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;IP&quot;</span></code></p></li>
@@ -550,9 +619,11 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 <div class="ansibleOptionAnchor" id="parameter-xff_forward_enabled"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-xff-forward-enabled"><strong>xff_forward_enabled</strong></p>
 <a class="ansibleOptionLink" href="#parameter-xff_forward_enabled" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<td><div class="ansible-option-cell"><p>Enable XFF Forwarding for a location. When set to true, traffic is passed to Zscaler Cloud via the X-Forwarded-For (XFF) header.</p>
+<p>Note: For sublocations, this attribute is a read-only field as the value is inherited from the parent location.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
 </ul>
 </div></td>
@@ -561,9 +632,13 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 <div class="ansibleOptionAnchor" id="parameter-zapp_ssl_scan_enabled"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-zapp-ssl-scan-enabled"><strong>zapp_ssl_scan_enabled</strong></p>
 <a class="ansibleOptionLink" href="#parameter-zapp_ssl_scan_enabled" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<td><div class="ansible-option-cell"><p>This parameter was deprecated and no longer has an effect on SSL policy.</p>
+<p>It remains supported in the API payload in order to maintain backwards compatibility with existing scripts, but it will be removed in future.</p>
+<p>Enable Zscaler App SSL Setting. When set to true, the Zscaler App SSL Scan Setting takes effect, irrespective of the SSL policy that is configured for the location.</p>
+<p>To Learn More, see Deploying SSL Inspection <a class="reference external" href="https://help.zscaler.com/z-app/configuring-ssl-inspection-zscaler-app#configure-SSL-Zscaler-App">https://help.zscaler.com/z-app/configuring-ssl-inspection-zscaler-app#configure-SSL-Zscaler-App</a></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
 </ul>
 </div></td>
