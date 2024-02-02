@@ -41,152 +41,207 @@ extends_documentation_fragment:
   - zscaler.ziacloud.fragments.state
 options:
   id:
-    description: ""
+    description: "Location ID"
     type: int
-    required: False
   name:
-    description: ""
+    description: "Location Name"
     type: str
-    required: True
+    required: true
   parent_id:
-    description: ""
+    description:
+      - "Parent Location ID."
+      - "If this ID does not exist or is 0, it is implied that it is a parent location."
+      - "Otherwise it is a sub-location whose parent has this ID. x-applicableTo: SUB"
     type: int
-    required: False
+    required: false
   up_bandwidth:
-    description: ""
+    description: "Upload bandwidth in kbps. The value 0 implies no Bandwidth Control enforcement."
     type: int
-    required: False
+    required: false
   dn_bandwidth:
-    description: ""
+    description: "Download bandwidth in kbps. The value 0 implies no Bandwidth Control enforcement."
     type: int
-    required: False
+    required: false
   country:
-    description: ""
+    description: "Country Name"
     type: str
-    required: False
+    required: false
   tz:
-    description: ""
+    description: "Timezone of the location. If not specified, it defaults to GMT."
     type: str
-    required: False
+    required: false
   ip_addresses:
-    description: ""
+    description:
+      - "For locations: IP addresses of the egress points that are provisioned in the Zscaler Cloud."
+      - "Each entry is a single IP address (e.g., 238.10.33.9)."
+      - "For sublocations: Egress, internal, or GRE tunnel IP addresses."
+      - "Each entry is either a single IP address, CIDR (e.g., 10.10.33.0/24), or range (e.g., 10.10.33.1-10.10.33.10))."
     type: list
     elements: str
-    required: False
+    required: false
   ports:
-    description: ""
+    description: "IP ports that are associated with the location."
     type: list
     elements: int
-    required: False
+    required: false
   auth_required:
-    description: ""
+    description: "Enforce Authentication. Required when ports are enabled, IP Surrogate is enabled, or Kerberos Authentication is enabled."
     type: bool
-    required: False
+    required: false
+    default: false
   ssl_scan_enabled:
-    description: ""
+    description:
+      - "This parameter was deprecated and no longer has an effect on SSL policy."
+      - "It remains supported in the API payload in order to maintain backwards compatibility with existing scripts, but it will be removed in future."
+      - Enable SSL Inspection. Set to true in order to apply your SSL Inspection policy to HTTPS traffic in the location and inspect HTTPS transactions for data leakage, malicious content, and viruses.
+      - To Learn More, see Deploying SSL Inspection U(https://help.zscaler.com/zia/deploying-ssl-inspection)
     type: bool
-    required: False
+    required: false
+    default: false
   zapp_ssl_scan_enabled:
-    description: ""
+    description:
+      - "This parameter was deprecated and no longer has an effect on SSL policy."
+      - "It remains supported in the API payload in order to maintain backwards compatibility with existing scripts, but it will be removed in future."
+      - "Enable Zscaler App SSL Setting. When set to true, the Zscaler App SSL Scan Setting takes effect, irrespective of the SSL policy that is configured for the location."
+      - To Learn More, see Deploying SSL Inspection U(https://help.zscaler.com/z-app/configuring-ssl-inspection-zscaler-app#configure-SSL-Zscaler-App)
     type: bool
-    required: False
+    required: false
+    default: false
   xff_forward_enabled:
-    description: ""
+    description:
+      - "Enable XFF Forwarding for a location. When set to true, traffic is passed to Zscaler Cloud via the X-Forwarded-For (XFF) header."
+      - "Note: For sublocations, this attribute is a read-only field as the value is inherited from the parent location."
     type: bool
-    required: False
+    required: false
+    default: false
   surrogate_ip:
-    description: ""
+    description:
+      - "Enable Surrogate IP. When set to true, users are mapped to internal device IP addresses."
+      - "To Learn More, see Deploying SSL Inspection U(https://help.zscaler.com/zia/about-surrogate-ip)"
     type: bool
-    required: False
+    required: false
+    default: false
   idle_time_in_minutes:
-    description: ""
+    description: "Idle Time to Disassociation. The user mapping idle time (in minutes) is required if a Surrogate IP is enabled."
     type: int
-    required: False
+    required: false
   display_time_unit:
-    description: ""
+    description: "Display Time Unit. The time unit to display for IP Surrogate idle time to disassociation."
     type: str
-    required: False
+    required: false
   surrogate_ip_enforced_for_known_browsers:
-    description: ""
+    description:
+      - "Enforce Surrogate IP for Known Browsers. When set to true, IP Surrogate is enforced for all known browsers."
+      - "To Learn More, see Deploying SSL Inspection U(https://help.zscaler.com/zia/about-surrogate-ip)"
     type: bool
-    required: False
+    required: false
+    default: false
   surrogate_refresh_time_in_minutes:
-    description: ""
+    description:
+      - "Refresh Time for re-validation of Surrogacy."
+      - "The surrogate refresh time (in minutes) to re-validate the IP surrogates."
     type: int
-    required: False
+    required: false
   surrogate_refresh_time_unit:
-    description: ""
-    type: int
-    required: False
+    description:
+      - "Display Refresh Time Unit."
+      - "The time unit to display for refresh time for re-validation of surrogacy."
+    type: str
+    required: false
+    choices:
+      - 'MINUTE'
+      - 'HOUR'
+      - 'DAY'
   ofw_enabled:
-    description: ""
+    description: "Enable Firewall. When set to true, Firewall is enabled for the location."
     type: bool
-    required: False
+    required: false
+    default: false
   ips_control:
-    description: ""
+    description: "Enable IPS Control. When set to true, IPS Control is enabled for the location if Firewall is enabled."
     type: bool
-    required: False
+    required: false
+    default: false
   aup_enabled:
-    description: ""
+    description:
+      - "Enable AUP. When set to true, AUP is enabled for the location."
+      - "To Learn More, see Deploying SSL Inspection U(https://help.zscaler.com/zia/about-end-user-notifications)"
     type: bool
-    required: False
+    required: false
+    default: false
   caution_enabled:
-    description: ""
+    description:
+      - "Enable Caution. When set to true, a caution notifcation is enabled for the location."
+      - "To Learn More, see Deploying SSL Inspection U(https://help.zscaler.com/zia/configuring-caution-notification#caution-interval)"
     type: bool
-    required: False
+    required: false
+    default: false
   aup_block_internet_until_accepted:
-    description: ""
+    description:
+      - "For First Time AUP Behavior, Block Internet Access."
+      - "When set, all internet access (including non-HTTP traffic) is disabled until the user accepts the AUP."
     type: bool
-    required: False
+    required: false
+    default: false
   aup_force_ssl_inspection:
-    description: ""
+    description:
+      - "For First Time AUP Behavior, Force SSL Inspection."
+      - "When set, Zscaler forces SSL Inspection in order to enforce AUP for HTTPS traffic."
     type: bool
-    required: False
+    required: false
+    default: false
   aup_timeout_in_days:
-    description: ""
+    description: "Custom AUP Frequency. Refresh time (in days) to re-validate the AUP."
     type: int
-    required: False
+    required: false
   profile:
-    description: ""
+    description:
+      - "(Optional) Profile tag that specifies the location traffic type."
+      - "The criteria used for setting best possible value is as follows:"
+      - "When invoked with a partner API key, it automatically sets the profile attribute to CORPORATE."
+      - "When invoked using public API, it automatically sets the profile attribute based on the following criteria:"
+      - "If the location has authentication enabled, then it sets profile to CORPORATE."
+      - "If the location has authentication disabled and name contains guest, then it sets profile to GUESTWIFI."
+      - "For all other locations with authentication disabled, it sets profile to SERVER."
     type: str
     default: NONE
     choices: ['NONE', 'CORPORATE', 'SERVER', 'GUESTWIFI', 'IOT']
+  iot_discovery_enabled:
+    description: "If this field is set to true, IoT discovery is enabled for this location."
+    type: bool
+    required: false
   description:
-    description: ""
+    description: "Additional notes or information regarding the location or sub-location. The description cannot exceed 1024 characters."
     type: str
-    required: False
+    required: false
   vpn_credentials:
-    description: ""
+    description: "VPN User Credentials that are associated with the location."
     type: list
     elements: dict
-    required: False
+    required: false
     suboptions:
       id:
-        description: ""
+        description: "VPN credential id"
         type: int
-        required: False
+        required: false
       type:
-        description: ""
+        description:
+          - "VPN authentication type (i.e., how the VPN credential is sent to the server)."
+          - It is not modifiable after VpnCredential is created."
         type: str
         default: UFQDN
         choices: ['UFQDN', 'IP']
       fqdn:
-        description: ""
+        description: "Fully Qualified Domain Name. Applicable only to UFQDN (or HOSTED_MOBILE_USERS) auth type."
         type: str
-        required: False
+        required: false
       ip_address:
-        description: ""
+        description:
+          - "Static IP address for VPN that is self-provisioned or provisioned by Zscaler."
+          - "This is a required field for IP auth type and is not applicable to other auth types."
+          - "Note: If you want Zscaler to provision static IP addresses for your organization, contact Zscaler Support."
         type: str
-        required: False
-      pre_shared_key:
-        description: ""
-        type: str
-        required: False
-  state:
-    description: ""
-    type: str
-    choices: ['present', 'absent']
-    default: present
+        required: false
 """
 
 EXAMPLES = """
@@ -460,6 +515,7 @@ def core(module):
                         managed_by=existing_location_mgmt.get("managed_by"),
                         profile=existing_location_mgmt.get("profile"),
                         description=existing_location_mgmt.get("description"),
+                        iot_discovery_enabled=existing_location_mgmt.get("iot_discovery_enabled"),
                     )
                 )
                 module.warn("Payload Update for SDK: {}".format(update_location))
@@ -510,6 +566,7 @@ def core(module):
                     aup_timeout_in_days=location_mgmt.get("aup_timeout_in_days"),
                     profile=location_mgmt.get("profile"),
                     description=location_mgmt.get("description"),
+                    iot_discovery_enabled=location_mgmt.get("iot_discovery_enabled"),
                 )
             )
             module.warn("Payload for SDK: {}".format(create_location))
@@ -565,6 +622,7 @@ def main():
         caution_enabled=dict(type="bool", required=False),
         aup_block_internet_until_accepted=dict(type="bool", required=False),
         aup_force_ssl_inspection=dict(type="bool", required=False),
+        iot_discovery_enabled=dict(type="bool", required=False),
         aup_timeout_in_days=dict(type="int", required=False),
         profile=dict(
             type="str",
