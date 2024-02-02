@@ -1,66 +1,95 @@
+.. ...........................................................................
+.. © Copyright Zscaler Inc, 2024                                             .
+.. ...........................................................................
+
 ==========================================
 Zscaler Internet Access Ansible Collection
 ==========================================
+The **Zscaler Internet Access Ansible collection**, also represented as **ziacloud** in this document,
+is a collection of modules that automate configuration and operational tasks on Zscaler Internet Access Cloud.
+This collection is part of the broader initiative to bring Ansible Automation to Zscaler Zero Trust Platform through the offering
+**Red Hat® Ansible Certified Content**.
 
-Version: 1.0.0
+Red Hat Ansible Certified Content for Zscaler
+=============================================
+**Red Hat® Ansible Certified Content for Zscaler Internet Access** provides the ability to
+connect Zscaler's platform' wider enterprise automation strategy through the
+Ansible Automation Platform ecosystem. This enables development and operations
+automation on Zscaler's platform through a seamless, unified workflow orchestration with
+configuration management, provisioning, in
+one easy-to-use platform.
 
-The Zscaler Private Access Ansible collection is a collection of modules that
-automate configuration and operational tasks on Zscaler Private Access Cloud. The
-underlying protocol uses API calls that are wrapped within the Ansible
-framework.
+The **Zscaler Internet Access Collection** is following the
+**Red Hat® Ansible Certified Content** method of distributing
+content. Collections will be developed in the open, and when content is ready
+for use it is released to
+`Ansible Galaxy`_
+for community adoption. Once contributors review community usage, feedback,
+and are satisfied with the content published, the collection will then be
+released to `Ansible Automation Hub`_
+as **certified** and **Zscaler supported** for
+**Red Hat® Ansible Automation Platform subscribers**. 
 
+For guides and reference, please review the `documentation`_.
 
-Installation
-============
+Features
+========
+The **Zscaler Internet Access Collection**, includes
+`modules`_ and ansible-doc to automate tasks on the Zscaler platform.
 
-This collection has the following environment requirements:
-
-* Python 3.8 or higher
-* Ansible 2.9 or higher
-
-Install the collection using `ansible-galaxy`:
-
-.. code-block:: bash
-
-    ansible-galaxy collection install zscaler.ziacloud
-
-Then in your playbooks you can specify that you want to use the
-`ziacloud` collection like so:
-
-.. code-block:: yaml
-
-    collections:
-        - zscaler.ziacloud
-
-* Ansible Galaxy: https://galaxy.ansible.com/zscaler/ziacloud
-* Red Hat Catalog: https://catalog.redhat.com/software/collection/zscaler/ziacloud
-* GitHub repo:  https://github.com/zscaler/ziacloud-ansible
-
+Sample playbooks are available in our `samples repository`_
+contributed by the **Zscaler's Technology Alliances** team.
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 1
+   :caption: Getting Started
 
+   requirements
+   installation
    examples
    modules
-   history
-   authors
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Release Notes
+
+   release_notes
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Reference
+
+   community_guides
    license
 
 
-Collection Dependencies
-=======================
+Author Information
+==================
 
-* zscaler-sdk-python
+**Zscaler Internet Access Collection** is maintained by the Zscaler's Technology Alliances team.
 
-If you believe you have installed these dependencies but Ansible is not finding them, it is likely a
-problem with where your local shell is searching for installed dependencies and where Ansible is
-searching for them.
+.. _Ansible Galaxy:
+   https://galaxy.ansible.com/search?keywords=zos_&order_by=-relevance&deprecated=false&type=collection&page=1
+.. _Ansible Automation Hub:
+   https://www.ansible.com/products/automation-hub
+.. _documentation:
+   https://zscaler.github.io/z_ansible_collections_doc/index.html
+.. _modules:
+   https://zscaler.github.io/ziacloud_ansible_collections_doc/ibm_zos_sysauto/docs/source/roles.html
+.. _samples repository:
+   https://github.com/zscaler/ziacloud_ansible_collections_samples/blob/master/README.md
 
-Configuring `ANSIBLE_PYTHON_INTERPRETER` is probably the solution to this issue:
 
-https://docs.ansible.com/ansible/latest/reference_appendices/python_3_support.html#using-python-3-on-the-managed-machines-with-commands-and-playbooks
+Development Leads
+-----------------
 
+-   William Guilherme (@willguibr)
+
+Contributors
+------------
+
+Credits
+-------
 
 Support
 =======

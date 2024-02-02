@@ -75,12 +75,21 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
 
-# -- Options for HTML output -------------------------------------------------
+##############################################################################
+# Options for HTML output
+##############################################################################
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
-# a list of builtin themes.
-#
+# a list of builtin themes such 'alabaster'. Currently this site uses the
+# sphinx_rtd_theme HTML theme.
 html_theme = "sphinx_ansible_theme"
+
+# Add any paths that contain custom static files (such as style sheets) here,
+# relative to this directory. They are copied after the builtin static files,
+# so a file named "default.css" will overwrite the built-in "default.css".
+# html_static_path = ['_static']
+
+# Github options used with Sphinx
 html_context = {
     "display_github": True,
     "github_user": "zscaler",
@@ -89,6 +98,10 @@ html_context = {
     "conf_py_path": "/docs/source/",
 }
 
+# Sort versions by one or more values. Valid values are semver, alpha, and time.
+# Semantic is referred to as 'semver', this would ensure our latest VRM is
+# the first in the list of documentation links.
+scv_sort = ('semver',)
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
