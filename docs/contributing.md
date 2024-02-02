@@ -9,7 +9,7 @@ You can contribute in many ways:
 
 ### Report Bugs
 
-Report bugs at https://github.com/willguibr/ziacloud-ansible/issues.
+Report bugs at https://github.com/PaloAltoNetworks/pan-os-ansible/issues.
 
 ### Fix Bugs
 
@@ -24,25 +24,25 @@ open to whoever wants to implement it.
 ### Submit Feedback
 
 The best way to send feedback is to file an issue at
-https://github.com/willguibr/ziacloud-ansible/issues.
+https://github.com/PaloAltoNetworks/pan-os-ansible/issues.
 
 If you are proposing a feature:
 
 - Explain in detail how it would work.
 - Keep the scope as narrow as possible, to make it easier to implement.
-- Remember that this is a volunteer-driven project, and that contributions
+- Remember that this is a volunteer-driven project, and that contributions 
   are welcome :)
 
 ## Get Started!
 
-Ready to contribute some code? Here's how to set up `ziacloud-ansible` for local development.
+Ready to contribute some code? Here's how to set up `pan-os-ansible` for local development.
 
 1. Install Python 3.6 or higher, along with Ansible
 
    Development must be done using Python 3.6 or higher.  Ansible still technically
    supports Python 2.7, but all code should target Python 3.6 or higher.
 
-2. Fork the `ziacloud-ansible` repo on GitHub.
+2. Fork the `pan-os-ansible` repo on GitHub.
 
 3. Create a top level directory for your work, for example `ansible-hacking`:
 
@@ -55,15 +55,15 @@ $ cd ansible-hacking/
    it as a collection:
 
 ```
-$ mkdir -p ansible_collections/willguibr
-$ git clone https://github.com/your-username/ziacloud-ansible.git ansible_collections/willguibr/ziacloud
+$ mkdir -p ansible_collections/paloaltonetworks
+$ git clone https://github.com/your-username/pan-os-ansible.git ansible_collections/paloaltonetworks/panos
 ```
 
 4. Create a playbooks directory, and add our top level directory to `ansible.cfg`:
 
    Adding our top level directory to `ansible.cfg` will interpret the directory
-   `ansible_collections/willguibr/ziacloud` as the collection
-   `zscaler.ziacloud` without us having to build and install the collection each
+   `ansible_collections/paloaltonetworks/panos` as the collection
+   `paloaltonetworks.panos` without us having to build and install the collection each
    time!
 
    You can add any test playbooks to the `playbooks/` directory.  Any
@@ -73,12 +73,12 @@ $ git clone https://github.com/your-username/ziacloud-ansible.git ansible_collec
 ```
 $ mkdir playbooks
 $ echo "[defaults]\ncollections_paths = .." > playbooks/ansible.cfg
-```
+``` 
 
 5. Create a branch for local development
 
 ```
-$ cd ansible_collections/willguibr/ziacloud
+$ cd ansible_collections/paloaltonetworks/panos
 $ git checkout -b name-of-your-bugfix-or-feature
 ```
 
@@ -106,7 +106,7 @@ $ git push origin name-of-your-bugfix-or-feature
 This workflow requires node, npm, and semantic-release to be installed locally:
 
 ```
-$ npm install -g semantic-release@^17.1.1 @semantic-release/git@^9.0.0 @semantic-release/exec@^5.0.0 conventional-changelog-conventionalcommits@^4.4.0
+$ npm install -g semantic-release@^17.1.1 @semantic-release/changelog@^5.0.1 @semantic-release/git@^9.0.0 @semantic-release/exec@^5.0.0 conventional-changelog-conventionalcommits@^4.4.0
 ```
 
 ### Test the release process
