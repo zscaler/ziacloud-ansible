@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zscaler Internet Access Ansible Collection &mdash; Ansible Collections Documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5707b69d" />
+      <link rel="stylesheet" type="text/css" href="_static/css/ansible.css?v=c5b67dd2" />
+      <link rel="stylesheet" type="text/css" href="_static/antsibull-minimal.css?v=e982f427" />
+      <link rel="stylesheet" type="text/css" href="_static/css/rtd-ethical-ads.css?v=289b023e" />
+
+  
+    <link rel="shortcut icon" href="_static/images/Ansible-Mark-RGB_Black.png"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=8d563738"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Requirements" href="requirements.html" /><!-- extra head elements for Ansible beyond RTD Sphinx Theme -->
+
+
+
+
+</head>
+
+<body class="wy-body-for-nav"><!-- extra body elements for Ansible beyond RTD Sphinx Theme -->
+
+<div class="DocSite-globalNav ansibleNav">
+  <ul>
+    <li><a href="https://www.ansible.com/blog" target="_blank">Blog</a></li>
+    <li><a href="https://forum.ansible.com/" target="_blank">Ansible community forum</a></li>
+    <li><a href="https://docs.ansible.com/" target="_blank">Documentation</a></li>
+  </ul>
+</div>
+
+<a class="DocSite-nav" href="/" style="padding-bottom: 30px;">
+
+  <img class="DocSiteNav-logo"
+    src="_static/images/Ansible-Mark-RGB_White.png"
+    alt="Ansible Logo">
+  <div class="DocSiteNav-title">Ansible Collections Documentation</div>
+</a>
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            Zscaler Internet Access Ansible Collection
+          </a><!--- Based on https://github.com/rtfd/sphinx_rtd_theme/pull/438/files -->
+
+<div class="version">
+  
+    
+  
+</div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <label class="sr-only" for="q">Search docs:</label>
+    <input type="text" class="st-default-search-input" id="q" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+  
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Module reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Release Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="release_notes.html">Releases</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="community_guides.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+</ul>
+<!-- extra nav elements for Ansible beyond RTD Sphinx Theme -->
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">Zscaler Internet Access Ansible Collection</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Zscaler Internet Access Ansible Collection</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/zscaler/ziacloud-ansible/blob/master/docs/source/index.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+
+  
+           <div itemprop="articleBody">
+             
+  <section id="zscaler-internet-access-ansible-collection">
+<h1>Zscaler Internet Access Ansible Collection<a class="headerlink" href="#zscaler-internet-access-ansible-collection" title="Link to this heading"></a></h1>
+<p>The <strong>Zscaler Internet Access Ansible collection</strong>, also represented as <strong>ziacloud</strong> in this document,
+is a collection of modules that automate configuration and operational tasks on Zscaler Internet Access Cloud.
+This collection is part of the broader initiative to bring Ansible Automation to Zscaler Zero Trust Platform through the offering
+<strong>Red Hat® Ansible Certified Content</strong>.</p>
+<section id="red-hat-ansible-certified-content-for-zscaler">
+<h2>Red Hat Ansible Certified Content for Zscaler<a class="headerlink" href="#red-hat-ansible-certified-content-for-zscaler" title="Link to this heading"></a></h2>
+<p><strong>Red Hat® Ansible Certified Content for Zscaler Internet Access</strong> provides the ability to
+connect Zscaler’s platform’ wider enterprise automation strategy through the
+Ansible Automation Platform ecosystem. This enables development and operations
+automation on Zscaler’s platform through a seamless, unified workflow orchestration with
+configuration management, provisioning, in
+one easy-to-use platform.</p>
+<p>The <strong>Zscaler Internet Access Collection</strong> is following the
+<strong>Red Hat® Ansible Certified Content</strong> method of distributing
+content. Collections will be developed in the open, and when content is ready
+for use it is released to
+<a class="reference external" href="https://galaxy.ansible.com/search?keywords=zos_&amp;order_by=-relevance&amp;deprecated=false&amp;type=collection&amp;page=1">Ansible Galaxy</a>
+for community adoption. Once contributors review community usage, feedback,
+and are satisfied with the content published, the collection will then be
+released to <a class="reference external" href="https://www.ansible.com/products/automation-hub">Ansible Automation Hub</a>
+as <strong>certified</strong> and <strong>Zscaler supported</strong> for
+<strong>Red Hat® Ansible Automation Platform subscribers</strong>.</p>
+<p>For guides and reference, please review the <a class="reference external" href="https://zscaler.github.io/z_ansible_collections_doc/index.html">documentation</a>.</p>
+</section>
+<section id="features">
+<h2>Features<a class="headerlink" href="#features" title="Link to this heading"></a></h2>
+<p>The <strong>Zscaler Internet Access Collection</strong>, includes
+<a class="reference external" href="https://zscaler.github.io/ziacloud_ansible_collections_doc/ibm_zos_sysauto/docs/source/roles.html">modules</a> and ansible-doc to automate tasks on the Zscaler platform.</p>
+<p>Sample playbooks are available in our <a class="reference external" href="https://github.com/zscaler/ziacloud_ansible_collections_samples/blob/master/README.md">samples repository</a>
+contributed by the <strong>Zscaler’s Technology Alliances</strong> team.</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Module reference</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Release Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="release_notes.html">Releases</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="community_guides.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+</ul>
+</div>
+</section>
+<section id="author-information">
+<h2>Author Information<a class="headerlink" href="#author-information" title="Link to this heading"></a></h2>
+<p><strong>Zscaler Internet Access Collection</strong> is maintained by the Zscaler’s Technology Alliances team.</p>
+<section id="development-leads">
+<h3>Development Leads<a class="headerlink" href="#development-leads" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>William Guilherme (&#64;willguibr)</p></li>
+</ul>
+</section>
+<section id="contributors">
+<h3>Contributors<a class="headerlink" href="#contributors" title="Link to this heading"></a></h3>
+</section>
+<section id="credits">
+<h3>Credits<a class="headerlink" href="#credits" title="Link to this heading"></a></h3>
+</section>
+</section>
+<section id="support">
+<h2>Support<a class="headerlink" href="#support" title="Link to this heading"></a></h2>
+<p>As of version 1.0.0, this Collection of Ansible Modules for Zscaler Internet Access is
+[certified on Ansible Automation Hub](<a class="reference external" href="https://console.redhat.com/ansible/automation-hub/repo/published/zscaler/ziacloud">https://console.redhat.com/ansible/automation-hub/repo/published/zscaler/ziacloud</a>)
+and officially supported for Ansible subscribers. Ansible subscribers can engage
+for support through their usual route towards Red Hat.</p>
+<p>For those who are not Ansible subscribers, this Collection of Ansible Modules is
+also [published on Ansible Galaxy](<a class="reference external" href="https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud">https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud</a>)
+to be freely used under an as-is, best effort, support
+policy. These scripts should be seen as community supported and Zscaler
+Technology Alliances Team will contribute our expertise as and when possible.
+We do not provide technical support or help in using or troubleshooting the components
+of the project through our normal support options such as Zscaler support teams,
+or ASC (Authorized Support Centers) partners and backline
+support options. The underlying product used (Zscaler Private Access API) but the
+scripts or templates are still supported, but the support is only for the
+product functionality and not for help in deploying or using the template or
+script itself.</p>
+<p>Unless explicitly tagged, all projects or work posted in our
+[GitHub repository](<a class="reference external" href="https://github.com/zscaler">https://github.com/zscaler</a>) or sites other
+than our official [Downloads page](<a class="reference external" href="https://help.zscaler.com/login-tickets">https://help.zscaler.com/login-tickets</a>)
+are provided under the best effort policy.</p>
+</section>
+<section id="indices-and-tables">
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          
+
+<footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="requirements.html" class="btn btn-neutral float-right" title="Requirements" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Zscaler Inc.</p>
+  </div>
+
+  
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script><!-- extra footer elements for Ansible beyond RTD Sphinx Theme -->
+
+</body>
+</html>
