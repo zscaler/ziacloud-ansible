@@ -19,7 +19,7 @@ pytz = "*"
 netaddr = "*"
 
 [tool.poetry.dev-dependencies]
-black = "22.3.0"
+black = "24.3.0"
 pytest = "*"
 coverage = "4.5.4"
 pylint = "2.13.*"
