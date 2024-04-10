@@ -26,7 +26,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-DOCUMENTATION = '''
+DOCUMENTATION = """
 ---
 module: zia_activation_status_facts
 
@@ -51,18 +51,18 @@ options:
     type: str
     description:
         - Organization Policy Edit/Update Activation status
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = """
 - name: Gets the activation status for the saved configuration changes
   zscaler.ziacloud.zia_activation_status:
     provider: '{{ provider }}'
     status: 'ACTIVE'
-'''
+"""
 
-RETURN = '''
+RETURN = """
 # Gets the activation status for the saved configuration changes.
-'''
+"""
 
 from traceback import format_exc
 

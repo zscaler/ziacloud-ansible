@@ -515,7 +515,9 @@ def core(module):
                         managed_by=existing_location_mgmt.get("managed_by"),
                         profile=existing_location_mgmt.get("profile"),
                         description=existing_location_mgmt.get("description"),
-                        iot_discovery_enabled=existing_location_mgmt.get("iot_discovery_enabled"),
+                        iot_discovery_enabled=existing_location_mgmt.get(
+                            "iot_discovery_enabled"
+                        ),
                     )
                 )
                 module.warn("Payload Update for SDK: {}".format(update_location))

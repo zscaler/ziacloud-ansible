@@ -555,8 +555,12 @@ def core(module):
                         parent_rule=existing_rule.get("parent_rule"),
                         sub_rules=existing_rule.get("sub_rules"),
                         workload_groups=existing_rule.get("workload_groups"),
-                        include_domain_profiles=existing_rule.get("include_domain_profiles"),
-                        exclude_domain_profiles=existing_rule.get("exclude_domain_profiles"),
+                        include_domain_profiles=existing_rule.get(
+                            "include_domain_profiles"
+                        ),
+                        exclude_domain_profiles=existing_rule.get(
+                            "exclude_domain_profiles"
+                        ),
                     )
                 )
                 module.warn("Payload Update for SDK: {}".format(update_rule))
