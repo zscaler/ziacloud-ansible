@@ -110,7 +110,7 @@ zpa_all_together/*
 ansible_collections/
 ansible_demo/
 tests/integration/integration_config.yml
-local_test
+local_dev
 ansible.cfg
 examples
 sanity.py

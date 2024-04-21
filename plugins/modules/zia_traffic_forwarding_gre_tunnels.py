@@ -1,8 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2023 Zscaler Technology Alliances, <zscaler-partner-labs@z-bd.com>
+# Copyright (c) 2023 Zscaler Inc, <devrel@zscaler.com>
 
+#                             MIT License
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -32,7 +33,7 @@ short_description: "GRE tunnel information"
 description: "GRE tunnel information"
 author:
   - William Guilherme (@willguibr)
-version_added: "1.0.0"
+version_added: "0.1.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
@@ -199,9 +200,9 @@ def core(module):
         available_ranges = client.traffic.list_gre_ranges(limit=1).to_list()
         if available_ranges:
             first_range = available_ranges[0]
-            gre_tunnel[
-                "internal_ip_range"
-            ] = f"{first_range['start_ip_address']}-{first_range['end_ip_address']}"
+            gre_tunnel["internal_ip_range"] = (
+                f"{first_range['start_ip_address']}-{first_range['end_ip_address']}"
+            )
         else:
             module.fail_json(msg="No available IP ranges found.")
 
@@ -250,14 +251,16 @@ def core(module):
                         "internal_ip_range": gre_tunnel.get("internal_ip_range"),
                         "ip_unnumbered": gre_tunnel.get("ip_unnumbered"),
                         "within_country": gre_tunnel.get("within_country"),
-                        "primary_dest_vip_id": gre_tunnel.get("primary_dest_vip_id")[0]
-                        if gre_tunnel.get("primary_dest_vip_id")
-                        else None,
-                        "secondary_dest_vip_id": gre_tunnel.get(
-                            "secondary_dest_vip_id"
-                        )[0]
-                        if gre_tunnel.get("secondary_dest_vip_id")
-                        else None,
+                        "primary_dest_vip_id": (
+                            gre_tunnel.get("primary_dest_vip_id")[0]
+                            if gre_tunnel.get("primary_dest_vip_id")
+                            else None
+                        ),
+                        "secondary_dest_vip_id": (
+                            gre_tunnel.get("secondary_dest_vip_id")[0]
+                            if gre_tunnel.get("secondary_dest_vip_id")
+                            else None
+                        ),
                         "sub_cloud": gre_tunnel.get("sub_cloud"),
                     }
                 )
@@ -277,12 +280,16 @@ def core(module):
                     "internal_ip_range": gre_tunnel.get("internal_ip_range"),
                     "ip_unnumbered": gre_tunnel.get("ip_unnumbered"),
                     "within_country": gre_tunnel.get("within_country"),
-                    "primary_dest_vip_id": gre_tunnel.get("primary_dest_vip_id")[0]
-                    if gre_tunnel.get("primary_dest_vip_id")
-                    else None,
-                    "secondary_dest_vip_id": gre_tunnel.get("secondary_dest_vip_id")[0]
-                    if gre_tunnel.get("secondary_dest_vip_id")
-                    else None,
+                    "primary_dest_vip_id": (
+                        gre_tunnel.get("primary_dest_vip_id")[0]
+                        if gre_tunnel.get("primary_dest_vip_id")
+                        else None
+                    ),
+                    "secondary_dest_vip_id": (
+                        gre_tunnel.get("secondary_dest_vip_id")[0]
+                        if gre_tunnel.get("secondary_dest_vip_id")
+                        else None
+                    ),
                     "sub_cloud": gre_tunnel.get("sub_cloud"),
                 }
             )

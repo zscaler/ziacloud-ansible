@@ -1,20 +1,21 @@
 ---
 - name: Include default variables
   ansible.builtin.include_vars:
-    file: "../defaults/main.yml"
+    file: ../defaults/main.yml
 
 - name: Import Random String Generator Tasks
-  ansible.builtin.import_tasks: "../../../generate_random_string.yml"
+  ansible.builtin.import_tasks: ../../../generate_random_string.yml
 
 - name: Import Network Services ID
-  ansible.builtin.include_tasks: "../../../helper_tasks/zia_cloud_firewall_network_services/zia_cloud_firewall_network_services_facts.yml"
+  ansible.builtin.include_tasks: ../../../helper_tasks/zia_cloud_firewall_network_services/zia_cloud_firewall_network_services_facts.yml
 
-- ansible.builtin.set_fact:
-    name: "{{ name }}_{{ random_string }}"
+- name: Set dynamic name values with random string
+  ansible.builtin.set_fact:
+    group_name: "{{ group_name }}_{{ random_string }}"
     description: "{{ description }}_{{ random_string }}"
 
 - name: Ensure required environment variables are set
-  fail:
+  ansible.builtin.fail:
     msg: "{{ env_var }} is not defined as environment variable"
   when: lookup('env', env_var) is none
   loop:
@@ -25,32 +26,44 @@
   loop_control:
     loop_var: env_var
 
-- ansible.builtin.set_fact:
+- name: Ensure ZIA Credential environment variables are set
+  ansible.builtin.set_fact:
     zia_cloud:
       username: "{{ lookup('env', 'ZIA_USERNAME') }}"
       password: "{{ lookup('env', 'ZIA_PASSWORD') }}"
       api_key: "{{ lookup('env', 'ZIA_API_KEY') }}"
       cloud: "{{ lookup('env', 'ZIA_CLOUD') | default(omit) }}"
-  no_log: True
+  no_log: true
 
-- block:
+- name: Main block to Test Cloud Firewall Network Services Groups Configuration
+  block:
     # Network Services Group
     - name: Ensure Network Services Group (leftover)
       zscaler.ziacloud.zia_cloud_firewall_network_services_groups:
         provider: "{{ zia_cloud }}"
         state: absent
-        name: "{{ name }}"
+        name: "{{ group_name }}"
         service_ids:
           - "{{ service_id0 }}"
           - "{{ service_id1 }}"
           - "{{ service_id2 }}"
       register: result
 
+  rescue:
+    - name: Handle errors
+      ansible.builtin.debug:
+        msg: An error occurred.
+
+  always:
+    - name: Cleanup operations
+      ansible.builtin.debug:
+        msg: Cleanup complete.
+
     - name: Ensure Network Services Group is absent
       zscaler.ziacloud.zia_cloud_firewall_network_services_groups:
         provider: "{{ zia_cloud }}"
         state: absent
-        name: "{{ name }}"
+        name: "{{ group_name }}"
         service_ids:
           - "{{ service_id0 }}"
           - "{{ service_id1 }}"
@@ -67,7 +80,7 @@
       zscaler.ziacloud.zia_cloud_firewall_network_services_groups:
         provider: "{{ zia_cloud }}"
         state: present
-        name: "{{ name }}"
+        name: "{{ group_name }}"
         description: "{{ description }}"
         service_ids:
           - "{{ service_id0 }}"
@@ -85,7 +98,7 @@
       zscaler.ziacloud.zia_cloud_firewall_network_services_groups:
         provider: "{{ zia_cloud }}"
         state: present
-        name: "{{ name }}"
+        name: "{{ group_name }}"
         description: "{{ description }}"
         service_ids:
           - "{{ service_id0 }}"
@@ -112,7 +125,7 @@
     - name: Fetch this Network Services Group
       zscaler.ziacloud.zia_cloud_firewall_network_services_groups_facts:
         provider: "{{ zia_cloud }}"
-        name: "{{ name }}"
+        name: "{{ group_name }}"
       register: result
 
     - name: Ensure this Network Services Group is found
@@ -131,7 +144,7 @@
       zscaler.ziacloud.zia_cloud_firewall_network_services_groups:
         provider: "{{ zia_cloud }}"
         state: absent
-        name: "{{ name }}"
+        name: "{{ group_name }}"
         service_ids:
           - "{{ service_id0 }}"
           - "{{ service_id1 }}"
@@ -147,7 +160,7 @@
       zscaler.ziacloud.zia_cloud_firewall_network_services_groups:
         provider: "{{ zia_cloud }}"
         state: absent
-        name: "{{ name }}"
+        name: "{{ group_name }}"
         service_ids:
           - "{{ service_id0 }}"
           - "{{ service_id1 }}"

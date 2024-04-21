@@ -10,7 +10,7 @@ namespace: "zscaler"
 name: "ziacloud"
 
 # The version of the collection. Must be compatible with semantic versioning
-version: 1.0.0
+version: 0.1.0
 
 # The path to the Markdown (.md) readme file. This path is relative to the root of the collection
 readme: "README.md"
@@ -18,7 +18,7 @@ readme: "README.md"
 # A list of the collection's content authors. Can be just the name or in the format 'Full Name <email> (url)
 # @nicks:irc/im.site#channel'
 authors:
-    - Zscaler Solutions Architecture <zscaler-partner-labs@z-bd.com>
+    - Zscaler Technology Alliances <devrel@zscaler.com>
 
 ### OPTIONAL but strongly recommended
 

@@ -1,8 +1,31 @@
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2023 Zscaler Inc, <devrel@zscaler.com>
+
+#                              MIT License
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-from netaddr import IPAddress, IPNetwork, AddrFormatError
+from netaddr import IPAddress, AddrFormatError
 
 
 def validate_iso3166_alpha2(country_code):
@@ -100,6 +123,10 @@ def validate_location_mgmt(location_mgmt):
     """
     Validate location management configuration based on given rules.
     """
+    # Default setting for ip_addresses to avoid TypeError on iteration
+    ip_addresses = location_mgmt.get("ip_addresses", [])
+    parent_id = location_mgmt.get("parent_id")
+
     surrogate_ip = location_mgmt.get("surrogate_ip")
     idle_time_in_minutes = location_mgmt.get("idle_time_in_minutes")
     auth_required = location_mgmt.get("auth_required")
@@ -239,9 +266,9 @@ def validate_location_mgmt(location_mgmt):
         converted_surrogate_refresh_time = convert_to_minutes(
             surrogate_refresh_time_in_minutes, surrogate_refresh_time_unit
         )
-        location_mgmt[
-            "surrogate_refresh_time_in_minutes"
-        ] = converted_surrogate_refresh_time
+        location_mgmt["surrogate_refresh_time_in_minutes"] = (
+            converted_surrogate_refresh_time
+        )
 
         # Re-validate the converted surrogate_refresh_time_in_minutes
         if (
@@ -270,15 +297,62 @@ def validate_location_mgmt(location_mgmt):
             "When 'caution_enabled' is set to true, 'auth_required' must be disabled."
         )
 
-    # Validate IP addresses
-    ip_addresses = location_mgmt.get("ip_addresses", [])
-    for ip in ip_addresses:
-        if not is_valid_ipv4_or_range(ip):
-            raise ValueError(f"Invalid IPv4 address or range: {ip}")
+    # Check VPN credentials to determine if IP addresses need to be validated for IP type VPN
+    validate_ips = False
+    vpn_credentials = location_mgmt.get("vpn_credentials", [])
+    for cred in vpn_credentials:
+        if cred.get("type") == "IP":
+            validate_ips = True
+            break
 
-    parent_id = location_mgmt.get("parent_id")
-    ip_addresses = location_mgmt.get("ip_addresses", [])
+    # Validate IP addresses only if necessary:
+    if validate_ips:
+        if not ip_addresses:  # This checks if IP addresses are provided when needed
+            raise ValueError(
+                "IP addresses must be provided for IP type VPN credentials."
+            )
+        for ip in ip_addresses:
+            if not is_valid_ipv4_or_range(ip):
+                raise ValueError(f"Invalid IPv4 address or range: {ip}")
 
-    # New Rule: When parent_id is not 0, ip_addresses must not be empty
-    if parent_id is not None and parent_id != 0 and not ip_addresses:
-        raise ValueError("When 'parent_id' is not 0, 'ip_addresses' must not be empty.")
+    # Rule for parent_id and ip_addresses:
+    # Validate ip_addresses are provided if parent_id is not None and not 0 (indicating a sub-location)
+    if parent_id is not None and parent_id != 0:
+        if not ip_addresses:
+            raise ValueError(
+                "When 'parent_id' is not 0, 'ip_addresses' must not be empty."
+            )
+
+
+# This function is used by the Location Management to distinguish
+# Between VPN Type IP and UFQDN
+def process_vpn_credentials(vpn_creds):
+    if not vpn_creds:
+        return []
+    processed_creds = []
+    for cred in vpn_creds:
+        if cred["type"] == "UFQDN":
+            # For UFQDN, ensure 'fqdn' is provided and ignore 'ip_address'
+            if "fqdn" not in cred or not cred["fqdn"]:
+                raise ValueError("FQDN must be provided for UFQDN VPN credentials")
+            processed_creds.append(
+                {
+                    "id": cred.get("id"),
+                    "type": "UFQDN",
+                    "fqdn": cred["fqdn"],
+                    "pre_shared_key": cred.get("pre_shared_key"),
+                }
+            )
+        elif cred["type"] == "IP":
+            # For IP, ensure 'ip_address' is provided
+            if "ip_address" not in cred or not cred["ip_address"]:
+                raise ValueError("IP address must be provided for IP VPN credentials")
+            processed_creds.append(
+                {
+                    "id": cred.get("id"),
+                    "type": "IP",
+                    "ip_address": cred["ip_address"],
+                    "pre_shared_key": cred.get("pre_shared_key"),
+                }
+            )
+    return processed_creds

@@ -1,8 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2023 Zscaler Technology Alliances, <zscaler-partner-labs@z-bd.com>
+# Copyright (c) 2023 Zscaler Inc, <devrel@zscaler.com>
 
+#                             MIT License
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -33,7 +34,7 @@ description:
   - "Get IDM template information for the specified ID or Name"
 author:
   - William Guilherme (@willguibr)
-version_added: "1.0.0"
+version_added: "0.1.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:

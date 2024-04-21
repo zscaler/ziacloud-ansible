@@ -1,3 +1,9 @@
+---
 - name: Generate a random string
-  set_fact:
-    random_string: "{{ lookup('password', '/dev/null length=6 chars=ascii_letters') }}"
+  ansible.builtin.set_fact:
+    random_string: "{{ lookup('password', '/dev/null length=5 chars=ascii_letters,digits') }}"
+
+- name: Generate a random password
+  ansible.builtin.set_fact:
+    random_password: "{{ lookup('password', '/dev/null length=16 chars=ascii_letters,digits,special') }}"
+  no_log: true

@@ -10,7 +10,7 @@ profile: production
 # and not relative to the CWD of execution. CLI arguments passed to the --exclude
 # option are parsed relative to the CWD of execution.
 exclude_paths:
-#   - .cache/ # implicit unless exclude_paths is defined in config
+  #   - .cache/ # implicit unless exclude_paths is defined in config
   - .github/
 #   - test/fixtures/formatting-before/
 #   - test/fixtures/formatting-prettier/
@@ -21,9 +21,8 @@ exclude_paths:
 
 # Mock modules or roles in order to pass ansible-playbook --syntax-check
 # mock_modules:
-#   - paloaltonetworks.panos.panos_op
 #   - zuul_return
-#   # note the foo.bar is invalid as being neither a module or a collection
+# note the foo.bar is invalid as being neither a module or a collection
 #   - fake_namespace.fake_collection.fake_module
 #   - fake_namespace.fake_collection.fake_module.fake_submodule
 # mock_roles:
@@ -53,7 +52,7 @@ exclude_paths:
 # When putting ignores inside the ignore file, they are marked as ignored, but
 # still visible, making it easier to address later.
 # skip_list:
-#   - role-name
+#   - skip_this_tag
 
 # Ansible-lint does not automatically load rules that have the 'opt-in' tag.
 # You must enable opt-in rules by listing each rule 'id' below.
@@ -72,13 +71,13 @@ enable_list:
 
 # Ansible-lint does not fail on warnings from the rules or tags listed below
 # warn_list:
-  # - skip_this_tag
-  # - experimental # experimental is included in the implicit list
-  # - role-name
-  # - yaml[document-start]  # you can also use sub-rule matches
+#   - skip_this_tag
+#   - experimental # experimental is included in the implicit list
+# - role-name
+# - yaml[document-start]  # you can also use sub-rule matches
 
 # Some rules can transform files to fix (or make it easier to fix) identified
-# errors. `ansible-lint --write` will reformat YAML files and run these transforms.
+# errors. `ansible-lint --fix` will reformat YAML files and run these transforms.
 # By default it will run all transforms (effectively `write_list: ["all"]`).
 # You can disable running transforms by setting `write_list: ["none"]`.
 # Or only enable a subset of rule transforms by listing rules/tags here.
@@ -87,11 +86,6 @@ enable_list:
 
 # Offline mode disables installation of requirements.yml and schema refreshing
 # offline: true
-
-# Return success if number of violations compared with previous git
-# commit has not increased. This feature works only in git
-# repositories.
-# progressive: false
 
 # Define required Ansible's variables to satisfy syntax check
 # extra_vars:
@@ -108,12 +102,12 @@ enable_list:
 # List of additional kind:pattern to be added at the top of the default
 # match list, first match determines the file kind.
 # kinds:
-  # - playbook: "**/examples/*.{yml,yaml}"
-  # - galaxy: "**/folder/galaxy.yml"
-  # - tasks: "**/tasks/*.yml"
-  # - vars: "**/vars/*.yml"
-  # - meta: "**/meta/main.yml"
-  # - yaml: "**/*.yaml-too"
+# - playbook: "**/examples/*.{yml,yaml}"
+# - galaxy: "**/folder/galaxy.yml"
+# - tasks: "**/tasks/*.yml"
+# - vars: "**/vars/*.yml"
+# - meta: "**/meta/main.yml"
+# - yaml: "**/*.yaml-too"
 
 # List of additional collections to allow in only-builtins rule.
 # only_builtins_allow_collections:
@@ -125,3 +119,7 @@ enable_list:
 
 # Allow setting custom prefix for name[prefix] rule
 # task_name_prefix: "{stem} | "
+# Complexity related settings
+
+# Limit the depth of the nested blocks:
+# max_block_depth: 20

@@ -1,5 +1,5 @@
 ---
-name: "test_zia_ansible"
+template_name: test_zia_ansible
 attach_content: true
 tls_enabled: true
 subject: "DLP Violation: $${TRANSACTION_ID} $${RULENAME}"

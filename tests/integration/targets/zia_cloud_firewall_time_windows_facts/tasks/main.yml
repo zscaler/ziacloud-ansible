@@ -1,10 +1,10 @@
 ---
 - name: Include default variables
   ansible.builtin.include_vars:
-    file: "../defaults/main.yml"
+    file: ../defaults/main.yml
 
 - name: Ensure required environment variables are set
-  fail:
+  ansible.builtin.fail:
     msg: "{{ env_var }} is not defined as environment variable"
   when: lookup('env', env_var) is none
   loop:
@@ -15,15 +15,17 @@
   loop_control:
     loop_var: env_var
 
-- ansible.builtin.set_fact:
+- name: Ensure ZIA Credential environment variables are set
+  ansible.builtin.set_fact:
     zia_cloud:
       username: "{{ lookup('env', 'ZIA_USERNAME') }}"
       password: "{{ lookup('env', 'ZIA_PASSWORD') }}"
       api_key: "{{ lookup('env', 'ZIA_API_KEY') }}"
       cloud: "{{ lookup('env', 'ZIA_CLOUD') | default(omit) }}"
-  no_log: True
+  no_log: true
 
-- block:
+- name: Main block to Test Cloud Firewall Time Windows Configuration
+  block:
     - name: Fetch All Time Intervals
       zscaler.ziacloud.zia_cloud_firewall_time_windows_facts:
         provider: "{{ zia_cloud }}"

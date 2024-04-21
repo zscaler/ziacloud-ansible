@@ -1,4 +1,5 @@
-ip_address: "121.234.54.72"
+---
+ip_address: 121.234.54.72
 routable_ip: true
 comment: test_zia_ansible
 geo_override: true

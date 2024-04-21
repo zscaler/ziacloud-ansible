@@ -1,8 +1,8 @@
 ---
-name: test_zia_ansible
+rule_name: test_zia_ansible
 description: test_zia_ansible
-action: "BLOCK"
-order: 1
+rule_action: BLOCK
+rule_order: 1
 rank: 7
 enabled: true
 without_content_inspection: false
@@ -17,15 +17,15 @@ protocols:
   - HTTPS_RULE
   - HTTP_RULE
 file_types:
-  - "ASM"
-  - "MATLAB_FILES"
-  - "SAS"
-  - "SCALA"
+  - ASM
+  - MATLAB_FILES
+  - SAS
+  - SCALA
 
 # Web DLP Rule Update
 name_update: test_zia_ansible
 description_update: test_zia_ansible
-action_update: "BLOCK"
+action_update: BLOCK
 order_update: 1
 rank_update: 7
 enabled_update: false
@@ -39,6 +39,6 @@ protocols_update:
   - HTTPS_RULE
   - HTTP_RULE
 file_types_update:
-  - "ASM"
-  - "MATLAB_FILES"
-  - "SAS"
+  - ASM
+  - MATLAB_FILES
+  - SAS

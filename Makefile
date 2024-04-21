@@ -1,4 +1,39 @@
 # Taken from: https://github.com/sensu/sensu-go-ansible/blob/master/Makefile
+COLOR_OK=\\x1b[0;32m
+COLOR_NONE=\x1b[0m
+COLOR_ERROR=\x1b[31;01m
+COLOR_WARNING=\x1b[33;01m
+COLOR_ZSCALER=\x1B[34;01m
+
+help:
+	@echo "$(COLOR_ZSCALER)"
+	@echo "  ______              _           "
+	@echo " |___  /             | |          "
+	@echo "    / / ___  ___ __ _| | ___ _ __ "
+	@echo "   / / / __|/ __/ _\` | |/ _ \ '__|"
+	@echo "  / /__\__ \ (_| (_| | |  __/ |   "
+	@echo " /_____|___/\___\__,_|_|\___|_|   "
+	@echo "                                  "
+	@echo "                                  "
+	@echo "$(COLOR_NONE)"
+	@echo "$(COLOR_OK)ZIA Ansible Collection$(COLOR_NONE) version $(COLOR_WARNING)$(VERSION)$(COLOR_NONE)"
+	@echo ""
+	@echo "$(COLOR_WARNING)Usage:$(COLOR_NONE)"
+	@echo "$(COLOR_OK)  make [command]$(COLOR_NONE)"
+	@echo ""
+	@echo "$(COLOR_WARNING)Available commands:$(COLOR_NONE)"
+	@echo "$(COLOR_OK)  help$(COLOR_NONE)           Show this help message"
+	@echo "$(COLOR_WARNING)clean$(COLOR_NONE)"
+	@echo "$(COLOR_OK)  clean                      	Remove all auto-generated files$(COLOR_NONE)"
+	@echo "$(COLOR_WARNING)development$(COLOR_NONE)"
+	@echo "$(COLOR_OK)  check-format               	Check code format/style with black$(COLOR_NONE)"
+	@echo "$(COLOR_OK)  format                     	Reformat code with black$(COLOR_NONE)"
+	@echo "$(COLOR_OK)  docs                       	Build collection documentation$(COLOR_NONE)"
+	@echo "$(COLOR_OK)  reqs                       	Recreate the requirements.txt file$(COLOR_NONE)"
+	@echo "$(COLOR_WARNING)test$(COLOR_NONE)"
+	@echo "$(COLOR_OK)  test:integration:zia          Execute the full integration test suite$(COLOR_NONE)"
+	@echo "$(COLOR_OK)  test:old-sanity          	Sanity tests for Ansible v2.9 and Ansible v2.10$(COLOR_NONE)"
+	@echo "$(COLOR_OK)  test:new-sanity          	Sanity tests for Ansible v2.11 and above$(COLOR_NONE)"
 
 # Make sure we have ansible_collections/zscaler/ziacloud_enhanced
 # as a prefix. This is ugly as heck, but it works. I suggest all future
@@ -21,15 +56,8 @@ python_version := $(shell \
   python3 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))' \
 )
 
-
-.PHONY: help
-help:
-	@echo Available targets:
-	@fgrep "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sort
-
 .PHONY: docs
 docs:		## Build collection documentation
-	sudo make install
 	rm -rf antsibull
 	mkdir antsibull
 	poetry run antsibull-docs collection --use-current --dest-dir antsibull --no-indexes zscaler.ziacloud
@@ -38,6 +66,7 @@ docs:		## Build collection documentation
 	rm -rf antsibull
 	rm -f docs/source/modules/index.rst
 	cd docs && sphinx-build source html
+	open docs/html/index.html
 
 .PHONY: clean
 clean:		## Remove all auto-generated files
@@ -51,6 +80,10 @@ format:		## Format with black
 .PHONY: check-format
 check-format:	## Check with black
 	black --check --diff .
+
+test\:integration\:zia:
+	@echo "$(COLOR_ZSCALER)Running zia integration tests...$(COLOR_NONE)"
+	ansible-plabook tests/integration/run_all_tests.yml
 
 .PHONY: old-sanity
 old-sanity:		## Sanity tests for Ansible v2.9 and Ansible v2.10
@@ -67,6 +100,9 @@ reqs:       ## Recreate the requirements.txt file
 install:
 	cp -R /Users/wguilherme/ansible_collections/zscaler/ziacloud /opt/homebrew/lib/python3.11/site-packages/ansible_collections/zscaler/
 	rm -f zscaler*
+	pip3 install -r requirements.txt
 	ansible-galaxy collection build . --force
 	ansible-galaxy collection install zscaler* --force
 	rm -f zscaler*
+
+.PHONY: clean-pyc clean-build docs clean local-setup
