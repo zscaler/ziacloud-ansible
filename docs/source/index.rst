@@ -41,7 +41,7 @@ Sample playbooks are available in our `samples repository`_
 contributed by the **Zscaler's Technology Alliances** team.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :hidden:
    :caption: Getting Started
 
@@ -80,9 +80,9 @@ Author Information
 .. _Ansible Automation Hub:
    https://www.ansible.com/products/automation-hub
 .. _documentation:
-   https://zscaler.github.io/z_ansible_collections_doc/index.html
+   https://zscaler.github.io/ziacloud-ansible/index.html
 .. _modules:
-   https://zscaler.github.io/ziacloud_ansible_collections_doc/ibm_zos_sysauto/docs/source/roles.html
+   https://zscaler.github.io/ziacloud-ansible/modules.html
 .. _samples repository:
    https://github.com/zscaler/ziacloud_ansible_collections_samples/blob/master/README.md
 
