@@ -42,6 +42,7 @@ contributed by the **Zscaler's Technology Alliances** team.
 
 .. toctree::
    :maxdepth: 2
+   :hidden:
    :caption: Getting Started
 
    requirements
