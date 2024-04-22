@@ -1,8 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2023 Zscaler Technology Alliances, <zscaler-partner-labs@z-bd.com>
+# Copyright (c) 2023 Zscaler Inc, <devrel@zscaler.com>
 
+#                             MIT License
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -27,19 +28,19 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 ---
-module: zia_sandbox_submit
+module: zia_sandbox_submission
 short_description: "Submits a file to the ZIA Advanced Cloud Sandbox for analysis."
 description:
   - Submits a file to the ZIA Advanced Cloud Sandbox for analysis.
 author:
   - William Guilherme (@willguibr)
-version_added: "1.0.0"
+version_added: "0.1.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
+  - zscaler.ziacloud.fragments.documentation
 
-  - zscaler.ziacloud.fragments.state
 options:
   file_path:
     description: "Path to the file that will be submitted for sandbox analysis."
@@ -48,15 +49,32 @@ options:
   force:
     description: "Force ZIA to analyse the file even if it has been submitted previously."
     type: bool
-    default: false
+  inspection_mode:
+        description:
+            - Sandbox option submits raw or archive files e.g., ZIP to Sandbox for analysis.
+            - You can submit up to 100 files per day and it supports all file types that are currently supported by Sandbox.
+            - Out Of Band option Submits raw or archive files e.g., ZIP to the Zscaler service for out-of-band file inspection.
+            - Generate real-time verdicts for known and unknown files.
+        type: str
+        default: sandbox
+        choices:
+        - sandbox
+        - out_of_band
 """
 
 EXAMPLES = r"""
 - name: Submit a file for analysis.
-  zscaler.ziacloud.zia_sandbox_submit:
+  zscaler.ziacloud.zia_sandbox_submission:
     provider: '{{ provider }}'
     file_path: "/path/to/malware.exe"
     force: True
+    inspection_mode: sandbox
+
+- name: Submit a file for analysis.
+  zscaler.ziacloud.zia_sandbox_submission:
+    provider: '{{ provider }}'
+    file_path: "/path/to/malware.exe"
+    inspection_mode: out_of_band
 """
 
 RETURN = r"""
@@ -97,7 +115,7 @@ def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         file_path=dict(type="str", required=True),
-        force=dict(type="bool", default=False),
+        force=dict(type="bool", required=False),
         inspection_mode=dict(
             type="str", choices=["sandbox", "out_of_band"], default="sandbox"
         ),

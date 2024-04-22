@@ -1,8 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2023 Zscaler Technology Alliances, <zscaler-partner-labs@z-bd.com>
+# Copyright (c) 2023 Zscaler Inc, <devrel@zscaler.com>
 
+#                             MIT License
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -32,13 +33,14 @@ short_description: "Firewall Filtering policy rule."
 description: "Adds a new Firewall Filtering policy rule."
 author:
   - William Guilherme (@willguibr)
-version_added: "1.0.0"
+version_added: "0.1.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-
+  - zscaler.ziacloud.fragments.documentation
   - zscaler.ziacloud.fragments.state
+
 options:
   id:
     description: "Unique identifier for the Firewall Filtering policy rule"
@@ -57,35 +59,42 @@ options:
     required: false
     default: 7
     type: int
+  enable_full_logging:
+    description:
+      - Aggregate The service groups together individual sessions based on  user, rule, network service, network application and records them periodically.
+      - Full The service logs all sessions of the rule individually, except HTTPS or HTTPS.
+      - Full logging on all other rules requires the Full Logging license. Only Block rules support full logging.
+    required: false
+    type: bool
   locations:
     description: "The locations to which the Firewall Filtering policy rule applies"
     type: list
-    elements: str
+    elements: int
     required: false
   location_groups:
     description: "The location groups to which the Firewall Filtering policy rule applies"
     type: list
-    elements: str
+    elements: int
     required: false
   departments:
     description: "The departments to which the Firewall Filtering policy rule applies"
     type: list
-    elements: str
+    elements: int
     required: false
   groups:
     description: "The groups to which the Firewall Filtering policy rule applies"
     type: list
-    elements: str
+    elements: int
     required: false
   users:
     description: "The users to which the Firewall Filtering policy rule applies"
     type: list
-    elements: str
+    elements: int
     required: false
   time_windows:
     description: "The time interval in which the Firewall Filtering policy rule applies"
     type: list
-    elements: str
+    elements: int
     required: false
   workload_groups:
     description: "The list of preconfigured workload groups to which the policy must be applied."
@@ -106,11 +115,7 @@ options:
     description:
         - Determines whether the Firewall Filtering policy rule is enabled or disabled
     required: false
-    type: str
-    choices:
-        - DISABLED
-        - ENABLED
-    default: ENABLED
+    type: bool
   description:
     description: "Additional information about the rule"
     required: false
@@ -127,7 +132,7 @@ options:
         - User-defined source IP address groups for which the rule is applicable.
         - If not set, the rule is not restricted to a specific source IP address group.
     type: list
-    elements: str
+    elements: int
     required: false
   dest_addresses:
     description:
@@ -147,6 +152,7 @@ options:
     description:
       - Destination countries for which the rule is applicable.
       - If not set, the rule is not restricted to specific destination countries.
+      - Provide a ISO3166 Alpha2 code.  visit the following site for reference U(https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes)
     type: list
     elements: str
     required: false
@@ -155,51 +161,112 @@ options:
         - User-defined destination IP address groups on which the rule is applied.
         - If not set, the rule is not restricted to a specific destination IP address group.
     type: list
+    elements: int
+    required: false
+  source_countries:
+    description:
+      - The list of source countries that must be included or excluded from the rule based on the excludeSrcCountries field value.
+      - If no value is set, this field is ignored during policy evaluation and the rule is applied to all source countries.
+      - Provide a ISO3166 Alpha2 code.  visit the following site for reference U(https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes)
+    type: list
     elements: str
+    required: false
+  exclude_src_countries:
+    description:
+      - Indicates whether the countries specified in the sourceCountries field are included or excluded from the rule.
+      - A true value denotes that the specified source countries are excluded from the rule.
+      - A false value denotes that the rule is applied to the source countries if there is a match.
+      - Provide a ISO3166 Alpha2 code.  visit the following site for reference U(https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes)
+    type: bool
     required: false
   nw_services:
     description:
         - User-defined network services on which the rule is applied.
         - If not set, the rule is not restricted to a specific network service.
     type: list
-    elements: str
+    elements: int
     required: false
   nw_service_groups:
     description:
         - User-defined network service group on which the rule is applied.
         - If not set, the rule is not restricted to a specific network service group.
     type: list
-    elements: str
+    elements: int
     required: false
   nw_applications:
     description:
       - User-defined network service applications on which the rule is applied.
       - If not set, the rule is not restricted to a specific network service application.
     type: list
-    elements: str
+    elements: int
     required: false
   nw_application_groups:
     description:
         - User-defined network service application group on which the rule is applied.
         - If not set, the rule is not restricted to a specific network service application group.
     type: list
-    elements: str
+    elements: int
     required: false
   app_services:
     description: "Application services on which this rule is applied"
     type: list
-    elements: str
+    elements: int
     required: false
   app_service_groups:
     description: "Application service groups on which this rule is applied"
     type: list
-    elements: str
+    elements: int
     required: false
   labels:
     description: "Labels that are applicable to the rule."
     type: list
+    elements: int
+    required: false
+  dest_ipv6_groups:
+    description:
+      - Destination IPv6 address groups for which the rule is applicable.
+      - If not set, the rule is not restricted to a specific source IPv6 address group.
+    type: list
+    elements: int
+    required: false
+  src_ipv6_groups:
+    description:
+      - Source IPv6 address groups for which the rule is applicable.
+      - If not set, the rule is not restricted to a specific source IPv6 address group.
+    type: list
+    elements: int
+    required: false
+  device_groups:
+    description:
+      - Name-ID pairs of device groups for which the rule must be applied.
+      - This field is applicable for devices that are managed using Zscaler Client Connector.
+      - If no value is set, this field is ignored during the policy evaluation.
+    type: list
+    elements: int
+    required: false
+  devices:
+    description:
+      - Name-ID pairs of devices for which rule must be applied.
+      - Specifies devices that are managed using Zscaler Client Connector.
+      - If no value is set, this field is ignored during the policy evaluation.
+    type: list
+    elements: int
+    required: false
+  device_trust_levels:
+    description:
+        - List of device trust levels for which the rule must be applied.
+        - This field is applicable for devices that are managed using Zscaler Client Connector.
+        - The trust levels are assigned to the devices based on your posture configurations.
+        - If no value is set, this field is ignored during the policy evaluation.
+    type: list
     elements: str
     required: false
+    choices:
+        - ANY
+        - UNKNOWN_DEVICETRUSTLEVEL
+        - LOW_TRUST
+        - MEDIUM_TRUST
+        - HIGH_TRUST
 """
 
 EXAMPLES = r"""
@@ -544,7 +611,7 @@ def main():
         required=False,
     )
     argument_spec.update(
-        id=dict(type="str", required=False),
+        id=dict(type="int", required=False),
         name=dict(type="str", required=True),
         description=dict(type="str", required=False),
         enabled=dict(type="bool", required=False),
@@ -580,7 +647,6 @@ def main():
         action=dict(
             type="str",
             required=False,
-            default="ALLOW",
             choices=["ALLOW", "BLOCK_DROP", "BLOCK_RESET", "BLOCK_ICMP", "EVAL_NWAPP"],
         ),
         device_trust_levels=dict(
@@ -588,6 +654,7 @@ def main():
             elements="str",
             required=False,
             choices=[
+                "ANY",
                 "UNKNOWN_DEVICETRUSTLEVEL",
                 "LOW_TRUST",
                 "MEDIUM_TRUST",

@@ -1,8 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2023 Zscaler Technology Alliances, <zscaler-partner-labs@z-bd.com>
+# Copyright (c) 2023 Zscaler Inc, <devrel@zscaler.com>
 
+#                             MIT License
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -34,13 +35,14 @@ description:
   - "It allows for the configuration of server groups and application segments for source IP anchoring."
 author:
   - William Guilherme (@willguibr)
-version_added: "1.0.0"
+version_added: "0.1.0"
 requirements:
   - Zscaler SDK Python (available on PyPI at https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-
+  - zscaler.ziacloud.fragments.documentation
   - zscaler.ziacloud.fragments.state
+
 options:
   id:
     description: "Unique identifier for the ZPA gateway."
@@ -55,10 +57,13 @@ options:
     required: false
     type: str
   type:
-    description: "Type of ZPA gateway. Choose 'ZPA' for Zscaler Internet Access or 'ECZPA' for Zscaler Cloud Connector."
+    description: "Type of ZPA gateway. Choose ZPA for Zscaler Internet Access or ECZPA for Zscaler Cloud Connector."
     required: false
     type: str
-    choices: [ZPA, ECZPA]
+    default: ZPA
+    choices:
+        - ZPA
+        - ECZPA
   zpa_server_group:
     description: "Server group associated with the ZPA gateway for source IP anchoring."
     required: true

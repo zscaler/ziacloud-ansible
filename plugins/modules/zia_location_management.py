@@ -1,8 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2023 Zscaler Technology Alliances, <zscaler-partner-labs@z-bd.com>
+# Copyright (c) 2023 Zscaler Inc, <devrel@zscaler.com>
 
+#                             MIT License
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -33,12 +34,14 @@ description:
   - "Adds new locations and sub-locations."
 author:
   - William Guilherme (@willguibr)
-version_added: "1.0.0"
+version_added: "0.1.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
+  - zscaler.ziacloud.fragments.documentation
   - zscaler.ziacloud.fragments.state
+
 options:
   id:
     description: "Location ID"
@@ -88,39 +91,37 @@ options:
     description: "Enforce Authentication. Required when ports are enabled, IP Surrogate is enabled, or Kerberos Authentication is enabled."
     type: bool
     required: false
-    default: false
   ssl_scan_enabled:
     description:
       - "This parameter was deprecated and no longer has an effect on SSL policy."
       - "It remains supported in the API payload in order to maintain backwards compatibility with existing scripts, but it will be removed in future."
-      - Enable SSL Inspection. Set to true in order to apply your SSL Inspection policy to HTTPS traffic in the location and inspect HTTPS transactions for data leakage, malicious content, and viruses.
+      - "Enable SSL Inspection."
+      - "Set to true in order to apply your SSL Inspection policy to HTTPS traffic."
       - To Learn More, see Deploying SSL Inspection U(https://help.zscaler.com/zia/deploying-ssl-inspection)
     type: bool
     required: false
-    default: false
   zapp_ssl_scan_enabled:
     description:
       - "This parameter was deprecated and no longer has an effect on SSL policy."
       - "It remains supported in the API payload in order to maintain backwards compatibility with existing scripts, but it will be removed in future."
-      - "Enable Zscaler App SSL Setting. When set to true, the Zscaler App SSL Scan Setting takes effect, irrespective of the SSL policy that is configured for the location."
+      - "Enable Zscaler App SSL Setting."
+      - "When set to true, the Zscaler App SSL Scan Setting takes effect, irrespective of the SSL policy that is configured for the location."
       - To Learn More, see Deploying SSL Inspection U(https://help.zscaler.com/z-app/configuring-ssl-inspection-zscaler-app#configure-SSL-Zscaler-App)
     type: bool
     required: false
-    default: false
   xff_forward_enabled:
     description:
-      - "Enable XFF Forwarding for a location. When set to true, traffic is passed to Zscaler Cloud via the X-Forwarded-For (XFF) header."
+      - "Enable XFF Forwarding for a location."
+      - "When set to true, traffic is passed to Zscaler Cloud via the X-Forwarded-For (XFF) header."
       - "Note: For sublocations, this attribute is a read-only field as the value is inherited from the parent location."
     type: bool
     required: false
-    default: false
   surrogate_ip:
     description:
       - "Enable Surrogate IP. When set to true, users are mapped to internal device IP addresses."
       - "To Learn More, see Deploying SSL Inspection U(https://help.zscaler.com/zia/about-surrogate-ip)"
     type: bool
     required: false
-    default: false
   idle_time_in_minutes:
     description: "Idle Time to Disassociation. The user mapping idle time (in minutes) is required if a Surrogate IP is enabled."
     type: int
@@ -129,13 +130,16 @@ options:
     description: "Display Time Unit. The time unit to display for IP Surrogate idle time to disassociation."
     type: str
     required: false
+    choices:
+      - MINUTE
+      - HOUR
+      - DAY
   surrogate_ip_enforced_for_known_browsers:
     description:
       - "Enforce Surrogate IP for Known Browsers. When set to true, IP Surrogate is enforced for all known browsers."
       - "To Learn More, see Deploying SSL Inspection U(https://help.zscaler.com/zia/about-surrogate-ip)"
     type: bool
     required: false
-    default: false
   surrogate_refresh_time_in_minutes:
     description:
       - "Refresh Time for re-validation of Surrogacy."
@@ -149,47 +153,41 @@ options:
     type: str
     required: false
     choices:
-      - 'MINUTE'
-      - 'HOUR'
-      - 'DAY'
+      - MINUTE
+      - HOUR
+      - DAY
   ofw_enabled:
     description: "Enable Firewall. When set to true, Firewall is enabled for the location."
     type: bool
     required: false
-    default: false
   ips_control:
     description: "Enable IPS Control. When set to true, IPS Control is enabled for the location if Firewall is enabled."
     type: bool
     required: false
-    default: false
   aup_enabled:
     description:
       - "Enable AUP. When set to true, AUP is enabled for the location."
       - "To Learn More, see Deploying SSL Inspection U(https://help.zscaler.com/zia/about-end-user-notifications)"
     type: bool
     required: false
-    default: false
   caution_enabled:
     description:
       - "Enable Caution. When set to true, a caution notifcation is enabled for the location."
       - "To Learn More, see Deploying SSL Inspection U(https://help.zscaler.com/zia/configuring-caution-notification#caution-interval)"
     type: bool
     required: false
-    default: false
   aup_block_internet_until_accepted:
     description:
       - "For First Time AUP Behavior, Block Internet Access."
       - "When set, all internet access (including non-HTTP traffic) is disabled until the user accepts the AUP."
     type: bool
     required: false
-    default: false
   aup_force_ssl_inspection:
     description:
       - "For First Time AUP Behavior, Force SSL Inspection."
       - "When set, Zscaler forces SSL Inspection in order to enforce AUP for HTTPS traffic."
     type: bool
     required: false
-    default: false
   aup_timeout_in_days:
     description: "Custom AUP Frequency. Refresh time (in days) to re-validate the AUP."
     type: int
@@ -245,15 +243,15 @@ options:
 """
 
 EXAMPLES = """
-- name: Create/Update/Delete Location.
-  zscaler.ziacloud.zia_location_management:
+- name: Create UFQDN VPN Credential.
+  zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials:
     type: "UFQDN"
     fqdn: "usa_sjc37@acme.com"
     comments: "Created via Ansible"
-    pre_shared_key: "newPassword123!"
+    pre_shared_key: "************!"
   register: vpn_credential_ufqdn
 
-- name: Gather Information Details of a ZIA User Role
+- name: Create Location Management with UFQDN VPN Type
   zscaler.ziacloud.zia_location_management:
     name: "USA_SJC_37"
     description: "Created with Ansible"
@@ -266,20 +264,31 @@ EXAMPLES = """
     xff_forward_enabled: true
     ofw_enabled: true
     ips_control: true
-    ip_addresses: "1.1.1.1"
     vpn_credentials:
         - id: "{{ vpn_credential_ufqdn.data.id }}"
           type: "{{ vpn_credential_ufqdn.data.type }}"
 
+# Create Location Management with VPN IP Type
+- name: Create/Update/Delete a Static IP.
+  zscaler.ziacloud.zia_traffic_forwarding_static_ip:
+    provider: '{{ provider }}'
+    ip_address: "1.1.1.1"
+    routable_ip: true
+    comment: "Created with Ansible"
+    geo_override: true
+    latitude: "-36.848461"
+    longitude: "174.763336"
+  register: static_ip
+
 - name: Create/Update/Delete VPN Credentials Type IP.
   zscaler.ziacloud.zia_location_management:
     type: "IP"
-    ip_address: "1.1.1.1"
+    ip_address: "static_ip.data.ip_address"
     comments: "Created via Ansible"
-    pre_shared_key: "newPassword123!"
+    pre_shared_key: "*************"
   register: vpn_credential_ip
 
-- name: Gather Information Details of a ZIA User Role
+- name: Create Location Management with IP VPN Type
   zscaler.ziacloud.zia_location_management:
     name: "USA_SJC_37"
     description: "Created with Ansible"
@@ -292,7 +301,7 @@ EXAMPLES = """
     xff_forward_enabled: true
     ofw_enabled: true
     ips_control: true
-    ip_addresses: "1.1.1.1"
+    ip_addresses: "static_ip.data.ip_address"
     vpn_credentials:
         - id: "{{ vpn_credential_ip.data.id }}"
           type: "{{ vpn_credential_ip.data.type }}"
@@ -348,7 +357,6 @@ def normalize_vpn_credentials(vpn_creds):
             "type": cred.get("type"),
             "fqdn": cred.get("fqdn"),
             "ip_address": cred.get("ip_address"),
-            "pre_shared_key": cred.get("pre_shared_key"),
         }
         normalized_creds.append(normalized_cred)
     return normalized_creds
@@ -358,6 +366,8 @@ def core(module):
     client = ZIAClientHelper(module)
     state = module.params.get("state", None)
     location_mgmt = dict()
+
+    # Processing and adding VPN credentials to location_mgmt as before
     params = [
         "id",
         "name",
@@ -368,7 +378,6 @@ def core(module):
         "tz",
         "ip_addresses",
         "ports",
-        "vpn_credentials",
         "auth_required",
         "ssl_scan_enabled",
         "zapp_ssl_scan_enabled",
@@ -392,6 +401,10 @@ def core(module):
     for param_name in params:
         location_mgmt[param_name] = module.params.get(param_name, None)
 
+    location_mgmt["vpn_credentials"] = normalize_vpn_credentials(
+        module.params.get("vpn_credentials", [])
+    )
+
     validate_location_mgmt(location_mgmt)
 
     # Set default values for attributes that have system defaults
@@ -409,13 +422,11 @@ def core(module):
 
     existing_location_mgmt = None
     if location_id is not None:
-        locationBox = client.locations.get_location(location_id=location_id)
-        if locationBox is not None:
-            existing_location_mgmt = locationBox.to_dict()
+        existing_location_mgmt = client.locations.get_location(location_id=location_id)
     elif location_name is not None:
-        locationBox = client.locations.get_location(location_name=location_name)
-        if locationBox is not None:
-            existing_location_mgmt = locationBox.to_dict()
+        existing_location_mgmt = client.locations.get_location(
+            location_name=location_name
+        )
 
     # Normalize and compare existing and desired data
     desired_location = normalize_location(location_mgmt)
@@ -423,14 +434,11 @@ def core(module):
         normalize_location(existing_location_mgmt) if existing_location_mgmt else {}
     )
 
-    # Adjusted Comparison Logic
     differences_detected = False
     for key, desired_value in desired_location.items():
         current_value = current_location.get(key)
 
-        # Special handling for lists/dictionaries
         if key == "vpn_credentials":
-            # Normalize vpn_credentials for comparison
             normalized_current_creds = normalize_vpn_credentials(current_value)
             normalized_desired_creds = normalize_vpn_credentials(desired_value)
 
@@ -439,13 +447,7 @@ def core(module):
                 module.warn(
                     f"Difference detected in {key}. Current: {normalized_current_creds}, Desired: {normalized_desired_creds}"
                 )
-
-        # Special handling for specific attributes
-        if key in ["aup_enabled", "aup_timeout_in_days", "profile"]:
-            # Your comparison logic for these attributes
-            pass
         elif desired_value is None:
-            # Skip updating this attribute if it's None (not specified)
             continue
         elif desired_value != current_value:
             differences_detected = True
@@ -453,139 +455,43 @@ def core(module):
                 f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
             )
 
-    if existing_location_mgmt is not None:
-        id = existing_location_mgmt.get("id")
-        existing_location_mgmt.update(desired_location)
-        existing_location_mgmt["id"] = id
-
-    module.warn(f"Final payload being sent to SDK: {location_mgmt}")
     if state == "present":
-        if existing_location_mgmt is not None:
-            if differences_detected:
-                """Update"""
-                update_location = deleteNone(
-                    dict(
-                        location_id=existing_location_mgmt.get("id"),
-                        name=existing_location_mgmt.get("name"),
-                        parent_id=existing_location_mgmt.get("parent_id"),
-                        up_bandwidth=existing_location_mgmt.get("up_bandwidth"),
-                        dn_bandwidth=existing_location_mgmt.get("dn_bandwidth"),
-                        country=existing_location_mgmt.get("country"),
-                        tz=existing_location_mgmt.get("tz"),
-                        ip_addresses=existing_location_mgmt.get("ip_addresses"),
-                        ports=existing_location_mgmt.get("ports"),
-                        vpn_credentials=existing_location_mgmt.get("vpn_credentials"),
-                        auth_required=existing_location_mgmt.get("auth_required"),
-                        ssl_scan_enabled=existing_location_mgmt.get("ssl_scan_enabled"),
-                        zapp_ssl_scan_enabled=existing_location_mgmt.get(
-                            "zapp_ssl_scan_enabled"
-                        ),
-                        xff_forward_enabled=existing_location_mgmt.get(
-                            "xff_forward_enabled"
-                        ),
-                        surrogate_ip=existing_location_mgmt.get("surrogate_ip"),
-                        idle_time_in_minutes=existing_location_mgmt.get(
-                            "idle_time_in_minutes"
-                        ),
-                        display_time_unit=existing_location_mgmt.get(
-                            "display_time_unit"
-                        ),
-                        surrogate_ip_enforced_for_known_browsers=existing_location_mgmt.get(
-                            "surrogate_ip_enforced_for_known_browsers"
-                        ),
-                        surrogate_refresh_time_in_minutes=existing_location_mgmt.get(
-                            "surrogate_refresh_time_in_minutes"
-                        ),
-                        surrogate_refresh_time_unit=existing_location_mgmt.get(
-                            "surrogate_refresh_time_unit"
-                        ),
-                        ofw_enabled=existing_location_mgmt.get("ofw_enabled"),
-                        ips_control=existing_location_mgmt.get("ips_control"),
-                        aup_enabled=existing_location_mgmt.get("aup_enabled"),
-                        caution_enabled=existing_location_mgmt.get("caution_enabled"),
-                        aup_block_internet_until_accepted=existing_location_mgmt.get(
-                            "aup_block_internet_until_accepted"
-                        ),
-                        aup_force_ssl_inspection=existing_location_mgmt.get(
-                            "aup_force_ssl_inspection"
-                        ),
-                        aup_timeout_in_days=existing_location_mgmt.get(
-                            "aup_timeout_in_days"
-                        ),
-                        managed_by=existing_location_mgmt.get("managed_by"),
-                        profile=existing_location_mgmt.get("profile"),
-                        description=existing_location_mgmt.get("description"),
-                        iot_discovery_enabled=existing_location_mgmt.get(
-                            "iot_discovery_enabled"
-                        ),
-                    )
-                )
+        if existing_location_mgmt:
+            location_id = existing_location_mgmt.get(
+                "id"
+            )  # Ensure we have the location ID
+            if location_id and differences_detected:
+                # Include location_id in the update call
+                update_location = deleteNone(desired_location)
                 module.warn("Payload Update for SDK: {}".format(update_location))
-                updated_location = client.locations.update_location(
-                    **update_location
-                ).to_dict()
-                module.exit_json(changed=True, data=updated_location)
+                try:
+                    updated_location = client.locations.update_location(
+                        location_id, **update_location
+                    ).to_dict()
+                    module.exit_json(changed=True, data=updated_location)
+                except Exception as e:
+                    module.fail_json(msg="Failed to update location: {}".format(str(e)))
+            else:
+                module.warn("Creating new location as no existing location found")
+                create_location = deleteNone(desired_location)
+                module.warn("Payload for SDK: {}".format(create_location))
+                new_location = client.locations.add_location(**create_location)
+                module.exit_json(changed=True, data=new_location)
+
         else:
             module.warn("Creating new location as no existing location found")
-            """Create"""
-            create_location = deleteNone(
-                dict(
-                    name=location_mgmt.get("name"),
-                    parent_id=location_mgmt.get("parent_id"),
-                    up_bandwidth=location_mgmt.get("up_bandwidth"),
-                    dn_bandwidth=location_mgmt.get("dn_bandwidth"),
-                    country=location_mgmt.get("country"),
-                    tz=location_mgmt.get("tz"),
-                    ip_addresses=location_mgmt.get("ip_addresses"),
-                    ports=location_mgmt.get("ports"),
-                    vpn_credentials=location_mgmt.get("vpn_credentials"),
-                    auth_required=location_mgmt.get("auth_required"),
-                    ssl_scan_enabled=location_mgmt.get("ssl_scan_enabled"),
-                    zapp_ssl_scan_enabled=location_mgmt.get("zapp_ssl_scan_enabled"),
-                    xff_forward_enabled=location_mgmt.get("xff_forward_enabled"),
-                    surrogate_ip=location_mgmt.get("surrogate_ip"),
-                    idle_time_in_minutes=location_mgmt.get("idle_time_in_minutes"),
-                    display_time_unit=location_mgmt.get("display_time_unit"),
-                    surrogate_ip_enforced_for_known_browsers=location_mgmt.get(
-                        "surrogate_ip_enforced_for_known_browsers"
-                    ),
-                    surrogate_refresh_time_in_minutes=location_mgmt.get(
-                        "surrogate_refresh_time_in_minutes"
-                    ),
-                    surrogate_refresh_time_unit=location_mgmt.get(
-                        "surrogate_refresh_time_unit"
-                    ),
-                    ofw_enabled=location_mgmt.get("ofw_enabled"),
-                    ips_control=location_mgmt.get("ips_control"),
-                    aup_enabled=location_mgmt.get("aup_enabled"),
-                    caution_enabled=location_mgmt.get("caution_enabled"),
-                    aup_block_internet_until_accepted=location_mgmt.get(
-                        "aup_block_internet_until_accepted"
-                    ),
-                    aup_force_ssl_inspection=location_mgmt.get(
-                        "aup_force_ssl_inspection"
-                    ),
-                    aup_timeout_in_days=location_mgmt.get("aup_timeout_in_days"),
-                    profile=location_mgmt.get("profile"),
-                    description=location_mgmt.get("description"),
-                    iot_discovery_enabled=location_mgmt.get("iot_discovery_enabled"),
-                )
-            )
+            create_location = deleteNone(desired_location)
             module.warn("Payload for SDK: {}".format(create_location))
             new_location = client.locations.add_location(**create_location)
             module.exit_json(changed=True, data=new_location)
-    elif (
-        state == "absent"
-        and existing_location_mgmt is not None
-        and existing_location_mgmt.get("id") is not None
-    ):
-        code = client.locations.delete_location(
-            location_id=existing_location_mgmt.get("id")
-        )
-        if code > 299:
-            module.exit_json(changed=False, data=None)
-        module.exit_json(changed=True, data=existing_location_mgmt)
-    module.exit_json(changed=False, data={})
+    elif state == "absent" and existing_location_mgmt:
+        try:
+            client.locations.delete_location(location_id=existing_location_mgmt["id"])
+            module.exit_json(changed=True, message="Location deleted successfully.")
+        except Exception as e:
+            module.fail_json(msg="Failed to delete location: {}".format(str(e)))
+    else:
+        module.exit_json(changed=False, message="No applicable changes to apply.")
 
 
 def main():
@@ -640,7 +546,6 @@ def main():
                 type=dict(type="str", default="UFQDN", choices=["UFQDN", "IP"]),
                 fqdn=dict(type="str", required=False),
                 ip_address=dict(type="str", required=False),
-                pre_shared_key=dict(type="str", required=False),
             ),
             required=False,
         ),

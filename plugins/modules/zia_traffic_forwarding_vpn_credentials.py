@@ -1,8 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2023 Zscaler Technology Alliances, <zscaler-partner-labs@z-bd.com>
+# Copyright (c) 2023 Zscaler Inc, <devrel@zscaler.com>
 
+#                             MIT License
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -33,13 +34,14 @@ description:
   - "Adds VPN credentials that can be associated to locations."
 author:
   - William Guilherme (@willguibr)
-version_added: "1.0.0"
+version_added: "0.1.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-
+  - zscaler.ziacloud.fragments.documentation
   - zscaler.ziacloud.fragments.state
+
 options:
   id:
     description:
@@ -52,7 +54,6 @@ options:
       - It is not modifiable after VpnCredential is created.
     required: false
     type: str
-    default: "UFQDN"
     choices:
     - IP
     - UFQDN
@@ -61,22 +62,26 @@ options:
     required: false
     type: str
   pre_shared_key:
-    description: "Pre-shared key. This is a required field for UFQDN and IP auth type."
+    description:
+        - This is a required field for UFQDN and IP auth type.
+    required: false
+    type: str
+  update_psk:
+    description:
+        - This is a required when updating the pre_shared_key value.
     required: false
     type: bool
   comments:
-    description: "Additional information about this VPN credential."
+    description:
+        - Additional information about this VPN credential.
     required: false
     type: str
-  state:
+  ip_address:
     description:
-      - Whether the app connector group should be present or absent.
+        - Static IP address for VPN that is self-provisioned or provisioned by Zscaler.
+        - This is a required field for IP auth type and is not applicable to other auth types.
+    required: false
     type: str
-    choices:
-        - present
-        - absent
-    default: present
-
 """
 
 EXAMPLES = r"""
@@ -285,13 +290,12 @@ def main():
         type=dict(
             type="str",
             required=False,
-            default="UFQDN",
-            choices=["UFQDN", "IP", "CN", "XAUTH"],
+            choices=["UFQDN", "IP"],
         ),
         fqdn=dict(type="str", required=False),
         ip_address=dict(type="str", required=False),
         pre_shared_key=dict(type="str", required=False, no_log=True),
-        update_psk=dict(type="bool", required=False, Default=False),
+        update_psk=dict(type="bool", required=False),
         comments=dict(type="str", required=False),
         state=dict(type="str", choices=["present", "absent"], default="present"),
     )

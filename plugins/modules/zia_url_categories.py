@@ -1,25 +1,26 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-#
-# Copyright (c) 2023 Zscaler Technology Alliances, <zscaler-partner-labs@z-bd.com>
+# #!/usr/bin/python
+# # -*- coding: utf-8 -*-
+# #
+# # Copyright (c) 2023 Zscaler Inc, <devrel@zscaler.com>
 
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
+# #                             MIT License
+# # Permission is hereby granted, free of charge, to any person obtaining a copy
+# # of this software and associated documentation files (the "Software"), to deal
+# # in the Software without restriction, including without limitation the rights
+# # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# # copies of the Software, and to permit persons to whom the Software is
+# # furnished to do so, subject to the following conditions:
 
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
+# # The above copyright notice and this permission notice shall be included in all
+# # copies or substantial portions of the Software.
 
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
+# # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# # AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# # SOFTWARE.
 
 from __future__ import absolute_import, division, print_function
 
@@ -33,24 +34,148 @@ description:
   - "Adds a new custom URL category."
 author:
   - William Guilherme (@willguibr)
-version_added: "1.0.0"
+version_added: "0.1.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-
+  - zscaler.ziacloud.fragments.documentation
   - zscaler.ziacloud.fragments.state
+
+options:
+  id:
+    description: URL category ID. See U(https://help.zscaler.com/zia/url-categories#/urlCategories-get)
+    required: false
+    type: str
+  configured_name:
+    description: "Name of the URL category. This is only required for custom URL categories."
+    required: false
+    type: str
+  description:
+    description: "Description of the URL category."
+    required: false
+    type: str
+  super_category:
+    description:
+        - Super Category of the URL category.
+        - This field is required when creating custom URL categories.
+    required: false
+    type: str
+  editable:
+    description: Value is set to false for custom URL category when due to scope user does not have edit permission
+    required: false
+    type: bool
+  type:
+    description: "Type of the custom categories."
+    required: false
+    type: str
+    choices:
+        - URL_CATEGORY
+        - TLD_CATEGORY
+        - ALL
+  keywords:
+    description:
+        - Custom keywords associated to a URL category.
+        - "Up to 2048 custom keywords can be added per organization across all categories including bandwidth classes"
+    required: false
+    type: list
+    elements: str
+  keywords_retaining_parent_category:
+    description:
+        - "Retained custom keywords from the parent URL category that is associated to a URL category."
+        - "Up to 2048 retained parent keywords can be added per organization across all categories including bandwidth classes."
+    required: false
+    type: list
+    elements: str
+  urls:
+    description:
+        - Retained custom keywords from the parent URL category that is associated to a URL category.
+        - "Up to 2048 retained parent keywords can be added per organization across all categories including bandwidth classes."
+    required: false
+    type: list
+    elements: str
+  db_categorized_urls:
+    description:
+        - URLs added to a custom URL category are also retained under the original parent URL category.
+        - i.e. the predefined category the URL previously belonged to.
+        - The URLs entered are covered by policies that reference the original parent URL category.
+        - If you add www.amazon.com, this URL is covered by policies that reference the custom URL category.
+    required: false
+    type: list
+    elements: str
+  ip_ranges:
+    description:
+        - Custom IP address ranges associated to a URL category.
+        - Up to 2000 custom IP address ranges and retaining parent custom IP address ranges can be added, per organization, across all categories.
+        - This field is available only if the option to configure custom IP ranges is enabled for your organization.
+        - To enable this option, contact Zscaler Support.
+    required: false
+    type: list
+    elements: str
+  ip_ranges_retaining_parent_category:
+    description:
+        - The retaining parent custom IP address ranges associated to a URL category.
+        - Up to 2000 custom IP ranges and retaining parent custom IP address ranges can be added, per organization, across all categories.
+    required: false
+    type: list
+    elements: str
+  custom_category:
+    description:
+        - Set to true for custom URL category. Up to 48 custom URL categories can be added per organization.
+    required: false
+    type: bool
+  scopes:
+    description:
+      - Scope of the custom categories.
+    type: list
+    elements: dict
+    required: false
+    suboptions:
+        type:
+            type: str
+            required: false
+            description:
+                - The admin scope type. The attribute name is subject to change.
+            choices:
+                - ORGANIZATION
+                - DEPARTMENT
+                - LOCATION
+                - LOCATION_GROUP
+        scope_entities:
+            description:
+                - Based on the admin scope type, the entities can be the ID/name pair of departments, locations, or location groups.
+                - The attribute name is subject to change.
+            type: list
+            elements: int
+            required: false
 """
 
 EXAMPLES = r"""
-- name: Gather Information Details of all custom URL Categories
+- name: Create a URL Category
   zscaler.ziacloud.zia_url_categories:
     provider: '{{ provider }}'
-
-- name: Gather Information Details of a custom URL Categories by Name
-  zscaler.ziacloud.zia_url_categories:
-    provider: '{{ provider }}'
-    name: "IOS"
+    super_category: USER_DEFINED
+    configured_name: Example_Category
+    description: Example_Category
+    type: URL_CATEGORY
+    keywords:
+        - microsoft
+    custom_category: true
+    db_categorized_urls:
+        - .creditkarma.com
+        - .youku.com
+    urls:
+        - .coupons.com
+        - .resource.alaskaair.net
+        - .techrepublic.com
+        - .dailymotion.com
+        - .osiriscomm.com
+        - .uefa.com
+        - .Logz.io
+        - .alexa.com
+        - .baidu.com
+        - .cnn.com
+        - .level3.com
 """
 
 RETURN = r"""
@@ -98,15 +223,11 @@ def core(module):
         "keywords_retaining_parent_category",
         "urls",
         "db_categorized_urls",
-        # "ip_ranges",
-        # "ip_ranges_retaining_parent_category",
+        "ip_ranges",
+        "ip_ranges_retaining_parent_category",
         "scopes",
-        "editable",
         "type",
-        # "custom_urls_count",
-        # "urls_retaining_parent_category_count",
-        # "custom_ip_ranges_count",
-        # "ip_ranges_retaining_parent_category_count",
+        "editable"
     ]
     for param_name in params:
         category[param_name] = module.params.get(param_name, None)
@@ -143,7 +264,7 @@ def core(module):
 
                 # Handling the 'editable' attribute, default to False if not provided
                 if attr == "editable":
-                    preprocessed[attr] = False if value is None else value
+                    preprocessed[attr] = True if value is None else value
 
                 # 'super_category' is required, so it should be directly assigned
                 elif attr == "super_category":
@@ -239,26 +360,27 @@ def core(module):
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
+    id_spec = dict(
+        type="list",
+        elements="int",
+        required=False,
+    )
     argument_spec.update(
         id=dict(type="str"),
         configured_name=dict(type="str", required=False),
         description=dict(type="str", required=False),
         custom_category=dict(type="bool", required=False),
-        keywords=dict(type="list", elements="str", required=False),
+        keywords=dict(type="list", elements="str", required=False, no_log=True),
         keywords_retaining_parent_category=dict(
-            type="list", elements="str", required=False
+            type="list", elements="str", required=False, no_log=True
         ),
         urls=dict(type="list", elements="str", required=False),
         db_categorized_urls=dict(type="list", elements="str", required=False),
-        # ip_ranges=dict(type="list", elements="str", required=False),
-        # ip_ranges_retaining_parent_category=dict(
-        #     type="list", elements="str", required=False
-        # ),
+        ip_ranges=dict(type="list", elements="str", required=False),
+        ip_ranges_retaining_parent_category=dict(
+            type="list", elements="str", required=False
+        ),
         editable=dict(type="bool", required=False),
-        # custom_urls_count=dict(type="int", required=False),
-        # urls_retaining_parent_category_count=dict(type="int", required=False),
-        # custom_ip_ranges_count=dict(type="int", required=False),
-        # ip_ranges_retaining_parent_category_count=dict(type="int", required=False),
         type=dict(
             type="str",
             required=False,
@@ -268,14 +390,7 @@ def main():
             type="list",
             elements="dict",
             options=dict(
-                scope_entities=dict(
-                    type="list",
-                    elements="dict",
-                    options=dict(
-                        id=dict(type="int", required=False),
-                    ),
-                    required=False,
-                ),
+                scope_entities=id_spec,
                 type=dict(
                     type="str",
                     required=False,
@@ -292,47 +407,6 @@ def main():
         super_category=dict(
             type="str",
             required=False,
-            choices=[
-                "ANY",
-                "ADVANCED_SECURITY",
-                "ENTERTAINMENT_AND_RECREATION",
-                "NEWS_AND_MEDIA",
-                "USER_DEFINED",
-                "EDUCATION",
-                "BUSINESS_AND_ECONOMY",
-                "JOB_SEARCH",
-                "INFORMATION_TECHNOLOGY",
-                "INTERNET_COMMUNICATION",
-                "OFFICE_365",
-                "CUSTOM_SUPERCATEGORY",
-                "CUSTOM_BP",
-                "CUSTOM_BW",
-                "MISCELLANEOUS",
-                "TRAVEL",
-                "VEHICLES",
-                "GOVERNMENT_AND_POLITICS",
-                "GLOBAL_INT",
-                "GLOBAL_INT_BP",
-                "GLOBAL_INT_BW",
-                "GLOBAL_INT_OFC365",
-                "ADULT_MATERIAL",
-                "DRUGS",
-                "GAMBLING",
-                "VIOLENCE",
-                "WEAPONS_AND_BOMBS",
-                "TASTELESS",
-                "MILITANCY_HATE_AND_EXTREMISM",
-                "ILLEGAL_OR_QUESTIONABLE",
-                "SOCIETY_AND_LIFESTYLE",
-                "HEALTH",
-                "SPORTS",
-                "SPECIAL_INTERESTS_SOCIAL_ORGANIZATIONS",
-                "GAMES",
-                "SHOPPING_AND_AUCTIONS",
-                "SOCIAL_AND_FAMILY_ISSUES",
-                "RELIGION",
-                "SECURITY",
-            ],
         ),
         state=dict(type="str", choices=["present", "absent"], default="present"),
     )

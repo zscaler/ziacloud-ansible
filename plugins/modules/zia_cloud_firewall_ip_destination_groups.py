@@ -1,8 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2023 Zscaler Technology Alliances, <zscaler-partner-labs@z-bd.com>
+# Copyright (c) 2023 Zscaler Inc, <devrel@zscaler.com>
 
+#                             MIT License
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -33,13 +34,14 @@ description:
   - "This module allows you to create IP destination groups within the Zscaler Internet Access (ZIA) Cloud firewall."
 author:
   - William Guilherme (@willguibr)
-version_added: "1.0.0"
+version_added: "0.1.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-
+  - zscaler.ziacloud.fragments.documentation
   - zscaler.ziacloud.fragments.state
+
 options:
   id:
     description: "Unique identifier for the destination IP group."
@@ -51,11 +53,11 @@ options:
     type: str
   description:
     description: "Additional information about the destination IP group."
-    required: true
+    required: false
     type: str
   type:
     description: "Destination IP group type (i.e., the group can contain destination IP addresses or FQDNs)."
-    required: true
+    required: false
     type: str
     choices:
       - DSTN_IP
@@ -69,28 +71,29 @@ options:
     required: false
   ip_categories:
     description:
-      - "Destination IP address URL categories."
-      - "You can identify destinations based on the URL category of the domain."
-      - "There are hundreds of categories available such as 'ANY', 'NONE', 'SOCIAL_ADULT', 'OTHER_BUSINESS_AND_ECONOMY', etc."
-      - "For a complete list of all available categories, please refer to the Zscaler URL Categories documentation at:"
-      - "U(https://help.zscaler.com/zia/firewall-policies#/ipDestinationGroups-get)"
+      - Destination IP address URL categories.
+      - You can identify destinations based on the URL category of the domain.
+      - There are hundreds of categories available such as ANY, NONE, SOCIAL_ADULT, OTHER_BUSINESS_AND_ECONOMY, etc.
+      - Visit for choices U(https://help.zscaler.com/zia/firewall-policies#/ipDestinationGroups-get).
     type: list
     elements: str
     required: false
-    choices:
-      - ANY
-      - SOCIAL_ADULT
-      - OTHER_BUSINESS_AND_ECONOMY
-      - CORPORATE_MARKETING
-      - PROFESSIONAL_SERVICES
-      - CLASSIFIEDS
-      - TRADING_BROKARAGE_INSURANCE
   countries:
     description:
+      - This option is available only when the attribute type is set to DSTN_OTHER
       - Destination IP address countries.
       - You can identify destinations based on the location of a server.
       - Supports 2-letter ISO3166 Alpha2 Country i.e BR, CA, US.
       - Please visit the following site for reference U(https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes)
+    type: list
+    elements: str
+    required: false
+  url_categories:
+    description:
+      - This option is available only when the attribute type is set to DSTN_OTHER
+      - To identify destinations based on the URL category of a domain, select the required URL categories.
+      - If no category is selected, the field remains set to Any, and the criteria will be ignored during policy evaluation.
+      - Only custom URL categories are supported
     type: list
     elements: str
     required: false

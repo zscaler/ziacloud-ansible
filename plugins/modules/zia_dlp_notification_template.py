@@ -1,8 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2023 Zscaler Technology Alliances, <zscaler-partner-labs@z-bd.com>
+# Copyright (c) 2023 Zscaler Inc, <devrel@zscaler.com>
 
+#                             MIT License
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -33,14 +34,15 @@ description:
   - This module allows for the management of Zscaler Internet Access (ZIA) Data Loss Prevention (DLP) Notification Templates.
   - It supports the creation, updating, and deletion of DLP Notification Templates.
   - It allows for the customization of the subject line, message body (both plain text and HTML), and various other settings related to DLP notifications.
-version_added: "1.0.0"
+version_added: "0.1.0"
 author: William Guilherme (@willguibr)
 requirements:
   - Zscaler SDK Python (obtainable from PyPI U(https://pypi.org/project/zscaler-sdk-python/))
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-
+  - zscaler.ziacloud.fragments.documentation
   - zscaler.ziacloud.fragments.state
+
 options:
   id:
     description:
@@ -55,22 +57,27 @@ options:
     description:
       - The subject line that is displayed within the DLP notification email.
     type: str
+    required: True
   attach_content:
     description:
       - If set to true, the content that triggered the violation is attached to the DLP notification email.
     type: bool
+    required: False
   plain_text_message:
     description:
       - The template for the plain text UTF-8 message body that is displayed in the DLP notification email.
     type: str
+    required: True
   html_message:
     description:
       - The template for the HTML message body that is displayed in the DLP notification email.
     type: str
+    required: True
   tls_enabled:
     description:
       - If set to true, enables TLS for the DLP notification template.
     type: bool
+    required: False
 """
 
 EXAMPLES = r"""
@@ -121,9 +128,7 @@ def normalize_dlp_template(template):
     """
     normalized = template.copy()
 
-    computed_values = [
-        "id",
-    ]
+    computed_values = []
     for attr in computed_values:
         normalized.pop(attr, None)
 

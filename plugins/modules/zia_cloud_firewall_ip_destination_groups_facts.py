@@ -1,8 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2023 Zscaler Technology Alliances, <zscaler-partner-labs@z-bd.com>
+# Copyright (c) 2023 Zscaler Inc, <devrel@zscaler.com>
 
+#                             MIT License
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -33,11 +34,12 @@ description:
   - "Gets a list of all IP destination groups"
 author:
   - William Guilherme (@willguibr)
-version_added: "1.0.0"
+version_added: "0.1.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
+  - zscaler.ziacloud.fragments.documentation
 
 options:
   id:
@@ -46,8 +48,17 @@ options:
     type: int
   name:
     description: "Destination IP group name"
-    required: true
+    required: false
     type: str
+  exclude_type:
+    description: Filter based on the IP destination group's type.
+    required: false
+    type: str
+    choices:
+      - DSTN_IP
+      - DSTN_FQDN
+      - DSTN_DOMAIN
+      - DSTN_OTHER
 """
 
 EXAMPLES = r"""
@@ -117,7 +128,16 @@ def main():
     argument_spec.update(
         name=dict(type="str", required=False),
         id=dict(type="int", required=False),
-        exclude_type=dict(type="str", required=False),  # Add the exclude_type parameter
+        exclude_type=dict(
+            type="str",
+            required=False,
+            choices=[
+                "DSTN_IP",
+                "DSTN_FQDN",
+                "DSTN_DOMAIN",
+                "DSTN_OTHER",
+            ],
+        ),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
 

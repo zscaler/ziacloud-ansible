@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "ziacloud-ansible"
-version = "1.0.0"
+version = "0.1.0"
 description = "Ansible collection for Zscaler Internet Access"
-authors = ["Zscaler Technology Alliances <zscaler-partner-labs@z-bd.com>"]
+authors = ["Zscaler Technology Alliances <devrel@zscaler.com>"]
 license = "MIT"
 keywords = ["ziacloud", "ziacloud-ansible", "zia"]
 readme = "README.md"
@@ -11,12 +11,13 @@ repository = "https://github.com/zscaler/ziacloud-ansible"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-# zscaler-sdk-python = "^1.0.0"
+zscaler-sdk-python = "*"
 xmltodict = "^0.12.0"
 aiohttp = ">=3.9.0"
 dpath = "^2.1.5"
 pytz = "*"
 netaddr = "*"
+pycountry = "*"
 
 [tool.poetry.dev-dependencies]
 black = "24.3.0"
@@ -27,13 +28,18 @@ pytest-xdist = "*"
 pytest-mock = "*"
 voluptuous = "*"
 yamllint = "*"
-sphinx = "*"
+sphinx = "^7.0.1"
 sphinx-rtd-theme = "*"
+sphinx_ansible_theme = "*"
 #ansible-doc-extractor = "*"
+antsibull-docs = "^2.10.0"
+antsibull-changelog = "^0.26.0"
+ansible-core = "*"
+ansible-lint = "*"
 rstcheck = "*"
 six = "*"
 pycodestyle = "*"
-#ansible-core = "~2"
+
 # from requirements.txt
 certifi = "^2023.11.17"
 chardet = "3.0.4"

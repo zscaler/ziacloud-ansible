@@ -1,13 +1,13 @@
 ---
 - name: Include default variables
   ansible.builtin.include_vars:
-    file: "../defaults/main.yml"
+    file: ../defaults/main.yml
 
 - name: Import Random String Generator Tasks
-  ansible.builtin.import_tasks: "../../../generate_random_string.yml"
+  ansible.builtin.import_tasks: ../../../generate_random_string.yml
 
 - name: Ensure required environment variables are set
-  fail:
+  ansible.builtin.fail:
     msg: "{{ env_var }} is not defined as environment variable"
   when: lookup('env', env_var) is none
   loop:
@@ -18,15 +18,17 @@
   loop_control:
     loop_var: env_var
 
-- ansible.builtin.set_fact:
+- name: Ensure ZIA Credential environment variables are set
+  ansible.builtin.set_fact:
     zia_cloud:
       username: "{{ lookup('env', 'ZIA_USERNAME') }}"
       password: "{{ lookup('env', 'ZIA_PASSWORD') }}"
       api_key: "{{ lookup('env', 'ZIA_API_KEY') }}"
       cloud: "{{ lookup('env', 'ZIA_CLOUD') | default(omit) }}"
-  no_log: True
+  no_log: true
 
-- block:
+- name: Main block to Test Cloud Firewall Rule Configuration
+  block:
     # Authentication Setting
     - name: Ensure Authentication Setting (leftover)
       zscaler.ziacloud.zia_authentication_settings:
@@ -34,6 +36,16 @@
         state: absent
         urls: "{{ urls }}"
       register: result
+
+  rescue:
+    - name: Handle errors
+      ansible.builtin.debug:
+        msg: An error occurred.
+
+  always:
+    - name: Cleanup operations
+      ansible.builtin.debug:
+        msg: Cleanup complete.
 
     - name: Ensure Authentication Setting is absent
       zscaler.ziacloud.zia_authentication_settings:

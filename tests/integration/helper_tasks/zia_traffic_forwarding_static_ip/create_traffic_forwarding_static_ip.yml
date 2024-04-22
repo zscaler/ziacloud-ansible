@@ -1,7 +1,7 @@
 ---
 - name: Set initial variables
   ansible.builtin.set_fact:
-    ip_address: "121.234.54.72"
+    ip_address: 121.234.54.72
     routable_ip: true
     comment: test_zia_ansible
     geo_override: true
@@ -9,7 +9,7 @@
     longitude: 114.0577
 
 - name: Ensure required environment variables are set
-  fail:
+  ansible.builtin.fail:
     msg: "{{ env_var }} is not defined as environment variable"
   when: lookup('env', env_var) is none
   loop:
@@ -20,21 +20,24 @@
   loop_control:
     loop_var: env_var
 
-- ansible.builtin.set_fact:
+- name: Ensure ZIA Credential environment variables are set
+  ansible.builtin.set_fact:
     zia_cloud:
       username: "{{ lookup('env', 'ZIA_USERNAME') }}"
       password: "{{ lookup('env', 'ZIA_PASSWORD') }}"
       api_key: "{{ lookup('env', 'ZIA_API_KEY') }}"
       cloud: "{{ lookup('env', 'ZIA_CLOUD') | default(omit) }}"
-  no_log: True
+  no_log: true
 
 - name: Import Random String Generator Tasks
-  ansible.builtin.import_tasks: "../../generate_random_string.yml"
+  ansible.builtin.import_tasks: ../../generate_random_string.yml
 
-- ansible.builtin.set_fact:
+- name: Set dynamic name values with random string
+  ansible.builtin.set_fact:
     comment: "{{ comment }}_{{ random_string }}"
 
-- block:
+- name: Main block to Test Static IP Address Configuration
+  block:
     - name: Create Helper Static IP Address
       zscaler.ziacloud.zia_traffic_forwarding_static_ip:
         provider: "{{ zia_cloud }}"

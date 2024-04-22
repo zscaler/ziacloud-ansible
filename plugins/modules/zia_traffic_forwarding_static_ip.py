@@ -1,8 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2023 Zscaler Technology Alliances, <zscaler-partner-labs@z-bd.com>
+# Copyright (c) 2023 Zscaler Inc, <devrel@zscaler.com>
 
+#                             MIT License
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -33,16 +34,16 @@ description:
   - "Adds a static IP address."
 author:
   - William Guilherme (@willguibr)
-version_added: "1.0.0"
+version_added: "0.1.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-
+  - zscaler.ziacloud.fragments.documentation
   - zscaler.ziacloud.fragments.state
 options:
   id:
-    description: ""
+    description: "The unique identifier for the static IP address"
     type: int
     required: False
   ip_address:
@@ -72,21 +73,13 @@ options:
       - Required only if the geoOverride attribute is set.
       - Latitude with 7 digit precision after decimal point, ranges between -90 and 90 degrees.
     required: False
-    type: int
+    type: float
   longitude:
     description:
       - Required only if the geoOverride attribute is set.
       - Longitude with 7 digit precision after decimal point, ranges between -180 and 180 degrees.
     required: False
-    type: int
-  state:
-    description:
-      - Whether the app connector group should be present or absent.
-    type: str
-    choices:
-      - present
-      - absent
-    default: present
+    type: float
 """
 
 EXAMPLES = r"""
@@ -162,8 +155,8 @@ def core(module):
     longitude = static_ip.get("longitude")
 
     if latitude is not None and longitude is not None:
-        _, lat_errors = validate_latitude(latitude)
-        _, lon_errors = validate_longitude(longitude)
+        unused_result_lat, lat_errors = validate_latitude(latitude)
+        unused_result_lon, lon_errors = validate_longitude(longitude)
         if lat_errors:
             module.fail_json(msg="; ".join(lat_errors))
         if lon_errors:

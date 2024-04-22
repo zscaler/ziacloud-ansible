@@ -1,8 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2023 Zscaler Technology Alliances, <zscaler-partner-labs@z-bd.com>
+# Copyright (c) 2023 Zscaler Inc, <devrel@zscaler.com>
 
+#                             MIT License
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -33,28 +34,30 @@ description:
   - Adds a URL to or removes a URL from the Denylist.
 author:
   - William Guilherme (@willguibr)
-version_added: "1.0.0"
+version_added: "0.1.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-
+  - zscaler.ziacloud.fragments.documentation
   - zscaler.ziacloud.fragments.state
+
 options:
   urls:
     description:
         - URLs on the denylist for your organization. Allow up to 25000 URLs.
     type: list
     elements: str
-    required: false
+    required: true
   url_type:
     description:
       - The type of URL to be whitelisted or blacklisted.
     required: false
     type: str
+    default: whitelist
     choices:
-        - "whitelist"
-        - "blacklist"
+        - whitelist
+        - blacklist
 """
 
 EXAMPLES = r"""

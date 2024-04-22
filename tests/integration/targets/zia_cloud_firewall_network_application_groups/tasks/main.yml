@@ -1,17 +1,18 @@
 ---
 - name: Include default variables
   ansible.builtin.include_vars:
-    file: "../defaults/main.yml"
+    file: ../defaults/main.yml
 
 - name: Import Random String Generator Tasks
-  ansible.builtin.import_tasks: "../../../generate_random_string.yml"
+  ansible.builtin.import_tasks: ../../../generate_random_string.yml
 
-- ansible.builtin.set_fact:
-    name: "{{ name }}_{{ random_string }}"
+- name: Set dynamic name values with random string
+  ansible.builtin.set_fact:
+    group_name: "{{ group_name }}_{{ random_string }}"
     description: "{{ description }}_{{ random_string }}"
 
 - name: Ensure required environment variables are set
-  fail:
+  ansible.builtin.fail:
     msg: "{{ env_var }} is not defined as environment variable"
   when: lookup('env', env_var) is none
   loop:
@@ -22,17 +23,19 @@
   loop_control:
     loop_var: env_var
 
-- ansible.builtin.set_fact:
+- name: Ensure ZIA Credential environment variables are set
+  ansible.builtin.set_fact:
     zia_cloud:
       username: "{{ lookup('env', 'ZIA_USERNAME') }}"
       password: "{{ lookup('env', 'ZIA_PASSWORD') }}"
       api_key: "{{ lookup('env', 'ZIA_API_KEY') }}"
       cloud: "{{ lookup('env', 'ZIA_CLOUD') | default(omit) }}"
-  no_log: True
+  no_log: true
 
-- block:
+- name: Main block to Test Network Application Group Configuration
+  block:
     - name: Ensure Network Application Group (leftover)
-      zscaler.ziacloud.zia_cloud_firewall_network_application_groups:
+      zscaler.ziacloud.zia_cloud_firewall_network_application_group:
         provider: "{{ zia_cloud }}"
         state: absent
         name: "{{ name }}"
@@ -40,8 +43,18 @@
         network_applications: "{{ network_applications }}"
       register: result
 
+  rescue:
+    - name: Handle errors
+      ansible.builtin.debug:
+        msg: An error occurred.
+
+  always:
+    - name: Cleanup operations
+      ansible.builtin.debug:
+        msg: Cleanup complete.
+
     - name: Ensure Network Application Group is absent
-      zscaler.ziacloud.zia_cloud_firewall_network_application_groups:
+      zscaler.ziacloud.zia_cloud_firewall_network_application_group:
         provider: "{{ zia_cloud }}"
         state: absent
         name: "{{ name }}"
@@ -56,7 +69,7 @@
           - result.data is defined
 
     - name: Ensure Network Application Group is (Present)
-      zscaler.ziacloud.zia_cloud_firewall_network_application_groups:
+      zscaler.ziacloud.zia_cloud_firewall_network_application_group:
         provider: "{{ zia_cloud }}"
         state: present
         name: "{{ name }}"
@@ -71,7 +84,7 @@
           - result.data.name is defined
 
     - name: Ensure Network Application Group (again; idempotency check)
-      zscaler.ziacloud.zia_cloud_firewall_network_application_groups:
+      zscaler.ziacloud.zia_cloud_firewall_network_application_group:
         provider: "{{ zia_cloud }}"
         state: present
         name: "{{ name }}"
@@ -85,7 +98,7 @@
           - not result.changed
 
     - name: Fetch all Network Application Group
-      zscaler.ziacloud.zia_cloud_firewall_network_application_groups_facts:
+      zscaler.ziacloud.zia_cloud_firewall_network_application_group_facts:
         provider: "{{ zia_cloud }}"
       register: result
 
@@ -96,7 +109,7 @@
           - result.data[0] is defined
 
     - name: Fetch this Network Application Group
-      zscaler.ziacloud.zia_cloud_firewall_network_application_groups_facts:
+      zscaler.ziacloud.zia_cloud_firewall_network_application_group_facts:
         provider: "{{ zia_cloud }}"
         name: "{{ name }}"
       register: result
@@ -114,7 +127,7 @@
         seconds: 5
 
     - name: Delete Network Application Group
-      zscaler.ziacloud.zia_cloud_firewall_network_application_groups:
+      zscaler.ziacloud.zia_cloud_firewall_network_application_group:
         provider: "{{ zia_cloud }}"
         state: absent
         name: "{{ name }}"
@@ -128,7 +141,7 @@
           - result.changed
 
     - name: Delete Network Application Group (again; idempotency check)
-      zscaler.ziacloud.zia_cloud_firewall_network_application_groups:
+      zscaler.ziacloud.zia_cloud_firewall_network_application_group:
         provider: "{{ zia_cloud }}"
         state: absent
         name: "{{ name }}"

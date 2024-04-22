@@ -1,8 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2023 Zscaler Technology Alliances, <zscaler-partner-labs@z-bd.com>
+# Copyright (c) 2023 Zscaler Inc, <devrel@zscaler.com>
 
+#                             MIT License
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -30,7 +31,7 @@ DOCUMENTATION = """
 ---
 module: zia_activation_status_facts
 
-version_added: "1.0.0"
+version_added: "0.1.0"
 
 short_description: Gets the activation status
 
@@ -45,6 +46,7 @@ requirements:
 
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
+  - zscaler.ziacloud.fragments.documentation
 
 options:
   status:
@@ -77,7 +79,7 @@ def core(module):
     activation_status = module.params.get("status", None)
     client = ZIAClientHelper(module)
 
-    current_activation_status = client.config.activate()
+    current_activation_status = client.activate.activate()
 
     # If specific status provided, check if it matches the current activation status
     if activation_status:

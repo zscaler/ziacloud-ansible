@@ -1,8 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2023 Zscaler Technology Alliances, <zscaler-partner-labs@z-bd.com>
+# Copyright (c) 2023 Zscaler Inc, <devrel@zscaler.com>
 
+#                             MIT License
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -34,12 +35,14 @@ description:
   - It allows adding or removing hashes from the blocklist and ensures idempotency.
 author:
   - William Guilherme (@willguibr)
-version_added: "1.0.0"
+version_added: "0.1.0"
 requirements:
   - Zscaler SDK Python (obtainable from PyPI U(https://pypi.org/project/zscaler-sdk-python/))
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
+  - zscaler.ziacloud.fragments.documentation
   - zscaler.ziacloud.fragments.state
+
 options:
   file_hashes_to_be_blocked:
     description:
@@ -132,14 +135,9 @@ def core(module):
     for hash_string in file_hashes_to_be_blocked:
         is_valid, hash_type = hash_type_and_validate(hash_string)
         if not is_valid:
-            if hash_type in ["SHA1", "SHA256"]:
-                module.fail_json(
-                    msg=f"Error: {hash_type} hashes are not supported. Please provide a valid MD5 hash."
-                )
-            else:
-                module.fail_json(
-                    msg=f"Error: The provided string '{hash_string}' is not a valid MD5 hash."
-                )
+            module.fail_json(
+                msg=f"Error: The provided string '{hash_string}' is not a valid {hash_type} hash. Only MD5 hashes are supported."
+            )
 
     client = ZIAClientHelper(module)
     sandbox_api = client.sandbox
@@ -148,28 +146,27 @@ def core(module):
     current_hashes = sandbox_api.get_behavioral_analysis().file_hashes_to_be_blocked
 
     # Determine if a change is needed
-    change_needed = False
+    desired_hashes_set = set(file_hashes_to_be_blocked)
+    current_hashes_set = set(current_hashes)
     if state == "present":
-        # Compare current hashes with desired hashes for additions
-        change_needed = set(file_hashes_to_be_blocked) != set(current_hashes)
-    elif state == "absent":
-        # Check if the list is already empty
-        change_needed = bool(current_hashes)
+        change_needed = desired_hashes_set != current_hashes_set
+    else:  # state == "absent"
+        change_needed = bool(
+            current_hashes_set
+        )  # change is needed if there are any hashes currently blocked
 
     # Perform update only if change is needed
     if change_needed:
         if state == "present":
-            # Call the method to add MD5 hashes to the custom list
             sandbox_api.add_hash_to_custom_list(file_hashes_to_be_blocked)
-        elif state == "absent":
-            # Call the method to empty the custom list of hashes
-            sandbox_api.erase_hash_to_custom_list()
+        else:  # Clear the list by passing an empty list
+            sandbox_api.add_hash_to_custom_list([])
 
-        # After updating, get the file hash count
+        # Fetch the updated hash count after the operation
         file_hash_count_data = sandbox_api.get_file_hash_count().to_dict()
         module.exit_json(
             changed=True,
-            msg="MD5 hash list updated.",
+            msg="MD5 hash list has been updated.",
             file_hash_count=file_hash_count_data,
         )
     else:

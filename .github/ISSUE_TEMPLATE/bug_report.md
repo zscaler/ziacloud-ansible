@@ -51,4 +51,4 @@ assignees: ''
 - Collection:
 - Python:
 - Ansible:
-- Zscaler SDK Python Library & version (e.g. zscaler-sdk-python 1.0.0)
+- Zscaler SDK Python Library & version (e.g. zscaler-sdk-python 0.1.1)
