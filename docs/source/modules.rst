@@ -9,4 +9,4 @@ Module reference
    :glob:
    :maxdepth: 1
 
-   docs/source/modules/*
+   docs/html/source/modules/*
