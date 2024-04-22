@@ -1,0 +1,32 @@
+name: sanity
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+jobs:
+  sanity:
+    timeout-minutes: 30
+    name: Sanity (Ⓐ$${{ matrix.versions.ansible }})
+    strategy:
+      fail-fast: false
+      matrix:
+        versions:
+          - ansible: stable-2.15
+            python: "3.9"
+          - ansible: stable-2.16
+            python: "3.10"
+          - ansible: devel
+            python: "3.10"
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Perform testing
+        uses: ansible-community/ansible-test-gh-action@release/v1
+        with:
+          ansible-core-version: ${{ matrix.versions.ansible }}
+          origin-python-version: ${{ matrix.versions.python }}
+          target-python-version: ${{ matrix.versions.python }}
+          testing-type: sanity

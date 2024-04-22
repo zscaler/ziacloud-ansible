@@ -83,7 +83,8 @@ check-format:	## Check with black
 
 test\:integration\:zia:
 	@echo "$(COLOR_ZSCALER)Running zia integration tests...$(COLOR_NONE)"
-	ansible-plabook tests/integration/run_all_tests.yml
+	ansible-playbook tests/integration/run_all_tests.yml
+
 
 .PHONY: old-sanity
 old-sanity:		## Sanity tests for Ansible v2.9 and Ansible v2.10

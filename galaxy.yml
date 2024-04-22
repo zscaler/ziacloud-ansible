@@ -18,7 +18,7 @@ readme: "README.md"
 # A list of the collection's content authors. Can be just the name or in the format 'Full Name <email> (url)
 # @nicks:irc/im.site#channel'
 authors:
-    - Zscaler Technology Alliances <devrel@zscaler.com>
+    - Zscaler Inc. <devrel@zscaler.com>
 
 ### OPTIONAL but strongly recommended
 
