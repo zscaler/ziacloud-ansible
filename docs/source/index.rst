@@ -41,7 +41,7 @@ Sample playbooks are available in our `samples repository`_
 contributed by the **Zscaler's Technology Alliances** team.
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Getting Started
 
    requirements
