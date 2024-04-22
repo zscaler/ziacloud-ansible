@@ -11,6 +11,11 @@
 # https://www.sphinx-doc.org/en/latest/man/sphinx-build.html
 ##############################################################################
 
+import os
+
+# Check if building documentation on RTD
+on_rtd = os.environ.get("READTHEDOCS", None) == "True"
+
 ##############################################################################
 # Project information
 ##############################################################################
