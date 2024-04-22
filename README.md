@@ -1,9 +1,9 @@
 # Zscaler Internet Access (ZIA) Ansible Collection (Beta)
 
-[![CI](https://github.com/zscaler/ziacloud-ansible/actions/workflows/CI.yml/badge.svg)](https://github.com/zscaler/ziacloud-ansible/actions/workflows/CI.yml)
 ![Version on Galaxy](https://img.shields.io/badge/dynamic/json?style=flat&label=Ansible+Galaxy&prefix=v&url=https://galaxy.ansible.com/api/v2/collections/zscaler/ziacloud/&query=latest_version.version)
 [![integration](https://github.com/zscaler/ziacloud-ansible/actions/workflows/ansible-test-integration.yml/badge.svg?branch=master)](https://github.com/zscaler/ziacloud-ansible/actions/workflows/ansible-test-integration.yml)
 [![sanity](https://github.com/zscaler/ziacloud-ansible/actions/workflows/ansible-test-sanity.yml/badge.svg?branch=master)](https://github.com/zscaler/ziacloud-ansible/actions/workflows/ansible-test-sanity.yml)
+[![docs passing](https://img.shields.io/readthedocs/ziacloud-ansible)](https://github.com/zscaler/ziacloud-ansible/actions/workflows/pages/pages-build-deployment)
 
 ## Zscaler Support
 

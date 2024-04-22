@@ -5,6 +5,7 @@
     "on":
       schedule:
         - cron: '0 0 1,15 * *' # Scheduled for 00:00 on day 1 and day 15 of every month
+      workflow_dispatch:
 
     jobs:
       automationhub_token_keepalive:

@@ -15,16 +15,38 @@ jobs:
       fail-fast: false
       matrix:
         versions:
-          - ansible: stable-2.15
-            python: "3.10"
-          - ansible: stable-2.16
-            python: "3.11"
-    runs-on: ubuntu-22.04
+          - ansible: "2.14"
+            python_ver: "3.11"
+          - ansible: "2.15"
+            python_ver: "3.11"
+          - ansible: "2.16"
+            python_ver: "3.11"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}
     steps:
-      - name: Perform testing
-        uses: ansible-community/ansible-test-gh-action@release/v1
+      - uses: actions/checkout@v4
         with:
-          ansible-core-version: ${{ matrix.versions.ansible }}
-          origin-python-version: ${{ matrix.versions.python }}
-          target-python-version: ${{ matrix.versions.python }}
-          testing-type: sanity
+          path: ./ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python_ver }}
+
+      - name: Install Poetry
+        uses: Gr1N/setup-poetry@v8
+
+      - name: Install ansible-base (${{ matrix.ansible }})
+        run: poetry run pip install https://github.com/ansible/ansible/archive/stable-${{ matrix.ansible }}.tar.gz --disable-pip-version-check
+
+      - name: Create lock file
+        run: poetry lock
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Run sanity tests
+        timeout-minutes: 8
+        run: poetry run make new-sanity
