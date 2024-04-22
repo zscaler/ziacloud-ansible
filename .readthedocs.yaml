@@ -12,3 +12,8 @@ build:
 # Build documentation in the "docsrc/" directory with Sphinx
 sphinx:
   configuration: docs/source/conf.py
+
+# Zscaler doc build requirements
+python:
+  install:
+    - requirements: docs/dev_requirements.txt
