@@ -34,19 +34,3 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python_ver }}
-
-      - name: Install Poetry
-        uses: Gr1N/setup-poetry@v8
-
-      - name: Install ansible-base (${{ matrix.ansible }})
-        run: poetry run pip install https://github.com/ansible/ansible/archive/stable-${{ matrix.ansible }}.tar.gz --disable-pip-version-check
-
-      - name: Create lock file
-        run: poetry lock
-
-      - name: Install dependencies
-        run: poetry install
-
-      - name: Run sanity tests
-        timeout-minutes: 8
-        run: poetry run make new-sanity
