@@ -7,7 +7,7 @@
     :trim:
 
 .. meta::
-  :antsibull-docs: 2.7.0
+  :antsibull-docs: 2.10.0
 
 .. Anchors
 
@@ -23,7 +23,7 @@ zscaler.ziacloud.zia_url_filtering_rules module -- Adds a new URL Filtering rule
 .. Collection note
 
 .. note::
-    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 1.0.0).
+    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 0.1.0).
 
     It is not included in ``ansible-core``.
     To check whether it is installed, run :code:`ansible-galaxy collection list`.
@@ -38,7 +38,7 @@ zscaler.ziacloud.zia_url_filtering_rules module -- Adds a new URL Filtering rule
 
 .. rst-class:: ansible-version-added
 
-New in zscaler.ziacloud 1.0.0
+New in zscaler.ziacloud 0.1.0
 
 .. contents::
    :local:
@@ -126,11 +126,45 @@ Parameters
       :ansible-option-choices:`Choices:`
 
       - :ansible-option-choices-entry:`"ANY"`
-      - :ansible-option-choices-entry:`"NONE"`
       - :ansible-option-choices-entry:`"BLOCK"`
       - :ansible-option-choices-entry:`"CAUTION"`
       - :ansible-option-choices-entry:`"ALLOW"`
+      - :ansible-option-choices-entry:`"ISOLATE"`
       - :ansible-option-choices-entry:`"ICAP\_RESPONSE"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-api_key"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_rules_module__parameter-api_key:
+
+      .. rst-class:: ansible-option-title
+
+      **api_key**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-api_key" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string` / :ansible-option-required:`required`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the obfuscated API key.
 
 
       .. raw:: html
@@ -175,7 +209,7 @@ Parameters
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
+      - :ansible-option-choices-entry:`false`
       - :ansible-option-choices-entry:`true`
 
 
@@ -391,6 +425,54 @@ Parameters
   * - .. raw:: html
 
         <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-cloud"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_rules_module__parameter-cloud:
+
+      .. rst-class:: ansible-option-title
+
+      **cloud**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-cloud" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string` / :ansible-option-required:`required`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The Zscaler cloud name was provisioned for your organization.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"zscloud"`
+      - :ansible-option-choices-entry:`"zscaler"`
+      - :ansible-option-choices-entry:`"zscalerone"`
+      - :ansible-option-choices-entry:`"zscalertwo"`
+      - :ansible-option-choices-entry:`"zscalerthree"`
+      - :ansible-option-choices-entry:`"zscalerbeta"`
+      - :ansible-option-choices-entry:`"zscalergov"`
+      - :ansible-option-choices-entry:`"zscalerten"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
         <div class="ansibleOptionAnchor" id="parameter-departments"></div>
 
       .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_rules_module__parameter-departments:
@@ -405,7 +487,7 @@ Parameters
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
 
       .. raw:: html
 
@@ -459,6 +541,133 @@ Parameters
   * - .. raw:: html
 
         <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-device_groups"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_rules_module__parameter-device_groups:
+
+      .. rst-class:: ansible-option-title
+
+      **device_groups**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-device_groups" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Name-ID pairs of device groups for which the rule must be applied.
+
+      This field is applicable for devices that are managed using Zscaler Client Connector.
+
+      If no value is set, this field is ignored during the policy evaluation.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-device_trust_levels"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_rules_module__parameter-device_trust_levels:
+
+      .. rst-class:: ansible-option-title
+
+      **device_trust_levels**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-device_trust_levels" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      List of device trust levels for which the rule must be applied.
+
+      This field is applicable for devices that are managed using Zscaler Client Connector.
+
+      The trust levels are assigned to the devices based on your posture configurations.
+
+      If no value is set, this field is ignored during the policy evaluation.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"ANY"`
+      - :ansible-option-choices-entry:`"UNKNOWN\_DEVICETRUSTLEVEL"`
+      - :ansible-option-choices-entry:`"LOW\_TRUST"`
+      - :ansible-option-choices-entry:`"MEDIUM\_TRUST"`
+      - :ansible-option-choices-entry:`"HIGH\_TRUST"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-devices"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_rules_module__parameter-devices:
+
+      .. rst-class:: ansible-option-title
+
+      **devices**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-devices" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Name-ID pairs of devices for which rule must be applied.
+
+      Specifies devices that are managed using Zscaler Client Connector.
+
+      If no value is set, this field is ignored during the policy evaluation.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
         <div class="ansibleOptionAnchor" id="parameter-enabled"></div>
 
       .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_rules_module__parameter-enabled:
@@ -473,7 +682,7 @@ Parameters
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`string`
+        :ansible-option-type:`boolean`
 
       .. raw:: html
 
@@ -490,8 +699,8 @@ Parameters
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry:`"DISABLED"`
-      - :ansible-option-choices-entry-default:`"ENABLED"` :ansible-option-choices-default-mark:`← (default)`
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
 
 
       .. raw:: html
@@ -568,7 +777,7 @@ Parameters
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
+      - :ansible-option-choices-entry:`false`
       - :ansible-option-choices-entry:`true`
 
 
@@ -593,7 +802,7 @@ Parameters
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
 
       .. raw:: html
 
@@ -661,7 +870,7 @@ Parameters
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
 
       .. raw:: html
 
@@ -697,7 +906,7 @@ Parameters
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
 
       .. raw:: html
 
@@ -731,7 +940,7 @@ Parameters
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
 
       .. raw:: html
 
@@ -833,7 +1042,7 @@ Parameters
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
 
       .. raw:: html
 
@@ -871,7 +1080,7 @@ Parameters
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
 
       .. raw:: html
 
@@ -895,6 +1104,40 @@ Parameters
   * - .. raw:: html
 
         <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-password"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_rules_module__parameter-password:
+
+      .. rst-class:: ansible-option-title
+
+      **password**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-password" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string` / :ansible-option-required:`required`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the password for the API admin.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
         <div class="ansibleOptionAnchor" id="parameter-protocols"></div>
 
       .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_rules_module__parameter-protocols:
@@ -909,7 +1152,7 @@ Parameters
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`string`
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
 
       .. raw:: html
 
@@ -964,7 +1207,7 @@ Parameters
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`dictionary` / :ansible-option-required:`required`
+        :ansible-option-type:`dictionary`
 
       .. raw:: html
 
@@ -974,7 +1217,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      A dict object containing connection details.
+      A dict object containing connection details. This is optional; credentials can also be provided directly at the top level.
 
 
       .. raw:: html
@@ -1016,7 +1259,7 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      A string that contains the obfuscated API key
+      A string that contains the obfuscated API key.
 
 
       .. raw:: html
@@ -1058,7 +1301,7 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      The Zscaler cloud name was provisioned for your organization
+      The Zscaler cloud name was provisioned for your organization.
 
 
       .. rst-class:: ansible-option-line
@@ -1114,7 +1357,49 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      A string that contains the password for the API admin
+      A string that contains the password for the API admin.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/sandbox_token"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_rules_module__parameter-provider/sandbox_token:
+
+      .. rst-class:: ansible-option-title
+
+      **sandbox_token**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/sandbox_token" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      A string that contains the Sandbox API Key.
 
 
       .. raw:: html
@@ -1156,7 +1441,7 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      A string that contains the email ID of the API admin
+      A string that contains the email ID of the API admin.
 
 
       .. raw:: html
@@ -1219,7 +1504,7 @@ Parameters
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string` / :ansible-option-required:`required`
 
       .. raw:: html
 
@@ -1247,6 +1532,40 @@ Parameters
       - :ansible-option-choices-entry:`"TRACE"`
       - :ansible-option-choices-entry:`"CONNECT"`
       - :ansible-option-choices-entry:`"OTHER"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-sandbox_token"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_rules_module__parameter-sandbox_token:
+
+      .. rst-class:: ansible-option-title
+
+      **sandbox_token**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-sandbox_token" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the Sandbox API Key.
 
 
       .. raw:: html
@@ -1320,7 +1639,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      The state.
+      Specifies the desired state of the resource.
 
 
       .. rst-class:: ansible-option-line
@@ -1392,7 +1711,7 @@ Parameters
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
 
       .. raw:: html
 
@@ -1446,6 +1765,132 @@ Parameters
   * - .. raw:: html
 
         <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-user_agent_types"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_rules_module__parameter-user_agent_types:
+
+      .. rst-class:: ansible-option-title
+
+      **user_agent_types**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-user_agent_types" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Any number of user agents to which the rule applies.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"OPERA"`
+      - :ansible-option-choices-entry:`"FIREFOX"`
+      - :ansible-option-choices-entry:`"MSIE"`
+      - :ansible-option-choices-entry:`"MSEDGE"`
+      - :ansible-option-choices-entry:`"CHROME"`
+      - :ansible-option-choices-entry:`"SAFARI"`
+      - :ansible-option-choices-entry:`"OTHER"`
+      - :ansible-option-choices-entry:`"MSCHREDGE"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-user_risk_score_levels"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_rules_module__parameter-user_risk_score_levels:
+
+      .. rst-class:: ansible-option-title
+
+      **user_risk_score_levels**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-user_risk_score_levels" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates the user risk level selected for the DLP rule violation.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"LOW"`
+      - :ansible-option-choices-entry:`"MEDIUM"`
+      - :ansible-option-choices-entry:`"HIGH"`
+      - :ansible-option-choices-entry:`"CRITICAL"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-username"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_rules_module__parameter-username:
+
+      .. rst-class:: ansible-option-title
+
+      **username**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-username" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string` / :ansible-option-required:`required`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the email ID of the API admin.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
         <div class="ansibleOptionAnchor" id="parameter-users"></div>
 
       .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_rules_module__parameter-users:
@@ -1460,7 +1905,7 @@ Parameters
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
 
       .. raw:: html
 
@@ -1545,6 +1990,40 @@ Parameters
       Example ( 11/20/2023 11:59 PM )
 
       Notice that validity\_start\_time cannot be in the past
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-validity_time_zone_id"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_rules_module__parameter-validity_time_zone_id:
+
+      .. rst-class:: ansible-option-title
+
+      **validity_time_zone_id**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-validity_time_zone_id" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      If enforceTimeValidity is set to true, the URL Filtering rule date and time is valid based on this time zone ID.
 
 
       .. raw:: html

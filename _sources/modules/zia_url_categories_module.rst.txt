@@ -7,7 +7,7 @@
     :trim:
 
 .. meta::
-  :antsibull-docs: 2.7.0
+  :antsibull-docs: 2.10.0
 
 .. Anchors
 
@@ -23,7 +23,7 @@ zscaler.ziacloud.zia_url_categories module -- Adds a new custom URL category.
 .. Collection note
 
 .. note::
-    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 1.0.0).
+    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 0.1.0).
 
     It is not included in ``ansible-core``.
     To check whether it is installed, run :code:`ansible-galaxy collection list`.
@@ -38,7 +38,7 @@ zscaler.ziacloud.zia_url_categories module -- Adds a new custom URL category.
 
 .. rst-class:: ansible-version-added
 
-New in zscaler.ziacloud 1.0.0
+New in zscaler.ziacloud 0.1.0
 
 .. contents::
    :local:
@@ -92,6 +92,496 @@ Parameters
   * - .. raw:: html
 
         <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-api_key"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_categories_module__parameter-api_key:
+
+      .. rst-class:: ansible-option-title
+
+      **api_key**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-api_key" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string` / :ansible-option-required:`required`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the obfuscated API key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-cloud"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_categories_module__parameter-cloud:
+
+      .. rst-class:: ansible-option-title
+
+      **cloud**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-cloud" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string` / :ansible-option-required:`required`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The Zscaler cloud name was provisioned for your organization.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"zscloud"`
+      - :ansible-option-choices-entry:`"zscaler"`
+      - :ansible-option-choices-entry:`"zscalerone"`
+      - :ansible-option-choices-entry:`"zscalertwo"`
+      - :ansible-option-choices-entry:`"zscalerthree"`
+      - :ansible-option-choices-entry:`"zscalerbeta"`
+      - :ansible-option-choices-entry:`"zscalergov"`
+      - :ansible-option-choices-entry:`"zscalerten"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-configured_name"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_categories_module__parameter-configured_name:
+
+      .. rst-class:: ansible-option-title
+
+      **configured_name**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-configured_name" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Name of the URL category. This is only required for custom URL categories.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-custom_category"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_categories_module__parameter-custom_category:
+
+      .. rst-class:: ansible-option-title
+
+      **custom_category**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-custom_category" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Set to true for custom URL category. Up to 48 custom URL categories can be added per organization.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-db_categorized_urls"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_categories_module__parameter-db_categorized_urls:
+
+      .. rst-class:: ansible-option-title
+
+      **db_categorized_urls**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-db_categorized_urls" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      URLs added to a custom URL category are also retained under the original parent URL category.
+
+      i.e. the predefined category the URL previously belonged to.
+
+      The URLs entered are covered by policies that reference the original parent URL category.
+
+      If you add www.amazon.com, this URL is covered by policies that reference the custom URL category.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-description"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_categories_module__parameter-description:
+
+      .. rst-class:: ansible-option-title
+
+      **description**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-description" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Description of the URL category.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-editable"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_categories_module__parameter-editable:
+
+      .. rst-class:: ansible-option-title
+
+      **editable**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-editable" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Value is set to false for custom URL category when due to scope user does not have edit permission
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-id"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_categories_module__parameter-id:
+
+      .. rst-class:: ansible-option-title
+
+      **id**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-id" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      URL category ID. See \ https://help.zscaler.com/zia/url-categories#/urlCategories-get\ 
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-ip_ranges"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_categories_module__parameter-ip_ranges:
+
+      .. rst-class:: ansible-option-title
+
+      **ip_ranges**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-ip_ranges" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Custom IP address ranges associated to a URL category.
+
+      Up to 2000 custom IP address ranges and retaining parent custom IP address ranges can be added, per organization, across all categories.
+
+      This field is available only if the option to configure custom IP ranges is enabled for your organization.
+
+      To enable this option, contact Zscaler Support.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-ip_ranges_retaining_parent_category"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_categories_module__parameter-ip_ranges_retaining_parent_category:
+
+      .. rst-class:: ansible-option-title
+
+      **ip_ranges_retaining_parent_category**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-ip_ranges_retaining_parent_category" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The retaining parent custom IP address ranges associated to a URL category.
+
+      Up to 2000 custom IP ranges and retaining parent custom IP address ranges can be added, per organization, across all categories.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-keywords"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_categories_module__parameter-keywords:
+
+      .. rst-class:: ansible-option-title
+
+      **keywords**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-keywords" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Custom keywords associated to a URL category.
+
+      Up to 2048 custom keywords can be added per organization across all categories including bandwidth classes
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-keywords_retaining_parent_category"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_categories_module__parameter-keywords_retaining_parent_category:
+
+      .. rst-class:: ansible-option-title
+
+      **keywords_retaining_parent_category**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-keywords_retaining_parent_category" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Retained custom keywords from the parent URL category that is associated to a URL category.
+
+      Up to 2048 retained parent keywords can be added per organization across all categories including bandwidth classes.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-password"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_categories_module__parameter-password:
+
+      .. rst-class:: ansible-option-title
+
+      **password**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-password" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string` / :ansible-option-required:`required`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the password for the API admin.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
         <div class="ansibleOptionAnchor" id="parameter-provider"></div>
 
       .. _ansible_collections.zscaler.ziacloud.zia_url_categories_module__parameter-provider:
@@ -106,7 +596,7 @@ Parameters
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`dictionary` / :ansible-option-required:`required`
+        :ansible-option-type:`dictionary`
 
       .. raw:: html
 
@@ -116,7 +606,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      A dict object containing connection details.
+      A dict object containing connection details. This is optional; credentials can also be provided directly at the top level.
 
 
       .. raw:: html
@@ -158,7 +648,7 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      A string that contains the obfuscated API key
+      A string that contains the obfuscated API key.
 
 
       .. raw:: html
@@ -200,7 +690,7 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      The Zscaler cloud name was provisioned for your organization
+      The Zscaler cloud name was provisioned for your organization.
 
 
       .. rst-class:: ansible-option-line
@@ -256,7 +746,49 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      A string that contains the password for the API admin
+      A string that contains the password for the API admin.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/sandbox_token"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_categories_module__parameter-provider/sandbox_token:
+
+      .. rst-class:: ansible-option-title
+
+      **sandbox_token**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/sandbox_token" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      A string that contains the Sandbox API Key.
 
 
       .. raw:: html
@@ -298,7 +830,172 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      A string that contains the email ID of the API admin
+      A string that contains the email ID of the API admin.
+
+
+      .. raw:: html
+
+        </div>
+
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-sandbox_token"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_categories_module__parameter-sandbox_token:
+
+      .. rst-class:: ansible-option-title
+
+      **sandbox_token**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-sandbox_token" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the Sandbox API Key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-scopes"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_categories_module__parameter-scopes:
+
+      .. rst-class:: ansible-option-title
+
+      **scopes**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-scopes" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=dictionary`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Scope of the custom categories.
+
+
+      .. raw:: html
+
+        </div>
+    
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-scopes/scope_entities"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_categories_module__parameter-scopes/scope_entities:
+
+      .. rst-class:: ansible-option-title
+
+      **scope_entities**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-scopes/scope_entities" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Based on the admin scope type, the entities can be the ID/name pair of departments, locations, or location groups.
+
+      The attribute name is subject to change.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-scopes/type"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_categories_module__parameter-scopes/type:
+
+      .. rst-class:: ansible-option-title
+
+      **type**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-scopes/type" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      The admin scope type. The attribute name is subject to change.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"ORGANIZATION"`
+      - :ansible-option-choices-entry:`"DEPARTMENT"`
+      - :ansible-option-choices-entry:`"LOCATION"`
+      - :ansible-option-choices-entry:`"LOCATION\_GROUP"`
 
 
       .. raw:: html
@@ -333,7 +1030,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      The state.
+      Specifies the desired state of the resource.
 
 
       .. rst-class:: ansible-option-line
@@ -342,6 +1039,155 @@ Parameters
 
       - :ansible-option-choices-entry-default:`"present"` :ansible-option-choices-default-mark:`← (default)`
       - :ansible-option-choices-entry:`"absent"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-super_category"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_categories_module__parameter-super_category:
+
+      .. rst-class:: ansible-option-title
+
+      **super_category**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-super_category" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Super Category of the URL category.
+
+      This field is required when creating custom URL categories.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-type"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_categories_module__parameter-type:
+
+      .. rst-class:: ansible-option-title
+
+      **type**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-type" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Type of the custom categories.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"URL\_CATEGORY"`
+      - :ansible-option-choices-entry:`"TLD\_CATEGORY"`
+      - :ansible-option-choices-entry:`"ALL"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-urls"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_categories_module__parameter-urls:
+
+      .. rst-class:: ansible-option-title
+
+      **urls**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-urls" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Retained custom keywords from the parent URL category that is associated to a URL category.
+
+      Up to 2048 retained parent keywords can be added per organization across all categories including bandwidth classes.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-username"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_categories_module__parameter-username:
+
+      .. rst-class:: ansible-option-title
+
+      **username**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-username" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string` / :ansible-option-required:`required`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the email ID of the API admin.
 
 
       .. raw:: html
@@ -366,14 +1212,31 @@ Examples
 .. code-block:: yaml+jinja
 
     
-    - name: Gather Information Details of all custom URL Categories
+    - name: Create a URL Category
       zscaler.ziacloud.zia_url_categories:
         provider: '{{ provider }}'
-
-    - name: Gather Information Details of a custom URL Categories by Name
-      zscaler.ziacloud.zia_url_categories:
-        provider: '{{ provider }}'
-        name: "IOS"
+        super_category: USER_DEFINED
+        configured_name: Example_Category
+        description: Example_Category
+        type: URL_CATEGORY
+        keywords:
+            - microsoft
+        custom_category: true
+        db_categorized_urls:
+            - .creditkarma.com
+            - .youku.com
+        urls:
+            - .coupons.com
+            - .resource.alaskaair.net
+            - .techrepublic.com
+            - .dailymotion.com
+            - .osiriscomm.com
+            - .uefa.com
+            - .Logz.io
+            - .alexa.com
+            - .baidu.com
+            - .cnn.com
+            - .level3.com
 
 
 

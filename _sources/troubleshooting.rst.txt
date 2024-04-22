@@ -2,11 +2,11 @@
 .. © Copyright Zscaler Inc, 2024                                             .
 .. ...........................................................................
 
-Module reference
-----------------
+======================
+Troubleshooting Guide
+======================
 
-.. toctree::
-   :glob:
-   :maxdepth: 1
+How to troubleshoot your problem
+---------------------------------
 
-   modules/*
+This section is under construction

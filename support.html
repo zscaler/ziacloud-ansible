@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Releases &mdash; Ansible Collections Documentation</title>
+  <title>Support Guide &mdash; Ansible Collections Documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5707b69d" />
       <link rel="stylesheet" type="text/css" href="_static/css/ansible.css?v=c5b67dd2" />
       <link rel="stylesheet" type="text/css" href="_static/antsibull-minimal.css" />
@@ -26,8 +26,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Contributing" href="community_guides.html" />
-    <link rel="prev" title="zscaler.ziacloud.zia_workload_groups_facts module – Get a list of workload groups." href="modules/zia_workload_groups_facts_module.html" /><!-- extra head elements for Ansible beyond RTD Sphinx Theme -->
+    <link rel="next" title="Troubleshooting Guide" href="troubleshooting.html" />
+    <link rel="prev" title="License" href="license.html" /><!-- extra head elements for Ansible beyond RTD Sphinx Theme -->
 
 
 
@@ -85,16 +85,8 @@
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Module reference</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Release Notes</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Releases</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#version-0-1-0">Version 0.1.0</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#notes">Notes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#what-s-new">What’s New</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#availability">Availability</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="release_notes.html">Releases</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -102,8 +94,15 @@
 <li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Support Guide</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="support.html">Support Guide</a></li>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Support Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#general-support-statement">General Support Statement</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#support-ticket-severity">Support Ticket Severity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#contact">Contact</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting Guide</a></li>
 </ul>
 <!-- extra nav elements for Ansible beyond RTD Sphinx Theme -->
@@ -122,9 +121,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Releases</li>
+      <li class="breadcrumb-item active">Support Guide</li>
       <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/zscaler/ziacloud-ansible/blob/master/docs/source/release_notes.rst" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/zscaler/ziacloud-ansible/blob/master/docs/source/support.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -134,26 +133,25 @@
   
            <div itemprop="articleBody">
              
-  <section id="releases">
-<h1>Releases<a class="headerlink" href="#releases" title="Link to this heading"></a></h1>
-<section id="version-0-1-0">
-<h2>Version 0.1.0<a class="headerlink" href="#version-0-1-0" title="Link to this heading"></a></h2>
-<section id="notes">
-<h3>Notes<a class="headerlink" href="#notes" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p>Initial release of Zscaler Internet Access Automation collection, referred to as <cite>ziacloud</cite>
-which is part of the Red Hat® Ansible Certified Content.</p></li>
-</ul>
+  <section id="support-guide">
+<h1>Support Guide<a class="headerlink" href="#support-guide" title="Link to this heading"></a></h1>
+<section id="general-support-statement">
+<h2>General Support Statement<a class="headerlink" href="#general-support-statement" title="Link to this heading"></a></h2>
+<p>This ZIA Ansible Collection Module is supported and maintained by the Zscaler Technology Alliances team in partnership with Zscaler’s engineering,
+and we welcome questions on how to use the collection.
+Please refer to our <a class="reference internal" href="troubleshooting.html"><span class="doc">troubleshooting guide</span></a> for guidance on typical problems.</p>
+<section id="support-ticket-severity">
+<h3>Support Ticket Severity<a class="headerlink" href="#support-ticket-severity" title="Link to this heading"></a></h3>
+<p>Support tickets related to this Ansible Collection can be opened with <a class="reference external" href="https://help.zscaler.com/login-tickets">Zscaler Support</a>, however, since the collection is just a client of the underlying product API,
+we will <strong>NOT</strong> be able to treat ansible-related support requests as a Severity-1 (Immediate time frame).</p>
+<p>When reporting bugs, please provide the Ansible playbook that demonstrates the bug and the command output. Tracebacks are also helpful.</p>
+<p>Notice that we will <strong>NOT</strong>, however, fix bugs upon customer demand, as we have to prioritize all pending bugs and features, as part of the product’s backlog and release cycles.</p>
+<p>Urgent, production-related Ansible issues can be resolved via direct interaction with the underlying API or UI. We will ask customers to resort to these methods to resolve downtime or urgent issues.</p>
+<p>If you have an urgent escalation, please contact your local Zscaler account team (RSM/SE/CSM/TAM) for assistance.</p>
 </section>
-<section id="what-s-new">
-<h3>What’s New<a class="headerlink" href="#what-s-new" title="Link to this heading"></a></h3>
-</section>
-<section id="availability">
-<h3>Availability<a class="headerlink" href="#availability" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p><a class="reference external" href="https://galaxy.ansible.com/zscaler/ziacloud-ansible">Galaxy</a></p></li>
-<li><p><a class="reference external" href="https://github.com/zscaler/ziacloud-ansible">GitHub</a></p></li>
-</ul>
+<section id="contact">
+<h3>Contact<a class="headerlink" href="#contact" title="Link to this heading"></a></h3>
+<p>For questions or requests that cannot be submitted via GitHub Issues, please contact <a class="reference external" href="mailto:devrel&#37;&#52;&#48;zscaler&#46;com">devrel<span>&#64;</span>zscaler<span>&#46;</span>com</a> with “zia-ansible-collection” in the subject line.</p>
 </section>
 </section>
 </section>
@@ -164,8 +162,8 @@ which is part of the Red Hat® Ansible Certified Content.</p></li>
           
 
 <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="modules/zia_workload_groups_facts_module.html" class="btn btn-neutral float-left" title="zscaler.ziacloud.zia_workload_groups_facts module – Get a list of workload groups." accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="community_guides.html" class="btn btn-neutral float-right" title="Contributing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="license.html" class="btn btn-neutral float-left" title="License" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="troubleshooting.html" class="btn btn-neutral float-right" title="Troubleshooting Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

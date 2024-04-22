@@ -7,7 +7,7 @@
     :trim:
 
 .. meta::
-  :antsibull-docs: 2.7.0
+  :antsibull-docs: 2.10.0
 
 .. Anchors
 
@@ -23,7 +23,7 @@ zscaler.ziacloud.zia_location_management module -- Adds new locations and sub-lo
 .. Collection note
 
 .. note::
-    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 1.0.0).
+    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 0.1.0).
 
     It is not included in ``ansible-core``.
     To check whether it is installed, run :code:`ansible-galaxy collection list`.
@@ -38,7 +38,7 @@ zscaler.ziacloud.zia_location_management module -- Adds new locations and sub-lo
 
 .. rst-class:: ansible-version-added
 
-New in zscaler.ziacloud 1.0.0
+New in zscaler.ziacloud 0.1.0
 
 .. contents::
    :local:
@@ -92,6 +92,40 @@ Parameters
   * - .. raw:: html
 
         <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-api_key"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_location_management_module__parameter-api_key:
+
+      .. rst-class:: ansible-option-title
+
+      **api_key**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-api_key" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string` / :ansible-option-required:`required`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the obfuscated API key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
         <div class="ansibleOptionAnchor" id="parameter-aup_block_internet_until_accepted"></div>
 
       .. _ansible_collections.zscaler.ziacloud.zia_location_management_module__parameter-aup_block_internet_until_accepted:
@@ -125,7 +159,7 @@ Parameters
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
+      - :ansible-option-choices-entry:`false`
       - :ansible-option-choices-entry:`true`
 
 
@@ -169,7 +203,7 @@ Parameters
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
+      - :ansible-option-choices-entry:`false`
       - :ansible-option-choices-entry:`true`
 
 
@@ -213,7 +247,7 @@ Parameters
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
+      - :ansible-option-choices-entry:`false`
       - :ansible-option-choices-entry:`true`
 
 
@@ -289,7 +323,7 @@ Parameters
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
+      - :ansible-option-choices-entry:`false`
       - :ansible-option-choices-entry:`true`
 
 
@@ -333,8 +367,56 @@ Parameters
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
+      - :ansible-option-choices-entry:`false`
       - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-cloud"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_location_management_module__parameter-cloud:
+
+      .. rst-class:: ansible-option-title
+
+      **cloud**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-cloud" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string` / :ansible-option-required:`required`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The Zscaler cloud name was provisioned for your organization.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"zscloud"`
+      - :ansible-option-choices-entry:`"zscaler"`
+      - :ansible-option-choices-entry:`"zscalerone"`
+      - :ansible-option-choices-entry:`"zscalertwo"`
+      - :ansible-option-choices-entry:`"zscalerthree"`
+      - :ansible-option-choices-entry:`"zscalerbeta"`
+      - :ansible-option-choices-entry:`"zscalergov"`
+      - :ansible-option-choices-entry:`"zscalerten"`
 
 
       .. raw:: html
@@ -437,6 +519,15 @@ Parameters
         <div class="ansible-option-cell">
 
       Display Time Unit. The time unit to display for IP Surrogate idle time to disassociation.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"MINUTE"`
+      - :ansible-option-choices-entry:`"HOUR"`
+      - :ansible-option-choices-entry:`"DAY"`
 
 
       .. raw:: html
@@ -661,7 +752,7 @@ Parameters
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
+      - :ansible-option-choices-entry:`false`
       - :ansible-option-choices-entry:`true`
 
 
@@ -737,7 +828,7 @@ Parameters
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
+      - :ansible-option-choices-entry:`false`
       - :ansible-option-choices-entry:`true`
 
 
@@ -777,6 +868,40 @@ Parameters
       If this ID does not exist or is 0, it is implied that it is a parent location.
 
       Otherwise it is a sub-location whose parent has this ID. x-applicableTo: SUB
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-password"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_location_management_module__parameter-password:
+
+      .. rst-class:: ansible-option-title
+
+      **password**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-password" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string` / :ansible-option-required:`required`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the password for the API admin.
 
 
       .. raw:: html
@@ -891,7 +1016,7 @@ Parameters
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`dictionary` / :ansible-option-required:`required`
+        :ansible-option-type:`dictionary`
 
       .. raw:: html
 
@@ -901,7 +1026,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      A dict object containing connection details.
+      A dict object containing connection details. This is optional; credentials can also be provided directly at the top level.
 
 
       .. raw:: html
@@ -943,7 +1068,7 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      A string that contains the obfuscated API key
+      A string that contains the obfuscated API key.
 
 
       .. raw:: html
@@ -985,7 +1110,7 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      The Zscaler cloud name was provisioned for your organization
+      The Zscaler cloud name was provisioned for your organization.
 
 
       .. rst-class:: ansible-option-line
@@ -1041,7 +1166,49 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      A string that contains the password for the API admin
+      A string that contains the password for the API admin.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/sandbox_token"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_location_management_module__parameter-provider/sandbox_token:
+
+      .. rst-class:: ansible-option-title
+
+      **sandbox_token**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/sandbox_token" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      A string that contains the Sandbox API Key.
 
 
       .. raw:: html
@@ -1083,13 +1250,47 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      A string that contains the email ID of the API admin
+      A string that contains the email ID of the API admin.
 
 
       .. raw:: html
 
         </div>
 
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-sandbox_token"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_location_management_module__parameter-sandbox_token:
+
+      .. rst-class:: ansible-option-title
+
+      **sandbox_token**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-sandbox_token" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the Sandbox API Key.
+
+
+      .. raw:: html
+
+        </div>
 
   * - .. raw:: html
 
@@ -1122,7 +1323,9 @@ Parameters
 
       It remains supported in the API payload in order to maintain backwards compatibility with existing scripts, but it will be removed in future.
 
-      Enable SSL Inspection. Set to true in order to apply your SSL Inspection policy to HTTPS traffic in the location and inspect HTTPS transactions for data leakage, malicious content, and viruses.
+      Enable SSL Inspection.
+
+      Set to true in order to apply your SSL Inspection policy to HTTPS traffic.
 
       To Learn More, see Deploying SSL Inspection \ https://help.zscaler.com/zia/deploying-ssl-inspection\ 
 
@@ -1131,7 +1334,7 @@ Parameters
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
+      - :ansible-option-choices-entry:`false`
       - :ansible-option-choices-entry:`true`
 
 
@@ -1166,7 +1369,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      The state.
+      Specifies the desired state of the resource.
 
 
       .. rst-class:: ansible-option-line
@@ -1217,7 +1420,7 @@ Parameters
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
+      - :ansible-option-choices-entry:`false`
       - :ansible-option-choices-entry:`true`
 
 
@@ -1261,7 +1464,7 @@ Parameters
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
+      - :ansible-option-choices-entry:`false`
       - :ansible-option-choices-entry:`true`
 
 
@@ -1412,6 +1615,40 @@ Parameters
         <div class="ansible-option-cell">
 
       Upload bandwidth in kbps. The value 0 implies no Bandwidth Control enforcement.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-username"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_location_management_module__parameter-username:
+
+      .. rst-class:: ansible-option-title
+
+      **username**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-username" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string` / :ansible-option-required:`required`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the email ID of the API admin.
 
 
       .. raw:: html
@@ -1662,7 +1899,9 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      Enable XFF Forwarding for a location. When set to true, traffic is passed to Zscaler Cloud via the X-Forwarded-For (XFF) header.
+      Enable XFF Forwarding for a location.
+
+      When set to true, traffic is passed to Zscaler Cloud via the X-Forwarded-For (XFF) header.
 
       Note: For sublocations, this attribute is a read-only field as the value is inherited from the parent location.
 
@@ -1671,7 +1910,7 @@ Parameters
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
+      - :ansible-option-choices-entry:`false`
       - :ansible-option-choices-entry:`true`
 
 
@@ -1710,7 +1949,9 @@ Parameters
 
       It remains supported in the API payload in order to maintain backwards compatibility with existing scripts, but it will be removed in future.
 
-      Enable Zscaler App SSL Setting. When set to true, the Zscaler App SSL Scan Setting takes effect, irrespective of the SSL policy that is configured for the location.
+      Enable Zscaler App SSL Setting.
+
+      When set to true, the Zscaler App SSL Scan Setting takes effect, irrespective of the SSL policy that is configured for the location.
 
       To Learn More, see Deploying SSL Inspection \ https://help.zscaler.com/z-app/configuring-ssl-inspection-zscaler-app#configure-SSL-Zscaler-App\ 
 
@@ -1719,7 +1960,7 @@ Parameters
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
+      - :ansible-option-choices-entry:`false`
       - :ansible-option-choices-entry:`true`
 
 
@@ -1745,15 +1986,15 @@ Examples
 .. code-block:: yaml+jinja
 
     
-    - name: Create/Update/Delete Location.
-      zscaler.ziacloud.zia_location_management:
+    - name: Create UFQDN VPN Credential.
+      zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials:
         type: "UFQDN"
         fqdn: "usa_sjc37@acme.com"
         comments: "Created via Ansible"
-        pre_shared_key: "newPassword123!"
+        pre_shared_key: "************!"
       register: vpn_credential_ufqdn
 
-    - name: Gather Information Details of a ZIA User Role
+    - name: Create Location Management with UFQDN VPN Type
       zscaler.ziacloud.zia_location_management:
         name: "USA_SJC_37"
         description: "Created with Ansible"
@@ -1766,20 +2007,31 @@ Examples
         xff_forward_enabled: true
         ofw_enabled: true
         ips_control: true
-        ip_addresses: "1.1.1.1"
         vpn_credentials:
             - id: "{{ vpn_credential_ufqdn.data.id }}"
               type: "{{ vpn_credential_ufqdn.data.type }}"
 
+    # Create Location Management with VPN IP Type
+    - name: Create/Update/Delete a Static IP.
+      zscaler.ziacloud.zia_traffic_forwarding_static_ip:
+        provider: '{{ provider }}'
+        ip_address: "1.1.1.1"
+        routable_ip: true
+        comment: "Created with Ansible"
+        geo_override: true
+        latitude: "-36.848461"
+        longitude: "174.763336"
+      register: static_ip
+
     - name: Create/Update/Delete VPN Credentials Type IP.
       zscaler.ziacloud.zia_location_management:
         type: "IP"
-        ip_address: "1.1.1.1"
+        ip_address: "static_ip.data.ip_address"
         comments: "Created via Ansible"
-        pre_shared_key: "newPassword123!"
+        pre_shared_key: "*************"
       register: vpn_credential_ip
 
-    - name: Gather Information Details of a ZIA User Role
+    - name: Create Location Management with IP VPN Type
       zscaler.ziacloud.zia_location_management:
         name: "USA_SJC_37"
         description: "Created with Ansible"
@@ -1792,7 +2044,7 @@ Examples
         xff_forward_enabled: true
         ofw_enabled: true
         ips_control: true
-        ip_addresses: "1.1.1.1"
+        ip_addresses: "static_ip.data.ip_address"
         vpn_credentials:
             - id: "{{ vpn_credential_ip.data.id }}"
               type: "{{ vpn_credential_ip.data.type }}"

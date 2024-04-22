@@ -7,7 +7,7 @@
     :trim:
 
 .. meta::
-  :antsibull-docs: 2.7.0
+  :antsibull-docs: 2.10.0
 
 .. Anchors
 
@@ -23,7 +23,7 @@ zscaler.ziacloud.zia_traffic_forwarding_gre_tunnels module -- GRE tunnel informa
 .. Collection note
 
 .. note::
-    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 1.0.0).
+    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 0.1.0).
 
     It is not included in ``ansible-core``.
     To check whether it is installed, run :code:`ansible-galaxy collection list`.
@@ -38,7 +38,7 @@ zscaler.ziacloud.zia_traffic_forwarding_gre_tunnels module -- GRE tunnel informa
 
 .. rst-class:: ansible-version-added
 
-New in zscaler.ziacloud 1.0.0
+New in zscaler.ziacloud 0.1.0
 
 .. contents::
    :local:
@@ -92,6 +92,88 @@ Parameters
   * - .. raw:: html
 
         <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-api_key"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_traffic_forwarding_gre_tunnels_module__parameter-api_key:
+
+      .. rst-class:: ansible-option-title
+
+      **api_key**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-api_key" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string` / :ansible-option-required:`required`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the obfuscated API key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-cloud"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_traffic_forwarding_gre_tunnels_module__parameter-cloud:
+
+      .. rst-class:: ansible-option-title
+
+      **cloud**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-cloud" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string` / :ansible-option-required:`required`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The Zscaler cloud name was provisioned for your organization.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"zscloud"`
+      - :ansible-option-choices-entry:`"zscaler"`
+      - :ansible-option-choices-entry:`"zscalerone"`
+      - :ansible-option-choices-entry:`"zscalertwo"`
+      - :ansible-option-choices-entry:`"zscalerthree"`
+      - :ansible-option-choices-entry:`"zscalerbeta"`
+      - :ansible-option-choices-entry:`"zscalergov"`
+      - :ansible-option-choices-entry:`"zscalerten"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
         <div class="ansibleOptionAnchor" id="parameter-comment"></div>
 
       .. _ansible_collections.zscaler.ziacloud.zia_traffic_forwarding_gre_tunnels_module__parameter-comment:
@@ -106,7 +188,7 @@ Parameters
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`string` / :ansible-option-required:`required`
+        :ansible-option-type:`string`
 
       .. raw:: html
 
@@ -174,7 +256,7 @@ Parameters
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`string` / :ansible-option-required:`required`
+        :ansible-option-type:`string`
 
       .. raw:: html
 
@@ -236,21 +318,55 @@ Parameters
   * - .. raw:: html
 
         <div class="ansible-option-cell">
-        <div class="ansibleOptionAnchor" id="parameter-primary_dest_vip"></div>
+        <div class="ansibleOptionAnchor" id="parameter-password"></div>
 
-      .. _ansible_collections.zscaler.ziacloud.zia_traffic_forwarding_gre_tunnels_module__parameter-primary_dest_vip:
+      .. _ansible_collections.zscaler.ziacloud.zia_traffic_forwarding_gre_tunnels_module__parameter-password:
 
       .. rst-class:: ansible-option-title
 
-      **primary_dest_vip**
+      **password**
 
       .. raw:: html
 
-        <a class="ansibleOptionLink" href="#parameter-primary_dest_vip" title="Permalink to this option"></a>
+        <a class="ansibleOptionLink" href="#parameter-password" title="Permalink to this option"></a>
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`list` / :ansible-option-elements:`elements=dictionary`
+        :ansible-option-type:`string` / :ansible-option-required:`required`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the password for the API admin.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-primary_dest_vip_id"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_traffic_forwarding_gre_tunnels_module__parameter-primary_dest_vip_id:
+
+      .. rst-class:: ansible-option-title
+
+      **primary_dest_vip_id**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-primary_dest_vip_id" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
 
       .. raw:: html
 
@@ -266,91 +382,6 @@ Parameters
       .. raw:: html
 
         </div>
-    
-  * - .. raw:: html
-
-        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
-        <div class="ansibleOptionAnchor" id="parameter-primary_dest_vip/id"></div>
-
-      .. raw:: latex
-
-        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
-
-      .. _ansible_collections.zscaler.ziacloud.zia_traffic_forwarding_gre_tunnels_module__parameter-primary_dest_vip/id:
-
-      .. rst-class:: ansible-option-title
-
-      **id**
-
-      .. raw:: html
-
-        <a class="ansibleOptionLink" href="#parameter-primary_dest_vip/id" title="Permalink to this option"></a>
-
-      .. ansible-option-type-line::
-
-        :ansible-option-type:`string`
-
-      .. raw:: html
-
-        </div>
-
-      .. raw:: latex
-
-        \end{minipage}
-
-    - .. raw:: html
-
-        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
-
-      Unique identifer of the GRE virtual IP address (VIP)
-
-
-      .. raw:: html
-
-        </div>
-
-  * - .. raw:: html
-
-        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
-        <div class="ansibleOptionAnchor" id="parameter-primary_dest_vip/virtual_ip"></div>
-
-      .. raw:: latex
-
-        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
-
-      .. _ansible_collections.zscaler.ziacloud.zia_traffic_forwarding_gre_tunnels_module__parameter-primary_dest_vip/virtual_ip:
-
-      .. rst-class:: ansible-option-title
-
-      **virtual_ip**
-
-      .. raw:: html
-
-        <a class="ansibleOptionLink" href="#parameter-primary_dest_vip/virtual_ip" title="Permalink to this option"></a>
-
-      .. ansible-option-type-line::
-
-        :ansible-option-type:`string`
-
-      .. raw:: html
-
-        </div>
-
-      .. raw:: latex
-
-        \end{minipage}
-
-    - .. raw:: html
-
-        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
-
-      GRE cluster virtual IP address (VIP)
-
-
-      .. raw:: html
-
-        </div>
-
 
   * - .. raw:: html
 
@@ -369,7 +400,7 @@ Parameters
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`dictionary` / :ansible-option-required:`required`
+        :ansible-option-type:`dictionary`
 
       .. raw:: html
 
@@ -379,7 +410,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      A dict object containing connection details.
+      A dict object containing connection details. This is optional; credentials can also be provided directly at the top level.
 
 
       .. raw:: html
@@ -421,7 +452,7 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      A string that contains the obfuscated API key
+      A string that contains the obfuscated API key.
 
 
       .. raw:: html
@@ -463,7 +494,7 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      The Zscaler cloud name was provisioned for your organization
+      The Zscaler cloud name was provisioned for your organization.
 
 
       .. rst-class:: ansible-option-line
@@ -519,7 +550,49 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      A string that contains the password for the API admin
+      A string that contains the password for the API admin.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/sandbox_token"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_traffic_forwarding_gre_tunnels_module__parameter-provider/sandbox_token:
+
+      .. rst-class:: ansible-option-title
+
+      **sandbox_token**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/sandbox_token" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      A string that contains the Sandbox API Key.
 
 
       .. raw:: html
@@ -561,7 +634,7 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      A string that contains the email ID of the API admin
+      A string that contains the email ID of the API admin.
 
 
       .. raw:: html
@@ -572,21 +645,55 @@ Parameters
   * - .. raw:: html
 
         <div class="ansible-option-cell">
-        <div class="ansibleOptionAnchor" id="parameter-secondary_dest_vip"></div>
+        <div class="ansibleOptionAnchor" id="parameter-sandbox_token"></div>
 
-      .. _ansible_collections.zscaler.ziacloud.zia_traffic_forwarding_gre_tunnels_module__parameter-secondary_dest_vip:
+      .. _ansible_collections.zscaler.ziacloud.zia_traffic_forwarding_gre_tunnels_module__parameter-sandbox_token:
 
       .. rst-class:: ansible-option-title
 
-      **secondary_dest_vip**
+      **sandbox_token**
 
       .. raw:: html
 
-        <a class="ansibleOptionLink" href="#parameter-secondary_dest_vip" title="Permalink to this option"></a>
+        <a class="ansibleOptionLink" href="#parameter-sandbox_token" title="Permalink to this option"></a>
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`list` / :ansible-option-elements:`elements=dictionary`
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the Sandbox API Key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-secondary_dest_vip_id"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_traffic_forwarding_gre_tunnels_module__parameter-secondary_dest_vip_id:
+
+      .. rst-class:: ansible-option-title
+
+      **secondary_dest_vip_id**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-secondary_dest_vip_id" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
 
       .. raw:: html
 
@@ -602,91 +709,6 @@ Parameters
       .. raw:: html
 
         </div>
-    
-  * - .. raw:: html
-
-        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
-        <div class="ansibleOptionAnchor" id="parameter-secondary_dest_vip/id"></div>
-
-      .. raw:: latex
-
-        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
-
-      .. _ansible_collections.zscaler.ziacloud.zia_traffic_forwarding_gre_tunnels_module__parameter-secondary_dest_vip/id:
-
-      .. rst-class:: ansible-option-title
-
-      **id**
-
-      .. raw:: html
-
-        <a class="ansibleOptionLink" href="#parameter-secondary_dest_vip/id" title="Permalink to this option"></a>
-
-      .. ansible-option-type-line::
-
-        :ansible-option-type:`string`
-
-      .. raw:: html
-
-        </div>
-
-      .. raw:: latex
-
-        \end{minipage}
-
-    - .. raw:: html
-
-        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
-
-      Unique identifer of the GRE virtual IP address (VIP)
-
-
-      .. raw:: html
-
-        </div>
-
-  * - .. raw:: html
-
-        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
-        <div class="ansibleOptionAnchor" id="parameter-secondary_dest_vip/virtual_ip"></div>
-
-      .. raw:: latex
-
-        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
-
-      .. _ansible_collections.zscaler.ziacloud.zia_traffic_forwarding_gre_tunnels_module__parameter-secondary_dest_vip/virtual_ip:
-
-      .. rst-class:: ansible-option-title
-
-      **virtual_ip**
-
-      .. raw:: html
-
-        <a class="ansibleOptionLink" href="#parameter-secondary_dest_vip/virtual_ip" title="Permalink to this option"></a>
-
-      .. ansible-option-type-line::
-
-        :ansible-option-type:`string`
-
-      .. raw:: html
-
-        </div>
-
-      .. raw:: latex
-
-        \end{minipage}
-
-    - .. raw:: html
-
-        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
-
-      GRE cluster virtual IP address (VIP)
-
-
-      .. raw:: html
-
-        </div>
-
 
   * - .. raw:: html
 
@@ -753,7 +775,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      The state.
+      Specifies the desired state of the resource.
 
 
       .. rst-class:: ansible-option-line
@@ -796,6 +818,40 @@ Parameters
         <div class="ansible-option-cell">
 
       Restrict the data center virtual IP addresses (VIPs) only to those part of the subcloud
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-username"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_traffic_forwarding_gre_tunnels_module__parameter-username:
+
+      .. rst-class:: ansible-option-title
+
+      **username**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-username" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string` / :ansible-option-required:`required`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the email ID of the API admin.
 
 
       .. raw:: html
