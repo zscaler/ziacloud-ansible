@@ -682,7 +682,12 @@ def main():
         workload_groups=id_spec,
         include_domain_profiles=id_spec,
         exclude_domain_profiles=id_spec,
-        protocols=dict(type="list", elements="str", required=False, choices=["ANY_RULE", "FTP_RULE", "HTTPS_RULE", "HTTP_RULE"]),
+        protocols=dict(
+            type="list",
+            elements="str",
+            required=False,
+            choices=["ANY_RULE", "FTP_RULE", "HTTPS_RULE", "HTTP_RULE"],
+        ),
         url_categories=dict(type="list", elements="int", required=False),
         cloud_applications=dict(type="list", elements="str", required=False),
         sub_rules=dict(type="list", elements="str", required=False),

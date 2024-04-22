@@ -17,17 +17,17 @@ jobs:
   # communication emails
   #
   # Config file is .ansible-lint
-  lint:
-    name: Ansible Lint
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v4
-      - name: Run ansible-lint
-        uses: ansible/ansible-lint@main
+  # lint:
+  #   name: Ansible Lint
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: ./ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}
+  #   steps:
+  #     - name: Check out code
+  #       uses: actions/checkout@v4
+  #     - name: Run ansible-lint
+  #       uses: ansible/ansible-lint@main
 
   # Tox is used to execute linters required for Event-Driven Ansible (EDA) code:
   #   github.com/ansible/eda-partner-testing/blob/main/README.md

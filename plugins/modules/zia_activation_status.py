@@ -74,7 +74,9 @@ import traceback
 zia_client_import_error = None
 
 try:
-    from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+    from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+        ZIAClientHelper,
+    )
 except ImportError as imp_exc:
     ZIAClientHelper = None
     zia_client_import_error = imp_exc
@@ -82,7 +84,9 @@ except ImportError as imp_exc:
 
 def core(module):
     if ZIAClientHelper is None:
-        module.fail_json(msg="Failed to import ZIAClientHelper: {}".format(zia_client_import_error))
+        module.fail_json(
+            msg="Failed to import ZIAClientHelper: {}".format(zia_client_import_error)
+        )
         return
 
     client = ZIAClientHelper(module)
@@ -140,7 +144,9 @@ def main():
     try:
         core(module)
     except Exception as e:
-        module.fail_json(msg="Unhandled exception: {}".format(e), exception=traceback.format_exc())
+        module.fail_json(
+            msg="Unhandled exception: {}".format(e), exception=traceback.format_exc()
+        )
 
 
 if __name__ == "__main__":

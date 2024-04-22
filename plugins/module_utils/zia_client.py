@@ -35,6 +35,7 @@ import platform
 
 try:
     from zscaler.zia import ZIAClientHelper as ZIA
+
     HAS_ZSCALER = True
     ZSCALER_IMPORT_ERROR = None
 except ImportError:
@@ -76,7 +77,10 @@ class ConnectionHelper:
 class ZIAClientHelper(ZIA):
     def __init__(self, module):
         if not HAS_ZSCALER:
-            module.fail_json(msg="The 'zscaler' library is required for this module.", exception=ZSCALER_IMPORT_ERROR)
+            module.fail_json(
+                msg="The 'zscaler' library is required for this module.",
+                exception=ZSCALER_IMPORT_ERROR,
+            )
 
         self.connection_helper = ConnectionHelper(min_sdk_version=(0, 1, 0))
         provider = module.params.get("provider") or {}

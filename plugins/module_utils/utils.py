@@ -29,6 +29,7 @@ from ansible.module_utils.basic import missing_required_lib
 
 try:
     from netaddr import IPAddress, AddrFormatError
+
     HAS_NETADDR = True
     ADDR_IMPORT_ERROR = None  # Set to None when import is successful
 except ImportError:
@@ -105,7 +106,9 @@ def diff_suppress_func_coordinate(old, new):
 
 def is_valid_ipv4_or_range(value):
     if not HAS_NETADDR:
-        raise ImportError(ADDR_IMPORT_ERROR)  # Raise the captured ImportError if netaddr is missing
+        raise ImportError(
+            ADDR_IMPORT_ERROR
+        )  # Raise the captured ImportError if netaddr is missing
 
     try:
         if "-" in value:  # If it's a range

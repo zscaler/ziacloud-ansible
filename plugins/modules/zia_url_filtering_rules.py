@@ -368,23 +368,34 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 try:
     import pytz
+
     HAS_PYTZ = True
     PYTZ_IMPORT_ERROR = None  # Explicitly set to None when import is successful
 except ImportError:
     pytz = None  # Set to None to indicate the module is unavailable
     HAS_PYTZ = False
-    PYTZ_IMPORT_ERROR = missing_required_lib("pytz")  # Use missing_required_lib for better error messages
+    PYTZ_IMPORT_ERROR = missing_required_lib(
+        "pytz"
+    )  # Use missing_required_lib for better error messages
 
 
 def validate_and_convert_time_fields(rule):
     if not HAS_PYTZ:
-        raise ImportError(PYTZ_IMPORT_ERROR)  # Properly handle the case where pytz is not available
+        raise ImportError(
+            PYTZ_IMPORT_ERROR
+        )  # Properly handle the case where pytz is not available
 
     enforce_time_validity = rule.get("enforce_time_validity")
     if enforce_time_validity:
-        for field in ["validity_start_time", "validity_end_time", "validity_time_zone_id"]:
+        for field in [
+            "validity_start_time",
+            "validity_end_time",
+            "validity_time_zone_id",
+        ]:
             if not rule.get(field):
-                raise ValueError(f"'{field}' must be set when 'enforce_time_validity' is True")
+                raise ValueError(
+                    f"'{field}' must be set when 'enforce_time_validity' is True"
+                )
 
         timezone_id = rule["validity_time_zone_id"]
         if timezone_id not in pytz.all_timezones:
@@ -816,7 +827,10 @@ def main():
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
     if not HAS_PYTZ:
-        module.fail_json(msg="The 'pytz' library is required by this module.", exception=PYTZ_IMPORT_ERROR)
+        module.fail_json(
+            msg="The 'pytz' library is required by this module.",
+            exception=PYTZ_IMPORT_ERROR,
+        )
 
     try:
         core(module)

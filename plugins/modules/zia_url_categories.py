@@ -227,7 +227,7 @@ def core(module):
         "ip_ranges_retaining_parent_category",
         "scopes",
         "type",
-        "editable"
+        "editable",
     ]
     for param_name in params:
         category[param_name] = module.params.get(param_name, None)
