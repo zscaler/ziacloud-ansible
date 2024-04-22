@@ -7,6 +7,6 @@ Module reference
 
 .. toctree::
    :glob:
-   :maxdepth: 1
+   :maxdepth: 2
 
-   docs/html/source/modules/*
+   modules/*
