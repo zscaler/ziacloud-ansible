@@ -39,23 +39,25 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-
+  - zscaler.ziacloud.fragments.documentation
   - zscaler.ziacloud.fragments.state
+
 options:
   urls:
     description:
         - URLs on the denylist for your organization. Allow up to 25000 URLs.
     type: list
     elements: str
-    required: false
+    required: true
   url_type:
     description:
       - The type of URL to be whitelisted or blacklisted.
     required: false
     type: str
+    default: whitelist
     choices:
-        - "whitelist"
-        - "blacklist"
+        - whitelist
+        - blacklist
 """
 
 EXAMPLES = r"""

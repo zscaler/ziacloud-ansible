@@ -39,11 +39,13 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
+  - zscaler.ziacloud.fragments.documentation
 
 options:
   profile_id:
     description: "The identifier (1-64) for the IDM template (i.e., IDM profile) that is unique within the organization"
     type: int
+    required: false
   profile_name:
     type: str
     required: false

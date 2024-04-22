@@ -38,15 +38,16 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
+  - zscaler.ziacloud.fragments.documentation
 
 options:
   start_ip_address:
     description: Starting IP address in the range
-    required: true
+    required: false
     type: str
   end_ip_address:
     description: Ending IP address in the range
-    required: true
+    required: false
     type: str
   internal_ip_range:
     description: Internal IP range information

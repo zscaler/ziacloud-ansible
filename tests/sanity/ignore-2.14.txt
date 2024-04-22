@@ -39,7 +39,6 @@ plugins/modules/zia_ip_source_anchoring_zpa_gateway_facts.py validate-modules:mi
 plugins/modules/zia_cloud_firewall_filtering_rule.py validate-modules:missing-gplv3-license
 plugins/modules/zia_cloud_firewall_network_services_groups_facts.py validate-modules:missing-gplv3-license
 plugins/modules/zia_sandbox_advanced_settings.py validate-modules:missing-gplv3-license
-plugins/modules/zia_forwarding_control_policy.py validate-modules:missing-gplv3-license
 plugins/modules/zia_authentication_settings.py validate-modules:missing-gplv3-license
 plugins/modules/zia_url_filtering_rule_facts.py validate-modules:missing-gplv3-license
 plugins/modules/zia_security_policy_settings.py validate-modules:missing-gplv3-license

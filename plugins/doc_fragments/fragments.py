@@ -33,22 +33,22 @@ class ModuleDocFragment(object):
 options:
     username:
         description:
-            - A string that contains the email ID of the API admin
+            - A string that contains the email ID of the API admin.
         required: true
         type: str
     password:
         description:
-            - A string that contains the password for the API admin
+            - A string that contains the password for the API admin.
         required: true
         type: str
     api_key:
         description:
-            - A string that contains the obfuscated API key
+            - A string that contains the obfuscated API key.
         required: true
         type: str
     cloud:
         description:
-            - The Zscaler cloud name was provisioned for your organization
+            - The Zscaler cloud name was provisioned for your organization.
         required: true
         type: str
         choices:
@@ -60,36 +60,41 @@ options:
             - zscalerbeta
             - zscalergov
             - zscalerten
+    sandbox_token:
+        description:
+            - A string that contains the Sandbox API Key.
+        type: str
+        required: false
 """
 
     PROVIDER = r"""
 options:
     provider:
         description:
-            - A dict object containing connection details.
-        required: true
+            - A dict object containing connection details. This is optional; credentials can also be provided directly at the top level.
         type: dict
+        required: False
         suboptions:
             username:
                 description:
-                    - A string that contains the email ID of the API admin
-                required: true
+                    - A string that contains the email ID of the API admin.
                 type: str
+                required: True
             password:
                 description:
-                    - A string that contains the password for the API admin
-                required: true
+                    - A string that contains the password for the API admin.
                 type: str
+                required: True
             api_key:
                 description:
-                    - A string that contains the obfuscated API key
-                required: true
+                    - A string that contains the obfuscated API key.
                 type: str
+                required: True
             cloud:
                 description:
-                    - The Zscaler cloud name was provisioned for your organization
-                required: true
+                    - The Zscaler cloud name was provisioned for your organization.
                 type: str
+                required: True
                 choices:
                     - zscloud
                     - zscaler
@@ -99,30 +104,35 @@ options:
                     - zscalerbeta
                     - zscalergov
                     - zscalerten
+            sandbox_token:
+                description:
+                    - A string that contains the Sandbox API Key.
+                type: str
+                required: False
 """
 
     STATE = r"""
-    options:
-        state:
-            description:
-                - The state.
-            type: str
-            default: present
-            choices:
-                - present
-                - absent
+options:
+    state:
+        description:
+            - Specifies the desired state of the resource.
+        type: str
+        default: present
+        choices:
+            - present
+            - absent
 """
 
     ENABLED_STATE = r"""
-    options:
-        state:
-            description:
-                - The state.
-            type: str
-            default: present
-            choices:
-                - present
-                - absent
-                - enabled
-                - disabled
+options:
+    state:
+        description:
+            - Specifies the desired state of the resource.
+        type: str
+        default: present
+        choices:
+            - present
+            - absent
+            - enabled
+            - disabled
 """

@@ -38,13 +38,14 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-
+  - zscaler.ziacloud.fragments.documentation
   - zscaler.ziacloud.fragments.state
+
 options:
   id:
     description: "Unique identifier of the static IP address that is associated to a GRE tunnel"
     type: int
-    required: False
+    required: false
   source_ip:
     description:
         - The source IP address of the GRE tunnel.
@@ -54,48 +55,34 @@ options:
     type: str
   comment:
     description: Additional information about this GRE tunnel
-    required: True
+    required: false
     type: str
   internal_ip_range:
     description: The start of the internal IP address in /29 CIDR range.
-    required: True
+    required: false
     type: str
   within_country:
     description: Restrict the data center virtual IP addresses (VIPs) only to those within the same country as the source IP address.
-    required: False
+    required: false
     type: bool
   ip_unnumbered:
     description: This is required to support the automated SD-WAN provisioning of GRE tunnels, when set to true gre_tun_ip and gre_tun_id are set to null
-    required: False
+    required: false
     type: bool
   sub_cloud:
     description: Restrict the data center virtual IP addresses (VIPs) only to those part of the subcloud
-    required: False
+    required: false
     type: str
-  primary_dest_vip:
-    type: list
-    elements: dict
-    required: False
+  primary_dest_vip_id:
     description: "The primary destination data center and virtual IP address (VIP) of the GRE tunnel"
-    suboptions:
-      id:
-        description: "Unique identifer of the GRE virtual IP address (VIP)"
-        type: str
-      virtual_ip:
-        description: "GRE cluster virtual IP address (VIP)"
-        type: str
-  secondary_dest_vip:
     type: list
-    elements: dict
-    required: False
+    elements: str
+    required: false
+  secondary_dest_vip_id:
     description: "The secondary destination data center and virtual IP address (VIP) of the GRE tunnel"
-    suboptions:
-      id:
-        description: "Unique identifer of the GRE virtual IP address (VIP)"
-        type: str
-      virtual_ip:
-        description: "GRE cluster virtual IP address (VIP)"
-        type: str
+    type: list
+    elements: str
+    required: false
 """
 
 EXAMPLES = r"""

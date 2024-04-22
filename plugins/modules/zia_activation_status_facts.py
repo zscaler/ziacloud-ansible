@@ -46,6 +46,7 @@ requirements:
 
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
+  - zscaler.ziacloud.fragments.documentation
 
 options:
   status:
@@ -78,7 +79,7 @@ def core(module):
     activation_status = module.params.get("status", None)
     client = ZIAClientHelper(module)
 
-    current_activation_status = client.config.activate()
+    current_activation_status = client.activate.activate()
 
     # If specific status provided, check if it matches the current activation status
     if activation_status:

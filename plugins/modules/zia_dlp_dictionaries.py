@@ -39,8 +39,9 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-
+  - zscaler.ziacloud.fragments.documentation
   - zscaler.ziacloud.fragments.state
+
 options:
   id:
     description: "Unique identifier for the DLP dictionary"
@@ -152,36 +153,35 @@ options:
         description:
           - The EDM template's primary field.
       secondary_fields:
-        type: int
+        type: list
+        elements: int
         required: false
         description:
           - The EDM template's secondary fields.
       secondary_field_match_on:
-        type: str
+        type: list
+        elements: str
         required: false
         description:
           - The EDM secondary field to match on.
         choices:
-          - MATCHON_NONE, MATCHON_ANY_1, MATCHON_ANY_2, MATCHON_ANY_3, MATCHON_ANY_4
-          - MATCHON_ANY_5, MATCHON_ANY_6, MATCHON_ANY_7, MATCHON_ANY_8, MATCHON_ANY_9
-          - MATCHON_ANY_10, MATCHON_ANY_11, MATCHON_ANY_12, MATCHON_ANY_13, MATCHON_ANY_14
-          - MATCHON_ANY_15, MATCHON_ALL
-  hierarchical_identifiers:
-    description:
-        - The list of identifiers selected within a DLP dictionary of hierarchical type.
-        - Each identifier represents a sub-dictionary that consists of specific patterns.
-    required: false
-    type: str
-    choices:
-        - CRED_AMAZON_MWS_TOKEN, CRED_GIT_TOKEN, CRED_GITHUB_TOKEN, CRED_GOOGLE_API, CRED_GOOGLE_OAUTH_TOKEN,
-        - CRED_GOOGLE_OAUTH_ID, CRED_JWT_TOKEN, CRED_PAYPAL_TOKEN, CRED_PICATIC_API_KEY, CRED_PRIVATE_KEY,
-        - CRED_SENDGRID_API_KEY, CRED_SLACK_TOKEN, CRED_SLACK_WEBHOOK, CRED_SQUARE_ACCESS_TOKEN, CRED_SQUARE_OAUTH_SECRET,
-        - CRED_STRIPE_API_KEY, EUPP_AT, EUPP_BE, EUPP_BG, EUPP_CZ, EUPP_DK, EUPP_EE, EUPP_FL, EUPP_FR, EUPP_DE, EUPP_GR,
-        - EUPP_HU, EUPP_IE, EUPP_IT, EUPP_LV, EUPP_LU, EUPP_NL, EUPP_PL, EUPP_PT, EUPP_RO, EUPP_SK, EUPP_SI, EUPP_ES, EUPP_SE,
-        - USDL_AL, USDL_AK, USDL_AZ, USDL_AR, USDL_CA, USDL_CO, USDL_CT, USDL_DE, USDL_DC, USDL_FL, USDL_GA, USDL_HI, USDL_ID,
-        - USDL_IL, USDL_IN, USDL_IA, USDL_KS, USDL_KY, USDL_LA, USDL_ME, USDL_MD, USDL_MA, USDL_MI, USDL_MN, USDL_MS, USDL_MO,
-        - USDL_MT, USDL_NE, USDL_NV, USDL_NH, USDL_NJ, USDL_NM, USDL_NY, USDL_NC, USDL_ND, USDL_OH, USDL_OK, USDL_OR, USDL_PA,
-        - USDL_RI, USDL_SC, USDL_SD, USDL_TN, USDL_TX, USDL_UT, USDL_VT, USDL_VA, USDL_WA, USDL_WV, USDL_WI, USDL_WY
+          - MATCHON_NONE
+          - MATCHON_ANY_1
+          - MATCHON_ANY_2
+          - MATCHON_ANY_3
+          - MATCHON_ANY_4
+          - MATCHON_ANY_5
+          - MATCHON_ANY_6
+          - MATCHON_ANY_7
+          - MATCHON_ANY_8
+          - MATCHON_ANY_9
+          - MATCHON_ANY_10
+          - MATCHON_ANY_11
+          - MATCHON_ANY_12
+          - MATCHON_ANY_13
+          - MATCHON_ANY_14
+          - MATCHON_ANY_15
+          - MATCHON_ALL
   idm_profile_match_accuracy:
     type: list
     elements: dict
@@ -190,7 +190,8 @@ options:
     required: false
     suboptions:
       adp_idm_profile:
-        type: int
+        type: list
+        elements: int
         required: false
         description:
           - The IDM template reference.
@@ -313,7 +314,6 @@ def core(module):
         "exact_data_match_details",
         "idm_profile_match_accuracy",
         "ignore_exact_match_idm_dict",
-        "hierarchical_identifiers",
         "include_bin_numbers",
         "bin_numbers",
         "dict_template_id",
@@ -384,7 +384,7 @@ def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     id_spec = dict(
         type="list",
-        elements="str",
+        elements="int",
         required=False,
     )
     argument_spec.update(
@@ -456,9 +456,10 @@ def main():
                 dictionary_edm_mapping_id=dict(type="int", required=False),
                 schema_id=dict(type="int", required=False),
                 primary_field=dict(type="int", required=False),
-                secondary_fields=dict(type="list", elements="str", required=False),
+                secondary_fields=dict(type="list", elements="int", required=False),
                 secondary_field_match_on=dict(
-                    type="str",
+                    type="list",
+                    elements="str",
                     required=False,
                     choices=[
                         "MATCHON_NONE",

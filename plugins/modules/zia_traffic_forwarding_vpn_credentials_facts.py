@@ -39,6 +39,7 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
+  - zscaler.ziacloud.fragments.documentation
 
 options:
   id:
@@ -50,7 +51,11 @@ options:
     description: "Fully Qualified Domain Name. Applicable only to UFQDN or XAUTH (or HOSTED_MOBILE_USERS) auth type."
     required: false
     type: str
-
+  ip_address:
+    description:
+        - This is a required field for IP auth type and is not applicable to other auth types.
+    required: false
+    type: str
 """
 
 EXAMPLES = r"""

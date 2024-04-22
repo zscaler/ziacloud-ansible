@@ -38,12 +38,13 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-
+  - zscaler.ziacloud.fragments.documentation
   - zscaler.ziacloud.fragments.state
+
 options:
   id:
     description: "The unique identifier for the DLP engine."
-    type: str
+    type: int
   name:
     description:
         - The DLP engine name as configured by the admin.
@@ -52,7 +53,7 @@ options:
     type: str
   description:
     description: "The DLP engine description."
-    required: true
+    required: false
     type: str
   engine_expression:
     description:
@@ -69,7 +70,7 @@ options:
     required: true
   custom_dlp_engine:
     description: "The DLP engine description."
-    required: true
+    required: false
     type: bool
 """
 
@@ -122,7 +123,6 @@ def core(module):
         "id",
         "name",
         "description",
-        "predefined_engine_name",
         "engine_expression",
         "custom_dlp_engine",
     ]
@@ -169,9 +169,6 @@ def core(module):
                         engine_id=existing_engine.get("id", ""),
                         name=existing_engine.get("name", ""),
                         description=existing_engine.get("description", ""),
-                        predefined_engine_name=existing_engine.get(
-                            "predefined_engine_name", ""
-                        ),
                         engine_expression=existing_engine.get("engine_expression", ""),
                         custom_dlp_engine=existing_engine.get("custom_dlp_engine", ""),
                     )
@@ -189,7 +186,6 @@ def core(module):
                 dict(
                     name=dlp_engine.get("name", ""),
                     description=dlp_engine.get("description", ""),
-                    predefined_engine_name=dlp_engine.get("predefined_engine_name", ""),
                     engine_expression=dlp_engine.get("engine_expression", ""),
                     custom_dlp_engine=dlp_engine.get("custom_dlp_engine", ""),
                 )
@@ -214,8 +210,7 @@ def main():
         id=dict(type="int", required=False),
         name=dict(type="str", required=True),
         description=dict(type="str", required=False),
-        predefined_engine_name=dict(type="str", required=False),
-        engine_expression=dict(type="str", required=False),
+        engine_expression=dict(type="str", required=True),
         custom_dlp_engine=dict(type="bool", required=False),
         state=dict(type="str", choices=["present", "absent"], default="present"),
     )

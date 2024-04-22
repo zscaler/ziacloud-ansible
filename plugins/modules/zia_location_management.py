@@ -39,7 +39,9 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
+  - zscaler.ziacloud.fragments.documentation
   - zscaler.ziacloud.fragments.state
+
 options:
   id:
     description: "Location ID"
@@ -89,7 +91,6 @@ options:
     description: "Enforce Authentication. Required when ports are enabled, IP Surrogate is enabled, or Kerberos Authentication is enabled."
     type: bool
     required: false
-    default: false
   ssl_scan_enabled:
     description:
       - "This parameter was deprecated and no longer has an effect on SSL policy."
@@ -99,7 +100,6 @@ options:
       - To Learn More, see Deploying SSL Inspection U(https://help.zscaler.com/zia/deploying-ssl-inspection)
     type: bool
     required: false
-    default: false
   zapp_ssl_scan_enabled:
     description:
       - "This parameter was deprecated and no longer has an effect on SSL policy."
@@ -109,7 +109,6 @@ options:
       - To Learn More, see Deploying SSL Inspection U(https://help.zscaler.com/z-app/configuring-ssl-inspection-zscaler-app#configure-SSL-Zscaler-App)
     type: bool
     required: false
-    default: false
   xff_forward_enabled:
     description:
       - "Enable XFF Forwarding for a location."
@@ -117,14 +116,12 @@ options:
       - "Note: For sublocations, this attribute is a read-only field as the value is inherited from the parent location."
     type: bool
     required: false
-    default: false
   surrogate_ip:
     description:
       - "Enable Surrogate IP. When set to true, users are mapped to internal device IP addresses."
       - "To Learn More, see Deploying SSL Inspection U(https://help.zscaler.com/zia/about-surrogate-ip)"
     type: bool
     required: false
-    default: false
   idle_time_in_minutes:
     description: "Idle Time to Disassociation. The user mapping idle time (in minutes) is required if a Surrogate IP is enabled."
     type: int
@@ -133,13 +130,16 @@ options:
     description: "Display Time Unit. The time unit to display for IP Surrogate idle time to disassociation."
     type: str
     required: false
+    choices:
+      - MINUTE
+      - HOUR
+      - DAY
   surrogate_ip_enforced_for_known_browsers:
     description:
       - "Enforce Surrogate IP for Known Browsers. When set to true, IP Surrogate is enforced for all known browsers."
       - "To Learn More, see Deploying SSL Inspection U(https://help.zscaler.com/zia/about-surrogate-ip)"
     type: bool
     required: false
-    default: false
   surrogate_refresh_time_in_minutes:
     description:
       - "Refresh Time for re-validation of Surrogacy."
@@ -153,47 +153,41 @@ options:
     type: str
     required: false
     choices:
-      - 'MINUTE'
-      - 'HOUR'
-      - 'DAY'
+      - MINUTE
+      - HOUR
+      - DAY
   ofw_enabled:
     description: "Enable Firewall. When set to true, Firewall is enabled for the location."
     type: bool
     required: false
-    default: false
   ips_control:
     description: "Enable IPS Control. When set to true, IPS Control is enabled for the location if Firewall is enabled."
     type: bool
     required: false
-    default: false
   aup_enabled:
     description:
       - "Enable AUP. When set to true, AUP is enabled for the location."
       - "To Learn More, see Deploying SSL Inspection U(https://help.zscaler.com/zia/about-end-user-notifications)"
     type: bool
     required: false
-    default: false
   caution_enabled:
     description:
       - "Enable Caution. When set to true, a caution notifcation is enabled for the location."
       - "To Learn More, see Deploying SSL Inspection U(https://help.zscaler.com/zia/configuring-caution-notification#caution-interval)"
     type: bool
     required: false
-    default: false
   aup_block_internet_until_accepted:
     description:
       - "For First Time AUP Behavior, Block Internet Access."
       - "When set, all internet access (including non-HTTP traffic) is disabled until the user accepts the AUP."
     type: bool
     required: false
-    default: false
   aup_force_ssl_inspection:
     description:
       - "For First Time AUP Behavior, Force SSL Inspection."
       - "When set, Zscaler forces SSL Inspection in order to enforce AUP for HTTPS traffic."
     type: bool
     required: false
-    default: false
   aup_timeout_in_days:
     description: "Custom AUP Frequency. Refresh time (in days) to re-validate the AUP."
     type: int
@@ -249,8 +243,8 @@ options:
 """
 
 EXAMPLES = """
-- name: Create/Update/Delete Location.
-  zscaler.ziacloud.zia_location_management:
+- name: Create UFQDN VPN Credential.
+  zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials:
     type: "UFQDN"
     fqdn: "usa_sjc37@acme.com"
     comments: "Created via Ansible"
@@ -363,7 +357,6 @@ def normalize_vpn_credentials(vpn_creds):
             "type": cred.get("type"),
             "fqdn": cred.get("fqdn"),
             "ip_address": cred.get("ip_address"),
-            "pre_shared_key": cred.get("pre_shared_key"),
         }
         normalized_creds.append(normalized_cred)
     return normalized_creds
@@ -376,18 +369,41 @@ def core(module):
 
     # Processing and adding VPN credentials to location_mgmt as before
     params = [
-        "id", "name", "parent_id", "up_bandwidth", "dn_bandwidth", "country", "tz",
-        "ip_addresses", "ports", "auth_required", "ssl_scan_enabled", "zapp_ssl_scan_enabled",
-        "xff_forward_enabled", "surrogate_ip", "idle_time_in_minutes", "display_time_unit",
-        "surrogate_ip_enforced_for_known_browsers", "surrogate_refresh_time_in_minutes",
-        "surrogate_refresh_time_unit", "ofw_enabled", "ips_control", "aup_enabled",
-        "caution_enabled", "aup_block_internet_until_accepted", "aup_force_ssl_inspection",
-        "aup_timeout_in_days", "profile", "description",
+        "id",
+        "name",
+        "parent_id",
+        "up_bandwidth",
+        "dn_bandwidth",
+        "country",
+        "tz",
+        "ip_addresses",
+        "ports",
+        "auth_required",
+        "ssl_scan_enabled",
+        "zapp_ssl_scan_enabled",
+        "xff_forward_enabled",
+        "surrogate_ip",
+        "idle_time_in_minutes",
+        "display_time_unit",
+        "surrogate_ip_enforced_for_known_browsers",
+        "surrogate_refresh_time_in_minutes",
+        "surrogate_refresh_time_unit",
+        "ofw_enabled",
+        "ips_control",
+        "aup_enabled",
+        "caution_enabled",
+        "aup_block_internet_until_accepted",
+        "aup_force_ssl_inspection",
+        "aup_timeout_in_days",
+        "profile",
+        "description",
     ]
     for param_name in params:
         location_mgmt[param_name] = module.params.get(param_name, None)
 
-    location_mgmt["vpn_credentials"] = normalize_vpn_credentials(module.params.get("vpn_credentials", []))
+    location_mgmt["vpn_credentials"] = normalize_vpn_credentials(
+        module.params.get("vpn_credentials", [])
+    )
 
     validate_location_mgmt(location_mgmt)
 
@@ -408,7 +424,9 @@ def core(module):
     if location_id is not None:
         existing_location_mgmt = client.locations.get_location(location_id=location_id)
     elif location_name is not None:
-        existing_location_mgmt = client.locations.get_location(location_name=location_name)
+        existing_location_mgmt = client.locations.get_location(
+            location_name=location_name
+        )
 
     # Normalize and compare existing and desired data
     desired_location = normalize_location(location_mgmt)
@@ -439,13 +457,17 @@ def core(module):
 
     if state == "present":
         if existing_location_mgmt:
-            location_id = existing_location_mgmt.get("id")  # Ensure we have the location ID
+            location_id = existing_location_mgmt.get(
+                "id"
+            )  # Ensure we have the location ID
             if location_id and differences_detected:
                 # Include location_id in the update call
                 update_location = deleteNone(desired_location)
                 module.warn("Payload Update for SDK: {}".format(update_location))
                 try:
-                    updated_location = client.locations.update_location(location_id, **update_location).to_dict()
+                    updated_location = client.locations.update_location(
+                        location_id, **update_location
+                    ).to_dict()
                     module.exit_json(changed=True, data=updated_location)
                 except Exception as e:
                     module.fail_json(msg="Failed to update location: {}".format(str(e)))
@@ -524,7 +546,6 @@ def main():
                 type=dict(type="str", default="UFQDN", choices=["UFQDN", "IP"]),
                 fqdn=dict(type="str", required=False),
                 ip_address=dict(type="str", required=False),
-                pre_shared_key=dict(type="str", required=False),
             ),
             required=False,
         ),

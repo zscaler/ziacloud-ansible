@@ -38,16 +38,18 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
+  - zscaler.ziacloud.fragments.documentation
 
 options:
   id:
     description:
         - The universally unique identifier (UUID) for the browser isolation profile.
     type: str
+    required: false
   name:
     description:
         - Name of the browser isolation profile.
-    required: true
+    required: false
     type: str
 """
 

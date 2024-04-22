@@ -20,7 +20,7 @@
       ansible.builtin.include_tasks: "{{ item }}"
       loop:
         # - targets/zia_cloud_firewall_filtering_rule/tasks/main.yml
-        # - targets/zia_cloud_firewall_ip_destination_groups/tasks/main.yml
+        - targets/zia_cloud_firewall_ip_destination_groups/tasks/main.yml
         # - targets/zia_cloud_firewall_ip_source_groups/tasks/main.yml
         # - targets/zia_cloud_firewall_network_services_groups/tasks/main.yml
         # - targets/zia_cloud_firewall_network_services/tasks/main.yml
@@ -32,7 +32,7 @@
         # - targets/zia_traffic_forwarding_static_ip/tasks/main.yml
         # - targets/zia_traffic_forwarding_vpn_credentials/tasks/main.yml
         # - targets/zia_traffic_forwarding_gre_tunnels/tasks/main.yml
-        - targets/zia_location_management/tasks/main.yml
+        # - targets/zia_location_management/tasks/main.yml
         # - targets/zia_dlp_dictionaries/tasks/main.yml
         # - targets/zia_dlp_engines/tasks/main.yml
         # - targets/zia_dlp_icap_server_facts/tasks/main.yml

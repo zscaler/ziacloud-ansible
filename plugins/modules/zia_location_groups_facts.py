@@ -39,11 +39,13 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
+  - zscaler.ziacloud.fragments.documentation
 
 options:
   id:
     description: "Unique identifier for the location group"
     type: int
+    required: false
   name:
     description: "Location group name"
     required: false

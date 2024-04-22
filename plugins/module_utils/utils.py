@@ -25,7 +25,16 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-from netaddr import IPAddress, AddrFormatError
+from ansible.module_utils.basic import missing_required_lib
+
+try:
+    from netaddr import IPAddress, AddrFormatError
+    HAS_NETADDR = True
+    ADDR_IMPORT_ERROR = None  # Set to None when import is successful
+except ImportError:
+    IPAddress = None  # Setting to None to indicate unavailability
+    HAS_NETADDR = False
+    ADDR_IMPORT_ERROR = missing_required_lib("netaddr")  # Store the error for reporting
 
 
 def validate_iso3166_alpha2(country_code):
@@ -95,6 +104,9 @@ def diff_suppress_func_coordinate(old, new):
 
 
 def is_valid_ipv4_or_range(value):
+    if not HAS_NETADDR:
+        raise ImportError(ADDR_IMPORT_ERROR)  # Raise the captured ImportError if netaddr is missing
+
     try:
         if "-" in value:  # If it's a range
             start_ip, end_ip = value.split("-")

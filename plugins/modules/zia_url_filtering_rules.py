@@ -38,8 +38,10 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-
+  - zscaler.ziacloud.fragments.documentation
   - zscaler.ziacloud.fragments.state
+
+
 options:
   id:
     description: "Unique identifier for the URL Filtering policy rule"
@@ -53,15 +55,34 @@ options:
     description: "Additional information about the rule"
     required: false
     type: str
+  enabled:
+    description:
+        - Determines whether the URL Filtering rule is enabled or disabled
+    required: false
+    type: bool
   order:
     description: "Rule order number of the URL Filtering policy rule"
     required: true
     type: int
+  action:
+    description:
+      - Action taken when traffic matches rule criteria
+      - When the action is set to CAUTION the attribute request_methods accepts only the following values are CONNECT GET HEAD
+    required: false
+    type: str
+    choices:
+        - ANY
+        - BLOCK
+        - CAUTION
+        - ALLOW
+        - ISOLATE
+        - ICAP_RESPONSE
   protocols:
     description:
         - Protocol criteria
     required: false
-    type: str
+    type: list
+    elements: str
     choices:
         - SMRULEF_ZPA_BROKERS_RULE
         - ANY_RULE
@@ -82,25 +103,25 @@ options:
     description:
         - Name-ID pairs of locations for which rule must be applied
     type: list
-    elements: str
+    elements: int
     required: false
   groups:
     description:
         - Name-ID pairs of groups for which rule must be applied
     type: list
-    elements: str
+    elements: int
     required: false
   departments:
     description:
         - Name-ID pairs of departments for which rule will be applied
     type: list
-    elements: str
+    elements: int
     required: false
   users:
     description:
         - Name-ID pairs of users for which rule must be applied
     type: list
-    elements: str
+    elements: int
     required: false
   workload_groups:
     description: "The list of preconfigured workload groups to which the policy must be applied."
@@ -113,20 +134,27 @@ options:
     type: list
     elements: str
     required: false
-  enabled:
+  device_groups:
     description:
-        - Determines whether the URL Filtering rule is enabled or disabled
+      - Name-ID pairs of device groups for which the rule must be applied.
+      - This field is applicable for devices that are managed using Zscaler Client Connector.
+      - If no value is set, this field is ignored during the policy evaluation.
+    type: list
+    elements: int
     required: false
-    type: str
-    choices:
-        - DISABLED
-        - ENABLED
-    default: ENABLED
+  devices:
+    description:
+      - Name-ID pairs of devices for which rule must be applied.
+      - Specifies devices that are managed using Zscaler Client Connector.
+      - If no value is set, this field is ignored during the policy evaluation.
+    type: list
+    elements: int
+    required: false
   time_windows:
     description:
         - Name-ID pairs of time interval during which rule must be enforced.
     type: list
-    elements: str
+    elements: int
     required: false
   rank:
     description:
@@ -140,7 +168,7 @@ options:
         - If not set, rule will be applied to all methods"
     type: list
     elements: str
-    required: false
+    required: true
     choices:
         - OPTIONS
         - GET
@@ -151,6 +179,46 @@ options:
         - TRACE
         - CONNECT
         - OTHER
+  user_agent_types:
+    description:
+        - Any number of user agents to which the rule applies.
+    type: list
+    elements: str
+    required: false
+    choices:
+        - OPERA
+        - FIREFOX
+        - MSIE
+        - MSEDGE
+        - CHROME
+        - SAFARI
+        - OTHER
+        - MSCHREDGE
+  user_risk_score_levels:
+    description: Indicates the user risk level selected for the DLP rule violation.
+    required: false
+    type: list
+    elements: str
+    choices:
+        - LOW
+        - MEDIUM
+        - HIGH
+        - CRITICAL
+  device_trust_levels:
+    description:
+        - List of device trust levels for which the rule must be applied.
+        - This field is applicable for devices that are managed using Zscaler Client Connector.
+        - The trust levels are assigned to the devices based on your posture configurations.
+        - If no value is set, this field is ignored during the policy evaluation.
+    type: list
+    elements: str
+    required: false
+    choices:
+        - ANY
+        - UNKNOWN_DEVICETRUSTLEVEL
+        - LOW_TRUST
+        - MEDIUM_TRUST
+        - HIGH_TRUST
   end_user_notification_url:
     description:
       - URL of end user notification page to be displayed when the rule is matched.
@@ -163,7 +231,7 @@ options:
         - Applicable only if block_override is set to true, action is BLOCK and override_groups is not set.
         - If this override_users is not set, BLOCK action can be overridden for any user.
     type: list
-    elements: str
+    elements: int
     required: false
   override_groups:
     description:
@@ -171,7 +239,7 @@ options:
         - Applicable only if block_override is set to true and action is BLOCK.
         - If this override_groups is not set, BLOCK action can be overridden for any group.
     type: list
-    elements: str
+    elements: int
     required: false
   block_override:
     description:
@@ -180,7 +248,6 @@ options:
         - If block_override is not set, BLOCK action cannot be overridden.
     type: bool
     required: false
-    default: false
   time_quota:
     description:
         - Action must be set to CAUTION
@@ -201,25 +268,29 @@ options:
     description:
         - Name-ID pairs of the location groups to which the rule must be applied.
     type: list
-    elements: str
+    elements: int
     required: false
   labels:
     description:
         - The URL Filtering rule label. Rule labels allow you to logically group your organization policy rules.
         - Policy rules that are not associated with a rule label are grouped under the Untagged label.
     type: list
-    elements: str
+    elements: int
     required: false
   enforce_time_validity:
     description:
         - Enforce a set a validity time period for the URL Filtering rule.
     type: bool
-    default: false
   validity_start_time:
     description:
       - If enforce_time_validity is set to true, the URL Filtering rule will be valid starting on this date and time.
       - Example ( 11/20/2023 11:59 PM )
       - Notice that validity_start_time cannot be in the past
+    required: false
+    type: str
+  validity_time_zone_id:
+    description:
+      - If enforceTimeValidity is set to true, the URL Filtering rule date and time is valid based on this time zone ID.
     required: false
     type: str
   validity_end_time:
@@ -228,19 +299,6 @@ options:
       - Example ( 12/21/2023 12:00 AM )
     required: false
     type: str
-  action:
-    description:
-      - Action taken when traffic matches rule criteria
-      - When the action is set to CAUTION the attribute request_methods accepts only the following values are CONNECT GET HEAD
-    required: false
-    type: str
-    choices:
-        - ANY
-        - NONE
-        - BLOCK
-        - CAUTION
-        - ALLOW
-        - ICAP_RESPONSE
   cipa_rule:
     description:
         - If set to true, the CIPA Compliance rule is enabled
@@ -297,11 +355,10 @@ RETURN = r"""
 """
 
 import time
-import pytz
 from datetime import datetime
 from traceback import format_exc
 from ansible.module_utils._text import to_native
-from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.basic import AnsibleModule, missing_required_lib
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
     deleteNone,
 )
@@ -309,30 +366,30 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
     ZIAClientHelper,
 )
 
+try:
+    import pytz
+    HAS_PYTZ = True
+    PYTZ_IMPORT_ERROR = None  # Explicitly set to None when import is successful
+except ImportError:
+    pytz = None  # Set to None to indicate the module is unavailable
+    HAS_PYTZ = False
+    PYTZ_IMPORT_ERROR = missing_required_lib("pytz")  # Use missing_required_lib for better error messages
+
 
 def validate_and_convert_time_fields(rule):
-    """
-    Validate time-related fields and convert start and end times to epoch if enforce_time_validity is True.
-    """
+    if not HAS_PYTZ:
+        raise ImportError(PYTZ_IMPORT_ERROR)  # Properly handle the case where pytz is not available
+
     enforce_time_validity = rule.get("enforce_time_validity")
     if enforce_time_validity:
-        # Mandatory fields check
-        for field in [
-            "validity_start_time",
-            "validity_end_time",
-            "validity_time_zone_id",
-        ]:
+        for field in ["validity_start_time", "validity_end_time", "validity_time_zone_id"]:
             if not rule.get(field):
-                raise ValueError(
-                    f"'{field}' must be set when 'enforce_time_validity' is True"
-                )
+                raise ValueError(f"'{field}' must be set when 'enforce_time_validity' is True")
 
-        # Validate and convert time zone
         timezone_id = rule["validity_time_zone_id"]
         if timezone_id not in pytz.all_timezones:
             raise ValueError(f"Invalid timezone ID: {timezone_id}")
 
-        # Convert start and end times to epoch
         for time_field in ["validity_start_time", "validity_end_time"]:
             time_str = rule.get(time_field)
             if time_str:
@@ -646,7 +703,7 @@ def main():
         url=dict(type="str", required=True),
     )
     argument_spec.update(
-        id=dict(type="str", required=False),
+        id=dict(type="int", required=False),
         name=dict(type="str", required=True),
         description=dict(type="str", required=False),
         enabled=dict(type="bool", required=False),
@@ -677,12 +734,12 @@ def main():
         cbi_profile=dict(
             type="dict",
             options=id_name_url_dict_spec,
-            required=True,
+            required=False,
         ),
         action=dict(
             type="str",
             required=False,
-            choices=["BLOCK", "CAUTION", "ALLOW", "ISOLATE", "ICAP_RESPONSE"],
+            choices=["ANY", "BLOCK", "CAUTION", "ALLOW", "ISOLATE", "ICAP_RESPONSE"],
         ),
         protocols=dict(
             type="list",
@@ -725,7 +782,7 @@ def main():
         user_agent_types=dict(
             type="list",
             elements="str",
-            required=True,
+            required=False,
             choices=[
                 "OPERA",
                 "FIREFOX",
@@ -758,6 +815,9 @@ def main():
         state=dict(type="str", choices=["present", "absent"], default="present"),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+    if not HAS_PYTZ:
+        module.fail_json(msg="The 'pytz' library is required by this module.", exception=PYTZ_IMPORT_ERROR)
+
     try:
         core(module)
     except Exception as e:

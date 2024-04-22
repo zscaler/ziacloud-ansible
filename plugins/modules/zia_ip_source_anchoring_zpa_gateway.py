@@ -40,8 +40,9 @@ requirements:
   - Zscaler SDK Python (available on PyPI at https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-
+  - zscaler.ziacloud.fragments.documentation
   - zscaler.ziacloud.fragments.state
+
 options:
   id:
     description: "Unique identifier for the ZPA gateway."
@@ -56,10 +57,13 @@ options:
     required: false
     type: str
   type:
-    description: "Type of ZPA gateway. Choose 'ZPA' for Zscaler Internet Access or 'ECZPA' for Zscaler Cloud Connector."
+    description: "Type of ZPA gateway. Choose ZPA for Zscaler Internet Access or ECZPA for Zscaler Cloud Connector."
     required: false
     type: str
-    choices: [ZPA, ECZPA]
+    default: ZPA
+    choices:
+        - ZPA
+        - ECZPA
   zpa_server_group:
     description: "Server group associated with the ZPA gateway for source IP anchoring."
     required: true

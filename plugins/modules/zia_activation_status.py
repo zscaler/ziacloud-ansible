@@ -1,9 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2023 Zscaler Inc, <devrel@zscaler.com>
+# Copyright (c) 2023 Zscaler Technology Alliances, <zscaler-partner-labs@z-bd.com>
 
-#                             MIT License
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -33,13 +32,13 @@ short_description: "Activates the saved configuration changes."
 description: "Activates the saved configuration changes."
 author:
   - William Guilherme (@willguibr)
-version_added: "0.1.0"
+version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
+  - zscaler.ziacloud.fragments.documentation
 
-  - zscaler.ziacloud.fragments.state
 options:
   status:
     description:
@@ -47,7 +46,14 @@ options:
     required: true
     type: str
     choices:
-        - 'ACTIVE'
+        - ACTIVE
+
+  state:
+    description:
+        - Whether the certificate should be present or absent.
+    default: present
+    choices: ['present']
+    type: str
 """
 
 EXAMPLES = r"""
@@ -61,16 +67,24 @@ RETURN = r"""
 # Activates the saved configuration changes.
 """
 
-from traceback import format_exc
-
-from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    ZIAClientHelper
-)
+import traceback
+
+# Initialize the variable at the module level
+zia_client_import_error = None
+
+try:
+    from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+except ImportError as imp_exc:
+    ZIAClientHelper = None
+    zia_client_import_error = imp_exc
 
 
 def core(module):
+    if ZIAClientHelper is None:
+        module.fail_json(msg="Failed to import ZIAClientHelper: {}".format(zia_client_import_error))
+        return
+
     client = ZIAClientHelper(module)
 
     desired_status = module.params.get("status", None)
@@ -116,9 +130,9 @@ def core(module):
 
 
 def main():
-    argument_spec = ZIAClientHelper.zia_argument_spec()
+    argument_spec = ZIAClientHelper.zia_argument_spec() if ZIAClientHelper else {}
     argument_spec.update(
-        status=dict(type="str", choices=["ACTIVE"], required=False),
+        status=dict(type="str", choices=["ACTIVE"], required=True),
         state=dict(type="str", choices=["present"], default="present"),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
@@ -126,7 +140,7 @@ def main():
     try:
         core(module)
     except Exception as e:
-        module.fail_json(msg=to_native(e), exception=format_exc())
+        module.fail_json(msg="Unhandled exception: {}".format(e), exception=traceback.format_exc())
 
 
 if __name__ == "__main__":

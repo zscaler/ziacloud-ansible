@@ -40,8 +40,9 @@ requirements:
   - Zscaler SDK Python (obtainable from PyPI U(https://pypi.org/project/zscaler-sdk-python/))
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-
+  - zscaler.ziacloud.fragments.documentation
   - zscaler.ziacloud.fragments.state
+
 options:
   id:
     description:
@@ -56,22 +57,27 @@ options:
     description:
       - The subject line that is displayed within the DLP notification email.
     type: str
+    required: True
   attach_content:
     description:
       - If set to true, the content that triggered the violation is attached to the DLP notification email.
     type: bool
+    required: False
   plain_text_message:
     description:
       - The template for the plain text UTF-8 message body that is displayed in the DLP notification email.
     type: str
+    required: True
   html_message:
     description:
       - The template for the HTML message body that is displayed in the DLP notification email.
     type: str
+    required: True
   tls_enabled:
     description:
       - If set to true, enables TLS for the DLP notification template.
     type: bool
+    required: False
 """
 
 EXAMPLES = r"""

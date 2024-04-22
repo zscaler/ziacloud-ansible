@@ -38,8 +38,9 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-
+  - zscaler.ziacloud.fragments.documentation
   - zscaler.ziacloud.fragments.state
+
 options:
   id:
     description: "The unique identifier for the network service"
@@ -62,23 +63,73 @@ options:
         - PREDEFINED
         - CUSTOM
     default: STANDARD
-  is_name_l10n_tag:
-    description: ""
-    required: false
-    default: false
-    type: bool
   tag:
     description: "The network service tag"
     required: false
-    type: str
-    choices: [  'ICMP_ANY', 'UDP_ANY', 'TCP_ANY', 'OTHER_NETWORK_SERVICE', 'DNS', 'NETBIOS',
-                'FTP', 'GNUTELLA', 'H_323', 'HTTP', 'HTTPS', 'IKE', 'IMAP', 'ILS', 'IKE_NAT',
-                'IRC', 'LDAP', 'QUIC', 'TDS', 'NETMEETING', 'NFS', 'NTP', 'SIP', 'SNMP', 'SMB',
-                'SMTP', 'SSH', 'SYSLOG', 'TELNET', 'TRACEROUTE', 'POP3', 'PPTP', 'RADIUS', 'REAL_MEDIA',
-                'RTSP', 'VNC', 'WHOIS', 'KERBEROS_SEC', 'TACACS', 'SNMPTRAP', 'NMAP', 'RSYNC', 'L2TP',
-                'HTTP_PROXY', 'PC_ANYWHERE', 'MSN', 'ECHO', 'AIM', 'IDENT', 'YMSG', 'SCCP', 'MGCP_UA',
-                'MGCP_CA', 'VDO_LIVE', 'OPENVPN', 'TFTP', 'FTPS_IMPLICIT', 'ZSCALER_PROXY_NW_SERVICES',
-                'GRE_PROTOCOL', 'ESP_PROTOCOL, DHCP' ]
+    type: list
+    elements: str
+    choices:
+      - ICMP_ANY
+      - UDP_ANY
+      - TCP_ANY
+      - OTHER_NETWORK_SERVICE
+      - DNS
+      - NETBIOS
+      - FTP
+      - GNUTELLA
+      - H_323
+      - HTTP
+      - HTTPS
+      - IKE
+      - IMAP
+      - ILS
+      - IKE_NAT
+      - IRC
+      - LDAP
+      - QUIC
+      - TDS
+      - NETMEETING
+      - NFS
+      - NTP
+      - SIP
+      - SNMP
+      - SMB
+      - SMTP
+      - SSH
+      - SYSLOG
+      - TELNET
+      - TRACEROUTE
+      - POP3
+      - PPTP
+      - RADIUS
+      - REAL_MEDIA
+      - RTSP
+      - VNC
+      - WHOIS
+      - KERBEROS_SEC
+      - TACACS
+      - SNMPTRAP
+      - NMAP
+      - RSYNC
+      - L2TP
+      - HTTP_PROXY
+      - PC_ANYWHERE
+      - MSN
+      - ECHO
+      - AIM
+      - IDENT
+      - YMSG
+      - SCCP
+      - MGCP_UA
+      - MGCP_CA
+      - VDO_LIVE
+      - OPENVPN
+      - TFTP
+      - FTPS_IMPLICIT
+      - ZSCALER_PROXY_NW_SERVICES
+      - GRE_PROTOCOL
+      - ESP_PROTOCOL
+      - DHCP
   src_tcp_ports:
     type: list
     elements: dict
@@ -215,7 +266,6 @@ def core(module):
         "dest_tcp_ports",
         "src_udp_ports",
         "dest_udp_ports",
-        "is_name_l10n_tag",
     ]
     for param_name in params:
         network_service[param_name] = module.params.get(param_name, None)
@@ -270,7 +320,6 @@ def core(module):
                 src_udp_ports=existing_network_service.get("src_udp_ports", ""),
                 dest_udp_ports=existing_network_service.get("dest_udp_ports", ""),
                 description=existing_network_service.get("description", ""),
-                is_name_l10n_tag=existing_network_service.get("is_name_l10n_tag", ""),
             ).to_dict()
             module.exit_json(changed=True, data=existing_network_service)
         else:
@@ -283,7 +332,6 @@ def core(module):
                 src_udp_ports=network_service.get("src_udp_ports", ""),
                 dest_udp_ports=network_service.get("dest_udp_ports", ""),
                 description=network_service.get("description", ""),
-                is_name_l10n_tag=network_service.get("is_name_l10n_tag", ""),
             ).to_dict()
             module.exit_json(changed=False, data=network_service)
     elif state == "absent":
@@ -303,7 +351,6 @@ def main():
         id=dict(type="int", required=False),
         name=dict(type="str", required=True),
         description=dict(type="str", required=False),
-        is_name_l10n_tag=dict(type="bool", default=False, required=False),
         type=dict(
             type="str",
             required=False,
@@ -345,6 +392,74 @@ def main():
                 end=dict(type="int", required=False),
             ),
             required=False,
+        ),
+        tag=dict(
+            type="list",
+            elements="str",
+            required=False,
+            choices=[
+                "ICMP_ANY",
+                "UDP_ANY",
+                "TCP_ANY",
+                "OTHER_NETWORK_SERVICE",
+                "DNS",
+                "NETBIOS",
+                "FTP",
+                "GNUTELLA",
+                "H_323",
+                "HTTP",
+                "HTTPS",
+                "IKE",
+                "IMAP",
+                "ILS",
+                "IKE_NAT",
+                "IRC",
+                "LDAP",
+                "QUIC",
+                "TDS",
+                "NETMEETING",
+                "NFS",
+                "NTP",
+                "SIP",
+                "SNMP",
+                "SMB",
+                "SMTP",
+                "SSH",
+                "SYSLOG",
+                "TELNET",
+                "TRACEROUTE",
+                "POP3",
+                "PPTP",
+                "RADIUS",
+                "REAL_MEDIA",
+                "RTSP",
+                "VNC",
+                "WHOIS",
+                "KERBEROS_SEC",
+                "TACACS",
+                "SNMPTRAP",
+                "NMAP",
+                "RSYNC",
+                "L2TP",
+                "HTTP_PROXY",
+                "PC_ANYWHERE",
+                "MSN",
+                "ECHO",
+                "AIM",
+                "IDENT",
+                "YMSG",
+                "SCCP",
+                "MGCP_UA",
+                "MGCP_CA",
+                "VDO_LIVE",
+                "OPENVPN",
+                "TFTP",
+                "FTPS_IMPLICIT",
+                "ZSCALER_PROXY_NW_SERVICES",
+                "GRE_PROTOCOL",
+                "ESP_PROTOCOL",
+                "DHCP",
+            ],
         ),
         state=dict(type="str", choices=["present", "absent"], default="present"),
     )

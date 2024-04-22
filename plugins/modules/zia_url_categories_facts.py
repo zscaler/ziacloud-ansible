@@ -38,6 +38,17 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
+  - zscaler.ziacloud.fragments.documentation
+
+options:
+  id:
+    description: URL category ID. See U(https://help.zscaler.com/zia/url-categories#/urlCategories-get)
+    required: false
+    type: str
+  configured_name:
+    description: "Name of the URL category. This is only required for custom URL categories."
+    required: false
+    type: str
 
 """
 

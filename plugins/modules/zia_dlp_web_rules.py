@@ -38,8 +38,9 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-
+  - zscaler.ziacloud.fragments.documentation
   - zscaler.ziacloud.fragments.state
+
 options:
   id:
     description: "The unique identifier for the DLP policy rule."
@@ -56,15 +57,30 @@ options:
     description: "The rule order of execution for the DLP policy rule with respect to other rules."
     required: true
     type: int
-  protocols:
-    description: "The protocol criteria specified for the DLP policy rule"
+  action:
+    description: "The action taken when traffic matches the DLP policy rule criteria."
     required: false
     type: str
     choices:
-        - "ANY_RULE"
-        - "FTP_RULE"
-        - "HTTPS_RULE"
-        - "HTTP_RULE"
+        - ANY
+        - BLOCK
+        - ALLOW
+        - ICAP_RESPONSE
+  enabled:
+    description:
+        - Enables or disables the DLP policy rule.
+    required: false
+    type: bool
+  protocols:
+    description: "The protocol criteria specified for the DLP policy rule"
+    required: false
+    type: list
+    elements: str
+    choices:
+        - ANY_RULE
+        - FTP_RULE
+        - HTTPS_RULE
+        - HTTP_RULE
   rank:
     description: "The admin rank of the admin who created the DLP policy rule."
     required: false
@@ -129,34 +145,17 @@ options:
   file_types:
     description: "The list of file types to which the DLP policy rule must be applied."
     required: false
-    type: str
+    type: list
+    elements: str
   cloud_applications:
     description: "The list of cloud applications to which the DLP policy rule must be applied."
     required: false
-    type: str
+    type: list
+    elements: str
   min_size:
     description: "The minimum file size (in KB) used for evaluation of the DLP policy rule.."
-    required: true
+    required: false
     type: int
-  action:
-    description: "The action taken when traffic matches the DLP policy rule criteria."
-    required: false
-    type: str
-    choices:
-        - "ANY"
-        - "NONE"
-        - "BLOCK"
-        - "ALLOW"
-        - "ICAP_RESPONSE"
-  enabled:
-    description:
-        - Enables or disables the DLP policy rule.
-    required: false
-    type: str
-    choices:
-        - DISABLED
-        - ENABLED
-    default: ENABLED
   time_windows:
     description: "The time windows to which the DLP policy rule must be applied."
     type: list
@@ -182,7 +181,7 @@ options:
     required: false
     type: bool
   icap_server:
-    description: "The DLP server, using ICAP, to which the transaction content is forwarded."
+    description: The DLP server using ICAP to which the transaction content is forwarded.
     type: list
     elements: int
     required: false
@@ -227,6 +226,16 @@ options:
         - RULE_SEVERITY_MEDIUM
         - RULE_SEVERITY_LOW
         - RULE_SEVERITY_INFO
+  user_risk_score_levels:
+    description: Indicates the user risk level selected for the DLP rule violation.
+    required: false
+    type: list
+    elements: str
+    choices:
+        - LOW
+        - MEDIUM
+        - HIGH
+        - CRITICAL
   sub_rules:
     description:
       - The list of exception rules added to a parent rule
@@ -240,6 +249,18 @@ options:
       - The unique identifier of the parent rule under which an exception rule is added.
     required: false
     type: int
+  dlp_download_scan_enabled:
+    description:
+      - If this field is set to true, DLP scan is enabled for file downloads from cloud applications configured in the rule.
+      - If this field is set to false, DLP scan is disabled for downloads from the cloud applications.
+    required: false
+    type: bool
+  zcc_notifications_enabled:
+    description:
+      - If this field is set to true, Zscaler Client Connector notification is enabled for the block action triggered by the web DLP rule.
+      - If this field is set to false, Zscaler Client Connector notification is disabled.
+    required: false
+    type: bool
 """
 
 EXAMPLES = r"""
@@ -392,7 +413,7 @@ def core(module):
 
     # Ensure file_types is a list of strings
     if rule.get("file_types"):
-        rule["file_types"] = [file_types for file_types in rule["file_types"]]
+        rule["file_types"] = list(rule["file_types"])
 
     rule_id = rule.get("id", None)
     rule_name = rule.get("name", None)
@@ -639,11 +660,11 @@ def main():
         required=False,
     )
     argument_spec.update(
-        id=dict(type="str", required=False),
+        id=dict(type="int", required=False),
         name=dict(type="str", required=True),
         description=dict(type="str", required=False),
         enabled=dict(type="bool", required=False),
-        order=dict(type="int", required=False),
+        order=dict(type="int", required=True),
         rank=dict(type="int", required=False, default=7),
         locations=id_spec,
         location_groups=id_spec,
@@ -661,8 +682,8 @@ def main():
         workload_groups=id_spec,
         include_domain_profiles=id_spec,
         exclude_domain_profiles=id_spec,
-        protocols=dict(type="list", elements="str", required=False),
-        url_categories=dict(type="list", elements="str", required=False),
+        protocols=dict(type="list", elements="str", required=False, choices=["ANY_RULE", "FTP_RULE", "HTTPS_RULE", "HTTP_RULE"]),
+        url_categories=dict(type="list", elements="int", required=False),
         cloud_applications=dict(type="list", elements="str", required=False),
         sub_rules=dict(type="list", elements="str", required=False),
         external_auditor_email=dict(type="str", required=False),
@@ -674,16 +695,11 @@ def main():
         zscaler_incident_receiver=dict(type="bool", required=False),
         zcc_notifications_enabled=dict(type="bool", required=False),
         dlp_download_scan_enabled=dict(type="bool", required=False),
-        icap_server=dict(
-            type="dict",
-            options=dict(id=dict(type="int", required=True)),
-            required=False,
-        ),
+        icap_server=dict(type="list", elements="int", required=False),
         action=dict(
             type="str",
             required=False,
-            default="NONE",
-            choices=["ANY", "NONE", "BLOCK", "ALLOW", "ICAP_RESPONSE"],
+            choices=["ANY", "BLOCK", "ALLOW", "ICAP_RESPONSE"],
         ),
         user_risk_score_levels=dict(
             type="list",
@@ -692,8 +708,7 @@ def main():
             choices=["LOW", "MEDIUM", "HIGH", "CRITICAL"],
         ),
         severity=dict(
-            type="list",
-            elements="str",
+            type="str",
             required=False,
             choices=[
                 "RULE_SEVERITY_HIGH",
@@ -706,90 +721,6 @@ def main():
             type="list",
             elements="str",
             required=False,
-            choices=[
-                "ALL_OUTBOUND",
-                "BITMAP",
-                "JPEG",
-                "PNG",
-                "TIFF",
-                "MSC",
-                "ASM",
-                "MATLAB_FILES",
-                "SAS",
-                "SCALA",
-                "BCP",
-                "TABLEAU_FILES",
-                "DELPHI",
-                "APPLE_DOCUMENTS",
-                "COMPILED_HTML_HELP",
-                "MS_RTF",
-                "MS_MDB",
-                "DMD",
-                "POWERSHELL",
-                "DAT",
-                "LOG_FILES",
-                "XAML",
-                "ACCDB",
-                "MAKE_FILES",
-                "JAVA_FILES",
-                "RUBY_FILES",
-                "MS_CPP_FILES",
-                "PERL_FILES",
-                "MS_EXCEL",
-                "BASH_SCRIPTS",
-                "MS_MSG",
-                "CHEMDRAW_FILES",
-                "PDF_DOCUMENT",
-                "F_FILES",
-                "APPX",
-                "INCLUDE_FILES",
-                "EML_FILES",
-                "SC",
-                "MS_WORD",
-                "QLIKVIEW_FILES",
-                "PYTHON",
-                "CP",
-                "RPY",
-                "FOR",
-                "INF",
-                "YAML_FILES",
-                "SHELL_SCRAP",
-                "VISUAL_BASIC_SCRIPT",
-                "BASIC_SOURCE_CODE",
-                "SCT",
-                "VISUAL_CPP_FILES",
-                "JAVASCRIPT",
-                "SCZIP",
-                "DSP",
-                "RES_FILES",
-                "AU3",
-                "MM",
-                "CSX",
-                "WINDOWS_META_FORMAT",
-                "OAB",
-                "TXT",
-                "CML",
-                "C_FILES",
-                "COBOL",
-                "RSP",
-                "TLI",
-                "VSDX",
-                "WINDOWS_SCRIPT_FILES",
-                "POSTSCRIPT",
-                "JAVA_APPLET",
-                "FORM_DATA_POST",
-                "TLH",
-                "MS_POWERPOINT",
-                "SQL",
-                "X1B",
-                "POD",
-                "GO_FILES",
-                "NATVIS",
-                "CSV",
-                "VISUAL_BASIC_FILES",
-                "BORLAND_CPP_FILES",
-                "IFC",
-            ],
         ),
         state=dict(type="str", choices=["present", "absent"], default="present"),
     )

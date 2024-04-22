@@ -39,15 +39,16 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
+  - zscaler.ziacloud.fragments.documentation
 
 options:
   id:
     description: "A unique identifier of the network services groups"
     required: false
-    type: str
+    type: int
   name:
     description: "The name of the network services groups"
-    required: true
+    required: false
     type: str
 """
 

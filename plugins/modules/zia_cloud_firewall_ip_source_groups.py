@@ -39,20 +39,21 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
-
+  - zscaler.ziacloud.fragments.documentation
   - zscaler.ziacloud.fragments.state
+
 options:
   id:
     description: "A unique identifier of the source IP address group"
     required: false
-    type: str
+    type: int
   name:
     description: "The name of the source IP address group"
     required: true
     type: str
   description:
     description: "The description of the source IP address group"
-    required: true
+    required: false
     type: str
   ip_addresses:
     description: "Source IP addresses added to the group"
