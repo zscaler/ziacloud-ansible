@@ -10,6 +10,8 @@ is a collection of modules that automate configuration and operational tasks on 
 This collection is part of the broader initiative to bring Ansible Automation to Zscaler Zero Trust Platform through the offering
 **Red Hat® Ansible Certified Content**.
 
+Version: 1.0.0
+
 Red Hat Ansible Certified Content for Zscaler
 =============================================
 **Red Hat® Ansible Certified Content for Zscaler Internet Access** provides the ability to
