@@ -1,6 +1,7 @@
 # Zscaler Internet Access (ZIA) Ansible Collection (Beta)
 
 [![Galaxy version](https://img.shields.io/badge/dynamic/json?style=flat&label=Galaxy&prefix=v&url=https://galaxy.ansible.com/api/v3/plugin/ansible/content/published/collections/index/zscaler/ziacloud/versions/?is_highest=true&query=data[0].version)](https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/)
+[![Ansible Lint](https://github.com/zscaler/ziacloud-ansible/actions/workflows/ansible-test-lint.yml/badge.svg?branch=master)](https://github.com/zscaler/ziacloud-ansible/actions/workflows/ansible-test-lint.yml)
 [![sanity](https://github.com/zscaler/ziacloud-ansible/actions/workflows/ansible-test-sanity.yml/badge.svg?branch=master)](https://github.com/zscaler/ziacloud-ansible/actions/workflows/ansible-test-sanity.yml)
 [![License](https://img.shields.io/github/license/zscaler/ziacloud-ansible?color=blue)](https://github.com/zscaler/ziacloud-ansible/v2/blob/master/LICENSE)
 [![docs passing](https://img.shields.io/readthedocs/ziacloud-ansible)](https://github.com/zscaler/ziacloud-ansible/actions/workflows/pages/pages-build-deployment)
