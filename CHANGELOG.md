@@ -1,3 +1,10 @@
+### [1.0.12](https://github.com/zscaler/ziacloud-ansible/compare/v1.0.11...v1.0.12) (2024-04-23)
+
+
+### Bug Fixes
+
+* Remoted Beta from README page ([658b30b](https://github.com/zscaler/ziacloud-ansible/commit/658b30baa1d1f6204de53c91aeb99f394788f79d))
+
 ### [1.0.11](https://github.com/zscaler/ziacloud-ansible/compare/v1.0.10...v1.0.11) (2024-04-23)
 
 
