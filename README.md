@@ -1,13 +1,14 @@
 # Zscaler Internet Access (ZIA) Ansible Collection (Beta)
 
-![Version on Galaxy](https://img.shields.io/badge/dynamic/json?style=flat&label=Ansible+Galaxy&prefix=v&url=https://galaxy.ansible.com/api/v2/collections/zscaler/ziacloud/&query=latest_version.version)
-[![integration](https://github.com/zscaler/ziacloud-ansible/actions/workflows/ansible-test-integration.yml/badge.svg?branch=master)](https://github.com/zscaler/ziacloud-ansible/actions/workflows/ansible-test-integration.yml)
+[![Galaxy version](https://img.shields.io/badge/dynamic/json?style=flat&label=Galaxy&prefix=v&url=https://galaxy.ansible.com/api/v3/plugin/ansible/content/published/collections/index/zscaler/ziacloud/versions/?is_highest=true&query=data[0].version)](https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/)
 [![sanity](https://github.com/zscaler/ziacloud-ansible/actions/workflows/ansible-test-sanity.yml/badge.svg?branch=master)](https://github.com/zscaler/ziacloud-ansible/actions/workflows/ansible-test-sanity.yml)
+[![License](https://img.shields.io/github/license/zscaler/ziacloud-ansible?color=blue)](https://github.com/zscaler/ziacloud-ansible/v2/blob/master/LICENSE)
 [![docs passing](https://img.shields.io/readthedocs/ziacloud-ansible)](https://github.com/zscaler/ziacloud-ansible/actions/workflows/pages/pages-build-deployment)
+[![Zscaler Community](https://img.shields.io/badge/zscaler-community-blue)](https://community.zscaler.com/)
 
 ## Zscaler Support
 
--> **Disclaimer:** Please refer to our [General Support Statement](/docs/support.md) before proceeding with the use of this collection. You can also refer to our [troubleshooting guide](/docs/troubleshooting.md) for guidance on typical problems.
+-> **Disclaimer:** Please refer to our [General Support Statement](https://zscaler.github.io/ziacloud-ansible/support.html) before proceeding with the use of this collection. You can also refer to our [troubleshooting guide](https://zscaler.github.io/ziacloud-ansible/troubleshooting.html) for guidance on typical problems.
 
 This collection contains modules and plugins to assist in automating the configuration and operational tasks on Zscaler Internet Access cloud, and API interactions with Ansible.
 
