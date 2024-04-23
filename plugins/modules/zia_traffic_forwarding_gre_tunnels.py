@@ -102,11 +102,11 @@ EXAMPLES = r"""
     ip_unnumbered: true
     within_country: true
     primary_dest_vip:
-        - id:
-          virtual_ip:
+      - id:
+        virtual_ip:
     secondary_dest_vip:
-        - id:
-          virtual_ip:
+      - id:
+        virtual_ip:
 """
 
 RETURN = r"""

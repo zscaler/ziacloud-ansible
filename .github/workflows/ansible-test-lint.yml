@@ -1,0 +1,35 @@
+name: Ansible Lint
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  schedule:
+    - cron: '0 14 * * 1-5' # UTC
+  workflow_dispatch:
+
+
+env:
+  NAMESPACE: zscaler
+  COLLECTION_NAME: ziacloud
+  PYTHON_VERSION: 3.8
+
+jobs:
+
+  # Ansible-lint is a requirement for certification, and was added to the
+  # certification pipeline 20 June 2023 per Ansible Partner Engineering
+  # communication emails
+  #
+  # Config file is .ansible-lint
+  lint:
+    name: Ansible Lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+      - name: Run ansible-lint
+        uses: ansible/ansible-lint@main

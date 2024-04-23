@@ -242,7 +242,7 @@ options:
         required: false
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Create UFQDN VPN Credential.
   zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials:
     type: "UFQDN"
@@ -265,8 +265,8 @@ EXAMPLES = """
     ofw_enabled: true
     ips_control: true
     vpn_credentials:
-        - id: "{{ vpn_credential_ufqdn.data.id }}"
-          type: "{{ vpn_credential_ufqdn.data.type }}"
+      - id: "{{ vpn_credential_ufqdn.data.id }}"
+        type: "{{ vpn_credential_ufqdn.data.type }}"
 
 # Create Location Management with VPN IP Type
 - name: Create/Update/Delete a Static IP.
@@ -303,9 +303,9 @@ EXAMPLES = """
     ips_control: true
     ip_addresses: "static_ip.data.ip_address"
     vpn_credentials:
-        - id: "{{ vpn_credential_ip.data.id }}"
-          type: "{{ vpn_credential_ip.data.type }}"
-          ip_address: "{{ vpn_credential_ip.data.ip_address }}"
+      - id: "{{ vpn_credential_ip.data.id }}"
+        type: "{{ vpn_credential_ip.data.type }}"
+        ip_address: "{{ vpn_credential_ip.data.ip_address }}"
 """
 
 RETURN = """

@@ -68,17 +68,17 @@ EXAMPLES = r"""
     provider: '{{ provider }}'
     name: "sampleNetworkApplicationGroup"
     network_applications:
-        - 'YAMMER'
-        - 'OFFICE365'
-        - 'SKYPE_FOR_BUSINESS'
-        - 'OUTLOOK'
-        - 'SHAREPOINT'
-        - 'SHAREPOINT_ADMIN'
-        - 'SHAREPOINT_BLOG'
-        - 'SHAREPOINT_CALENDAR'
-        - 'SHAREPOINT_DOCUMENT'
-        - 'SHAREPOINT_ONLINE'
-        - 'ONEDRIVE'
+      - 'YAMMER'
+      - 'OFFICE365'
+      - 'SKYPE_FOR_BUSINESS'
+      - 'OUTLOOK'
+      - 'SHAREPOINT'
+      - 'SHAREPOINT_ADMIN'
+      - 'SHAREPOINT_BLOG'
+      - 'SHAREPOINT_CALENDAR'
+      - 'SHAREPOINT_DOCUMENT'
+      - 'SHAREPOINT_ONLINE'
+      - 'ONEDRIVE'
 """
 
 RETURN = r"""

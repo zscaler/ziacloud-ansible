@@ -73,7 +73,6 @@ EXAMPLES = r"""
   zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_facts:
     provider: '{{ provider }}'
     id: 222
-
 """
 
 

@@ -68,7 +68,6 @@ EXAMPLES = r"""
   zscaler.ziacloud.zia_traffic_forwarding_gre_tunnel_facts:
     provider: '{{ provider }}'
     id: 82709
-
 """
 
 RETURN = r"""

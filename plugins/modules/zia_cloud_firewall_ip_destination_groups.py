@@ -100,14 +100,13 @@ options:
 """
 
 EXAMPLES = r"""
-
 - name: Create/Update/Delete ip destination group - DSTN_FQDN.
   zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups:
     provider: '{{ provider }}'
     name: "Example"
     description: "Example"
     type: "DSTN_FQDN"
-    addresses: [ "test1.acme.com", "test2.acme.com", "test3.acme.com" ]
+    addresses: ["test1.acme.com", "test2.acme.com", "test3.acme.com"]
 
 - name: Create/Update/Delete ip destination group - DSTN_IP by Country.
   zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups:
@@ -124,10 +123,11 @@ EXAMPLES = r"""
     name: "Example - IP Ranges"
     description: "Example - IP Ranges"
     type: "DSTN_IP"
-    addresses: [ "3.217.228.0-3.217.231.255",
-        "3.235.112.0-3.235.119.255",
-        "52.23.61.0-52.23.62.25",
-        "35.80.88.0-35.80.95.255" ]
+    addresses:
+      - "3.217.228.0-3.217.231.255"
+      - "3.235.112.0-3.235.119.255"
+      - "52.23.61.0-52.23.62.25"
+      - "35.80.88.0-35.80.95.255"
 """
 
 RETURN = r"""

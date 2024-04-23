@@ -159,23 +159,23 @@ EXAMPLES = r"""
     description: Example_Category
     type: URL_CATEGORY
     keywords:
-        - microsoft
+      - microsoft
     custom_category: true
     db_categorized_urls:
-        - .creditkarma.com
-        - .youku.com
+      - .creditkarma.com
+      - .youku.com
     urls:
-        - .coupons.com
-        - .resource.alaskaair.net
-        - .techrepublic.com
-        - .dailymotion.com
-        - .osiriscomm.com
-        - .uefa.com
-        - .Logz.io
-        - .alexa.com
-        - .baidu.com
-        - .cnn.com
-        - .level3.com
+      - .coupons.com
+      - .resource.alaskaair.net
+      - .techrepublic.com
+      - .dailymotion.com
+      - .osiriscomm.com
+      - .uefa.com
+      - .Logz.io
+      - .alexa.com
+      - .baidu.com
+      - .cnn.com
+      - .level3.com
 """
 
 RETURN = r"""

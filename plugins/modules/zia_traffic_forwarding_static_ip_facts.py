@@ -66,7 +66,6 @@ EXAMPLES = r"""
   zscaler.ziacloud.zia_traffic_forwarding_static_ip_facts:
     provider: '{{ provider }}'
     id: 82709
-
 """
 
 RETURN = r"""

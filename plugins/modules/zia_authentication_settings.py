@@ -51,14 +51,13 @@ options:
 """
 
 EXAMPLES = """
-
 - name: Create/Update/Delete URLs
   zscaler.ziacloud.zia_authentication_settings:
     urls:
-        - .okta.com
-        - .oktacdn.com
-        - .mtls.oktapreview.com
-        - .mtls.okta.com
+      - .okta.com
+      - .oktacdn.com
+      - .mtls.oktapreview.com
+      - .mtls.okta.com
 """
 
 RETURN = r"""

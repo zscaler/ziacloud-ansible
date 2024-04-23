@@ -48,7 +48,6 @@ plugins/modules/zia_dlp_web_rules.py validate-modules:missing-gplv3-license
 plugins/modules/zia_traffic_forwarding_gre_tunnel_facts.py validate-modules:missing-gplv3-license
 plugins/modules/zia_url_filtering_rules.py validate-modules:missing-gplv3-license
 plugins/modules/zia_url_categories_facts.py validate-modules:missing-gplv3-license
-plugins/modules/zia_forwarding_control_policy_facts.py validate-modules:missing-gplv3-license
 plugins/modules/zia_cloud_firewall_network_services_groups.py validate-modules:missing-gplv3-license
 plugins/modules/zia_activation_status.py validate-modules:missing-gplv3-license
 plugins/modules/zia_cloud_firewall_time_windows_facts.py validate-modules:missing-gplv3-license

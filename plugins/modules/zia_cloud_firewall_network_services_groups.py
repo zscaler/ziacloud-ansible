@@ -63,15 +63,13 @@ options:
 """
 
 EXAMPLES = r"""
-
 - name: Create/Update/Delete Network Services Groups.
   zscaler.ziacloud.zia_cloud_firewall_network_services_groups:
     provider: '{{ provider }}'
     name: "example"
     description: "example"
     services:
-        - name: [ "UDP_ANY", "TCP_ANY" ]
-
+      - name: ["UDP_ANY", "TCP_ANY"]
 """
 
 RETURN = r"""

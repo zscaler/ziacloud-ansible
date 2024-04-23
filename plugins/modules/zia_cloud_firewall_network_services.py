@@ -208,13 +208,12 @@ EXAMPLES = r"""
     name: "example"
     description: "example"
     src_tcp_ports:
-        - start: 5002
-          end: 5005
+      - start: 5002
+        end: 5005
     dest_tcp_ports:
-        - start: 5003
-          end: 5005
+      - start: 5003
+        end: 5005
     type: "CUSTOM"
-
 """
 
 RETURN = r"""

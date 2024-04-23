@@ -67,7 +67,7 @@ EXAMPLES = r"""
   zscaler.ziacloud.zia_sandbox_submission:
     provider: '{{ provider }}'
     file_path: "/path/to/malware.exe"
-    force: True
+    force: true
     inspection_mode: sandbox
 
 - name: Submit a file for analysis.
