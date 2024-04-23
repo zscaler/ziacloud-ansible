@@ -1,44 +1,50 @@
-name: Pages
+name: GitHub Pages
+
 on:
   push:
     branches:
-      - master
+      - master  # or main if your default branch is named main
 
-  # Run manually if needed
+  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
-  build:
+  build_and_deploy:
+    runs-on: ubuntu-latest
     permissions:
       contents: write
-    runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Build docs
-        uses: addnab/docker-run-action@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          registry: quay.io
-          image: quay.io/zscaler/ansible-doc-builder:latest
-          options: -v ${{ github.workspace }}:/usr/share/ansible/collections/ansible_collections/zscaler/ziacloud
-          run: /build.sh
+          python-version: '3.9'  # Ensure compatibility with your project requirements
 
-      - name: Commit files
+      - name: Install Dependencies
         run: |
-          cd html
+          python -m pip install --upgrade pip
+          pip install poetry
+          poetry install
+
+      - name: Generate Documentation
+        run: make docs
+
+      - name: Commit and Push Documentation
+        run: |
+          cd docs/html
           git init
           git add -A
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git commit -m "Updating gh-pages docs"
+          git commit -m "Update generated documentation"
+          git push --force ${{ secrets.GITHUB_TOKEN }} HEAD:gh-pages
 
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: gh-pages
-          force: true
-          directory: ./html
+      # Optional: Clean up to avoid actions cluttering the repo with generated files
+      - name: Clean up Generated Files
+        run: |
+          rm -rf docs/html
