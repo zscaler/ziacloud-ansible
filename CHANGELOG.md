@@ -1,3 +1,10 @@
+### [1.0.8](https://github.com/zscaler/ziacloud-ansible/compare/v1.0.7...v1.0.8) (2024-04-23)
+
+
+### Bug Fixes
+
+* Removed poetry from release.yml doc generation ([e0feb95](https://github.com/zscaler/ziacloud-ansible/commit/e0feb95affb02877cb2c8471dae9137f56d20ccf))
+
 ### [1.0.7](https://github.com/zscaler/ziacloud-ansible/compare/v1.0.6...v1.0.7) (2024-04-23)
 
 
