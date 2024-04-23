@@ -86,7 +86,7 @@ jobs:
 
   release:
     name: release
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     needs: [sanity, format]
     runs-on: ubuntu-latest
 
