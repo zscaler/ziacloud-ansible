@@ -67,7 +67,6 @@ docs:		## Build collection documentation
 	rm -rf antsibull
 	rm -f docs/source/modules/index.rst
 	cd docs && sphinx-build source html
-	open docs/html/index.html
 
 .PHONY: clean
 clean:		## Remove all auto-generated files
