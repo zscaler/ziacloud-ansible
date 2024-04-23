@@ -35,7 +35,7 @@ description:
   - It allows adding or removing hashes from the blocklist and ensures idempotency.
 author:
   - William Guilherme (@willguibr)
-version_added: "0.1.0"
+version_added: "1.0.0"
 requirements:
   - Zscaler SDK Python (obtainable from PyPI U(https://pypi.org/project/zscaler-sdk-python/))
 extends_documentation_fragment:

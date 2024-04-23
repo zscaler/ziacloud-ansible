@@ -33,7 +33,7 @@ short_description: "Gets all rules in the Forwarding Control policy."
 description: "Gets the list of forwarding rules configured in the ZIA Admin Portal."
 author:
   - William Guilherme (@willguibr)
-version_added: "0.1.0"
+version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:

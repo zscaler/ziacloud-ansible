@@ -177,8 +177,7 @@ def validate_location_mgmt(location_mgmt):
     # surrogate_refresh_time_unit must be set, and surrogate_refresh_time_in_minutes must be within 1 to 720
     if (
         surrogate_ip_enforced_for_known_browsers
-        and surrogate_refresh_time_in_minutes is not None
-    ):
+        and surrogate_refresh_time_in_minutes is not None):
         if surrogate_refresh_time_unit is None:
             raise ValueError(
                 "When 'surrogate_ip_enforced_for_known_browsers' and "

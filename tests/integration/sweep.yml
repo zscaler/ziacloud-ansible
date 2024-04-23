@@ -65,10 +65,10 @@
 
 - name: Print success message ✅
   ansible.builtin.debug:
-    msg: "Tenant sweep successfully completed!"
+    msg: Tenant sweep successfully completed!
   when: sweep_successful
 
 - name: Print failure message ❌
   ansible.builtin.debug:
-    msg: "Tenant sweep incomplete. Please check the above logs for errors."
+    msg: Tenant sweep incomplete. Please check the above logs for errors.
   when: not sweep_successful

@@ -35,7 +35,7 @@ description:
   - "It allows for the configuration of server groups and application segments for source IP anchoring."
 author:
   - William Guilherme (@willguibr)
-version_added: "0.1.0"
+version_added: "1.0.0"
 requirements:
   - Zscaler SDK Python (available on PyPI at https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:

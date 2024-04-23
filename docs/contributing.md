@@ -30,7 +30,7 @@ If you are proposing a feature:
 
 - Explain in detail how it would work.
 - Keep the scope as narrow as possible, to make it easier to implement.
-- Remember that this is a volunteer-driven project, and that contributions 
+- Remember that this is a volunteer-driven project, and that contributions
   are welcome :)
 
 ## Get Started!
@@ -73,7 +73,7 @@ $ git clone https://github.com/your-username/pan-os-ansible.git ansible_collecti
 ```
 $ mkdir playbooks
 $ echo "[defaults]\ncollections_paths = .." > playbooks/ansible.cfg
-``` 
+```
 
 5. Create a branch for local development
 

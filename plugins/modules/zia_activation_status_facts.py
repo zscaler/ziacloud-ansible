@@ -31,7 +31,7 @@ DOCUMENTATION = """
 ---
 module: zia_activation_status_facts
 
-version_added: "0.1.0"
+version_added: "1.0.0"
 
 short_description: Gets the activation status
 

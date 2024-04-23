@@ -34,7 +34,7 @@ description:
   - This module allows for the management of Zscaler Internet Access (ZIA) Data Loss Prevention (DLP) Notification Templates.
   - It supports the creation, updating, and deletion of DLP Notification Templates.
   - It allows for the customization of the subject line, message body (both plain text and HTML), and various other settings related to DLP notifications.
-version_added: "0.1.0"
+version_added: "1.0.0"
 author: William Guilherme (@willguibr)
 requirements:
   - Zscaler SDK Python (obtainable from PyPI U(https://pypi.org/project/zscaler-sdk-python/))

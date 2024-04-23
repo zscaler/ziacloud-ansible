@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ziacloud-ansible"
-version = "0.1.0"
+version = "1.0.0"
 description = "Ansible collection for Zscaler Internet Access"
 authors = ["Zscaler Technology Alliances <devrel@zscaler.com>"]
 license = "MIT"

@@ -33,7 +33,7 @@ short_description: "Gets the GRE tunnel information for the specified ID.D"
 description: "Gets the GRE tunnel information for the specified ID."
 author:
   - William Guilherme (@willguibr)
-version_added: "0.1.0"
+version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 extends_documentation_fragment:

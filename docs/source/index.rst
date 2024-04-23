@@ -100,7 +100,7 @@ Credits
 
 Support
 =======
-As of version 0.1.0, this Collection of Ansible Modules for Zscaler Internet Access is
+As of version 1.0.0, this Collection of Ansible Modules for Zscaler Internet Access is
 `certified on Ansible Automation Hub <https://console.redhat.com/ansible/automation-hub/repo/published/zscaler/ziacloud>`_,
 and officially supported for Ansible subscribers. Ansible subscribers can engage
 for support through their usual route towards Red Hat.

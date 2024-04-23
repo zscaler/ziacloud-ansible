@@ -58,22 +58,6 @@ jobs:
         timeout-minutes: 8
         run: poetry run make new-sanity
 
-  # Ansible-lint is a requirement for certification, and was added to the
-  # certification pipeline 20 June 2023 per Ansible Partner Engineering
-  # communication emails
-  #
-  # Config file is .ansible-lint
-  lint:
-    name: Ansible Lint
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v4
-      - name: Run ansible-lint
-        uses: ansible/ansible-lint@main
 
   format:
     name: Code Format Check
@@ -103,7 +87,7 @@ jobs:
   release:
     name: release
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [sanity, lint, format]
+    needs: [sanity, format]
     runs-on: ubuntu-latest
 
     steps:

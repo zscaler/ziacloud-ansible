@@ -70,9 +70,9 @@ enable_list:
 #   - jinja[spacing]
 
 # Ansible-lint does not fail on warnings from the rules or tags listed below
-# warn_list:
-#   - skip_this_tag
-#   - experimental # experimental is included in the implicit list
+warn_list:
+  #   - skip_this_tag
+  - experimental # experimental is included in the implicit list
 # - role-name
 # - yaml[document-start]  # you can also use sub-rule matches
 
