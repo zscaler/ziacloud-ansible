@@ -1,3 +1,11 @@
+### [1.0.11](https://github.com/zscaler/ziacloud-ansible/compare/v1.0.10...v1.0.11) (2024-04-23)
+
+
+### Bug Fixes
+
+* Fixed linter workflow and documentation ([45f0f98](https://github.com/zscaler/ziacloud-ansible/commit/45f0f98fe6e6eebfb83dab7775c847d845ede585))
+* Fixed linter workflow and documentation ([093c9ad](https://github.com/zscaler/ziacloud-ansible/commit/093c9add9409b85d17c971346b61f8cd507604ae))
+
 ### [1.0.10](https://github.com/zscaler/ziacloud-ansible/compare/v1.0.9...v1.0.10) (2024-04-23)
 
 
