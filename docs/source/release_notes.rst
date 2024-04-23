@@ -29,7 +29,7 @@ Availability
    https://github.com/zscaler/ziacloud-ansible
 
 .. _Galaxy:
-   https://galaxy.ansible.com/zscaler/ziacloud-ansible
+   https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/
 
 .. _Automation Hub:
    https://www.ansible.com/products/automation-hub
