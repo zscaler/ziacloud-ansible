@@ -29,9 +29,9 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
+import platform
 from ansible.module_utils.basic import missing_required_lib, env_fallback
 from ansible.module_utils import ansible_release
-import platform
 
 try:
     from zscaler.zia import ZIAClientHelper as ZIA
@@ -107,7 +107,7 @@ class ZIAClientHelper(ZIA):
                 options=dict(
                     username=dict(
                         no_log=False,
-                        required=True,  # Not required at the provider level if they are provided at the top level
+                        required=True,
                         fallback=(env_fallback, ["ZIA_USERNAME"]),
                         type="str",
                     ),

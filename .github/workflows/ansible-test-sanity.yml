@@ -4,8 +4,8 @@ on:
   push:
     branches: [master]
   pull_request:
-  #schedule:
-  #  - cron: '0 6 * * *'
+  schedule:
+   - cron: '0 14 * * 1-5'
 
 env:
   NAMESPACE: zscaler
