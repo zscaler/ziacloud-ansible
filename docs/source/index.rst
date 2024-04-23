@@ -62,7 +62,6 @@ contributed by the **Zscaler's Technology Alliances** team.
    :maxdepth: 1
    :caption: Reference
 
-   community_guides
    license
 
 .. toctree::
