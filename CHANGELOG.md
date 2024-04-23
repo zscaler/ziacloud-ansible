@@ -1,3 +1,10 @@
+### [1.0.9](https://github.com/zscaler/ziacloud-ansible/compare/v1.0.8...v1.0.9) (2024-04-23)
+
+
+### Bug Fixes
+
+* Fixed makefile doc generation section ([165756c](https://github.com/zscaler/ziacloud-ansible/commit/165756cdab765b556c0a82e4fb01f0612b96bc41))
+
 ### [1.0.8](https://github.com/zscaler/ziacloud-ansible/compare/v1.0.7...v1.0.8) (2024-04-23)
 
 
