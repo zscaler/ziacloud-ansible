@@ -60,6 +60,7 @@ python_version := $(shell \
 docs:		## Build collection documentation
 	rm -rf antsibull
 	mkdir antsibull
+	poetry add sphinx_ansible_theme
 	poetry run antsibull-docs collection --use-current --dest-dir antsibull --no-indexes zscaler.ziacloud
 	mkdir -p docs/source/modules
 	mv antsibull/collections/zscaler/ziacloud/* docs/source/modules

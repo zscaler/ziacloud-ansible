@@ -18,6 +18,7 @@ dpath = "^2.1.5"
 pytz = "*"
 netaddr = "*"
 pycountry = "*"
+sphinx-ansible-theme = "^0.10.3"
 
 [tool.poetry.dev-dependencies]
 black = "24.3.0"

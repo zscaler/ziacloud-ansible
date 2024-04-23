@@ -846,13 +846,13 @@ profile = ["gprof2dot (>=2022.7.29)"]
 
 [[package]]
 name = "docutils"
-version = "0.21.1"
+version = "0.20.1"
 description = "Docutils -- Python Documentation Utilities"
 optional = false
-python-versions = ">=3.9"
+python-versions = ">=3.7"
 files = [
-    {file = "docutils-0.21.1-py3-none-any.whl", hash = "sha256:14c8d34a55b46c88f9f714adb29cefbdd69fb82f3fef825e59c5faab935390d8"},
-    {file = "docutils-0.21.1.tar.gz", hash = "sha256:65249d8a5345bc95e0f40f280ba63c98eb24de35c6c8f5b662e3e8948adea83f"},
+    {file = "docutils-0.20.1-py3-none-any.whl", hash = "sha256:96f387a2c5562db4476f09f13bbab2192e764cac08ebbf3a34a95d9b1e4a59d6"},
+    {file = "docutils-0.20.1.tar.gz", hash = "sha256:f08a4e276c3a1583a86dce3e34aba3fe04d02bba2dd51ed16106244e8a923e3b"},
 ]
 
 [[package]]
@@ -2384,36 +2384,41 @@ test = ["cython (>=3.0)", "defusedxml (>=0.7.1)", "pytest (>=6.0)", "setuptools 
 
 [[package]]
 name = "sphinx-ansible-theme"
-version = "0.9.1"
+version = "0.10.3"
 description = "Ansible Sphinx Theme"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.8"
 files = [
-    {file = "sphinx-ansible-theme-0.9.1.tar.gz", hash = "sha256:242cdad5c5bcc12e910b2ad9dc7c12f8c5d96e640f8b5676a011148997a70395"},
-    {file = "sphinx_ansible_theme-0.9.1-py3-none-any.whl", hash = "sha256:4a41345123ed739976cd310c8afa8c7799e311c2e4fc1ecd2739293ad5da89eb"},
+    {file = "sphinx-ansible-theme-0.10.3.tar.gz", hash = "sha256:21f56a96f0977cb6f1ee51f4cb397ae9466576f3020b73f5849c4ca293ba378d"},
+    {file = "sphinx_ansible_theme-0.10.3-py3-none-any.whl", hash = "sha256:cdcee91338e0aa1439e74a392b8b89263bd9e1ea452e3d110a1a81d0a2ee31c2"},
 ]
 
 [package.dependencies]
-ansible-pygments = "*"
-Sphinx = ">=1.6"
-sphinx-rtd-theme = "*"
+ansible-pygments = ">=0.1.1"
+sphinx = ">=5.3.0"
+sphinx-rtd-theme = ">=1.1.1"
+
+[package.extras]
+test = ["sphinx-notfound-page"]
 
 [[package]]
 name = "sphinx-rtd-theme"
-version = "0.5.1"
+version = "2.0.0"
 description = "Read the Docs theme for Sphinx"
 optional = false
-python-versions = "*"
+python-versions = ">=3.6"
 files = [
-    {file = "sphinx_rtd_theme-0.5.1-py2.py3-none-any.whl", hash = "sha256:fa6bebd5ab9a73da8e102509a86f3fcc36dec04a0b52ea80e5a033b2aba00113"},
-    {file = "sphinx_rtd_theme-0.5.1.tar.gz", hash = "sha256:eda689eda0c7301a80cf122dad28b1861e5605cbf455558f3775e1e8200e83a5"},
+    {file = "sphinx_rtd_theme-2.0.0-py2.py3-none-any.whl", hash = "sha256:ec93d0856dc280cf3aee9a4c9807c60e027c7f7b461b77aeffed682e68f0e586"},
+    {file = "sphinx_rtd_theme-2.0.0.tar.gz", hash = "sha256:bd5d7b80622406762073a04ef8fadc5f9151261563d47027de09910ce03afe6b"},
 ]
 
 [package.dependencies]
-sphinx = "*"
+docutils = "<0.21"
+sphinx = ">=5,<8"
+sphinxcontrib-jquery = ">=4,<5"
 
 [package.extras]
-dev = ["bump2version", "sphinxcontrib-httpdomain", "transifex-client"]
+dev = ["bump2version", "sphinxcontrib-httpdomain", "transifex-client", "wheel"]
 
 [[package]]
 name = "sphinxcontrib-applehelp"
@@ -2462,6 +2467,20 @@ files = [
 lint = ["docutils-stubs", "flake8", "mypy"]
 standalone = ["Sphinx (>=5)"]
 test = ["html5lib", "pytest"]
+
+[[package]]
+name = "sphinxcontrib-jquery"
+version = "4.1"
+description = "Extension to include jQuery on newer Sphinx releases"
+optional = false
+python-versions = ">=2.7"
+files = [
+    {file = "sphinxcontrib-jquery-4.1.tar.gz", hash = "sha256:1620739f04e36a2c779f1a131a2dfd49b2fd07351bf1968ced074365933abc7a"},
+    {file = "sphinxcontrib_jquery-4.1-py2.py3-none-any.whl", hash = "sha256:f936030d7d0147dd026a4f2b5a57343d233f1fc7b363f68b3d4f1cb0993878ae"},
+]
+
+[package.dependencies]
+Sphinx = ">=1.8"
 
 [[package]]
 name = "sphinxcontrib-jsmath"
@@ -2894,4 +2913,4 @@ dev = ["aenum", "black", "isort", "pydash", "pyfakefs", "pytest", "pytest-asynci
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "56caae9bc6a502e6c525df6dfcc0ae1835806401c6532af9d29b6b421fd31db2"
+content-hash = "d4e30867858aba7578d5e54c1e98465fd2a60fb481914a433347c503c9309837"
