@@ -1,3 +1,10 @@
+### [1.0.13](https://github.com/zscaler/ziacloud-ansible/compare/v1.0.12...v1.0.13) (2024-04-23)
+
+
+### Bug Fixes
+
+* Removed Beta comment from README and fixed galaxy link on index ([e47696c](https://github.com/zscaler/ziacloud-ansible/commit/e47696cc8c4ea26e492547a76687dce8dcc71b2a))
+
 ### [1.0.12](https://github.com/zscaler/ziacloud-ansible/compare/v1.0.11...v1.0.12) (2024-04-23)
 
 
