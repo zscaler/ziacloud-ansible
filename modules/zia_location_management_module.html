@@ -112,7 +112,6 @@
 <li class="toctree-l2"><a class="reference internal" href="zia_dlp_notification_template_module.html">zscaler.ziacloud.zia_dlp_notification_template module – Manage Zscaler Internet Access (ZIA) DLP Notification Templates</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_dlp_web_rules_facts_module.html">zscaler.ziacloud.zia_dlp_web_rules_facts module – Gets a list of DLP policy rules, excluding SaaS Security API DLP policy rules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_dlp_web_rules_module.html">zscaler.ziacloud.zia_dlp_web_rules module – Adds a new DLP policy rule.</a></li>
-<li class="toctree-l2"><a class="reference internal" href="zia_forwarding_control_policy_facts_module.html">zscaler.ziacloud.zia_forwarding_control_policy_facts module – Gets all rules in the Forwarding Control policy.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_ip_source_anchoring_zpa_gateway_facts_module.html">zscaler.ziacloud.zia_ip_source_anchoring_zpa_gateway_facts module – Gets the list of Zscaler Private Access (ZPA) gateways.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_ip_source_anchoring_zpa_gateway_module.html">zscaler.ziacloud.zia_ip_source_anchoring_zpa_gateway module – Manages ZPA Gateways within Zscaler Internet Access</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_location_groups_facts_module.html">zscaler.ziacloud.zia_location_groups_facts module – Gets locations only, not sub-locations.</a></li>
@@ -199,7 +198,7 @@
 <h1>zscaler.ziacloud.zia_location_management module – Adds new locations and sub-locations.<a class="headerlink" href="#zscaler-ziacloud-zia-location-management-module-adds-new-locations-and-sub-locations" title="Link to this heading"></a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This module is part of the <a class="reference external" href="https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/">zscaler.ziacloud collection</a> (version 1.0.9).</p>
+<p>This module is part of the <a class="reference external" href="https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/">zscaler.ziacloud collection</a> (version 1.0.10).</p>
 <p>It is not included in <code class="docutils literal notranslate"><span class="pre">ansible-core</span></code>.
 To check whether it is installed, run <code class="code docutils literal notranslate"><span class="pre">ansible-galaxy</span> <span class="pre">collection</span> <span class="pre">list</span></code>.</p>
 <p>To install it, use: <code class="code docutils literal notranslate"><span class="pre">ansible-galaxy</span> <span class="pre">collection</span> <span class="pre">install</span> <span class="pre">zscaler.ziacloud</span></code>.
@@ -736,8 +735,8 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 <span class="w">    </span><span class="nt">ofw_enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">    </span><span class="nt">ips_control</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">    </span><span class="nt">vpn_credentials</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">vpn_credential_ufqdn.data.id</span> <span class="cp">}}</span><span class="s">&quot;</span>
-<span class="w">          </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">vpn_credential_ufqdn.data.type</span> <span class="cp">}}</span><span class="s">&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">vpn_credential_ufqdn.data.id</span> <span class="cp">}}</span><span class="s">&quot;</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">vpn_credential_ufqdn.data.type</span> <span class="cp">}}</span><span class="s">&quot;</span>
 
 <span class="c1"># Create Location Management with VPN IP Type</span>
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create/Update/Delete a Static IP.</span>
@@ -774,9 +773,9 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 <span class="w">    </span><span class="nt">ips_control</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">    </span><span class="nt">ip_addresses</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;static_ip.data.ip_address&quot;</span>
 <span class="w">    </span><span class="nt">vpn_credentials</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">vpn_credential_ip.data.id</span> <span class="cp">}}</span><span class="s">&quot;</span>
-<span class="w">          </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">vpn_credential_ip.data.type</span> <span class="cp">}}</span><span class="s">&quot;</span>
-<span class="w">          </span><span class="nt">ip_address</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">vpn_credential_ip.data.ip_address</span> <span class="cp">}}</span><span class="s">&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">vpn_credential_ip.data.id</span> <span class="cp">}}</span><span class="s">&quot;</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">vpn_credential_ip.data.type</span> <span class="cp">}}</span><span class="s">&quot;</span>
+<span class="w">        </span><span class="nt">ip_address</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">vpn_credential_ip.data.ip_address</span> <span class="cp">}}</span><span class="s">&quot;</span>
 </pre></div>
 </div>
 <section id="authors">

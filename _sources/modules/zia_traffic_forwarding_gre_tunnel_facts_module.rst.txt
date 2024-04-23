@@ -23,7 +23,7 @@ zscaler.ziacloud.zia_traffic_forwarding_gre_tunnel_facts module -- Gets the GRE 
 .. Collection note
 
 .. note::
-    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 1.0.9).
+    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 1.0.10).
 
     It is not included in ``ansible-core``.
     To check whether it is installed, run :code:`ansible-galaxy collection list`.
@@ -635,7 +635,6 @@ Examples
       zscaler.ziacloud.zia_traffic_forwarding_gre_tunnel_facts:
         provider: '{{ provider }}'
         id: 82709
-
 
 
 

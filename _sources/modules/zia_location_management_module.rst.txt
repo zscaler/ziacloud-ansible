@@ -23,7 +23,7 @@ zscaler.ziacloud.zia_location_management module -- Adds new locations and sub-lo
 .. Collection note
 
 .. note::
-    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 1.0.9).
+    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 1.0.10).
 
     It is not included in ``ansible-core``.
     To check whether it is installed, run :code:`ansible-galaxy collection list`.
@@ -2008,8 +2008,8 @@ Examples
         ofw_enabled: true
         ips_control: true
         vpn_credentials:
-            - id: "{{ vpn_credential_ufqdn.data.id }}"
-              type: "{{ vpn_credential_ufqdn.data.type }}"
+          - id: "{{ vpn_credential_ufqdn.data.id }}"
+            type: "{{ vpn_credential_ufqdn.data.type }}"
 
     # Create Location Management with VPN IP Type
     - name: Create/Update/Delete a Static IP.
@@ -2046,9 +2046,9 @@ Examples
         ips_control: true
         ip_addresses: "static_ip.data.ip_address"
         vpn_credentials:
-            - id: "{{ vpn_credential_ip.data.id }}"
-              type: "{{ vpn_credential_ip.data.type }}"
-              ip_address: "{{ vpn_credential_ip.data.ip_address }}"
+          - id: "{{ vpn_credential_ip.data.id }}"
+            type: "{{ vpn_credential_ip.data.type }}"
+            ip_address: "{{ vpn_credential_ip.data.ip_address }}"
 
 
 

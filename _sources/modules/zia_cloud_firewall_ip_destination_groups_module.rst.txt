@@ -23,7 +23,7 @@ zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups module -- Create IP de
 .. Collection note
 
 .. note::
-    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 1.0.9).
+    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 1.0.10).
 
     It is not included in ``ansible-core``.
     To check whether it is installed, run :code:`ansible-galaxy collection list`.
@@ -894,14 +894,13 @@ Examples
 .. code-block:: yaml+jinja
 
     
-
     - name: Create/Update/Delete ip destination group - DSTN_FQDN.
       zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups:
         provider: '{{ provider }}'
         name: "Example"
         description: "Example"
         type: "DSTN_FQDN"
-        addresses: [ "test1.acme.com", "test2.acme.com", "test3.acme.com" ]
+        addresses: ["test1.acme.com", "test2.acme.com", "test3.acme.com"]
 
     - name: Create/Update/Delete ip destination group - DSTN_IP by Country.
       zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups:
@@ -918,10 +917,11 @@ Examples
         name: "Example - IP Ranges"
         description: "Example - IP Ranges"
         type: "DSTN_IP"
-        addresses: [ "3.217.228.0-3.217.231.255",
-            "3.235.112.0-3.235.119.255",
-            "52.23.61.0-52.23.62.25",
-            "35.80.88.0-35.80.95.255" ]
+        addresses:
+          - "3.217.228.0-3.217.231.255"
+          - "3.235.112.0-3.235.119.255"
+          - "52.23.61.0-52.23.62.25"
+          - "35.80.88.0-35.80.95.255"
 
 
 

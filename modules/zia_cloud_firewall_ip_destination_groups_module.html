@@ -122,7 +122,6 @@
 <li class="toctree-l2"><a class="reference internal" href="zia_dlp_notification_template_module.html">zscaler.ziacloud.zia_dlp_notification_template module – Manage Zscaler Internet Access (ZIA) DLP Notification Templates</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_dlp_web_rules_facts_module.html">zscaler.ziacloud.zia_dlp_web_rules_facts module – Gets a list of DLP policy rules, excluding SaaS Security API DLP policy rules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_dlp_web_rules_module.html">zscaler.ziacloud.zia_dlp_web_rules module – Adds a new DLP policy rule.</a></li>
-<li class="toctree-l2"><a class="reference internal" href="zia_forwarding_control_policy_facts_module.html">zscaler.ziacloud.zia_forwarding_control_policy_facts module – Gets all rules in the Forwarding Control policy.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_ip_source_anchoring_zpa_gateway_facts_module.html">zscaler.ziacloud.zia_ip_source_anchoring_zpa_gateway_facts module – Gets the list of Zscaler Private Access (ZPA) gateways.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_ip_source_anchoring_zpa_gateway_module.html">zscaler.ziacloud.zia_ip_source_anchoring_zpa_gateway module – Manages ZPA Gateways within Zscaler Internet Access</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_location_groups_facts_module.html">zscaler.ziacloud.zia_location_groups_facts module – Gets locations only, not sub-locations.</a></li>
@@ -199,7 +198,7 @@
 <h1>zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups module – Create IP destination groups.<a class="headerlink" href="#zscaler-ziacloud-zia-cloud-firewall-ip-destination-groups-module-create-ip-destination-groups" title="Link to this heading"></a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This module is part of the <a class="reference external" href="https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/">zscaler.ziacloud collection</a> (version 1.0.9).</p>
+<p>This module is part of the <a class="reference external" href="https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/">zscaler.ziacloud collection</a> (version 1.0.10).</p>
 <p>It is not included in <code class="docutils literal notranslate"><span class="pre">ansible-core</span></code>.
 To check whether it is installed, run <code class="code docutils literal notranslate"><span class="pre">ansible-galaxy</span> <span class="pre">collection</span> <span class="pre">list</span></code>.</p>
 <p>To install it, use: <code class="code docutils literal notranslate"><span class="pre">ansible-galaxy</span> <span class="pre">collection</span> <span class="pre">install</span> <span class="pre">zscaler.ziacloud</span></code>.
@@ -433,7 +432,7 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 <span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Example&quot;</span>
 <span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Example&quot;</span>
 <span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;DSTN_FQDN&quot;</span>
-<span class="w">    </span><span class="nt">addresses</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&quot;test1.acme.com&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;test2.acme.com&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;test3.acme.com&quot;</span><span class="w"> </span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">addresses</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;test1.acme.com&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;test2.acme.com&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;test3.acme.com&quot;</span><span class="p p-Indicator">]</span>
 
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create/Update/Delete ip destination group - DSTN_IP by Country.</span>
 <span class="w">  </span><span class="nt">zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups</span><span class="p">:</span>
@@ -450,10 +449,11 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 <span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Example</span><span class="nv"> </span><span class="s">-</span><span class="nv"> </span><span class="s">IP</span><span class="nv"> </span><span class="s">Ranges&quot;</span>
 <span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Example</span><span class="nv"> </span><span class="s">-</span><span class="nv"> </span><span class="s">IP</span><span class="nv"> </span><span class="s">Ranges&quot;</span>
 <span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;DSTN_IP&quot;</span>
-<span class="w">    </span><span class="nt">addresses</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&quot;3.217.228.0-3.217.231.255&quot;</span><span class="p p-Indicator">,</span>
-<span class="w">        </span><span class="s">&quot;3.235.112.0-3.235.119.255&quot;</span><span class="p p-Indicator">,</span>
-<span class="w">        </span><span class="s">&quot;52.23.61.0-52.23.62.25&quot;</span><span class="p p-Indicator">,</span>
-<span class="w">        </span><span class="s">&quot;35.80.88.0-35.80.95.255&quot;</span><span class="w"> </span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">addresses</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;3.217.228.0-3.217.231.255&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;3.235.112.0-3.235.119.255&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;52.23.61.0-52.23.62.25&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;35.80.88.0-35.80.95.255&quot;</span>
 </pre></div>
 </div>
 <section id="authors">
