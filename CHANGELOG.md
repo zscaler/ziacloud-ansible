@@ -1,3 +1,10 @@
+### [1.0.7](https://github.com/zscaler/ziacloud-ansible/compare/v1.0.6...v1.0.7) (2024-04-23)
+
+
+### Bug Fixes
+
+* Fixed index.rst document ([dfef5dc](https://github.com/zscaler/ziacloud-ansible/commit/dfef5dc53b63c3aa7f04bfa9809fdbcc3c06472d))
+
 ### [1.0.6](https://github.com/zscaler/ziacloud-ansible/compare/v1.0.5...v1.0.6) (2024-04-23)
 
 
