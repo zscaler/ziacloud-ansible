@@ -1,3 +1,10 @@
+### [1.0.4](https://github.com/zscaler/ziacloud-ansible/compare/v1.0.3...v1.0.4) (2024-04-23)
+
+
+### Bug Fixes
+
+* Temporarily disabled Automation Hub Workflow ([e1a4b24](https://github.com/zscaler/ziacloud-ansible/commit/e1a4b24bb0a0d669073ce79cda7d197ea73c69f7))
+
 ### [1.0.3](https://github.com/zscaler/ziacloud-ansible/compare/v1.0.2...v1.0.3) (2024-04-23)
 
 
