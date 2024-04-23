@@ -1,0 +1,44 @@
+name: Pages
+on:
+  push:
+    branches:
+      - master
+
+  # Run manually if needed
+  workflow_dispatch:
+
+jobs:
+  build:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build docs
+        uses: addnab/docker-run-action@v3
+        with:
+          registry: quay.io
+          image: quay.io/zscaler/ansible-doc-builder:latest
+          options: -v ${{ github.workspace }}:/usr/share/ansible/collections/ansible_collections/zscaler/ziacloud
+          run: /build.sh
+
+      - name: Commit files
+        run: |
+          cd html
+          git init
+          git add -A
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit -m "Updating gh-pages docs"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
+          force: true
+          directory: ./html
