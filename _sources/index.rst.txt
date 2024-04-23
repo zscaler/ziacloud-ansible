@@ -10,6 +10,8 @@ is a collection of modules that automate configuration and operational tasks on 
 This collection is part of the broader initiative to bring Ansible Automation to Zscaler Zero Trust Platform through the offering
 **Red Hat® Ansible Certified Content**.
 
+Version: 1.0.9
+
 Red Hat Ansible Certified Content for Zscaler
 =============================================
 **Red Hat® Ansible Certified Content for Zscaler Internet Access** provides the ability to
@@ -100,7 +102,7 @@ Credits
 
 Support
 =======
-As of version 0.1.0, this Collection of Ansible Modules for Zscaler Internet Access is
+As of version 1.0.0, this Collection of Ansible Modules for Zscaler Internet Access is
 `certified on Ansible Automation Hub <https://console.redhat.com/ansible/automation-hub/repo/published/zscaler/ziacloud>`_,
 and officially supported for Ansible subscribers. Ansible subscribers can engage
 for support through their usual route towards Red Hat.
