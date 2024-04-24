@@ -92,7 +92,7 @@ Deprecations are done by version number, not by date or by age of release. Break
 
 The Zscaler Internet Access (ZIA) Collection of Ansible Modules is [certified on Ansible Automation Hub](https://console.redhat.com/ansible/automation-hub/repo/published/zscaler/ziacloud) and officially supported for Ansible subscribers. Ansible subscribers can engage for support through their usual route towards Red Hat.
 
-For those who are not Ansible subscribers, this Collection of Ansible Modules is also [published on Ansible Galaxy](https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud) and also supported via the formal Zscaler suppport process. Please refer to our [General Support Statement](/docs/support.md)
+For those who are not Ansible subscribers, this Collection of Ansible Modules is also [published on Ansible Galaxy](https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud) and also supported via the formal Zscaler suppport process. Please refer to our [General Support Statement](https://zscaler.github.io/ziacloud-ansible/support.html)
 
 ## MIT License
 

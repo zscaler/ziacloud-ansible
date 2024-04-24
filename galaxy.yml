@@ -52,21 +52,10 @@ dependencies: {}
 repository: https://github.com/zscaler/ziacloud-ansible
 
 # The URL to any online docs
-documentation: https://zscaler.github.io/ziacloud-ansible/
+documentation: https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/docs/
 
 # The URL to the homepage of the collection/project
 homepage: https://github.com/zscaler/ziacloud-ansible
 
 # The URL to the collection issue tracker
 issues: https://github.com/zscaler/ziacloud-ansible/issues
-
-# A list of file glob-like patterns used to filter any files or directories that should not be included in the build
-# artifact. A pattern is matched from the relative path of the file or directory of the collection directory. This
-# uses 'fnmatch' to match the files or directories. Some directories and files like 'galaxy.yml', '*.pyc', '*.retry',
-# and '.git' are always filtered
-build_ignore:
-  - .devcontainer
-  - .git*
-  - .pre-commit-config.yaml
-  - docs
-  - tox.ini

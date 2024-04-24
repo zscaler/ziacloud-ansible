@@ -32,8 +32,8 @@ help:
 	@echo "$(COLOR_OK)  reqs                       	Recreate the requirements.txt file$(COLOR_NONE)"
 	@echo "$(COLOR_WARNING)test$(COLOR_NONE)"
 	@echo "$(COLOR_OK)  test:integration:zia          Execute the full integration test suite$(COLOR_NONE)"
-	@echo "$(COLOR_OK)  test:old-sanity          	Sanity tests for Ansible v2.9 and Ansible v2.10$(COLOR_NONE)"
-	@echo "$(COLOR_OK)  test:new-sanity          	Sanity tests for Ansible v2.11 and above$(COLOR_NONE)"
+	@echo "$(COLOR_OK)  old-sanity          		Sanity tests for Ansible v2.9 and Ansible v2.10$(COLOR_NONE)"
+	@echo "$(COLOR_OK)  new-sanity          	        Sanity tests for Ansible v2.11 and above$(COLOR_NONE)"
 
 # Make sure we have ansible_collections/zscaler/ziacloud_enhanced
 # as a prefix. This is ugly as heck, but it works. I suggest all future

@@ -78,7 +78,7 @@ Author Information
 **Zscaler Internet Access Collection** is maintained by the Zscaler's Technology Alliances team.
 
 .. _Ansible Galaxy:
-   https://galaxy.ansible.com/search?keywords=zia_&order_by=-relevance&deprecated=false&type=collection&page=1
+   https://galaxy.ansible.com/ui/search/?keywords=zia_&order_by=-relevance&deprecated=false&type=collection&page=1
 .. _Ansible Automation Hub:
    https://www.ansible.com/products/automation-hub
 .. _documentation:
@@ -86,7 +86,7 @@ Author Information
 .. _modules:
    https://zscaler.github.io/ziacloud-ansible/modules.html
 .. _samples repository:
-   https://github.com/zscaler/ziacloud_ansible_collections_samples/blob/master/README.md
+   https://github.com/zscaler/ziacloud-playbooks/blob/master/README.md
 
 
 Development Leads
