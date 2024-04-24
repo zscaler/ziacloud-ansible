@@ -1,3 +1,10 @@
+### [1.0.14](https://github.com/zscaler/ziacloud-ansible/compare/v1.0.13...v1.0.14) (2024-04-24)
+
+
+### Bug Fixes
+
+* Fixed release process for automation hub ([#27](https://github.com/zscaler/ziacloud-ansible/issues/27)) ([a067c69](https://github.com/zscaler/ziacloud-ansible/commit/a067c69e723bcd37c28437115cf734bc9c5e32ce))
+
 ### [1.0.13](https://github.com/zscaler/ziacloud-ansible/compare/v1.0.12...v1.0.13) (2024-04-23)
 
 
