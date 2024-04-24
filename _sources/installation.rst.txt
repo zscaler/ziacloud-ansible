@@ -26,6 +26,6 @@ Then in your playbooks you can specify that you want to use the
     collections:
         - zscaler.ziacloud
 
-* Ansible Galaxy: https://galaxy.ansible.com/zscaler/ziacloud
+* Ansible Galaxy: https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/
 * Red Hat Catalog: https://catalog.redhat.com/software/collection/zscaler/ziacloud
 * GitHub repo:  https://github.com/zscaler/ziacloud-ansible
