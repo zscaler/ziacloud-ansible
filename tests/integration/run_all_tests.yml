@@ -13,8 +13,8 @@
           cloud: '{{ lookup("env", "ZIA_CLOUD") | default(omit) }}'
       no_log: true
 
-    - name: Run initial sweep to clean tenant
-      ansible.builtin.include_tasks: ./sweep.yml
+    # - name: Run initial sweep to clean tenant
+    #   ansible.builtin.include_tasks: ./sweep.yml
 
     - name: Running ZIA Integration Tests
       ansible.builtin.include_tasks: "{{ item }}"
@@ -41,5 +41,5 @@
         - targets/zia_dlp_notification_template/tasks/main.yml
         - targets/zia_sandbox_advanced_settings/tasks/main.yml
 
-    - name: Run final sweep to clean tenant
-      ansible.builtin.include_tasks: ./sweep.yml
+    # - name: Run final sweep to clean tenant
+    #   ansible.builtin.include_tasks: ./sweep.yml
