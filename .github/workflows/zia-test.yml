@@ -92,7 +92,7 @@ jobs:
           ZIA_CLOUD: ${{ secrets.ZIA_CLOUD }}
           ZIA_SANDBOX_TOKEN: ${{ secrets.ZIA_SANDBOX_TOKEN }}
 
-  ia-test-tenants:
+  zia-test-tenants:
     needs: [zia-zsbeta-tests]
     runs-on: ubuntu-latest
     strategy:
