@@ -79,7 +79,10 @@ jobs:
       - name: Install dependencies
         run: poetry install
 
-      - name: Do black code format check
+      - name: Do black code format
+        run: poetry run make format
+
+      - name: Do black code check-format
         run: poetry run make check-format
 
   release:
