@@ -24,6 +24,7 @@
         "assets": [
           "galaxy.yml",
           "docs/source/index.rst",
+          "plugins/module_utils/version.py",
           "./CHANGELOG.md"
         ],
         "message": "chore(release): ${nextRelease.version}\n\n${nextRelease.notes}"

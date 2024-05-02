@@ -5,6 +5,8 @@ COLOR_ERROR=\x1b[31;01m
 COLOR_WARNING=\x1b[33;01m
 COLOR_ZSCALER=\x1B[34;01m
 
+VERSION=$(shell grep -E -o '(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?' ./plugins/module_utils/version.py)
+
 help:
 	@echo "$(COLOR_ZSCALER)"
 	@echo "  ______              _           "

@@ -29,6 +29,10 @@ import platform
 from ansible.module_utils.basic import missing_required_lib, env_fallback
 from ansible.module_utils import ansible_release
 
+# Initialize import error variables
+ZSCALER_IMPORT_ERROR = None
+VERSION_IMPORT_ERROR = None
+
 try:
     from zscaler.zia import ZIAClientHelper as ZIA
 
@@ -38,6 +42,15 @@ except ImportError:
     ZIA = object  # Default to object if import fails
     HAS_ZSCALER = False
     ZSCALER_IMPORT_ERROR = missing_required_lib("zscaler")
+
+# Attempt to import the version information
+try:
+    from ansible_collections.zscaler.ziacloud.plugins.module_utils.version import __version__ as ansible_collection_version
+    HAS_VERSION = True
+except ImportError as e:
+    HAS_VERSION = False
+    VERSION_IMPORT_ERROR = missing_required_lib("plugins.module_utils.version (version information)")
+
 
 VALID_ZIA_CLOUD = {
     "zscaler",
@@ -73,13 +86,12 @@ class ConnectionHelper:
 class ZIAClientHelper(ZIA):
     def __init__(self, module):
         if not HAS_ZSCALER:
-            module.fail_json(
-                msg="The 'zscaler' library is required for this module.",
-                exception=ZSCALER_IMPORT_ERROR,
-            )
+            module.fail_json(msg="The 'zscaler' library is required for this module.", exception=ZSCALER_IMPORT_ERROR)
+        if not HAS_VERSION:
+            module.fail_json(msg="Failed to import the version from the collection's module_utils.", exception=VERSION_IMPORT_ERROR)
 
         self.connection_helper = ConnectionHelper(min_sdk_version=(0, 1, 0))
-        provider = module.params.get("provider") or {}
+        provider = module.params.get("provider", {})
         username = provider.get("username") or module.params.get("username")
         password = provider.get("password") or module.params.get("password")
         api_key = provider.get("api_key") or module.params.get("api_key")
@@ -93,7 +105,7 @@ class ZIAClientHelper(ZIA):
             username=username, password=password, api_key=api_key, cloud=cloud_env
         )
         ansible_version = ansible_release.__version__
-        self.user_agent = f"zia-ansible/{ansible_version}/({platform.system().lower()} {platform.machine()})"
+        self.user_agent = f"ziacloud-ansible/{ansible_version} (collection/{ansible_collection_version}) ({platform.system().lower()} {platform.machine()})"
 
     @staticmethod
     def zia_argument_spec():

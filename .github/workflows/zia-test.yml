@@ -1,0 +1,172 @@
+name: ZIA Test
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+  merge_group:
+    types: [checks_requested]
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: '0 15 * * 1-5' # UTC
+  workflow_dispatch:
+
+env:
+  NAMESPACE: zscaler
+  COLLECTION_NAME: ziacloud
+  PYTHON_VERSION: 3.10
+
+jobs:
+  zia-zsbeta-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10"]
+        environment:
+          - ZIA_ZSBETA
+    environment: ${{ matrix.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          path: ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Poetry
+        uses: Gr1N/setup-poetry@v9
+        with:
+          poetry-version: 1.8.2
+
+      - name: Get poetry cache directory
+        id: poetry-cache
+        run: echo "dir=$(poetry config cache-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache poetry dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.poetry-cache.outputs.dir }}
+          key:
+            ${{ runner.os }}-poetry-${{ matrix.python-version }}-${{
+            hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-${{ matrix.python-version }}-
+
+      - name: Install dependencies
+        run: poetry install
+        working-directory: ${{ github.workspace }}/ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}
+
+      - name: Install Ansible
+        run: pip install 'ansible>=2.14'
+
+      - name: Build and install collection locally
+        run: poetry run make install
+        working-directory: ${{ github.workspace }}/ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}
+
+      - name: Run integration tests with retries
+        run: |
+          max_attempts=3
+          attempt=0
+          until [ "$attempt" -ge "$max_attempts" ]
+          do
+            attempt=$((attempt+1))
+            poetry run make test:integration:zia && break
+            echo "Attempt $attempt of $max_attempts failed. Retrying..."
+            sleep 10
+          done
+          if [ "$attempt" -eq "$max_attempts" ]; then
+            echo "Test failed after $max_attempts attempts."
+            exit 1
+          fi
+        working-directory: ${{ github.workspace }}/ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}
+        env:
+          ZIA_USERNAME: ${{ secrets.ZIA_USERNAME }}
+          ZIA_PASSWORD: ${{ secrets.ZIA_PASSWORD }}
+          ZIA_API_KEY: ${{ secrets.ZIA_API_KEY }}
+          ZIA_CLOUD: ${{ secrets.ZIA_CLOUD }}
+          ZIA_SANDBOX_TOKEN: ${{ secrets.ZIA_SANDBOX_TOKEN }}
+
+  ia-test-tenants:
+    needs: [zia-zsbeta-tests]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10"]
+        environment:
+          - ZIA_ZSCLOUD
+          - ZIA_ZS0
+          - ZIA_ZS1
+          - ZIA_ZS2
+          - ZIA_ZS3
+    environment: ${{ matrix.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          path: ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Poetry
+        uses: Gr1N/setup-poetry@v9
+        with:
+          poetry-version: 1.8.2
+
+      - name: Get poetry cache directory
+        id: poetry-cache
+        run: echo "dir=$(poetry config cache-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache poetry dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.poetry-cache.outputs.dir }}
+          key:
+            ${{ runner.os }}-poetry-${{ matrix.python-version }}-${{
+            hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-${{ matrix.python-version }}-
+
+      - name: Install dependencies
+        run: poetry install
+        working-directory: ${{ github.workspace }}/ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}
+
+      - name: Install Ansible
+        run: pip install 'ansible>=2.14'
+
+      - name: Build and install collection locally
+        run: poetry run make install
+        working-directory: ${{ github.workspace }}/ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}
+
+      - name: Run integration tests with retries
+        run: |
+          max_attempts=3
+          attempt=0
+          until [ "$attempt" -ge "$max_attempts" ]
+          do
+            attempt=$((attempt+1))
+            poetry run make test:integration:zia && break
+            echo "Attempt $attempt of $max_attempts failed. Retrying..."
+            sleep 10
+          done
+          if [ "$attempt" -eq "$max_attempts" ]; then
+            echo "Test failed after $max_attempts attempts."
+            exit 1
+          fi
+        working-directory: ${{ github.workspace }}/ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}
+        env:
+          ZIA_USERNAME: ${{ secrets.ZIA_USERNAME }}
+          ZIA_PASSWORD: ${{ secrets.ZIA_PASSWORD }}
+          ZIA_API_KEY: ${{ secrets.ZIA_API_KEY }}
+          ZIA_CLOUD: ${{ secrets.ZIA_CLOUD }}
+          ZIA_SANDBOX_TOKEN: ${{ secrets.ZIA_SANDBOX_TOKEN }}
