@@ -61,7 +61,15 @@
 
 - name: Set fact for overall status
   ansible.builtin.set_fact:
-  sweep_successful: "{{ not ( rule_labels_failed or ip_dest_groups_failed or ip_source_groups_failed or network_services_failed ) }}"
+    sweep_successful: >-
+      {{
+        not (
+          rule_labels_failed or
+          ip_dest_groups_failed or
+          ip_source_groups_failed or
+          network_services_failed
+        )
+      }}
 
 - name: Print success message ✅
   ansible.builtin.debug:
