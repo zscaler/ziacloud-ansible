@@ -57,7 +57,7 @@ options:
     type: str
   service_ids:
     type: list
-    elements: dict
+    elements: int
     description: "List of network service IDs"
     required: true
 """
@@ -68,7 +68,7 @@ EXAMPLES = r"""
     provider: '{{ provider }}'
     name: "example"
     description: "example"
-    services:
+    service_ids:
       - name: ["UDP_ANY", "TCP_ANY"]
 """
 
@@ -80,6 +80,9 @@ from traceback import format_exc
 
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
+    deleteNone,
+)
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
     ZIAClientHelper,
 )
@@ -93,9 +96,9 @@ def normalize_svc_group(group):
 
     computed_values = [
         "id",
-        "name",
-        "description",
-        "service_ids",
+        # "name",
+        # "description",
+        # "service_ids",
     ]
     for attr in computed_values:
         normalized.pop(attr, None)
@@ -120,64 +123,82 @@ def core(module):
 
     existing_service_group = None
     if group_id is not None:
-        existing_service_group = client.firewall.get_network_svc_group(
-            group_id
-        ).to_dict()
-    else:
-        service_groups = client.firewall.list_network_svc_groups().to_list()
-        if group_name is not None:
-            for svc in service_groups:
-                if svc.get("name", None) == group_name:
-                    existing_service_group = svc
-                    break
+        group_box = client.firewall.get_network_svc_group(group_id=group_id)
+        if group_box is not None:
+            existing_service_group = group_box.to_dict()
+    elif group_name is not None:
+        groups = client.firewall.list_network_svc_groups().to_list()
+        for group_ in groups:
+            if group_.get("name") == group_name:
+                existing_service_group = group_
 
     # Normalize and compare existing and desired data
-    normalized_group = normalize_svc_group(service_group)
-    normalized_existing_group = (
+    desired_group = normalize_svc_group(service_group)
+    current_group = (
         normalize_svc_group(existing_service_group) if existing_service_group else {}
     )
 
     fields_to_exclude = ["id"]
     differences_detected = False
-    for key, value in normalized_group.items():
-        if key not in fields_to_exclude and normalized_existing_group.get(key) != value:
+    for key, value in desired_group.items():
+        if key not in fields_to_exclude and current_group.get(key) != value:
             differences_detected = True
             module.warn(
-                f"Difference detected in {key}. Current: {normalized_existing_group.get(key)}, Desired: {value}"
+                f"Difference detected in {key}. Current: {current_group.get(key)}, Desired: {value}"
             )
 
     if existing_service_group is not None:
         id = existing_service_group.get("id")
-        existing_service_group.update(normalized_group)
+        existing_service_group.update(service_group)
         existing_service_group["id"] = id
 
+    module.warn(f"Final payload being sent to SDK: {service_group}")
     if state == "present":
         if existing_service_group is not None:
             if differences_detected:
                 """Update"""
+                existing_service_group = deleteNone(
+                    dict(
+                        group_id=existing_service_group.get("id"),
+                        name=existing_service_group.get("name", None),
+                        service_ids=existing_service_group.get("service_ids", None),
+                        description=existing_service_group.get("description", None),
+                    )
+                )
+                module.warn("Payload Update for SDK: {}".format(existing_service_group))
                 existing_service_group = client.firewall.update_network_svc_group(
-                    group_id=existing_service_group.get("id", ""),
-                    name=existing_service_group.get("name", ""),
-                    service_ids=existing_service_group.get("service_ids", ""),
-                    description=existing_service_group.get("description", ""),
+                    **existing_service_group
                 ).to_dict()
                 module.exit_json(changed=True, data=existing_service_group)
+            else:
+                """No Changes Needed"""
+                module.exit_json(changed=False, data=existing_service_group)
         else:
-            """Create"""
-            service_group = client.firewall.add_network_svc_group(
-                name=service_group.get("name", ""),
-                service_ids=service_group.get("service_ids", ""),
-                description=service_group.get("description", ""),
-            ).to_dict()
-            module.exit_json(changed=False, data=service_group)
-    elif state == "absent":
-        if existing_service_group is not None:
-            code = client.firewall.delete_network_svc_group(
-                existing_service_group.get("id")
+            module.warn(
+                "Creating services group as no existing services group was found"
             )
-            if code > 299:
-                module.exit_json(changed=False, data=None)
-            module.exit_json(changed=True, data=existing_service_group)
+            """Create"""
+            service_group = deleteNone(
+                dict(
+                    name=service_group.get("name", None),
+                    service_ids=service_group.get("service_ids", None),
+                    description=service_group.get("description", None),
+                )
+            )
+            module.warn("Payload for SDK: {}".format(service_group))
+            service_group = client.firewall.add_network_svc_group(**service_group)
+            module.exit_json(changed=True, data=service_group)
+    elif (
+        state == "absent"
+        and existing_service_group is not None
+        and existing_service_group.get("id") is not None
+    ):
+        code = client.firewall.delete_network_svc_group(
+            group_id=existing_service_group.get("id"),
+        )
+        if code > 299:
+            module.exit_json(changed=False, data=None)
+        module.exit_json(changed=True, data=existing_service_group)
     module.exit_json(changed=False, data={})
 
 
@@ -185,7 +206,7 @@ def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     id_name_spec = dict(
         type="list",
-        elements="dict",
+        elements="int",
         required=True,
     )
     argument_spec.update(

@@ -44,7 +44,7 @@ options:
   ip_address:
     description:
       - The static IP address
-    required: true
+    required: false
     type: str
   id:
     description: "Static IP ID to retrieve"
@@ -109,7 +109,7 @@ def core(module):
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
-        ip_address=dict(type="str", required=True),
+        ip_address=dict(type="str", required=False),
         id=dict(type="int", required=False),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)

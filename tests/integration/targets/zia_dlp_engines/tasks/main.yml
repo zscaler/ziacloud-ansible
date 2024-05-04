@@ -112,17 +112,13 @@
         name: "{{ engine_name }}"
       register: result
 
-    - name: Debug Authentication Setting result
-      ansible.builtin.debug:
-        var: result
-
     - name: Ensure this DLP Engine is found
       ansible.builtin.assert:
         that:
           - not result.changed
           - result.data is defined
           - result.data.name is defined
-          - result.data.name == name
+          - result.data.name == engine_name
 
     - name: Give the ZIA Cloud a 5 seconds to settle
       ansible.builtin.pause:
@@ -138,7 +134,7 @@
         custom_dlp_engine: "{{ custom_dlp_engine }}"
       register: result
 
-    - name: Verify Destination Group of Type DSTN_IP is Deleted
+    - name: Verify DLP Engine is Deleted
       ansible.builtin.assert:
         that:
           - result.changed

@@ -1,8 +1,8 @@
 ---
 # Creating new "UFQDN" VPN Credentials
-type: UFQDN
-fqdn: test_zia_ansible@bd-redhat.com
-comments: test_zia_ansible
+vpn_type: UFQDN
+vpn_fqdn: test_zia_ansible@bd-redhat.com
+vpn_comments: test_zia_ansible
 
 # Updating "UFQDN" VPN Credentials Pre-Shared-Key
 update_psk: true

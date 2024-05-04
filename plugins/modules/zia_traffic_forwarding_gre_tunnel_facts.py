@@ -50,7 +50,7 @@ options:
       - The source IP address of the GRE tunnel.
       - This is typically a static IP address in the organization or SD-WAN.
       - This IP address must be provisioned within the Zscaler service using the /staticIP endpoint.
-    required: true
+    required: false
     type: str
 """
 
@@ -117,7 +117,7 @@ def core(module):
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
-        source_ip=dict(type="str", required=True),
+        source_ip=dict(type="str", required=False),
         id=dict(type="int", required=False),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)

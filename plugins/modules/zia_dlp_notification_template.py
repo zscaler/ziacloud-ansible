@@ -52,32 +52,32 @@ options:
     description:
       - The name of the DLP notification template.
     type: str
-    required: True
+    required: true
   subject:
     description:
       - The subject line that is displayed within the DLP notification email.
     type: str
-    required: True
+    required: false
   attach_content:
     description:
       - If set to true, the content that triggered the violation is attached to the DLP notification email.
     type: bool
-    required: False
+    required: false
   plain_text_message:
     description:
       - The template for the plain text UTF-8 message body that is displayed in the DLP notification email.
     type: str
-    required: True
+    required: false
   html_message:
     description:
       - The template for the HTML message body that is displayed in the DLP notification email.
     type: str
-    required: True
+    required: false
   tls_enabled:
     description:
       - If set to true, enables TLS for the DLP notification template.
     type: bool
-    required: False
+    required: false
 """
 
 EXAMPLES = r"""
@@ -186,11 +186,11 @@ def main():
     argument_spec.update(
         id=dict(type="int", required=False),
         name=dict(type="str", required=True),
-        subject=dict(type="str", required=True),
+        subject=dict(type="str", required=False),
         tls_enabled=dict(type="bool", required=False),
         attach_content=dict(type="bool", required=False),
-        plain_text_message=dict(type="str", required=True),
-        html_message=dict(type="str", required=True),
+        plain_text_message=dict(type="str", required=False),
+        html_message=dict(type="str", required=False),
         state=dict(type="str", choices=["present", "absent"], default="present"),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)

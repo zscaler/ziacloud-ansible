@@ -55,7 +55,7 @@ options:
     type: str
   order:
     description: "The rule order of execution for the DLP policy rule with respect to other rules."
-    required: true
+    required: false
     type: int
   action:
     description: "The action taken when traffic matches the DLP policy rule criteria."
@@ -664,7 +664,7 @@ def main():
         name=dict(type="str", required=True),
         description=dict(type="str", required=False),
         enabled=dict(type="bool", required=False),
-        order=dict(type="int", required=True),
+        order=dict(type="int", required=False),
         rank=dict(type="int", required=False, default=7),
         locations=id_spec,
         location_groups=id_spec,

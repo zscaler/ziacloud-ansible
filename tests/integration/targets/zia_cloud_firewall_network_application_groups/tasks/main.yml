@@ -38,7 +38,7 @@
       zscaler.ziacloud.zia_cloud_firewall_network_application_group:
         provider: "{{ zia_cloud }}"
         state: absent
-        name: "{{ name }}"
+        name: "{{ group_name }}"
         description: "{{ description }}"
         network_applications: "{{ network_applications }}"
       register: result
@@ -57,7 +57,7 @@
       zscaler.ziacloud.zia_cloud_firewall_network_application_group:
         provider: "{{ zia_cloud }}"
         state: absent
-        name: "{{ name }}"
+        name: "{{ group_name }}"
         description: "{{ description }}"
         network_applications: "{{ network_applications }}"
       register: result
@@ -72,7 +72,7 @@
       zscaler.ziacloud.zia_cloud_firewall_network_application_group:
         provider: "{{ zia_cloud }}"
         state: present
-        name: "{{ name }}"
+        name: "{{ group_name }}"
         description: "{{ description }}"
         network_applications: "{{ network_applications }}"
       register: result
@@ -87,7 +87,7 @@
       zscaler.ziacloud.zia_cloud_firewall_network_application_group:
         provider: "{{ zia_cloud }}"
         state: present
-        name: "{{ name }}"
+        name: "{{ group_name }}"
         description: "{{ description }}"
         network_applications: "{{ network_applications }}"
       register: result
@@ -111,7 +111,7 @@
     - name: Fetch this Network Application Group
       zscaler.ziacloud.zia_cloud_firewall_network_application_group_facts:
         provider: "{{ zia_cloud }}"
-        name: "{{ name }}"
+        name: "{{ group_name }}"
       register: result
 
     - name: Ensure this Network Application Group is found
@@ -120,7 +120,7 @@
           - not result.changed
           - result.data is defined
           - result.data[0].name is defined
-          - result.data[0].name == name
+          - result.data[0].name == group_name
 
     - name: Give the ZIA Cloud a 5 seconds to settle
       ansible.builtin.pause:
@@ -130,7 +130,7 @@
       zscaler.ziacloud.zia_cloud_firewall_network_application_group:
         provider: "{{ zia_cloud }}"
         state: absent
-        name: "{{ name }}"
+        name: "{{ group_name }}"
         description: "{{ description }}"
         network_applications: "{{ network_applications }}"
       register: result
@@ -144,7 +144,7 @@
       zscaler.ziacloud.zia_cloud_firewall_network_application_group:
         provider: "{{ zia_cloud }}"
         state: absent
-        name: "{{ name }}"
+        name: "{{ group_name }}"
         description: "{{ description }}"
         network_applications: "{{ network_applications }}"
       register: result

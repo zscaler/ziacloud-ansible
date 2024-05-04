@@ -116,7 +116,7 @@
         that:
           - result.changed
           - result.data is defined
-          - result.data.name == name
+          - result.data.name == template_name
           - result.data.attach_content == attach_content_update
           - result.data.tls_enabled == tls_enabled_update
 
@@ -160,7 +160,7 @@
           - not result.changed
           - result.data is defined
           - result.data[0].name is defined
-          - result.data[0].name == name
+          - result.data[0].name == template_name
 
     - name: Give the ZIA Cloud a 5 seconds to settle
       ansible.builtin.pause:

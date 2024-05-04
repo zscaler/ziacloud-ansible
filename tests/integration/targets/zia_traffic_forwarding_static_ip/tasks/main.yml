@@ -188,7 +188,7 @@
         longitude: "{{ longitude }}"
       register: result
 
-    - name: Verify Destination Group of Type DSTN_IP is Deleted
+    - name: Verify Static IP Address is Deleted
       ansible.builtin.assert:
         that:
           - result.changed

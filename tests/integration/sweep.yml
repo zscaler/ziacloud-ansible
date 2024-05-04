@@ -49,7 +49,7 @@
     provider: "{{ zia_cloud }}"
     state: absent
     name: "{{ item.name }}"
-  loop: "{{ all_network_services.data }}"
+  loop: "{{ all_network_services.data | rejectattr('type', 'in', ['PREDEFINED', 'STANDARD']) | list }}"
   when: all_network_services.data is defined
 
 - name: Set fact for each task status
@@ -61,7 +61,15 @@
 
 - name: Set fact for overall status
   ansible.builtin.set_fact:
-  sweep_successful: "{{ not ( rule_labels_failed or ip_dest_groups_failed or ip_source_groups_failed or network_services_failed ) }}"
+    sweep_successful: >-
+      {{
+        not (
+          rule_labels_failed or
+          ip_dest_groups_failed or
+          ip_source_groups_failed or
+          network_services_failed
+        )
+      }}
 
 - name: Print success message ✅
   ansible.builtin.debug:

@@ -85,7 +85,7 @@
         ips_control: "{{ ips_control }}"
         vpn_credentials:
           - id: "{{ vpn_id }}"
-            type: "{{ vpn_type }}"
+            type: "{{ help_type }}"
       register: result
 
     - name: Set fact for expected change
@@ -119,7 +119,7 @@
         ips_control: "{{ ips_control }}"
         vpn_credentials:
           - id: "{{ vpn_id }}"
-            type: "{{ vpn_type }}"
+            type: "{{ help_type }}"
       register: result
 
     - name: Set fact for expected change

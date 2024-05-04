@@ -47,22 +47,22 @@ options:
     required: false
     type: int
   name:
-    description: "The network service name"
+    description: "The name for the application layer service"
     required: true
     type: str
   description:
-    description: ""
+    description:
+      - The description for the application layer service
+      - The description cannot exceed 10240 characters.
     required: false
     type: str
   type:
-    description: ""
+    description: "The service indicates that this is an admin-defined service."
     required: false
     type: str
     choices:
-        - STANDARD
-        - PREDEFINED
         - CUSTOM
-    default: STANDARD
+    default: CUSTOM
   tag:
     description: "The network service tag"
     required: false
@@ -134,70 +134,74 @@ options:
     type: list
     elements: dict
     description:
-      - List of tcp port range pairs, e.g. ['35000', '35000'] for port 35000.
+      - List of tcp port range pairs, e.g. [35000, 35000] for port 35000.
+      - The TCP source port number example 50 or port number range if any, that is used by the network service.
     required: false
     suboptions:
       start:
         type: int
         required: false
         description:
-          - List of valid TCP ports.
+          - List of valid source TCP ports.
+          - Start and End cannot be the same value.
       end:
         type: int
         required: false
         description:
-          - List of valid TCP ports.
+          - List of valid source TCP ports.
   dest_tcp_ports:
     type: list
     elements: dict
     description:
-      - List of tcp port range pairs, e.g. ['35000', '35000'] for port 35000.
+      - The TCP source port number example 50 or port number range if any, that is used by the network service.
     required: false
     suboptions:
       start:
         type: int
         required: false
         description:
-          - List of valid TCP ports.
+          - List of valid destination TCP ports.
       end:
         type: int
         required: false
         description:
-          - List of valid TCP ports.
+          - List of valid destination TCP ports.
   src_udp_ports:
     type: list
     elements: dict
     description:
-      - List of tcp port range pairs, e.g. ['35000', '35000'] for port 35000.
+      - List of udp port range pairs, e.g. [35000, 35000] for port 35000.
+      - The list of UDP source port number example 50 or port number range if any, that is used by the network service.
     required: false
     suboptions:
       start:
         type: int
         required: false
         description:
-          - List of valid TCP ports.
+          - List of valid source UDP ports.
       end:
         type: int
         required: false
         description:
-          - List of valid TCP ports.
+          - List of valid source UDP ports.
   dest_udp_ports:
     type: list
     elements: dict
     description:
-      - List of tcp port range pairs, e.g. ['35000', '35000'] for port 35000.
+      - List of udp port range pairs, e.g. [35000, 35000] for port 35000.
+      - The UDP destination port number example 50 or port number range if any, that is used by the network service.
     required: false
     suboptions:
       start:
         type: int
         required: false
         description:
-          - List of valid TCP ports.
+          - List of valid destination UDP ports.
       end:
         type: int
         required: false
         description:
-          - List of valid TCP ports.
+          - List of valid destination UDP ports.
 """
 
 EXAMPLES = r"""
@@ -240,6 +244,7 @@ def normalize_service(service):
         "name",
         "description",
         "tag",
+        "type",
         "src_tcp_ports",
         "dest_tcp_ports",
         "src_udp_ports",
@@ -261,6 +266,7 @@ def core(module):
         "name",
         "description",
         "tag",
+        "type",
         "src_tcp_ports",
         "dest_tcp_ports",
         "src_udp_ports",
@@ -313,12 +319,13 @@ def core(module):
             existing_network_service = client.firewall.update_network_service(
                 service_id=existing_network_service.get("id", ""),
                 name=existing_network_service.get("name", ""),
+                description=existing_network_service.get("description", ""),
+                type=existing_network_service.get("type", ""),
                 tag=existing_network_service.get("tag", ""),
                 src_tcp_ports=existing_network_service.get("src_tcp_ports", ""),
                 dest_tcp_ports=existing_network_service.get("dest_tcp_ports", ""),
                 src_udp_ports=existing_network_service.get("src_udp_ports", ""),
                 dest_udp_ports=existing_network_service.get("dest_udp_ports", ""),
-                description=existing_network_service.get("description", ""),
             ).to_dict()
             module.exit_json(changed=True, data=existing_network_service)
         else:
@@ -326,6 +333,7 @@ def core(module):
             network_service = client.firewall.add_network_service(
                 name=network_service.get("name", ""),
                 tag=network_service.get("tag", ""),
+                type=network_service.get("type", ""),
                 src_tcp_ports=network_service.get("src_tcp_ports", ""),
                 dest_tcp_ports=network_service.get("dest_tcp_ports", ""),
                 src_udp_ports=network_service.get("src_udp_ports", ""),
@@ -335,13 +343,27 @@ def core(module):
             module.exit_json(changed=False, data=network_service)
     elif state == "absent":
         if existing_network_service is not None:
-            code = client.firewall.delete_network_service(
-                existing_network_service.get("id")
+            service_type = existing_network_service.get("type")
+            if service_type in ["PREDEFINED", "STANDARD"]:
+                module.exit_json(
+                    changed=False,
+                    msg=f"Skipping deletion as the network service type '{service_type}' is protected.",
+                )
+            else:
+                code = client.firewall.delete_network_service(
+                    existing_network_service.get("id")
+                )
+                if code > 299:
+                    module.fail_json(msg="Failed to delete the network service.")
+                module.exit_json(
+                    changed=True,
+                    data=existing_network_service,
+                    msg="Network service deleted successfully.",
+                )
+        else:
+            module.exit_json(
+                changed=False, msg="No matching network service found to delete."
             )
-            if code > 299:
-                module.exit_json(changed=False, data=None)
-            module.exit_json(changed=True, data=existing_network_service)
-    module.exit_json(changed=False, data={})
 
 
 def main():
@@ -353,8 +375,8 @@ def main():
         type=dict(
             type="str",
             required=False,
-            default="STANDARD",
-            choices=["STANDARD", "PREDEFINED", "CUSTOM"],
+            default="CUSTOM",
+            choices=["CUSTOM"],
         ),
         src_tcp_ports=dict(
             type="list",

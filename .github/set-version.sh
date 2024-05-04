@@ -44,3 +44,8 @@ sed -i.bak -E "s/^Version: (.+)$/Version: $1/" "$ROOT/docs/source/index.rst" && 
 echo "Updating pyproject.toml"
 grep -E '^version = ".+"$' "$ROOT/pyproject.toml" || exit 1
 sed -i.bak -E "s/^version = \".+\"$/version = \"$1\"/" "$ROOT/pyproject.toml" && rm "$ROOT/pyproject.toml.bak"
+
+# Set version in plugins/module_utils/version.py
+echo "Updating plugins/module_utils/version.py"
+grep -E '^__version__ = ".+"$' "$ROOT/plugins/module_utils/version.py" || exit 1
+sed -i.bak -E "s/^__version__ = \".+\"$/__version__ = \"$1\"/" "$ROOT/plugins/module_utils/version.py" && rm "$ROOT/plugins/module_utils/version.py.bak"

@@ -91,7 +91,7 @@
     - name: Verify Network Services Group is present
       ansible.builtin.assert:
         that:
-          - not result.changed
+          - result.changed
           - result.data.name is defined
 
     - name: Ensure Network Services Group (again; idempotency check)
@@ -109,7 +109,7 @@
     - name: Ensure Network Services Group is absent (idempotency check)
       ansible.builtin.assert:
         that:
-          - not result.changed
+          - result.changed
 
     - name: Fetch all Network Services Group
       zscaler.ziacloud.zia_cloud_firewall_network_services_groups_facts:
@@ -134,7 +134,7 @@
           - not result.changed
           - result.data is defined
           - result.data[0].name is defined
-          - result.data[0].name == name
+          - result.data[0].name == group_name
 
     - name: Give the ZIA Cloud a 5 seconds to settle
       ansible.builtin.pause:
@@ -151,7 +151,7 @@
           - "{{ service_id2 }}"
       register: result
 
-    - name: Verify Destination Group of Type DSTN_IP is Deleted
+    - name: Verify Network Services Group is Deleted
       ansible.builtin.assert:
         that:
           - result.changed

@@ -29,15 +29,31 @@ import platform
 from ansible.module_utils.basic import missing_required_lib, env_fallback
 from ansible.module_utils import ansible_release
 
+# Initialize import error variables
+ZSCALER_IMPORT_ERROR = None
+VERSION_IMPORT_ERROR = None
+
 try:
     from zscaler.zia import ZIAClientHelper as ZIA
 
     HAS_ZSCALER = True
-    ZSCALER_IMPORT_ERROR = None
-except ImportError:
+except ImportError as e:
     ZIA = object  # Default to object if import fails
     HAS_ZSCALER = False
     ZSCALER_IMPORT_ERROR = missing_required_lib("zscaler")
+
+# Attempt to import the version information
+try:
+    from ansible_collections.zscaler.ziacloud.plugins.module_utils.version import (
+        __version__ as ansible_collection_version,
+    )
+
+    HAS_VERSION = True
+except ImportError as e:
+    HAS_VERSION = False
+    VERSION_IMPORT_ERROR = missing_required_lib(
+        "plugins.module_utils.version (version information)"
+    )
 
 VALID_ZIA_CLOUD = {
     "zscaler",
@@ -77,6 +93,11 @@ class ZIAClientHelper(ZIA):
                 msg="The 'zscaler' library is required for this module.",
                 exception=ZSCALER_IMPORT_ERROR,
             )
+        if not HAS_VERSION:
+            module.fail_json(
+                msg="Failed to import the version from the collection's module_utils.",
+                exception=VERSION_IMPORT_ERROR,
+            )
 
         self.connection_helper = ConnectionHelper(min_sdk_version=(0, 1, 0))
         provider = module.params.get("provider") or {}
@@ -93,7 +114,7 @@ class ZIAClientHelper(ZIA):
             username=username, password=password, api_key=api_key, cloud=cloud_env
         )
         ansible_version = ansible_release.__version__
-        self.user_agent = f"zia-ansible/{ansible_version}/({platform.system().lower()} {platform.machine()})"
+        self.user_agent = f"ziacloud-ansible/{ansible_version} (collection/{ansible_collection_version}) ({platform.system().lower()} {platform.machine()})"
 
     @staticmethod
     def zia_argument_spec():

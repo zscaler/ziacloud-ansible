@@ -45,40 +45,40 @@ options:
   id:
     description: "The unique identifier for the static IP address"
     type: int
-    required: False
+    required: false
   ip_address:
     description:
       - The static IP address
-    required: True
+    required: false
     type: str
   routable_ip:
     description:
       - Indicates whether a non-RFC 1918 IP address is publicly routable.
       - This attribute is ignored if there is no ZIA Private Service Edge associated to the organization."
-    required: False
+    required: false
     type: bool
   comment:
     description:
       - Additional information about this static IP address
-    required: False
+    required: false
     type: str
   geo_override:
     description:
       - If not set, geographic coordinates and city are automatically determined from the IP address.
       - Otherwise, the latitude and longitude coordinates must be provided.
-    required: False
+    required: false
     type: bool
   latitude:
     description:
       - Required only if the geoOverride attribute is set.
       - Latitude with 7 digit precision after decimal point, ranges between -90 and 90 degrees.
-    required: False
+    required: false
     type: float
   longitude:
     description:
       - Required only if the geoOverride attribute is set.
       - Longitude with 7 digit precision after decimal point, ranges between -180 and 180 degrees.
-    required: False
+    required: false
     type: float
 """
 
@@ -275,7 +275,7 @@ def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         id=dict(type="int", required=False),
-        ip_address=dict(type="str", required=True),
+        ip_address=dict(type="str", required=False),
         comment=dict(type="str", required=False),
         geo_override=dict(type="bool", required=False),
         latitude=dict(type="float", required=False),
