@@ -23,7 +23,7 @@ zscaler.ziacloud.zia_cloud_firewall_network_services module -- Adds a new networ
 .. Collection note
 
 .. note::
-    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 1.0.13).
+    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 1.0.15).
 
     It is not included in ``ansible-core``.
     To check whether it is installed, run :code:`ansible-galaxy collection list`.
@@ -198,7 +198,9 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      The description for the application layer service
+
+      The description cannot exceed 10240 characters.
 
 
       .. raw:: html
@@ -232,7 +234,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      List of tcp port range pairs, e.g. ['35000', '35000'] for port 35000.
+      The TCP source port number example 50 or port number range if any, that is used by the network service.
 
 
       .. raw:: html
@@ -274,7 +276,7 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      List of valid TCP ports.
+      List of valid destination TCP ports.
 
 
       .. raw:: html
@@ -316,7 +318,7 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      List of valid TCP ports.
+      List of valid destination TCP ports.
 
 
       .. raw:: html
@@ -351,7 +353,9 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      List of tcp port range pairs, e.g. ['35000', '35000'] for port 35000.
+      List of udp port range pairs, e.g. [35000, 35000] for port 35000.
+
+      The UDP destination port number example 50 or port number range if any, that is used by the network service.
 
 
       .. raw:: html
@@ -393,7 +397,7 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      List of valid TCP ports.
+      List of valid destination UDP ports.
 
 
       .. raw:: html
@@ -435,7 +439,7 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      List of valid TCP ports.
+      List of valid destination UDP ports.
 
 
       .. raw:: html
@@ -504,7 +508,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      The network service name
+      The name for the application layer service
 
 
       .. raw:: html
@@ -865,7 +869,9 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      List of tcp port range pairs, e.g. ['35000', '35000'] for port 35000.
+      List of tcp port range pairs, e.g. [35000, 35000] for port 35000.
+
+      The TCP source port number example 50 or port number range if any, that is used by the network service.
 
 
       .. raw:: html
@@ -907,7 +913,7 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      List of valid TCP ports.
+      List of valid source TCP ports.
 
 
       .. raw:: html
@@ -949,7 +955,9 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      List of valid TCP ports.
+      List of valid source TCP ports.
+
+      Start and End cannot be the same value.
 
 
       .. raw:: html
@@ -984,7 +992,9 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      List of tcp port range pairs, e.g. ['35000', '35000'] for port 35000.
+      List of udp port range pairs, e.g. [35000, 35000] for port 35000.
+
+      The list of UDP source port number example 50 or port number range if any, that is used by the network service.
 
 
       .. raw:: html
@@ -1026,7 +1036,7 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      List of valid TCP ports.
+      List of valid source UDP ports.
 
 
       .. raw:: html
@@ -1068,7 +1078,7 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      List of valid TCP ports.
+      List of valid source UDP ports.
 
 
       .. raw:: html
@@ -1246,16 +1256,14 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      
+      The service indicates that this is an admin-defined service.
 
 
       .. rst-class:: ansible-option-line
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry-default:`"STANDARD"` :ansible-option-choices-default-mark:`← (default)`
-      - :ansible-option-choices-entry:`"PREDEFINED"`
-      - :ansible-option-choices-entry:`"CUSTOM"`
+      - :ansible-option-choices-entry-default:`"CUSTOM"` :ansible-option-choices-default-mark:`← (default)`
 
 
       .. raw:: html

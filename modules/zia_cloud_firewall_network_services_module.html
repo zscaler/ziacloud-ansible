@@ -19,7 +19,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=8d563738"></script>
+        <script src="../_static/documentation_options.js?v=cb0f6c17"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -198,7 +198,7 @@
 <h1>zscaler.ziacloud.zia_cloud_firewall_network_services module – Adds a new network service.<a class="headerlink" href="#zscaler-ziacloud-zia-cloud-firewall-network-services-module-adds-a-new-network-service" title="Link to this heading"></a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This module is part of the <a class="reference external" href="https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/">zscaler.ziacloud collection</a> (version 1.0.13).</p>
+<p>This module is part of the <a class="reference external" href="https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/">zscaler.ziacloud collection</a> (version 1.0.15).</p>
 <p>It is not included in <code class="docutils literal notranslate"><span class="pre">ansible-core</span></code>.
 To check whether it is installed, run <code class="code docutils literal notranslate"><span class="pre">ansible-galaxy</span> <span class="pre">collection</span> <span class="pre">list</span></code>.</p>
 <p>To install it, use: <code class="code docutils literal notranslate"><span class="pre">ansible-galaxy</span> <span class="pre">collection</span> <span class="pre">install</span> <span class="pre">zscaler.ziacloud</span></code>.
@@ -266,48 +266,51 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 <div class="ansibleOptionAnchor" id="parameter-description"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-cloud-firewall-network-services-module-parameter-description"><strong>description</strong></p>
 <a class="ansibleOptionLink" href="#parameter-description" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
-<td><div class="ansible-option-cell"></div></td>
+<td><div class="ansible-option-cell"><p>The description for the application layer service</p>
+<p>The description cannot exceed 10240 characters.</p>
+</div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-dest_tcp_ports"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-cloud-firewall-network-services-module-parameter-dest-tcp-ports"><strong>dest_tcp_ports</strong></p>
 <a class="ansibleOptionLink" href="#parameter-dest_tcp_ports" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=dictionary</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>List of tcp port range pairs, e.g. [‘35000’, ‘35000’] for port 35000.</p>
+<td><div class="ansible-option-cell"><p>The TCP source port number example 50 or port number range if any, that is used by the network service.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-dest_tcp_ports/end"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-cloud-firewall-network-services-module-parameter-dest-tcp-ports-end"><strong>end</strong></p>
 <a class="ansibleOptionLink" href="#parameter-dest_tcp_ports/end" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>List of valid TCP ports.</p>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>List of valid destination TCP ports.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-dest_tcp_ports/start"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-cloud-firewall-network-services-module-parameter-dest-tcp-ports-start"><strong>start</strong></p>
 <a class="ansibleOptionLink" href="#parameter-dest_tcp_ports/start" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>List of valid TCP ports.</p>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>List of valid destination TCP ports.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-dest_udp_ports"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-cloud-firewall-network-services-module-parameter-dest-udp-ports"><strong>dest_udp_ports</strong></p>
 <a class="ansibleOptionLink" href="#parameter-dest_udp_ports" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=dictionary</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>List of tcp port range pairs, e.g. [‘35000’, ‘35000’] for port 35000.</p>
+<td><div class="ansible-option-cell"><p>List of udp port range pairs, e.g. [35000, 35000] for port 35000.</p>
+<p>The UDP destination port number example 50 or port number range if any, that is used by the network service.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-dest_udp_ports/end"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-cloud-firewall-network-services-module-parameter-dest-udp-ports-end"><strong>end</strong></p>
 <a class="ansibleOptionLink" href="#parameter-dest_udp_ports/end" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>List of valid TCP ports.</p>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>List of valid destination UDP ports.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-dest_udp_ports/start"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-cloud-firewall-network-services-module-parameter-dest-udp-ports-start"><strong>start</strong></p>
 <a class="ansibleOptionLink" href="#parameter-dest_udp_ports/start" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>List of valid TCP ports.</p>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>List of valid destination UDP ports.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
@@ -321,7 +324,7 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 <div class="ansibleOptionAnchor" id="parameter-name"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-cloud-firewall-network-services-module-parameter-name"><strong>name</strong></p>
 <a class="ansibleOptionLink" href="#parameter-name" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span> / <span class="ansible-option-required">required</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>The network service name</p>
+<td><div class="ansible-option-cell"><p>The name for the application layer service</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
@@ -395,42 +398,45 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 <div class="ansibleOptionAnchor" id="parameter-src_tcp_ports"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-cloud-firewall-network-services-module-parameter-src-tcp-ports"><strong>src_tcp_ports</strong></p>
 <a class="ansibleOptionLink" href="#parameter-src_tcp_ports" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=dictionary</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>List of tcp port range pairs, e.g. [‘35000’, ‘35000’] for port 35000.</p>
+<td><div class="ansible-option-cell"><p>List of tcp port range pairs, e.g. [35000, 35000] for port 35000.</p>
+<p>The TCP source port number example 50 or port number range if any, that is used by the network service.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-src_tcp_ports/end"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-cloud-firewall-network-services-module-parameter-src-tcp-ports-end"><strong>end</strong></p>
 <a class="ansibleOptionLink" href="#parameter-src_tcp_ports/end" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>List of valid TCP ports.</p>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>List of valid source TCP ports.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-src_tcp_ports/start"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-cloud-firewall-network-services-module-parameter-src-tcp-ports-start"><strong>start</strong></p>
 <a class="ansibleOptionLink" href="#parameter-src_tcp_ports/start" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>List of valid TCP ports.</p>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>List of valid source TCP ports.</p>
+<p>Start and End cannot be the same value.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-src_udp_ports"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-cloud-firewall-network-services-module-parameter-src-udp-ports"><strong>src_udp_ports</strong></p>
 <a class="ansibleOptionLink" href="#parameter-src_udp_ports" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=dictionary</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>List of tcp port range pairs, e.g. [‘35000’, ‘35000’] for port 35000.</p>
+<td><div class="ansible-option-cell"><p>List of udp port range pairs, e.g. [35000, 35000] for port 35000.</p>
+<p>The list of UDP source port number example 50 or port number range if any, that is used by the network service.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-src_udp_ports/end"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-cloud-firewall-network-services-module-parameter-src-udp-ports-end"><strong>end</strong></p>
 <a class="ansibleOptionLink" href="#parameter-src_udp_ports/end" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>List of valid TCP ports.</p>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>List of valid source UDP ports.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-src_udp_ports/start"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-cloud-firewall-network-services-module-parameter-src-udp-ports-start"><strong>start</strong></p>
 <a class="ansibleOptionLink" href="#parameter-src_udp_ports/start" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>List of valid TCP ports.</p>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>List of valid source UDP ports.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
@@ -520,11 +526,10 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 <div class="ansibleOptionAnchor" id="parameter-type"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-cloud-firewall-network-services-module-parameter-type"><strong>type</strong></p>
 <a class="ansibleOptionLink" href="#parameter-type" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<td><div class="ansible-option-cell"><p>The service indicates that this is an admin-defined service.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">&quot;STANDARD&quot;</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;PREDEFINED&quot;</span></code></p></li>
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;CUSTOM&quot;</span></code></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">&quot;CUSTOM&quot;</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 </ul>
 </div></td>
 </tr>
