@@ -44,7 +44,7 @@ except ImportError as e:
 
 # Attempt to import the version information
 try:
-    from ansible_collections.zscaler.zpacloud.plugins.module_utils.version import (
+    from ansible_collections.zscaler.ziacloud.plugins.module_utils.version import (
         __version__ as ansible_collection_version,
     )
 
@@ -114,7 +114,7 @@ class ZIAClientHelper(ZIA):
             username=username, password=password, api_key=api_key, cloud=cloud_env
         )
         ansible_version = ansible_release.__version__
-        self.user_agent = f"zpacloud-ansible/{ansible_version} (collection/{ansible_collection_version}) ({platform.system().lower()} {platform.machine()})"
+        self.user_agent = f"ziacloud-ansible/{ansible_version} (collection/{ansible_collection_version}) ({platform.system().lower()} {platform.machine()})"
 
     @staticmethod
     def zia_argument_spec():

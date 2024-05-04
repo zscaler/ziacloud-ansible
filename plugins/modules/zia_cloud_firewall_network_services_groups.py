@@ -80,7 +80,7 @@ from traceback import format_exc
 
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.zpacloud.plugins.module_utils.utils import (
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
     deleteNone,
 )
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (

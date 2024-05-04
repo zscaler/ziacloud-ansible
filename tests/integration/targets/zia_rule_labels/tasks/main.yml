@@ -101,7 +101,7 @@
           - not result.changed
           - result.data[0] is defined
 
-    - name: Give the ZPA Cloud a 5 seconds to settle
+    - name: Give the ZIA Cloud a 5 seconds to settle
       ansible.builtin.pause:
         seconds: 5
 
