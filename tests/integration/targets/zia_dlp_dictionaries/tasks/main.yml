@@ -122,7 +122,7 @@
           - not result.changed
           - result.data is defined
           - result.data[0].name is defined
-          - result.data[0].name == name
+          - result.data[0].name == dict_name
 
     - name: Give the ZIA Cloud a 5 seconds to settle
       ansible.builtin.pause:
@@ -140,7 +140,7 @@
         patterns: "{{ patterns }}"
       register: result
 
-    - name: Verify Destination Group of Type DSTN_IP is Deleted
+    - name: Verify DLP Dictionary of Type DSTN_IP is Deleted
       ansible.builtin.assert:
         that:
           - result.changed

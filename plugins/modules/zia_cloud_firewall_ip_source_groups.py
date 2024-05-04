@@ -59,7 +59,7 @@ options:
     description: "Source IP addresses added to the group"
     type: list
     elements: str
-    required: true
+    required: false
 """
 
 EXAMPLES = r"""
@@ -188,7 +188,7 @@ def main():
         id=dict(type="int", required=False),
         name=dict(type="str", required=True),
         description=dict(type="str", required=False),
-        ip_addresses=dict(type="list", elements="str", required=True),
+        ip_addresses=dict(type="list", elements="str", required=False),
         state=dict(type="str", choices=["present", "absent"], default="present"),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)

@@ -51,7 +51,7 @@ options:
         - The source IP address of the GRE tunnel.
         - This is typically a static IP address in the organization or SD-WAN.
         - This IP address must be provisioned within the Zscaler service using the /staticIP endpoint.
-    required: True
+    required: false
     type: str
   comment:
     description: Additional information about this GRE tunnel
@@ -301,7 +301,7 @@ def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         id=dict(type="int", required=False),
-        source_ip=dict(type="str", required=True),
+        source_ip=dict(type="str", required=False),
         comment=dict(type="str", required=False),
         internal_ip_range=dict(type="str", required=False),
         within_country=dict(type="bool", required=False),

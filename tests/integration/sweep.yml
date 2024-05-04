@@ -49,7 +49,7 @@
     provider: "{{ zia_cloud }}"
     state: absent
     name: "{{ item.name }}"
-  loop: "{{ all_network_services.data }}"
+  loop: "{{ all_network_services.data | rejectattr('type', 'in', ['PREDEFINED', 'STANDARD']) | list }}"
   when: all_network_services.data is defined
 
 - name: Set fact for each task status

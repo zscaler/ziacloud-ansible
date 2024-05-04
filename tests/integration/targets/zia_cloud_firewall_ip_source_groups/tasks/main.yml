@@ -133,7 +133,7 @@
         ip_addresses: "{{ ip_addresses }}"
       register: result
 
-    - name: Verify Destination Group of Type DSTN_IP is Deleted
+    - name: Verify IP Source Group is Deleted
       ansible.builtin.assert:
         that:
           - result.changed

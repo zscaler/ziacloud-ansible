@@ -52,7 +52,7 @@ options:
     type: str
   order:
     description: "Rule order number of the Firewall Filtering policy rule"
-    required: true
+    required: false
     type: int
   rank:
     description: "Admin rank of the Firewall Filtering policy rule"
@@ -615,7 +615,7 @@ def main():
         name=dict(type="str", required=True),
         description=dict(type="str", required=False),
         enabled=dict(type="bool", required=False),
-        order=dict(type="int", required=True),
+        order=dict(type="int", required=False),
         rank=dict(type="int", required=False, default=7),
         device_groups=id_spec,
         devices=id_spec,

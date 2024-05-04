@@ -23,6 +23,7 @@
       {
         "assets": [
           "galaxy.yml",
+          "pyproject.toml",
           "docs/source/index.rst",
           "plugins/module_utils/version.py",
           "./CHANGELOG.md"

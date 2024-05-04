@@ -88,7 +88,7 @@
           - not result.changed
           - result.data is defined
           - result.data.name is defined
-          - result.data.name == name
+          - result.data.name == service_name
           - result.data.description is defined
           - result.data.description == description
 
@@ -131,7 +131,7 @@
           - not result.changed
           - result.data is defined
           - result.data[0].name is defined
-          - result.data[0].name == name
+          - result.data[0].name == service_name
           - result.data[0].description is defined
           - result.data[0].description == description
 

@@ -67,7 +67,7 @@ options:
         - 61 is the Financial Statements ID, and 38 is the ABA Bank Routing Numbers dictionary ID.
         - Each dictionary ID is wrapped around by a prefix (D) and a suffix (.S).
     type: str
-    required: true
+    required: false
   custom_dlp_engine:
     description: "The DLP engine description."
     required: false
@@ -210,7 +210,7 @@ def main():
         id=dict(type="int", required=False),
         name=dict(type="str", required=True),
         description=dict(type="str", required=False),
-        engine_expression=dict(type="str", required=True),
+        engine_expression=dict(type="str", required=False),
         custom_dlp_engine=dict(type="bool", required=False),
         state=dict(type="str", choices=["present", "absent"], default="present"),
     )

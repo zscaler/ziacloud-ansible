@@ -185,12 +185,12 @@ def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         id=dict(type="int", required=False),
-        name=dict(type="str", required=True),
-        subject=dict(type="str", required=True),
+        name=dict(type="str", required=False),
+        subject=dict(type="str", required=False),
         tls_enabled=dict(type="bool", required=False),
         attach_content=dict(type="bool", required=False),
-        plain_text_message=dict(type="str", required=True),
-        html_message=dict(type="str", required=True),
+        plain_text_message=dict(type="str", required=False),
+        html_message=dict(type="str", required=False),
         state=dict(type="str", choices=["present", "absent"], default="present"),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
