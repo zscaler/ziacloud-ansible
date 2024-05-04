@@ -1,3 +1,10 @@
+### [1.0.15](https://github.com/zscaler/ziacloud-ansible/compare/v1.0.14...v1.0.15) (2024-05-04)
+
+
+### Bug Fixes
+
+* Added collection version to user-agent header ([#30](https://github.com/zscaler/ziacloud-ansible/issues/30)) ([1fa5f3f](https://github.com/zscaler/ziacloud-ansible/commit/1fa5f3f9c44ecb05846a3263a4afe591a49bf2bb))
+
 ### [1.0.14](https://github.com/zscaler/ziacloud-ansible/compare/v1.0.13...v1.0.14) (2024-04-24)
 
 
