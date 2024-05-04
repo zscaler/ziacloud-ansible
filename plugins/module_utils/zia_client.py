@@ -35,6 +35,7 @@ VERSION_IMPORT_ERROR = None
 
 try:
     from zscaler.zia import ZIAClientHelper as ZIA
+
     HAS_ZSCALER = True
 except ImportError as e:
     ZIA = object  # Default to object if import fails
@@ -43,11 +44,16 @@ except ImportError as e:
 
 # Attempt to import the version information
 try:
-    from ansible_collections.zscaler.zpacloud.plugins.module_utils.version import __version__ as ansible_collection_version
+    from ansible_collections.zscaler.zpacloud.plugins.module_utils.version import (
+        __version__ as ansible_collection_version,
+    )
+
     HAS_VERSION = True
 except ImportError as e:
     HAS_VERSION = False
-    VERSION_IMPORT_ERROR = missing_required_lib("plugins.module_utils.version (version information)")
+    VERSION_IMPORT_ERROR = missing_required_lib(
+        "plugins.module_utils.version (version information)"
+    )
 
 VALID_ZIA_CLOUD = {
     "zscaler",
@@ -83,9 +89,15 @@ class ConnectionHelper:
 class ZIAClientHelper(ZIA):
     def __init__(self, module):
         if not HAS_ZSCALER:
-            module.fail_json(msg="The 'zscaler' library is required for this module.", exception=ZSCALER_IMPORT_ERROR)
+            module.fail_json(
+                msg="The 'zscaler' library is required for this module.",
+                exception=ZSCALER_IMPORT_ERROR,
+            )
         if not HAS_VERSION:
-            module.fail_json(msg="Failed to import the version from the collection's module_utils.", exception=VERSION_IMPORT_ERROR)
+            module.fail_json(
+                msg="Failed to import the version from the collection's module_utils.",
+                exception=VERSION_IMPORT_ERROR,
+            )
 
         self.connection_helper = ConnectionHelper(min_sdk_version=(0, 1, 0))
         provider = module.params.get("provider") or {}

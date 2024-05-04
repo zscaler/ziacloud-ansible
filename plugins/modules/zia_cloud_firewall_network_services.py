@@ -345,16 +345,25 @@ def core(module):
         if existing_network_service is not None:
             service_type = existing_network_service.get("type")
             if service_type in ["PREDEFINED", "STANDARD"]:
-                module.exit_json(changed=False, msg=f"Skipping deletion as the network service type '{service_type}' is protected.")
+                module.exit_json(
+                    changed=False,
+                    msg=f"Skipping deletion as the network service type '{service_type}' is protected.",
+                )
             else:
                 code = client.firewall.delete_network_service(
                     existing_network_service.get("id")
                 )
                 if code > 299:
                     module.fail_json(msg="Failed to delete the network service.")
-                module.exit_json(changed=True, data=existing_network_service, msg="Network service deleted successfully.")
+                module.exit_json(
+                    changed=True,
+                    data=existing_network_service,
+                    msg="Network service deleted successfully.",
+                )
         else:
-            module.exit_json(changed=False, msg="No matching network service found to delete.")
+            module.exit_json(
+                changed=False, msg="No matching network service found to delete."
+            )
 
 
 def main():
