@@ -112,10 +112,6 @@
         name: "{{ engine_name }}"
       register: result
 
-    - name: Debug Authentication Setting result
-      ansible.builtin.debug:
-        var: result
-
     - name: Ensure this DLP Engine is found
       ansible.builtin.assert:
         that:
