@@ -106,7 +106,7 @@ Parameters
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`string` / :ansible-option-required:`required`
+        :ansible-option-type:`string`
 
       .. raw:: html
 
@@ -178,7 +178,7 @@ Parameters
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`string` / :ansible-option-required:`required`
+        :ansible-option-type:`string`
 
       .. raw:: html
 
@@ -1023,7 +1023,7 @@ Parameters
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`string` / :ansible-option-required:`required`
+        :ansible-option-type:`string`
 
       .. raw:: html
 
@@ -1393,7 +1393,7 @@ Parameters
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`string` / :ansible-option-required:`required`
+        :ansible-option-type:`string`
 
       .. raw:: html
 
@@ -1435,7 +1435,7 @@ Parameters
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`string` / :ansible-option-required:`required`
+        :ansible-option-type:`string`
 
       .. raw:: html
 
@@ -1491,7 +1491,7 @@ Parameters
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`string` / :ansible-option-required:`required`
+        :ansible-option-type:`string`
 
       .. raw:: html
 
@@ -1575,7 +1575,7 @@ Parameters
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`string` / :ansible-option-required:`required`
+        :ansible-option-type:`string`
 
       .. raw:: html
 
@@ -1724,7 +1724,7 @@ Parameters
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`string` / :ansible-option-required:`required`
+        :ansible-option-type:`string`
 
       .. raw:: html
 

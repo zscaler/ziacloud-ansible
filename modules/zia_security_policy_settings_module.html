@@ -19,7 +19,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=cb0f6c17"></script>
+        <script src="../_static/documentation_options.js?v=588f6264"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -80,6 +80,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../requirements.html">Requirements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../authentication.html">Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../modules.html">Module reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="zia_activation_status_facts_module.html">zscaler.ziacloud.zia_activation_status_facts module – Gets the activation status</a></li>
@@ -239,14 +240,14 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 <tbody>
 <tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-api_key"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-security-policy-settings-module-parameter-api-key"><strong>api_key</strong></p>
-<a class="ansibleOptionLink" href="#parameter-api_key" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span> / <span class="ansible-option-required">required</span></p>
+<a class="ansibleOptionLink" href="#parameter-api_key" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>A string that contains the obfuscated API key.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-cloud"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-security-policy-settings-module-parameter-cloud"><strong>cloud</strong></p>
-<a class="ansibleOptionLink" href="#parameter-cloud" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span> / <span class="ansible-option-required">required</span></p>
+<a class="ansibleOptionLink" href="#parameter-cloud" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>The Zscaler cloud name was provisioned for your organization.</p>
 <p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
@@ -264,7 +265,7 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-password"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-security-policy-settings-module-parameter-password"><strong>password</strong></p>
-<a class="ansibleOptionLink" href="#parameter-password" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span> / <span class="ansible-option-required">required</span></p>
+<a class="ansibleOptionLink" href="#parameter-password" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>A string that contains the password for the API admin.</p>
 </div></td>
@@ -278,14 +279,14 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 </tr>
 <tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-provider/api_key"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-security-policy-settings-module-parameter-provider-api-key"><strong>api_key</strong></p>
-<a class="ansibleOptionLink" href="#parameter-provider/api_key" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span> / <span class="ansible-option-required">required</span></p>
+<a class="ansibleOptionLink" href="#parameter-provider/api_key" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>A string that contains the obfuscated API key.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-provider/cloud"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-security-policy-settings-module-parameter-provider-cloud"><strong>cloud</strong></p>
-<a class="ansibleOptionLink" href="#parameter-provider/cloud" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span> / <span class="ansible-option-required">required</span></p>
+<a class="ansibleOptionLink" href="#parameter-provider/cloud" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The Zscaler cloud name was provisioned for your organization.</p>
 <p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
@@ -303,7 +304,7 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 </tr>
 <tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-provider/password"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-security-policy-settings-module-parameter-provider-password"><strong>password</strong></p>
-<a class="ansibleOptionLink" href="#parameter-provider/password" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span> / <span class="ansible-option-required">required</span></p>
+<a class="ansibleOptionLink" href="#parameter-provider/password" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>A string that contains the password for the API admin.</p>
 </div></td>
@@ -317,7 +318,7 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 </tr>
 <tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-provider/username"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-security-policy-settings-module-parameter-provider-username"><strong>username</strong></p>
-<a class="ansibleOptionLink" href="#parameter-provider/username" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span> / <span class="ansible-option-required">required</span></p>
+<a class="ansibleOptionLink" href="#parameter-provider/username" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>A string that contains the email ID of the API admin.</p>
 </div></td>
@@ -362,7 +363,7 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-username"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-security-policy-settings-module-parameter-username"><strong>username</strong></p>
-<a class="ansibleOptionLink" href="#parameter-username" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span> / <span class="ansible-option-required">required</span></p>
+<a class="ansibleOptionLink" href="#parameter-username" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>A string that contains the email ID of the API admin.</p>
 </div></td>
