@@ -1,3 +1,10 @@
+### [1.0.16](https://github.com/zscaler/ziacloud-ansible/compare/v1.0.15...v1.0.16) (2024-05-06)
+
+
+### Bug Fixes
+
+* Fixed zia authentication method schema ([#31](https://github.com/zscaler/ziacloud-ansible/issues/31)) ([271ce29](https://github.com/zscaler/ziacloud-ansible/commit/271ce29c308f6cfb101048f5197aff20fb0fdce1))
+
 ### [1.0.15](https://github.com/zscaler/ziacloud-ansible/compare/v1.0.14...v1.0.15) (2024-05-04)
 
 
