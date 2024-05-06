@@ -85,30 +85,30 @@ def core(module):
     rules = []
 
     if rule_id is not None:
-        # Fetch rule by ID
-        ruleBox = client.firewall.get_rule(rule_id=rule_id)
-        if ruleBox is None:
-            module.fail_json(
-                msg="Failed to retrieve Firewall Rule ID: '%s'" % (rule_id)
-            )
-        rules = [ruleBox.to_dict()]
+        # Fetch rule by ID directly
+        rule_box = client.firewall.get_rule(rule_id=rule_id)
+        if rule_box is None:
+            module.fail_json(msg=f"Failed to retrieve Firewall Rule ID: '{rule_id}'")
+        rules = [rule_box]
     else:
-        # Fetch all rules and search by name
-        all_rules = client.firewall.list_rules().to_list()
+        # Fetch all rules from the SDK directly
+        all_rules = client.firewall.list_rules()
+
         if rule_name is not None:
-            # Iterate over rules to find the matching name
+            # Search for the specific rule by name directly
             for rule in all_rules:
                 if rule.get("name") == rule_name:
                     rules = [rule]
                     break
+
             # Handle case where no rule with the given name is found
             if not rules:
                 module.fail_json(
-                    msg="Failed to retrieve Firewall Rule Name: '%s'" % (rule_name)
+                    msg=f"Failed to retrieve Firewall Rule Name: '{rule_name}'"
                 )
         else:
-            # Return all rules if no specific name is provided
-            rules = all_rules
+            # Return all rules directly
+            rules = list(all_rules)
 
     module.exit_json(changed=False, data=rules)
 

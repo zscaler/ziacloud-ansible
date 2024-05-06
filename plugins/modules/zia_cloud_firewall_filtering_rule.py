@@ -65,6 +65,7 @@ options:
       - Full The service logs all sessions of the rule individually, except HTTPS or HTTPS.
       - Full logging on all other rules requires the Full Logging license. Only Block rules support full logging.
     required: false
+    default: false
     type: bool
   locations:
     description: "The locations to which the Firewall Filtering policy rule applies"
@@ -320,7 +321,9 @@ def normalize_rule(rule):
     """
     normalized = rule.copy()
 
-    computed_values = []
+    computed_values = [
+        "exclude_src_countries",
+    ]
     for attr in computed_values:
         normalized.pop(attr, None)
 
@@ -643,7 +646,7 @@ def main():
         dest_countries=dict(type="list", elements="str", required=False),
         source_countries=dict(type="list", elements="str", required=False),
         exclude_src_countries=dict(type="bool", required=False),
-        enable_full_logging=dict(type="bool", required=False),
+        enable_full_logging=dict(type="bool", default=False, required=False),
         action=dict(
             type="str",
             required=False,

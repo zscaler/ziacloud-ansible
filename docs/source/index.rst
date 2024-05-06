@@ -49,6 +49,7 @@ contributed by the **Zscaler's Technology Alliances** team.
 
    requirements
    installation
+   authentication
    examples
    modules
 

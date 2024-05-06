@@ -21,10 +21,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from __future__ import absolute_import, division, print_function
-
-__metaclass__ = type
-
+import os
 import platform
 from ansible.module_utils.basic import missing_required_lib, env_fallback
 from ansible.module_utils import ansible_release
@@ -42,7 +39,6 @@ except ImportError as e:
     HAS_ZSCALER = False
     ZSCALER_IMPORT_ERROR = missing_required_lib("zscaler")
 
-# Attempt to import the version information
 try:
     from ansible_collections.zscaler.ziacloud.plugins.module_utils.version import (
         __version__ as ansible_collection_version,
@@ -99,20 +95,42 @@ class ZIAClientHelper(ZIA):
                 exception=VERSION_IMPORT_ERROR,
             )
 
-        self.connection_helper = ConnectionHelper(min_sdk_version=(0, 1, 0))
+        # Initialize provider to an empty dict if None
         provider = module.params.get("provider") or {}
-        username = provider.get("username") or module.params.get("username")
-        password = provider.get("password") or module.params.get("password")
-        api_key = provider.get("api_key") or module.params.get("api_key")
-        cloud_env = provider.get("cloud") or module.params.get("cloud")
-        cloud_env = cloud_env.lower()
 
+        # Use provider or environment variables
+        username = (
+            provider.get("username")
+            or module.params.get("username")
+            or os.getenv("ZIA_USERNAME")
+        )
+        password = (
+            provider.get("password")
+            or module.params.get("password")
+            or os.getenv("ZIA_PASSWORD")
+        )
+        api_key = (
+            provider.get("api_key")
+            or module.params.get("api_key")
+            or os.getenv("ZIA_API_KEY")
+        )
+        cloud_env = (
+            provider.get("cloud")
+            or module.params.get("cloud")
+            or os.getenv("ZIA_CLOUD")
+        )
+
+        if not all([username, password, api_key, cloud_env]):
+            module.fail_json(msg="All authentication parameters must be provided.")
+
+        cloud_env = cloud_env.lower()
         if cloud_env not in VALID_ZIA_CLOUD:
-            raise ValueError(f"Invalid ZIA Cloud environment '{cloud_env}'.")
+            module.fail_json(msg=f"Invalid ZIA Cloud environment '{cloud_env}'.")
 
         super().__init__(
             username=username, password=password, api_key=api_key, cloud=cloud_env
         )
+
         ansible_version = ansible_release.__version__
         self.user_agent = f"ziacloud-ansible/{ansible_version} (collection/{ansible_collection_version}) ({platform.system().lower()} {platform.machine()})"
 
@@ -121,87 +139,58 @@ class ZIAClientHelper(ZIA):
         return dict(
             provider=dict(
                 type="dict",
+                required=False,
                 options=dict(
                     username=dict(
-                        no_log=False,
-                        required=True,
+                        no_log=True,
+                        required=False,
                         fallback=(env_fallback, ["ZIA_USERNAME"]),
                         type="str",
                     ),
                     password=dict(
                         no_log=True,
-                        required=True,
+                        required=False,
                         fallback=(env_fallback, ["ZIA_PASSWORD"]),
                         type="str",
                     ),
                     api_key=dict(
                         no_log=True,
-                        required=True,
+                        required=False,
                         fallback=(env_fallback, ["ZIA_API_KEY"]),
                         type="str",
                     ),
                     cloud=dict(
                         no_log=False,
-                        required=True,
-                        choices=[
-                            "zscloud",
-                            "zscaler",
-                            "zscalerone",
-                            "zscalertwo",
-                            "zscalerthree",
-                            "zscalerbeta",
-                            "zscalergov",
-                            "zscalerten",
-                        ],
-                        fallback=(env_fallback, ["ZIA_CLOUD"]),
-                        type="str",
-                    ),
-                    sandbox_token=dict(
-                        no_log=True,
                         required=False,
-                        fallback=(env_fallback, ["ZIA_SANDBOX_TOKEN"]),
+                        choices=list(VALID_ZIA_CLOUD),
+                        fallback=(env_fallback, ["ZIA_CLOUD"]),
                         type="str",
                     ),
                 ),
             ),
             username=dict(
                 no_log=True,
-                required=True,
+                required=False,
                 fallback=(env_fallback, ["ZIA_USERNAME"]),
                 type="str",
             ),
             password=dict(
                 no_log=True,
-                required=True,
+                required=False,
                 fallback=(env_fallback, ["ZIA_PASSWORD"]),
                 type="str",
             ),
             api_key=dict(
                 no_log=True,
-                required=True,
+                required=False,
                 fallback=(env_fallback, ["ZIA_API_KEY"]),
                 type="str",
             ),
             cloud=dict(
                 no_log=False,
-                required=True,
-                choices=[
-                    "zscloud",
-                    "zscaler",
-                    "zscalerone",
-                    "zscalertwo",
-                    "zscalerthree",
-                    "zscalerbeta",
-                    "zscalergov",
-                    "zscalerten",
-                ],
-                fallback=(env_fallback, ["ZIA_CLOUD"]),
-                type="str",
-            ),
-            sandbox_token=dict(
-                no_log=True,
                 required=False,
-                fallback=(env_fallback, ["ZIA_SANDBOX_TOKEN"]),
+                choices=list(VALID_ZIA_CLOUD),
+                fallback=(env_fallback, ["ZIA_CLOUD"]),
                 type="str",
             ),
         )
