@@ -34,22 +34,22 @@ options:
     username:
         description:
             - A string that contains the email ID of the API admin.
-        required: true
+        required: false
         type: str
     password:
         description:
             - A string that contains the password for the API admin.
-        required: true
+        required: false
         type: str
     api_key:
         description:
             - A string that contains the obfuscated API key.
-        required: true
+        required: false
         type: str
     cloud:
         description:
             - The Zscaler cloud name was provisioned for your organization.
-        required: true
+        required: false
         type: str
         choices:
             - zscloud
@@ -73,28 +73,28 @@ options:
         description:
             - A dict object containing connection details. This is optional; credentials can also be provided directly at the top level.
         type: dict
-        required: False
+        required: false
         suboptions:
             username:
                 description:
                     - A string that contains the email ID of the API admin.
                 type: str
-                required: True
+                required: false
             password:
                 description:
                     - A string that contains the password for the API admin.
                 type: str
-                required: True
+                required: false
             api_key:
                 description:
                     - A string that contains the obfuscated API key.
                 type: str
-                required: True
+                required: false
             cloud:
                 description:
                     - The Zscaler cloud name was provisioned for your organization.
                 type: str
-                required: True
+                required: false
                 choices:
                     - zscloud
                     - zscaler
@@ -108,7 +108,7 @@ options:
                 description:
                     - A string that contains the Sandbox API Key.
                 type: str
-                required: False
+                required: false
 """
 
     STATE = r"""

@@ -139,10 +139,9 @@ class ZIAClientHelper(ZIA):
         return dict(
             provider=dict(
                 type="dict",
-                required=False,
                 options=dict(
                     username=dict(
-                        no_log=True,
+                        no_log=False,
                         required=False,
                         fallback=(env_fallback, ["ZIA_USERNAME"]),
                         type="str",
@@ -162,8 +161,23 @@ class ZIAClientHelper(ZIA):
                     cloud=dict(
                         no_log=False,
                         required=False,
-                        choices=list(VALID_ZIA_CLOUD),
+                        choices=[
+                            "zscloud",
+                            "zscaler",
+                            "zscalerone",
+                            "zscalertwo",
+                            "zscalerthree",
+                            "zscalerbeta",
+                            "zscalergov",
+                            "zscalerten",
+                        ],
                         fallback=(env_fallback, ["ZIA_CLOUD"]),
+                        type="str",
+                    ),
+                    sandbox_token=dict(
+                        no_log=True,
+                        required=False,
+                        fallback=(env_fallback, ["ZIA_SANDBOX_TOKEN"]),
                         type="str",
                     ),
                 ),
@@ -189,8 +203,23 @@ class ZIAClientHelper(ZIA):
             cloud=dict(
                 no_log=False,
                 required=False,
-                choices=list(VALID_ZIA_CLOUD),
+                choices=[
+                    "zscloud",
+                    "zscaler",
+                    "zscalerone",
+                    "zscalertwo",
+                    "zscalerthree",
+                    "zscalerbeta",
+                    "zscalergov",
+                    "zscalerten",
+                ],
                 fallback=(env_fallback, ["ZIA_CLOUD"]),
+                type="str",
+            ),
+            sandbox_token=dict(
+                no_log=True,
+                required=False,
+                fallback=(env_fallback, ["ZIA_SANDBOX_TOKEN"]),
                 type="str",
             ),
         )
