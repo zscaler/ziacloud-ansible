@@ -46,7 +46,7 @@ pycodestyle = "*"
 certifi = "^2023.11.17"
 chardet = "3.0.4"
 idna = "3.7"
-requests = "^2.22.0"
+requests = "^2.32.0"
 
 [build-system]
 requires = ["poetry>=0.12"]
