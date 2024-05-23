@@ -9,10 +9,10 @@
 
 <div style="display: flex; align-items: center;">
     <a href="https://catalog.redhat.com/software/search?p=1&type=Ansible%20collection&partnerName=Zscaler">
-        <img src="https://catalog.redhat.com/img/svg/logo.svg" alt="RedHat logo" title="RedHat Ecosystem Catalog" height="40" />
+        <img src="https://catalog.redhat.com/img/svg/logo.svg" alt="RedHat logo" title="RedHat Ecosystem Catalog" height="20" style="margin-left: 20px;"/>
     </a>
     <a href="https://www.zscaler.com/">
-        <img src="https://www.zscaler.com/themes/custom/zscaler/logo.svg" alt="Zscaler logo" title="Zscaler" height="30" style="margin-left: 30px;" />
+        <img src="https://www.zscaler.com/themes/custom/zscaler/logo.svg" alt="Zscaler logo" title="Zscaler" height="25" style="margin-left: 25px;" />
     </a>
 </div>
 
