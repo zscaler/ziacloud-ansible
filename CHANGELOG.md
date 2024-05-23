@@ -1,3 +1,10 @@
+### [1.0.17](https://github.com/zscaler/ziacloud-ansible/compare/v1.0.16...v1.0.17) (2024-05-23)
+
+
+### Bug Fixes
+
+* Fixed IP Destination and IP Source Group Drift ([#33](https://github.com/zscaler/ziacloud-ansible/issues/33)) ([2e9531b](https://github.com/zscaler/ziacloud-ansible/commit/2e9531b7a6584c4ab091e5f833e1f6c383ea5a81))
+
 ### [1.0.16](https://github.com/zscaler/ziacloud-ansible/compare/v1.0.15...v1.0.16) (2024-05-06)
 
 
