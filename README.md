@@ -7,6 +7,15 @@
 [![License](https://img.shields.io/github/license/zscaler/ziacloud-ansible?color=blue)](https://github.com/zscaler/ziacloud-ansible/v2/blob/master/LICENSE)
 [![Zscaler Community](https://img.shields.io/badge/zscaler-community-blue)](https://community.zscaler.com/)
 
+<div style="display: flex; align-items: center;">
+    <a href="https://catalog.redhat.com/software/search?p=1&type=Ansible%20collection&partnerName=Zscaler">
+        <img src="https://catalog.redhat.com/img/svg/logo.svg" alt="RedHat logo" title="RedHat Ecosystem Catalog" height="40" />
+    </a>
+    <a href="https://www.zscaler.com/">
+        <img src="https://www.zscaler.com/themes/custom/zscaler/logo.svg" alt="Zscaler logo" title="Zscaler" height="30" style="margin-left: 30px;" />
+    </a>
+</div>
+
 ## Zscaler Support
 
 -> **Disclaimer:** Please refer to our [General Support Statement](https://zscaler.github.io/ziacloud-ansible/support.html) before proceeding with the use of this collection. You can also refer to our [troubleshooting guide](https://zscaler.github.io/ziacloud-ansible/troubleshooting.html) for guidance on typical problems.
