@@ -148,25 +148,28 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 def normalize_ip_group(group):
     """
-    Normalize ip destination group data by setting computed values.
+    Normalize ip destination group data by setting computed values and sorting lists.
     """
     normalized = group.copy()
 
     computed_values = [
         "id",
-        "name",
-        "description",
-        "type",
         "creation_time",
         "modified_by",
         "modified_time",
-        "addresses",
-        "ip_categories",
-        "url_categories",
-        "countries",
     ]
     for attr in computed_values:
         normalized.pop(attr, None)
+
+    # Sort the addresses list to ensure order is ignored during comparison
+    if "addresses" in normalized and normalized["addresses"]:
+        normalized["addresses"] = sorted(normalized["addresses"])
+
+    # Convert None values for lists to empty lists for comparison purposes
+    list_fields = ["ip_categories", "url_categories", "countries"]
+    for field in list_fields:
+        if normalized.get(field) is None:
+            normalized[field] = []
 
     return normalized
 

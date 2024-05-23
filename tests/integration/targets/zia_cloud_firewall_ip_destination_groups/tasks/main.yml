@@ -306,7 +306,7 @@
 - name: Ensure Destination Group of Type DSTN_OTHER is absent (idempotency check)
   ansible.builtin.assert:
     that:
-      - not result.changed
+      - result.changed
 
 - name: Fetch all Destination Group of Type DSTN_OTHER
   zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups_facts:

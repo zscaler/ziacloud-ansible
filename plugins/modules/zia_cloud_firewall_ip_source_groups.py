@@ -95,10 +95,6 @@ def normalize_ip_group(group):
 
     computed_values = [
         "id",
-        "name",
-        "description",
-        "is_non_editable",
-        "ip_addresses",
     ]
     for attr in computed_values:
         normalized.pop(attr, None)
