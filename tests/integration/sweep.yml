@@ -38,32 +38,6 @@
   loop: "{{ all_locations.data }}"
   when: all_locations.data is defined
 
-- name: List all DLP Engines
-  zscaler.ziacloud.zia_dlp_engine_facts:
-    provider: "{{ zia_cloud }}"
-  register: all_engines
-
-- name: Delete all DLP Engines 💥
-  zscaler.ziacloud.zia_dlp_engine:
-    provider: "{{ zia_cloud }}"
-    state: absent
-    name: "{{ item.name }}"
-  loop: "{{ all_engines.data }}"
-  when: all_engines.data is defined
-
-- name: List all DLP Dictionaries
-  zscaler.ziacloud.zia_dlp_dictionaries_facts:
-    provider: "{{ zia_cloud }}"
-  register: all_dictionaries
-
-- name: Delete all DLP Dictionaries 💥
-  zscaler.ziacloud.zia_dlp_dictionaries:
-    provider: "{{ zia_cloud }}"
-    state: absent
-    name: "{{ item.name }}"
-  loop: "{{ all_dictionaries.data }}"
-  when: all_dictionaries.data is defined
-
 - name: List all Rule Labels
   zscaler.ziacloud.zia_rule_labels_facts:
     provider: "{{ zia_cloud }}"
@@ -122,8 +96,6 @@
     dlp_web_rules_failed: "{{ all_dlp_rules.failed | default(false) }}"
     url_filtering_rules_failed: "{{ all_url_rules.failed | default(false) }}"
     locations_failed: "{{ all_locations.failed | default(false) }}"
-    dlp_engines_failed: "{{ all_engines.failed | default(false) }}"
-    dlp_dictionaries_failed: "{{ all_dictionaries.failed | default(false) }}"
     rule_labels_failed: "{{ all_rule_labels.failed | default(false) }}"
     ip_dest_groups_failed: "{{ all_ip_dest_groups.failed | default(false) }}"
     ip_source_groups_failed: "{{ all_ip_source_groups.failed | default(false) }}"
@@ -137,8 +109,6 @@
           dlp_web_rules_failed or
           url_filtering_rules_failed or
           locations_failed or
-          dlp_engines_failed or
-          dlp_dictionaries_failed or
           rule_labels_failed or
           ip_dest_groups_failed or
           ip_source_groups_failed or
