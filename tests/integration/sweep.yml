@@ -12,19 +12,6 @@
   loop: "{{ all_dlp_rules.data }}"
   when: all_dlp_rules.data is defined
 
-- name: List all URL Filtering Rules
-  zscaler.ziacloud.zia_url_filtering_rule_facts:
-    provider: "{{ zia_cloud }}"
-  register: all_url_rules
-
-- name: Delete all URL Filtering Rules 💥
-  zscaler.ziacloud.zia_url_filtering_rules:
-    provider: "{{ zia_cloud }}"
-    state: absent
-    name: "{{ item.name }}"
-  loop: "{{ all_url_rules.data }}"
-  when: all_url_rules.data is defined
-
 - name: List all Locations
   zscaler.ziacloud.zia_location_management_facts:
     provider: "{{ zia_cloud }}"
@@ -94,7 +81,6 @@
 - name: Set fact for each task status
   ansible.builtin.set_fact:
     dlp_web_rules_failed: "{{ all_dlp_rules.failed | default(false) }}"
-    url_filtering_rules_failed: "{{ all_url_rules.failed | default(false) }}"
     locations_failed: "{{ all_locations.failed | default(false) }}"
     rule_labels_failed: "{{ all_rule_labels.failed | default(false) }}"
     ip_dest_groups_failed: "{{ all_ip_dest_groups.failed | default(false) }}"
@@ -107,7 +93,6 @@
       {{
         not (
           dlp_web_rules_failed or
-          url_filtering_rules_failed or
           locations_failed or
           rule_labels_failed or
           ip_dest_groups_failed or
