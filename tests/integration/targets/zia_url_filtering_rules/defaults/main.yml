@@ -1,0 +1,45 @@
+---
+rule_name: test_zia_ansible
+description: test_zia_ansible
+rule_action: ALLOW
+rule_order: 1
+enabled: true
+url_categories:
+  - ANY
+protocols:
+  - ANY_RULE
+device_trust_levels:
+  - UNKNOWN_DEVICETRUSTLEVEL
+  - LOW_TRUST
+  - MEDIUM_TRUST
+  - HIGH_TRUST
+user_agent_types:
+  - OPERA
+  - FIREFOX
+  - MSIE
+  - MSEDGE
+  - CHROME
+  - SAFARI
+  - MSCHREDGE
+  - OTHER
+user_risk_score_levels:
+  - LOW
+  - MEDIUM
+  - HIGH
+  - CRITICAL
+request_methods:
+  - CONNECT
+  - DELETE
+  - GET
+  - HEAD
+  - OPTIONS
+  - OTHER
+  - POST
+  - PUT
+  - TRACE
+
+# URL Filtering Rule Update
+name_update: test_zia_ansible
+description_update: test_zia_ansible_update
+action_update: BLOCK
+enabled_update: false

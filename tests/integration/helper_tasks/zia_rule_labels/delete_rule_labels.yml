@@ -1,0 +1,38 @@
+---
+- name: Ensure required environment variables are set
+  ansible.builtin.fail:
+    msg: "{{ env_var }} is not defined as environment variable"
+  when: lookup('env', env_var) is none
+  loop:
+    - ZIA_USERNAME
+    - ZIA_PASSWORD
+    - ZIA_API_KEY
+    - ZIA_CLOUD
+  loop_control:
+    loop_var: env_var
+
+- name: Ensure ZIA Credential environment variables are set
+  ansible.builtin.set_fact:
+    zia_cloud:
+      username: "{{ lookup('env', 'ZIA_USERNAME') }}"
+      password: "{{ lookup('env', 'ZIA_PASSWORD') }}"
+      api_key: "{{ lookup('env', 'ZIA_API_KEY') }}"
+      cloud: "{{ lookup('env', 'ZIA_CLOUD') | default(omit) }}"
+  no_log: true
+
+- name: Main block to List All Rule Labels Configuration
+  block:
+    - name: List all Rule Labels
+      zscaler.ziacloud.zia_rule_labels_facts:
+        provider: "{{ zia_cloud }}"
+      register: all_labels
+
+    - name: Delete all Rule Label 💥
+      zscaler.ziacloud.zia_rule_labels:
+        provider: "{{ zia_cloud }}"
+        state: absent
+        name: "{{ rule_label.name }}"
+      loop: "{{ all_labels.data }}"
+      when: all_labels.data is defined
+      loop_control:
+        loop_var: rule_label

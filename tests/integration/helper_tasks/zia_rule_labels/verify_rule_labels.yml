@@ -1,0 +1,37 @@
+---
+- name: Ensure required environment variables are set
+  ansible.builtin.fail:
+    msg: "{{ env_var }} is not defined as environment variable"
+  when: lookup('env', env_var) is none
+  loop:
+    - ZIA_USERNAME
+    - ZIA_PASSWORD
+    - ZIA_API_KEY
+    - ZIA_CLOUD
+  loop_control:
+    loop_var: env_var
+
+- name: Ensure ZIA Credential environment variables are set
+  ansible.builtin.set_fact:
+    zia_cloud:
+      username: "{{ lookup('env', 'ZIA_USERNAME') }}"
+      password: "{{ lookup('env', 'ZIA_PASSWORD') }}"
+      api_key: "{{ lookup('env', 'ZIA_API_KEY') }}"
+      cloud: "{{ lookup('env', 'ZIA_CLOUD') | default(omit) }}"
+  no_log: true
+
+- name: Main block to Fetch The Created Rule Label Configuration
+  block:
+    - name: Fetch the created Rule Label
+      zscaler.ziacloud.zia_rule_labels_facts:
+        provider: "{{ zia_cloud }}"
+        id: "{{ label_id }}" # assuming you have the ID stored in this variable
+      register: fetched_label
+
+    - name: Verify App Rule Label attributes
+      ansible.builtin.assert:
+        that:
+          - fetched_label.data[0].name == label_name
+          - fetched_label.data[0].name == label_description
+        fail_msg: Verification failed for Rule Label!
+        success_msg: Verification successful for Rule Label!
