@@ -62,7 +62,7 @@ options:
     type: bool
   order:
     description: "Rule order number of the URL Filtering policy rule"
-    required: true
+    required: false
     type: int
   action:
     description:
@@ -168,7 +168,7 @@ options:
         - If not set, rule will be applied to all methods"
     type: list
     elements: str
-    required: true
+    required: false
     choices:
         - OPTIONS
         - GET
@@ -439,12 +439,15 @@ def normalize_rule(rule):
     """
     Normalize rule data by setting computed values.
     """
+    if not rule:
+        return {}
+
     normalized = rule.copy()
 
     # Add 'profile_seq' to the list of computed values to be removed
     computed_values = ["profile_seq"]
     for attr in computed_values:
-        if "cbi_profile" in normalized and attr in normalized["cbi_profile"]:
+        if "cbi_profile" in normalized and isinstance(normalized["cbi_profile"], dict) and attr in normalized["cbi_profile"]:
             normalized["cbi_profile"].pop(attr, None)
 
     return normalized
@@ -718,7 +721,7 @@ def main():
         name=dict(type="str", required=True),
         description=dict(type="str", required=False),
         enabled=dict(type="bool", required=False),
-        order=dict(type="int", required=True),
+        order=dict(type="int", required=False),
         rank=dict(type="int", required=False, default=7),
         locations=id_spec,
         groups=id_spec,
@@ -777,7 +780,7 @@ def main():
         request_methods=dict(
             type="list",
             elements="str",
-            required=True,
+            required=False,
             choices=[
                 "OPTIONS",
                 "GET",

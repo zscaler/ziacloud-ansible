@@ -1,0 +1,48 @@
+---
+- name: Set initial variables
+  ansible.builtin.set_fact:
+    label_name: test_zia_ansible
+    label_description: test_zia_ansible
+
+- name: Ensure required environment variables are set
+  ansible.builtin.fail:
+    msg: "{{ env_var }} is not defined as environment variable"
+  when: lookup('env', env_var) is none
+  loop:
+    - ZIA_USERNAME
+    - ZIA_PASSWORD
+    - ZIA_API_KEY
+    - ZIA_CLOUD
+  loop_control:
+    loop_var: env_var
+
+- name: Ensure ZIA Credential environment variables are set
+  ansible.builtin.set_fact:
+    zia_cloud:
+      username: "{{ lookup('env', 'ZIA_USERNAME') }}"
+      password: "{{ lookup('env', 'ZIA_PASSWORD') }}"
+      api_key: "{{ lookup('env', 'ZIA_API_KEY') }}"
+      cloud: "{{ lookup('env', 'ZIA_CLOUD') | default(omit) }}"
+  no_log: true
+
+- name: Import Random String Generator Tasks
+  ansible.builtin.import_tasks: ../../generate_random_string.yml
+
+- name: Set dynamic name values with random string
+  ansible.builtin.set_fact:
+    label_name: "{{ label_name }}_{{ random_string }}"
+    label_description: "{{ label_description }}_{{ random_string }}"
+
+- name: Main block to Test Rule Label Configuration
+  block:
+    - name: Create Helper Rule Label
+      zscaler.ziacloud.zia_rule_labels:
+        provider: "{{ zia_cloud }}"
+        state: present
+        name: "{{ label_name }}"
+        description: "{{ label_description }}"
+      register: label_id
+
+    - name: Set Rule Label ID as fact
+      ansible.builtin.set_fact:
+        label_id: "{{ label_id.data.id }}"

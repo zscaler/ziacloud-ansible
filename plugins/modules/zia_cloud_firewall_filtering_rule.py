@@ -322,7 +322,7 @@ def normalize_rule(rule):
     normalized = rule.copy()
 
     computed_values = [
-        "exclude_src_countries",
+        # "exclude_src_countries",
     ]
     for attr in computed_values:
         normalized.pop(attr, None)
@@ -430,6 +430,17 @@ def core(module):
             if rule_.get("name") == rule_name:
                 existing_rule = rule_
 
+    # Check for predefined or default rules before deletion
+    if state == "absent" and existing_rule is not None:
+        if existing_rule.get("default_rule", False) or existing_rule.get(
+            "predefined", False
+        ):
+            module.warn("Default and predefined rules cannot be deleted.")
+            module.exit_json(
+                changed=False,
+                msg="Deletion of default or predefined rule is not allowed.",
+            )
+
     # Normalize and compare existing and desired data
     desired_rule = normalize_rule(rule)
     current_rule = normalize_rule(existing_rule) if existing_rule else {}
@@ -476,6 +487,12 @@ def core(module):
         # Convert 'state' in current_rule to boolean 'enabled'
         if key == "enabled" and "state" in current_rule:
             current_value = current_rule["state"] == "ENABLED"
+
+        # Special handling for exclude_src_countries
+        if key == "exclude_src_countries":
+            # Ignore comparison if exclude_src_countries is not specified in the playbook
+            if module.params.get("exclude_src_countries") is None:
+                continue
 
         # Handling None values for all attributes
         if desired_value is None and key != "enabled":
@@ -599,6 +616,15 @@ def core(module):
         and existing_rule is not None
         and existing_rule.get("id") is not None
     ):
+        # Check for predefined or default rules before deletion
+        if existing_rule.get("default_rule", False) or existing_rule.get(
+            "predefined", False
+        ):
+            module.warn("Default and predefined rules cannot be deleted.")
+            module.exit_json(
+                changed=False,
+                msg="Deletion of default or predefined rule is not allowed.",
+            )
         code = client.firewall.delete_rule(rule_id=existing_rule.get("id"))
         if code > 299:
             module.exit_json(changed=False, data=None)

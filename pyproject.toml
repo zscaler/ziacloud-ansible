@@ -15,16 +15,16 @@ zscaler-sdk-python = ">=0.1.7"
 xmltodict = "^0.12.0"
 aiohttp = ">=3.9.0"
 dpath = "^2.1.5"
-pytz = "*"
-netaddr = "*"
-pycountry = "*"
+pytz = ">=2024.1"
+netaddr = ">=1.2.1"
+pycountry = ">=23.12.11"
 sphinx-ansible-theme = "^0.10.3"
 python-box = "^7.1.1"
 
 [tool.poetry.dev-dependencies]
 black = "24.3.0"
-pytest = "*"
-coverage = "4.5.4"
+pytest = "^8.2.1"
+coverage = ">=4.5.4"
 pylint = "2.13.*"
 pytest-xdist = "*"
 pytest-mock = "*"
@@ -43,10 +43,11 @@ six = "*"
 pycodestyle = "*"
 
 # from requirements.txt
-certifi = "^2023.11.17"
-chardet = "3.0.4"
+certifi = ">=2023.11.17"
+chardet = ">=5.2.0"
 idna = "3.7"
-requests = "^2.22.0"
+requests = ">=2.22.0"
+urllib3 = ">=2.0"
 
 [build-system]
 requires = ["poetry>=0.12"]

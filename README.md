@@ -32,9 +32,23 @@ This collection contains modules and plugins to assist in automating the configu
 This collection is tested with the most current Ansible releases.  Ansible versions
 before 2.15 are **not supported**.
 
-## Python Version
+## Python dependencies
 
 The minimum python version for this collection is python `3.9`.
+
+The Python module dependencies are not automatically handled by `ansible-galaxy`. To manually install these dependencies, you have the following options:
+
+1. Utilize the `requirements.txt` file located [here](https://github.com/zscaler/ziacloud-ansible/blob/master/requirements.txt) to install all required packages:
+
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+2. Alternatively, install the [Zscaler SDK Python](https://pypi.org/project/zscaler-sdk-python/) package directly:
+
+    ```bash
+    pip install zscaler-sdk-python
+    ```
 
 ## Installation
 

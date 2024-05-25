@@ -1,0 +1,218 @@
+---
+- name: Include default variables
+  ansible.builtin.include_vars:
+    file: ../defaults/main.yml
+
+- name: Import Random String Generator Tasks
+  ansible.builtin.import_tasks: ../../../generate_random_string.yml
+
+- name: Set dynamic name values with random string
+  ansible.builtin.set_fact:
+    rule_name: "{{ rule_name }}_{{ random_string }}"
+    description: "{{ description }}_{{ random_string }}"
+    description_update: "{{ description_update }}_{{ random_string }}"
+
+- name: Ensure required environment variables are set
+  ansible.builtin.fail:
+    msg: "{{ env_var }} is not defined as environment variable"
+  when: lookup('env', env_var) is none
+  loop:
+    - ZIA_USERNAME
+    - ZIA_PASSWORD
+    - ZIA_API_KEY
+    - ZIA_CLOUD
+  loop_control:
+    loop_var: env_var
+
+- name: Ensure ZIA Credential environment variables are set
+  ansible.builtin.set_fact:
+    zia_cloud:
+      username: "{{ lookup('env', 'ZIA_USERNAME') }}"
+      password: "{{ lookup('env', 'ZIA_PASSWORD') }}"
+      api_key: "{{ lookup('env', 'ZIA_API_KEY') }}"
+      cloud: "{{ lookup('env', 'ZIA_CLOUD') | default(omit) }}"
+  no_log: true
+
+- name: Main block to Test URL Filtering Rule Configuration
+  block:
+    - name: Ensure URL Filtering Rule (leftover)
+      zscaler.ziacloud.zia_url_filtering_rules:
+        provider: "{{ zia_cloud }}"
+        state: absent
+        name: "{{ rule_name }}"
+        order: "{{ rule_order }}"
+      register: result
+
+  rescue:
+    - name: Handle errors
+      ansible.builtin.debug:
+        msg: An error occurred.
+
+  always:
+    - name: Cleanup operations
+      ansible.builtin.debug:
+        msg: Cleanup complete.
+
+    - name: Ensure URL Filtering Rule is absent
+      zscaler.ziacloud.zia_url_filtering_rules:
+        provider: "{{ zia_cloud }}"
+        state: absent
+        name: "{{ rule_name }}"
+        order: "{{ rule_order }}"
+      register: result
+
+    - name: Verify URL Filtering Rule is absent
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+          - result.data is defined
+
+    - name: Ensure URL Filtering Rule is (Present)
+      zscaler.ziacloud.zia_url_filtering_rules:
+        provider: "{{ zia_cloud }}"
+        state: present
+        name: "{{ rule_name }}"
+        description: "{{ description }}"
+        action: "{{ rule_action }}"
+        order: "{{ rule_order }}"
+        enabled: "{{ enabled }}"
+        url_categories: "{{ url_categories }}"
+        protocols: "{{ protocols }}"
+        device_trust_levels: "{{ device_trust_levels }}"
+        user_agent_types: "{{ user_agent_types }}"
+        user_risk_score_levels: "{{ user_risk_score_levels }}"
+        request_methods: "{{ request_methods }}"
+      register: result
+
+    - name: Verify URL Filtering Rule is present
+      ansible.builtin.assert:
+        that:
+          - result.changed
+          - result.data is defined
+          - result.data.name is defined
+
+    - name: Ensure URL Filtering Rule (again; idempotency check)
+      zscaler.ziacloud.zia_url_filtering_rules:
+        provider: "{{ zia_cloud }}"
+        state: present
+        name: "{{ rule_name }}"
+        description: "{{ description }}"
+        action: "{{ rule_action }}"
+        order: "{{ rule_order }}"
+        enabled: "{{ enabled }}"
+        url_categories: "{{ url_categories }}"
+        protocols: "{{ protocols }}"
+        device_trust_levels: "{{ device_trust_levels }}"
+        user_agent_types: "{{ user_agent_types }}"
+        user_risk_score_levels: "{{ user_risk_score_levels }}"
+        request_methods: "{{ request_methods }}"
+      register: result
+
+    - name: Ensure URL Filtering Rule is present (idempotency check)
+      ansible.builtin.assert:
+        that:
+          - result.changed
+
+    - name: Update URL Filtering Rule (Present)
+      zscaler.ziacloud.zia_url_filtering_rules:
+        provider: "{{ zia_cloud }}"
+        state: present
+        name: "{{ rule_name }}"
+        description: "{{ description_update }}"
+        action: "{{ action_update }}"
+        order: "{{ rule_order }}"
+        enabled: "{{ enabled_update }}"
+        url_categories: "{{ url_categories }}"
+        protocols: "{{ protocols }}"
+        device_trust_levels: "{{ device_trust_levels }}"
+        user_agent_types: "{{ user_agent_types }}"
+        user_risk_score_levels: "{{ user_risk_score_levels }}"
+        request_methods: "{{ request_methods }}"
+      register: result
+
+    - name: Verify URL Filtering Rule is Updated
+      ansible.builtin.assert:
+        that:
+          - result.changed
+          - result.data is defined
+          - result.data.name == rule_name
+          - result.data.description == description_update
+          - result.data.action == action_update
+
+    - name: Ensure URL Filtering Rule is Updated (again; idempotency check)
+      zscaler.ziacloud.zia_url_filtering_rules:
+        provider: "{{ zia_cloud }}"
+        state: present
+        name: "{{ rule_name }}"
+        description: "{{ description_update }}"
+        action: "{{ action_update }}"
+        order: "{{ rule_order }}"
+        enabled: "{{ enabled_update }}"
+        url_categories: "{{ url_categories }}"
+        protocols: "{{ protocols }}"
+        device_trust_levels: "{{ device_trust_levels }}"
+        user_agent_types: "{{ user_agent_types }}"
+        user_risk_score_levels: "{{ user_risk_score_levels }}"
+        request_methods: "{{ request_methods }}"
+      register: result
+
+    - name: Ensure URL Filtering Rule update is idempotent
+      ansible.builtin.assert:
+        that:
+          - result.changed
+
+    - name: Fetch all URL Filtering Rule
+      zscaler.ziacloud.zia_url_filtering_rule_facts:
+        provider: "{{ zia_cloud }}"
+      register: result
+
+    - name: Ensure all URL Filtering Rule found
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+          - result.data[0] is defined
+
+    - name: Fetch this URL Filtering Rule
+      zscaler.ziacloud.zia_url_filtering_rule_facts:
+        provider: "{{ zia_cloud }}"
+        name: "{{ rule_name }}"
+      register: result
+
+    - name: Ensure this URL Filtering Rule is found
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+          - result.data is defined
+          - result.data[0].name is defined
+          - result.data[0].name == rule_name
+
+    - name: Give the ZIA Cloud a 5 seconds to settle
+      ansible.builtin.pause:
+        seconds: 5
+
+    - name: Delete URL Filtering Rule
+      zscaler.ziacloud.zia_url_filtering_rules:
+        provider: "{{ zia_cloud }}"
+        state: absent
+        name: "{{ rule_name }}"
+        order: "{{ rule_order }}"
+      register: result
+
+    - name: Verify URL Filtering Rule is Deleted
+      ansible.builtin.assert:
+        that:
+          - result.changed
+
+    - name: Delete URL Filtering Rule (again; idempotency check)
+      zscaler.ziacloud.zia_url_filtering_rules:
+        provider: "{{ zia_cloud }}"
+        state: absent
+        name: "{{ rule_name }}"
+        order: "{{ rule_order }}"
+      register: result
+
+    - name: Verify URL Filtering Rule is absent
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+          - result.data is defined
