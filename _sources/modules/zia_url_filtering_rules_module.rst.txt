@@ -1008,7 +1008,7 @@ Parameters
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`integer` / :ansible-option-required:`required`
+        :ansible-option-type:`integer`
 
       .. raw:: html
 
@@ -1504,7 +1504,7 @@ Parameters
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`list` / :ansible-option-elements:`elements=string` / :ansible-option-required:`required`
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
 
       .. raw:: html
 
