@@ -1,3 +1,10 @@
+### [1.0.18](https://github.com/zscaler/ziacloud-ansible/compare/v1.0.17...v1.0.18) (2024-05-25)
+
+
+### Bug Fixes
+
+* Updated requirements.txt and documentation ([#34](https://github.com/zscaler/ziacloud-ansible/issues/34)) ([337f505](https://github.com/zscaler/ziacloud-ansible/commit/337f5055ed0e667c5143c031e50f38d2c40caff0))
+
 ### [1.0.17](https://github.com/zscaler/ziacloud-ansible/compare/v1.0.16...v1.0.17) (2024-05-23)
 
 
