@@ -72,51 +72,23 @@ options:
       external_id:
         description: "External identifier for the server group, managed outside of ZIA."
         required: true
-        type: int
+        type: str
       name:
         description: "Name of the server group."
         required: true
         type: str
-  zpa_app_segments:
-    description: "Application segments associated with the server group. Optional if segments are predefined at the server group level."
-    required: false
-    type: list
-    elements: dict
-    suboptions:
-      external_id:
-        description: "External identifier for the application segment."
-        required: true
-        type: int
-      name:
-        description: "Name of the application segment."
-        required: true
-        type: str
 """
-EXAMPLES = r"""
-- name: Create or update a ZPA Gateway with application segments
-  zscaler.ziacloud.zia_ip_source_anchoring_zpa_gateway:
-    provider: '{{ provider }}'
-    name: "ZPA_GW02"
-    description: "ZPA Gateway for internal apps"
-    type: "ZPA"
-    zpa_server_group:
-      external_id: 216196257331370454
-      name: "Server Group for IP Anchoring"
-    zpa_app_segments:
-      - external_id: 216196257331370455
-        name: "App Segment 1"
-      - external_id: 216196257331370465
-        name: "App Segment 2"
 
-- name: Update a ZPA Gateway without specifying application segments
+EXAMPLES = r"""
+- name: Create or update a ZPA Gateway
   zscaler.ziacloud.zia_ip_source_anchoring_zpa_gateway:
     provider: '{{ provider }}'
-    name: "ZPA_GW02"
-    description: "ZPA Gateway update"
+    name: 'ZPA_GW01'
+    description: 'TT#1965432123'
     type: "ZPA"
     zpa_server_group:
       external_id: 216196257331370454
-      name: "Updated Server Group"
+      name: "SRV01"
 """
 RETURN = r"""
 # Returns information on the newly created ZPA Gateway.
@@ -151,13 +123,6 @@ def normalize_gateway(gateway):
             "external_id": str(sg.get("external_id")),
             "name": sg.get("name"),
         }
-
-    # Ensure external_id is a string for each item in 'zpa_app_segments'
-    if normalized.get("zpa_app_segments"):
-        normalized["zpa_app_segments"] = [
-            {"external_id": str(seg.get("external_id")), "name": seg.get("name")}
-            for seg in normalized["zpa_app_segments"]
-        ]
 
     return normalized
 
@@ -197,7 +162,6 @@ def core(module):
         "name",
         "description",
         "zpa_server_group",
-        "zpa_app_segments",
     ]
     for param_name in params:
         gateway[param_name] = module.params.get(param_name, None)
@@ -225,20 +189,8 @@ def core(module):
     for key, value in desired_gateway.items():
         current_value = current_gateway.get(key)
 
-        # Skip comparison for 'zpa_app_segments' if it's not provided in the desired state
-        if key == "zpa_app_segments" and value is None:
-            continue
-
-        # Special handling for 'type' attribute
-        if key == "type" and current_value is None:
-            if value != "ZPA":
-                differences_detected = True
-                module.warn(
-                    f"Difference detected in {key}. Current: {current_value}, Desired: {value}"
-                )
-
         # Custom comparison for nested fields
-        elif key in ["zpa_server_group", "zpa_app_segments"]:
+        if key in ["zpa_server_group"]:
             if not compare_nested_structures(current_value, value):
                 differences_detected = True
                 module.warn(
@@ -269,7 +221,6 @@ def core(module):
                         description=existing_gateway.get("description"),
                         type=existing_gateway.get("type"),
                         zpa_server_group=existing_gateway.get("zpa_server_group"),
-                        zpa_app_segments=existing_gateway.get("zpa_app_segments"),
                     )
                 )
                 updated_gateway_response = client.zpa_gateway.update_gateway(
@@ -297,7 +248,6 @@ def core(module):
                     description=gateway.get("description"),
                     type=gateway.get("type"),
                     zpa_server_group=gateway.get("zpa_server_group"),
-                    zpa_app_segments=gateway.get("zpa_app_segments"),
                 )
             )
             module.warn("Payload for SDK: {}".format(create_gateway))
@@ -317,33 +267,23 @@ def core(module):
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
-
-    # Define the spec for a dictionary with external_id and name
-    external_id_name_dict_spec = dict(
-        external_id=dict(type="int", required=True),
-        name=dict(type="str", required=True),
-    )
-
     argument_spec.update(
         id=dict(type="int", required=False),
         name=dict(type="str", required=True),
         description=dict(type="str", required=False),
-        zpa_server_group=dict(
-            type="dict",
-            options=external_id_name_dict_spec,
-            required=True,
-        ),
-        zpa_app_segments=dict(
-            type="list",
-            elements="dict",
-            options=external_id_name_dict_spec,
-            required=False,
-        ),
         type=dict(
             type="str",
             required=False,
             default="ZPA",
             choices=["ZPA", "ECZPA"],
+        ),
+        zpa_server_group=dict(
+            type="dict",
+            required=True,
+            options=dict(
+                external_id=dict(type="str", required=True),
+                name=dict(type="str", required=True),
+            ),
         ),
         state=dict(type="str", choices=["present", "absent"], default="present"),
     )
