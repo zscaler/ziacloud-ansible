@@ -33,6 +33,7 @@
         - targets/zia_dlp_incident_receiver_facts/tasks/main.yml
         - targets/zia_dlp_notification_template/tasks/main.yml
         - targets/zia_dlp_web_rules/tasks/main.yml
+        - targets/zia_forwarding_control_rule/tasks/main.yml
         - targets/zia_location_management/tasks/main.yml
         - targets/zia_rule_labels/tasks/main.yml
         - targets/zia_sandbox_advanced_settings/tasks/main.yml

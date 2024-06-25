@@ -447,7 +447,11 @@ def normalize_rule(rule):
     # Add 'profile_seq' to the list of computed values to be removed
     computed_values = ["profile_seq"]
     for attr in computed_values:
-        if "cbi_profile" in normalized and isinstance(normalized["cbi_profile"], dict) and attr in normalized["cbi_profile"]:
+        if (
+            "cbi_profile" in normalized
+            and isinstance(normalized["cbi_profile"], dict)
+            and attr in normalized["cbi_profile"]
+        ):
             normalized["cbi_profile"].pop(attr, None)
 
     return normalized

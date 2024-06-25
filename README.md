@@ -7,15 +7,6 @@
 [![License](https://img.shields.io/github/license/zscaler/ziacloud-ansible?color=blue)](https://github.com/zscaler/ziacloud-ansible/v2/blob/master/LICENSE)
 [![Zscaler Community](https://img.shields.io/badge/zscaler-community-blue)](https://community.zscaler.com/)
 
-<div style="display: flex; align-items: center;">
-    <a href="https://catalog.redhat.com/software/search?p=1&type=Ansible%20collection&partnerName=Zscaler">
-        <img src="https://catalog.redhat.com/img/svg/logo.svg" alt="RedHat logo" title="RedHat Ecosystem Catalog" height="20" style="margin-left: 20px;"/>
-    </a>
-    <a href="https://www.zscaler.com/">
-        <img src="https://www.zscaler.com/themes/custom/zscaler/logo.svg" alt="Zscaler logo" title="Zscaler" height="25" style="margin-left: 25px;" />
-    </a>
-</div>
-
 ## Zscaler Support
 
 -> **Disclaimer:** Please refer to our [General Support Statement](https://zscaler.github.io/ziacloud-ansible/support.html) before proceeding with the use of this collection. You can also refer to our [troubleshooting guide](https://zscaler.github.io/ziacloud-ansible/troubleshooting.html) for guidance on typical problems.
@@ -29,7 +20,7 @@ This collection contains modules and plugins to assist in automating the configu
 
 ## Tested Ansible Versions
 
-This collection is tested with the most current Ansible releases.  Ansible versions
+This collection is tested with the most current Ansible releases. Ansible versions
 before 2.15 are **not supported**.
 
 ## Python dependencies
@@ -40,21 +31,21 @@ The Python module dependencies are not automatically handled by `ansible-galaxy`
 
 1. Utilize the `requirements.txt` file located [here](https://github.com/zscaler/ziacloud-ansible/blob/master/requirements.txt) to install all required packages:
 
-    ```bash
+  ```sh
     pip install -r requirements.txt
-    ```
+  ```
 
 2. Alternatively, install the [Zscaler SDK Python](https://pypi.org/project/zscaler-sdk-python/) package directly:
 
-    ```bash
+  ```sh
     pip install zscaler-sdk-python
-    ```
+  ```
 
 ## Installation
 
 Install this collection using the Ansible Galaxy CLI:
 
-```bash
+```sh
 ansible-galaxy collection install zscaler.ziacloud
 ```
 

@@ -228,6 +228,9 @@ from traceback import format_exc
 
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
+    deleteNone,
+)
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
     ZIAClientHelper,
 )
@@ -235,21 +238,13 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 def normalize_service(service):
     """
-    Normalize ip source group data by setting computed values.
+    Normalize network service data by setting computed values.
     """
     normalized = service.copy()
 
     computed_values = [
-        "id",
-        "name",
-        "description",
-        "tag",
-        "type",
-        "src_tcp_ports",
-        "dest_tcp_ports",
-        "src_udp_ports",
-        "dest_udp_ports",
-        "is_name_l10n_tag",
+        "creatorContext",
+        "isNameL10nTag",
     ]
     for attr in computed_values:
         normalized.pop(attr, None)
@@ -312,35 +307,51 @@ def core(module):
         existing_network_service.update(normalized_service)
         existing_network_service["id"] = id
 
+    module.warn(f"Final payload being sent to SDK: {normalized_service}")
     if state == "present":
         if existing_network_service is not None:
             if differences_detected:
                 """Update"""
-            existing_network_service = client.firewall.update_network_service(
-                service_id=existing_network_service.get("id", ""),
-                name=existing_network_service.get("name", ""),
-                description=existing_network_service.get("description", ""),
-                type=existing_network_service.get("type", ""),
-                tag=existing_network_service.get("tag", ""),
-                src_tcp_ports=existing_network_service.get("src_tcp_ports", ""),
-                dest_tcp_ports=existing_network_service.get("dest_tcp_ports", ""),
-                src_udp_ports=existing_network_service.get("src_udp_ports", ""),
-                dest_udp_ports=existing_network_service.get("dest_udp_ports", ""),
-            ).to_dict()
-            module.exit_json(changed=True, data=existing_network_service)
+                update_service = deleteNone(
+                    dict(
+                        service_id=existing_network_service.get("id"),
+                        name=existing_network_service.get("name"),
+                        description=existing_network_service.get("description"),
+                        type=existing_network_service.get("type"),
+                        tag=existing_network_service.get("tag"),
+                        src_tcp_ports=existing_network_service.get("src_tcp_ports"),
+                        dest_tcp_ports=existing_network_service.get("dest_tcp_ports"),
+                        src_udp_ports=existing_network_service.get("src_udp_ports"),
+                        dest_udp_ports=existing_network_service.get("dest_udp_ports"),
+                    )
+                )
+                module.warn("Payload Update for SDK: {}".format(update_service))
+                update_service = client.firewall.update_network_service(
+                    **update_service
+                ).to_dict()
+                module.exit_json(changed=True, data=update_service)
+            else:
+                module.exit_json(changed=False, data=existing_network_service)
         else:
+            module.warn("Creating new service as no existing service found")
             """Create"""
-            network_service = client.firewall.add_network_service(
-                name=network_service.get("name", ""),
-                tag=network_service.get("tag", ""),
-                type=network_service.get("type", ""),
-                src_tcp_ports=network_service.get("src_tcp_ports", ""),
-                dest_tcp_ports=network_service.get("dest_tcp_ports", ""),
-                src_udp_ports=network_service.get("src_udp_ports", ""),
-                dest_udp_ports=network_service.get("dest_udp_ports", ""),
-                description=network_service.get("description", ""),
+            create_service = deleteNone(
+                dict(
+                    name=network_service.get("name"),
+                    tag=network_service.get("tag"),
+                    type=network_service.get("type"),
+                    src_tcp_ports=network_service.get("src_tcp_ports"),
+                    dest_tcp_ports=network_service.get("dest_tcp_ports"),
+                    src_udp_ports=network_service.get("src_udp_ports"),
+                    dest_udp_ports=network_service.get("dest_udp_ports"),
+                    description=network_service.get("description"),
+                )
+            )
+            module.warn("Payload for SDK: {}".format(create_service))
+            create_service = client.firewall.add_network_service(
+                **create_service
             ).to_dict()
-            module.exit_json(changed=False, data=network_service)
+            module.exit_json(changed=True, data=create_service)
     elif state == "absent":
         if existing_network_service is not None:
             service_type = existing_network_service.get("type")
