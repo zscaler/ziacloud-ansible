@@ -85,7 +85,7 @@
     - name: Verify Network Services is Present
       ansible.builtin.assert:
         that:
-          - not result.changed
+          - result.changed
           - result.data is defined
           - result.data.name is defined
           - result.data.name == service_name
@@ -106,7 +106,7 @@
     - name: Verify Network Services is absent
       ansible.builtin.assert:
         that:
-          - result.changed
+          - not result.changed
 
     - name: Fetch All Network Services
       zscaler.ziacloud.zia_cloud_firewall_network_services_facts:

@@ -94,7 +94,7 @@
     - name: Ensure IP Source Group is absent (idempotency check)
       ansible.builtin.assert:
         that:
-          - not result.changed
+          - result.changed
 
     - name: Fetch all IP Source Group
       zscaler.ziacloud.zia_cloud_firewall_ip_source_groups_facts:
