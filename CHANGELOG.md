@@ -1,3 +1,11 @@
+## [1.1.0](https://github.com/zscaler/ziacloud-ansible/compare/v1.0.18...v1.1.0) (2024-06-25)
+
+
+### Features
+
+* Release v1.1.0 ([98727b7](https://github.com/zscaler/ziacloud-ansible/commit/98727b79f6fd0250e83996bf297db18fcf626cdd))
+* **new:** Added Forwarding Control Rule Resource ([#37](https://github.com/zscaler/ziacloud-ansible/issues/37)) ([a0abe94](https://github.com/zscaler/ziacloud-ansible/commit/a0abe943d5cd4a5d76742f13c7e176df9929c4f8))
+
 ### [1.0.18](https://github.com/zscaler/ziacloud-ansible/compare/v1.0.17...v1.0.18) (2024-05-25)
 
 
