@@ -113,6 +113,8 @@
 <li class="toctree-l2"><a class="reference internal" href="zia_dlp_notification_template_module.html">zscaler.ziacloud.zia_dlp_notification_template module – Manage Zscaler Internet Access (ZIA) DLP Notification Templates</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_dlp_web_rules_facts_module.html">zscaler.ziacloud.zia_dlp_web_rules_facts module – Gets a list of DLP policy rules, excluding SaaS Security API DLP policy rules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_dlp_web_rules_module.html">zscaler.ziacloud.zia_dlp_web_rules module – Adds a new DLP policy rule.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_forwarding_control_rule_facts_module.html">zscaler.ziacloud.zia_forwarding_control_rule_facts module – Gets all rules in the Forwarding Control policy.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_forwarding_control_rule_module.html">zscaler.ziacloud.zia_forwarding_control_rule module – Forwarding Control policy rule</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_ip_source_anchoring_zpa_gateway_facts_module.html">zscaler.ziacloud.zia_ip_source_anchoring_zpa_gateway_facts module – Gets the list of Zscaler Private Access (ZPA) gateways.</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">zscaler.ziacloud.zia_ip_source_anchoring_zpa_gateway module – Manages ZPA Gateways within Zscaler Internet Access</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#synopsis">Synopsis</a></li>
@@ -384,41 +386,20 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="parameter-zpa_app_segments"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-ip-source-anchoring-zpa-gateway-module-parameter-zpa-app-segments"><strong>zpa_app_segments</strong></p>
-<a class="ansibleOptionLink" href="#parameter-zpa_app_segments" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=dictionary</span></p>
-</div></td>
-<td><div class="ansible-option-cell"><p>Application segments associated with the server group. Optional if segments are predefined at the server group level.</p>
-</div></td>
-</tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="parameter-zpa_app_segments/external_id"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-ip-source-anchoring-zpa-gateway-module-parameter-zpa-app-segments-external-id"><strong>external_id</strong></p>
-<a class="ansibleOptionLink" href="#parameter-zpa_app_segments/external_id" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span> / <span class="ansible-option-required">required</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>External identifier for the application segment.</p>
-</div></td>
-</tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="parameter-zpa_app_segments/name"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-ip-source-anchoring-zpa-gateway-module-parameter-zpa-app-segments-name"><strong>name</strong></p>
-<a class="ansibleOptionLink" href="#parameter-zpa_app_segments/name" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span> / <span class="ansible-option-required">required</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Name of the application segment.</p>
-</div></td>
-</tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-zpa_server_group"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-ip-source-anchoring-zpa-gateway-module-parameter-zpa-server-group"><strong>zpa_server_group</strong></p>
 <a class="ansibleOptionLink" href="#parameter-zpa_server_group" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span> / <span class="ansible-option-required">required</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Server group associated with the ZPA gateway for source IP anchoring.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-zpa_server_group/external_id"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-ip-source-anchoring-zpa-gateway-module-parameter-zpa-server-group-external-id"><strong>external_id</strong></p>
-<a class="ansibleOptionLink" href="#parameter-zpa_server_group/external_id" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span> / <span class="ansible-option-required">required</span></p>
+<a class="ansibleOptionLink" href="#parameter-zpa_server_group/external_id" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span> / <span class="ansible-option-required">required</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>External identifier for the server group, managed outside of ZIA.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-zpa_server_group/name"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-ip-source-anchoring-zpa-gateway-module-parameter-zpa-server-group-name"><strong>name</strong></p>
 <a class="ansibleOptionLink" href="#parameter-zpa_server_group/name" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span> / <span class="ansible-option-required">required</span></p>
 </div></td>
@@ -430,30 +411,15 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 </section>
 <section id="examples">
 <h2><a class="toc-backref" href="#id4" role="doc-backlink">Examples</a><a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
-<div class="highlight-yaml+jinja notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create or update a ZPA Gateway with application segments</span>
+<div class="highlight-yaml+jinja notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create or update a ZPA Gateway</span>
 <span class="w">  </span><span class="nt">zscaler.ziacloud.zia_ip_source_anchoring_zpa_gateway</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">provider</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;</span><span class="cp">{{</span> <span class="nv">provider</span> <span class="cp">}}</span><span class="s">&#39;</span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;ZPA_GW02&quot;</span>
-<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;ZPA</span><span class="nv"> </span><span class="s">Gateway</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">internal</span><span class="nv"> </span><span class="s">apps&quot;</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;ZPA_GW01&#39;</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;TT#1965432123&#39;</span>
 <span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;ZPA&quot;</span>
 <span class="w">    </span><span class="nt">zpa_server_group</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">external_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">216196257331370454</span>
-<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Server</span><span class="nv"> </span><span class="s">Group</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">IP</span><span class="nv"> </span><span class="s">Anchoring&quot;</span>
-<span class="w">    </span><span class="nt">zpa_app_segments</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">external_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">216196257331370455</span>
-<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;App</span><span class="nv"> </span><span class="s">Segment</span><span class="nv"> </span><span class="s">1&quot;</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">external_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">216196257331370465</span>
-<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;App</span><span class="nv"> </span><span class="s">Segment</span><span class="nv"> </span><span class="s">2&quot;</span>
-
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Update a ZPA Gateway without specifying application segments</span>
-<span class="w">  </span><span class="nt">zscaler.ziacloud.zia_ip_source_anchoring_zpa_gateway</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">provider</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;</span><span class="cp">{{</span> <span class="nv">provider</span> <span class="cp">}}</span><span class="s">&#39;</span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;ZPA_GW02&quot;</span>
-<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;ZPA</span><span class="nv"> </span><span class="s">Gateway</span><span class="nv"> </span><span class="s">update&quot;</span>
-<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;ZPA&quot;</span>
-<span class="w">    </span><span class="nt">zpa_server_group</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">external_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">216196257331370454</span>
-<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Updated</span><span class="nv"> </span><span class="s">Server</span><span class="nv"> </span><span class="s">Group&quot;</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;SRV01&quot;</span>
 </pre></div>
 </div>
 <section id="authors">
