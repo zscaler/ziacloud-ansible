@@ -1,6 +1,7 @@
 ---
 - name: ZIA Integration Tests
   hosts: localhost
+  gather_facts: false
 
   tasks:
     - name: Set up environment variables
