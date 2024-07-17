@@ -1,6 +1,6 @@
 ---
 - name: List all DLP Web Rules
-  zscaler.ziacloud.zia_dlp_web_rules_facts:
+  zscaler.ziacloud.zia_dlp_web_rules_info:
     provider: "{{ zia_cloud }}"
   register: all_dlp_rules
 
@@ -13,7 +13,7 @@
   when: all_dlp_rules.data is defined
 
 - name: List all Cloud Firewall Rules
-  zscaler.ziacloud.zia_cloud_firewall_filtering_rule_facts:
+  zscaler.ziacloud.zia_cloud_firewall_filtering_rule_info:
     provider: "{{ zia_cloud }}"
   register: all_firewall_rules
 
@@ -26,7 +26,7 @@
   when: all_firewall_rules.data is defined
 
 - name: List all URL Filtering Rules
-  zscaler.ziacloud.zia_url_filtering_rule_facts:
+  zscaler.ziacloud.zia_url_filtering_rule_info:
     provider: "{{ zia_cloud }}"
   register: all_url_rules
 
@@ -39,7 +39,7 @@
   when: all_url_rules.data is defined
 
 - name: List all Locations
-  zscaler.ziacloud.zia_location_management_facts:
+  zscaler.ziacloud.zia_location_management_info:
     provider: "{{ zia_cloud }}"
   register: all_locations
 
@@ -52,7 +52,7 @@
   when: all_locations.data is defined
 
 - name: List all Rule Labels
-  zscaler.ziacloud.zia_rule_labels_facts:
+  zscaler.ziacloud.zia_rule_labels_info:
     provider: "{{ zia_cloud }}"
   register: all_rule_labels
 
@@ -65,7 +65,7 @@
   when: all_rule_labels.data is defined
 
 - name: List all IP Destination Groups
-  zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups_facts:
+  zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups_info:
     provider: "{{ zia_cloud }}"
   register: all_ip_dest_groups
 
@@ -78,7 +78,7 @@
   when: all_ip_dest_groups.data is defined
 
 - name: List all IP Source Groups
-  zscaler.ziacloud.zia_cloud_firewall_ip_source_groups_facts:
+  zscaler.ziacloud.zia_cloud_firewall_ip_source_groups_info:
     provider: "{{ zia_cloud }}"
   register: all_ip_source_groups
 
@@ -92,7 +92,7 @@
   when: all_ip_source_groups.data is defined
 
 - name: List all Network Services
-  zscaler.ziacloud.zia_cloud_firewall_network_services_facts:
+  zscaler.ziacloud.zia_cloud_firewall_network_services_info:
     provider: "{{ zia_cloud }}"
   register: all_network_services
 

@@ -137,7 +137,7 @@
           - result.data.description == description
 
     - name: Fetch All Locations
-      zscaler.ziacloud.zia_location_management_facts:
+      zscaler.ziacloud.zia_location_management_info:
         provider: "{{ zia_cloud }}"
       register: result
 
@@ -148,7 +148,7 @@
           - result.data is defined
 
     - name: Fetch this Location
-      zscaler.ziacloud.zia_location_management_facts:
+      zscaler.ziacloud.zia_location_management_info:
         provider: "{{ zia_cloud }}"
         name: "{{ location_name }}"
       register: result
@@ -166,7 +166,7 @@
         seconds: 5
 
     - name: Check if Location Exists
-      zscaler.ziacloud.zia_location_management_facts:
+      zscaler.ziacloud.zia_location_management_info:
         provider: "{{ zia_cloud }}"
         name: "{{ location_name }}"
       register: location_check

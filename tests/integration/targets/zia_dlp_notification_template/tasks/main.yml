@@ -138,7 +138,7 @@
           - not result.changed
 
     - name: Fetch all DLP Notification Template
-      zscaler.ziacloud.zia_dlp_notification_template_facts:
+      zscaler.ziacloud.zia_dlp_notification_template_info:
         provider: "{{ zia_cloud }}"
       register: result
 
@@ -149,7 +149,7 @@
           - result.data[0] is defined
 
     - name: Fetch this DLP Notification Template
-      zscaler.ziacloud.zia_dlp_notification_template_facts:
+      zscaler.ziacloud.zia_dlp_notification_template_info:
         provider: "{{ zia_cloud }}"
         name: "{{ template_name }}"
       register: result

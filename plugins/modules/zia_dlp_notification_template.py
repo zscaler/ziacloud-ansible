@@ -38,6 +38,8 @@ version_added: "1.0.0"
 author: William Guilherme (@willguibr)
 requirements:
   - Zscaler SDK Python (obtainable from PyPI U(https://pypi.org/project/zscaler-sdk-python/))
+notes:
+    - Check mode is supported.
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
   - zscaler.ziacloud.fragments.documentation
@@ -159,11 +161,22 @@ def core(module):
             (t for t in templates if t.get("name") == template.get("name")), None
         )
 
+    # Define differences_detected early to ensure it's defined before check_mode check
+    differences_detected = False
     if existing_template:
         updated_template = {k: v for k, v in template.items() if v is not None}
         differences_detected = any(
             existing_template.get(k) != v for k, v in updated_template.items()
         )
+
+    if module.check_mode:
+        # If in check mode, report changes and exit
+        if state == "present" and (existing_template is None or differences_detected):
+            module.exit_json(changed=True)
+        elif state == "absent" and existing_template is not None:
+            module.exit_json(changed=True)
+        else:
+            module.exit_json(changed=False)
 
         if state == "present" and differences_detected:
             updated_template["template_id"] = existing_template["id"]

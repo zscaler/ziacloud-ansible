@@ -91,7 +91,7 @@
           - not result.changed
 
     - name: Fetch all Rule Labels
-      zscaler.ziacloud.zia_rule_labels_facts:
+      zscaler.ziacloud.zia_rule_labels_info:
         provider: "{{ zia_cloud }}"
       register: result
 

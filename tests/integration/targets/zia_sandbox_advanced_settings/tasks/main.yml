@@ -35,7 +35,7 @@
       register: clear_result
 
     - name: Fetch initial hash counts (After Clearing)
-      zscaler.ziacloud.zia_sandbox_advanced_settings_facts:
+      zscaler.ziacloud.zia_sandbox_advanced_settings_info:
         provider: "{{ zia_cloud }}"
       register: initial_fetch_result
 
@@ -102,7 +102,7 @@
           - not clear_idempotency_result.changed # No change should be detected
 
     - name: Fetch final hash counts
-      zscaler.ziacloud.zia_sandbox_advanced_settings_facts:
+      zscaler.ziacloud.zia_sandbox_advanced_settings_info:
         provider: "{{ zia_cloud }}"
       register: final_fetch_result
 

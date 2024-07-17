@@ -37,6 +37,8 @@ author:
 version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
+notes:
+    - Check mode is supported.
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
   - zscaler.ziacloud.fragments.documentation
@@ -219,6 +221,17 @@ def core(module):
                 f"Difference detected in {key}. Current: {current_value}, Desired: {value}"
             )
 
+    if module.check_mode:
+        # If in check mode, report changes and exit
+        if state == "present" and (
+            existing_vpn_credentials is None or differences_detected
+        ):
+            module.exit_json(changed=True)
+        elif state == "absent" and existing_vpn_credentials is not None:
+            module.exit_json(changed=True)
+        else:
+            module.exit_json(changed=False)
+
     # Check if the pre_shared_key needs to be updated
     if update_psk_flag and "pre_shared_key" in vpn_credentials:
         differences_detected = True
@@ -239,7 +252,7 @@ def core(module):
             if update_psk_flag and "pre_shared_key" in vpn_credentials:
                 update_payload["pre_shared_key"] = vpn_credentials["pre_shared_key"]
 
-            module.warn(f"Final payload being sent to SDK: {update_payload}")
+            # module.warn(f"Final payload being sent to SDK: {update_payload}")
             if differences_detected:
                 updated_vpn = client.traffic.update_vpn_credential(
                     **update_payload
@@ -261,7 +274,7 @@ def core(module):
                     "comments": vpn_credentials.get("comments"),
                 }
             )
-            module.warn("Payload for SDK: {}".format(create_vpn))
+            # module.warn("Payload for SDK: {}".format(create_vpn))
             new_vpn = client.traffic.add_vpn_credential(**create_vpn).to_dict()
             module.exit_json(changed=True, data=new_vpn)
     elif state == "absent":

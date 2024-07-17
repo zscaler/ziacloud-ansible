@@ -37,6 +37,8 @@ author:
 version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
+notes:
+    - Check mode is supported.
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
   - zscaler.ziacloud.fragments.documentation
@@ -319,12 +321,21 @@ def core(module):
                 f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
             )
 
+    if module.check_mode:
+        # If in check mode, report changes and exit
+        if state == "present" and (existing_category is None or differences_detected):
+            module.exit_json(changed=True)
+        elif state == "absent" and existing_category is not None:
+            module.exit_json(changed=True)
+        else:
+            module.exit_json(changed=False)
+
     if existing_category is not None:
         id = existing_category.get("id")
         existing_category.update(category)
         existing_category["id"] = id
 
-    module.warn(f"Final payload being sent to SDK: {category}")
+    # module.warn(f"Final payload being sent to SDK: {category}")
     if state == "present":
         if existing_category is not None:
             if differences_detected:
@@ -343,7 +354,7 @@ def core(module):
                 )
         else:
             created_category = deleteNone(category)
-            module.warn("Payload for SDK: {}".format(created_category))
+            # module.warn("Payload for SDK: {}".format(created_category))
             new_category = client.url_categories.add_url_category(
                 **created_category
             ).to_dict()

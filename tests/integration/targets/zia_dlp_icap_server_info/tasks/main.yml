@@ -1,0 +1,53 @@
+---
+- name: Include default variables
+  ansible.builtin.include_vars:
+    file: ../defaults/main.yml
+
+- name: Import Random String Generator Tasks
+  ansible.builtin.import_tasks: ../../../generate_random_string.yml
+
+- name: Ensure required environment variables are set
+  ansible.builtin.fail:
+    msg: "{{ env_var }} is not defined as environment variable"
+  when: lookup('env', env_var) is none
+  loop:
+    - ZIA_USERNAME
+    - ZIA_PASSWORD
+    - ZIA_API_KEY
+    - ZIA_CLOUD
+  loop_control:
+    loop_var: env_var
+
+- name: Ensure ZIA Credential environment variables are set
+  ansible.builtin.set_fact:
+    zia_cloud:
+      username: "{{ lookup('env', 'ZIA_USERNAME') }}"
+      password: "{{ lookup('env', 'ZIA_PASSWORD') }}"
+      api_key: "{{ lookup('env', 'ZIA_API_KEY') }}"
+      cloud: "{{ lookup('env', 'ZIA_CLOUD') | default(omit) }}"
+  no_log: true
+
+- name: Main block to Test DLP ICAP Server
+  block:
+    - name: Fetch All ICAP Servers
+      zscaler.ziacloud.zia_dlp_icap_server_info:
+        provider: "{{ zia_cloud }}"
+      register: result
+
+    - name: Ensure All ICAP Servers found
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+          - result.icaps is defined
+
+    - name: Fetch bd_icap01 ICAP Servers
+      zscaler.ziacloud.zia_dlp_icap_server_info:
+        provider: "{{ zia_cloud }}"
+        name: "{{ bd_icap01 }}"
+      register: result
+
+    - name: Ensure bd_icap01 ICAP Servers found
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+          - result.icaps[0] is defined

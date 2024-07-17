@@ -153,7 +153,7 @@
           - result.changed
 
     - name: Fetch all Forwarding Control Rule
-      zscaler.ziacloud.zia_forwarding_control_rule_facts:
+      zscaler.ziacloud.zia_forwarding_control_rule_info:
         provider: "{{ zia_cloud }}"
       register: result
 
@@ -164,7 +164,7 @@
           - result.data[0] is defined
 
     - name: Fetch this Forwarding Control Rule
-      zscaler.ziacloud.zia_forwarding_control_rule_facts:
+      zscaler.ziacloud.zia_forwarding_control_rule_info:
         provider: "{{ zia_cloud }}"
         name: "{{ rule_name }}"
       register: result

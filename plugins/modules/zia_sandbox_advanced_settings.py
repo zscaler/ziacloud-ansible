@@ -78,7 +78,7 @@ register: result
 
 EXAMPLES = r"""
 - name: Retrieves the custom list of MD5 file hashes that are blocked by Sandbox.
-  zscaler.ziacloud.zia_sandbox_advanced_settings_facts:
+  zscaler.ziacloud.zia_sandbox_advanced_settings:
 """
 
 RETURN = r"""
@@ -148,19 +148,31 @@ def core(module):
     # Determine if a change is needed
     desired_hashes_set = set(file_hashes_to_be_blocked)
     current_hashes_set = set(current_hashes)
-    if state == "present":
-        change_needed = desired_hashes_set != current_hashes_set
-    else:  # state == "absent"
-        change_needed = bool(
-            current_hashes_set
-        )  # change is needed if there are any hashes currently blocked
+    change_needed = (
+        (desired_hashes_set != current_hashes_set)
+        if state == "present"
+        else bool(current_hashes_set)
+    )
+
+    if module.check_mode:
+        # Report potential changes in check_mode without making any API calls
+        module.exit_json(
+            changed=change_needed,
+            msg=(
+                "Changes would be made to the MD5 hash list."
+                if change_needed
+                else "No changes needed for MD5 hash list."
+            ),
+        )
 
     # Perform update only if change is needed
     if change_needed:
         if state == "present":
-            sandbox_api.add_hash_to_custom_list(file_hashes_to_be_blocked)
-        else:  # Clear the list by passing an empty list
-            sandbox_api.add_hash_to_custom_list([])
+            sandbox_api.add_hash_to_custom_list(list(desired_hashes_set))
+            action_message = "MD5 hash list has been updated."
+        elif state == "absent":
+            sandbox_api.add_hash_to_custom_list([])  # Clear the list
+            action_message = "MD5 hash list has been cleared."
 
         # Fetch the updated hash count after the operation
         file_hash_count_data = sandbox_api.get_file_hash_count().to_dict()

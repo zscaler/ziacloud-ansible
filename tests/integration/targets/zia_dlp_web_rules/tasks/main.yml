@@ -111,7 +111,7 @@
           - result.changed
 
     - name: Fetch all Cloud Web DLP Rule
-      zscaler.ziacloud.zia_dlp_web_rules_facts:
+      zscaler.ziacloud.zia_dlp_web_rules_info:
         provider: "{{ zia_cloud }}"
       register: result
 
@@ -170,7 +170,7 @@
           - result.changed
 
     - name: Fetch all Cloud Web DLP Rule
-      zscaler.ziacloud.zia_dlp_web_rules_facts:
+      zscaler.ziacloud.zia_dlp_web_rules_info:
         provider: "{{ zia_cloud }}"
       register: result
 
@@ -181,7 +181,7 @@
           - result.data[0] is defined
 
     - name: Fetch this Cloud Web DLP Rule
-      zscaler.ziacloud.zia_dlp_web_rules_facts:
+      zscaler.ziacloud.zia_dlp_web_rules_info:
         provider: "{{ zia_cloud }}"
         name: "{{ rule_name }}"
       register: result

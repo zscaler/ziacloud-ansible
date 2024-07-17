@@ -36,6 +36,8 @@ author:
 version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
+notes:
+    - Check mode is supported.
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
   - zscaler.ziacloud.fragments.documentation
@@ -298,16 +300,27 @@ def core(module):
             and normalized_existing_service.get(key) != value
         ):
             differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {normalized_existing_service.get(key)}, Desired: {value}"
-            )
+            # module.warn(
+            #     f"Difference detected in {key}. Current: {normalized_existing_service.get(key)}, Desired: {value}"
+            # )
+
+    if module.check_mode:
+        # If in check mode, report changes and exit
+        if state == "present" and (
+            existing_network_service is None or differences_detected
+        ):
+            module.exit_json(changed=True)
+        elif state == "absent" and existing_network_service is not None:
+            module.exit_json(changed=True)
+        else:
+            module.exit_json(changed=False)
 
     if existing_network_service is not None:
         id = existing_network_service.get("id")
         existing_network_service.update(normalized_service)
         existing_network_service["id"] = id
 
-    module.warn(f"Final payload being sent to SDK: {normalized_service}")
+    # module.warn(f"Final payload being sent to SDK: {normalized_service}")
     if state == "present":
         if existing_network_service is not None:
             if differences_detected:
@@ -347,7 +360,7 @@ def core(module):
                     description=network_service.get("description"),
                 )
             )
-            module.warn("Payload for SDK: {}".format(create_service))
+            # module.warn("Payload for SDK: {}".format(create_service))
             create_service = client.firewall.add_network_service(
                 **create_service
             ).to_dict()

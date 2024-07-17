@@ -148,7 +148,7 @@
           - not result.changed
 
     - name: Fetch all Static IP Address
-      zscaler.ziacloud.zia_traffic_forwarding_static_ip_facts:
+      zscaler.ziacloud.zia_traffic_forwarding_static_ip_info:
         provider: "{{ zia_cloud }}"
       register: result
 
@@ -159,7 +159,7 @@
           - result.data[0] is defined
 
     - name: Fetch this Static IP Address
-      zscaler.ziacloud.zia_traffic_forwarding_static_ip_facts:
+      zscaler.ziacloud.zia_traffic_forwarding_static_ip_info:
         provider: "{{ zia_cloud }}"
         ip_address: "{{ ip_address }}"
       register: result

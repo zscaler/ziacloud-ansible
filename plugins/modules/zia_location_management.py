@@ -37,6 +37,8 @@ author:
 version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
+notes:
+    - Check mode is supported.
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
   - zscaler.ziacloud.fragments.documentation
@@ -435,8 +437,15 @@ def core(module):
     )
 
     differences_detected = False
+    differences_summary = {}
     for key, desired_value in desired_location.items():
         current_value = current_location.get(key)
+        if desired_value != current_value:
+            differences_detected = True
+            differences_summary[key] = {
+                "current": current_value,
+                "desired": desired_value,
+            }
 
         if key == "vpn_credentials":
             normalized_current_creds = normalize_vpn_credentials(current_value)
@@ -454,6 +463,12 @@ def core(module):
             module.warn(
                 f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
             )
+
+    if module.check_mode:
+        # Provide a preview of changes
+        if differences_detected:
+            module.exit_json(changed=True, differences=differences_summary)
+        module.exit_json(changed=False)
 
     if state == "present":
         if existing_location_mgmt:

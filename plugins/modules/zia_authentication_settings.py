@@ -36,6 +36,8 @@ author:
 version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
+notes:
+    - Check mode is supported.
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
   - zscaler.ziacloud.fragments.documentation
@@ -86,6 +88,13 @@ def core(module):
     if state == "present":
         new_urls = [url for url in urls if url not in current_exempted_urls]
         if new_urls:
+            if module.check_mode:
+                # Just simulate adding URLs without making any changes
+                module.exit_json(
+                    changed=True,
+                    msg="URLs would be added.",
+                    exempted_urls=current_exempted_urls + new_urls,
+                )
             updated_list = auth_settings_api.add_urls_to_exempt_list(new_urls)
             module.exit_json(changed=True, exempted_urls=updated_list)
         else:
@@ -94,6 +103,16 @@ def core(module):
     elif state == "absent":
         urls_to_remove = [url for url in urls if url in current_exempted_urls]
         if urls_to_remove:
+            if module.check_mode:
+                # Simulate removing URLs without making any changes
+                updated_list = [
+                    url for url in current_exempted_urls if url not in urls_to_remove
+                ]
+                module.exit_json(
+                    changed=True,
+                    msg="URLs would be removed.",
+                    exempted_urls=updated_list,
+                )
             updated_list = auth_settings_api.delete_urls_from_exempt_list(
                 urls_to_remove
             )

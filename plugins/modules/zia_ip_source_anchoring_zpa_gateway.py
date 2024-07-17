@@ -38,6 +38,8 @@ author:
 version_added: "1.0.0"
 requirements:
   - Zscaler SDK Python (available on PyPI at https://pypi.org/project/zscaler-sdk-python/)
+notes:
+    - Check mode is supported.
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
   - zscaler.ziacloud.fragments.documentation
@@ -203,6 +205,15 @@ def core(module):
             module.warn(
                 f"Difference detected in {key}. Current: {current_value}, Desired: {value}"
             )
+
+    if module.check_mode:
+        # If in check mode, report changes and exit
+        if state == "present" and (existing_gateway is None or differences_detected):
+            module.exit_json(changed=True)
+        elif state == "absent" and existing_gateway is not None:
+            module.exit_json(changed=True)
+        else:
+            module.exit_json(changed=False)
 
     if existing_gateway is not None:
         id = existing_gateway.get("id")

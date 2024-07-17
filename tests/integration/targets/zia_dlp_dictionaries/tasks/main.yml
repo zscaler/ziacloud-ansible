@@ -100,7 +100,7 @@
           - not result.changed
 
     - name: Fetch all DLP Dictionary
-      zscaler.ziacloud.zia_dlp_dictionaries_facts:
+      zscaler.ziacloud.zia_dlp_dictionaries_info:
         provider: "{{ zia_cloud }}"
       register: result
 
@@ -111,7 +111,7 @@
           - result.data[0] is defined
 
     - name: Fetch this DLP Dictionary
-      zscaler.ziacloud.zia_dlp_dictionaries_facts:
+      zscaler.ziacloud.zia_dlp_dictionaries_info:
         provider: "{{ zia_cloud }}"
         name: "{{ dict_name }}"
       register: result

@@ -139,7 +139,7 @@
           - not result.changed
 
     - name: Fetch all Type "UFQDN" VPN Credentials
-      zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_facts:
+      zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_info:
         provider: "{{ zia_cloud }}"
       register: result
 
@@ -150,7 +150,7 @@
           - result.data[0] is defined
 
     - name: Fetch this Type "UFQDN" VPN Credentials
-      zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_facts:
+      zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_info:
         provider: "{{ zia_cloud }}"
         fqdn: "{{ vpn_fqdn }}"
       register: result
@@ -292,7 +292,7 @@
       - not result.changed
 
 - name: Fetch all Type "IP" VPN Credentials
-  zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_facts:
+  zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_info:
     provider: "{{ zia_cloud }}"
   register: result
 
@@ -303,7 +303,7 @@
       - result.data[0] is defined
 
 - name: Fetch this Type "IP" VPN Credential
-  zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_facts:
+  zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_info:
     provider: "{{ zia_cloud }}"
     ip_address: "{{ static_ip_address }}"
   register: result

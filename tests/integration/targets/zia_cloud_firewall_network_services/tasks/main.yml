@@ -109,7 +109,7 @@
           - not result.changed
 
     - name: Fetch All Network Services
-      zscaler.ziacloud.zia_cloud_firewall_network_services_facts:
+      zscaler.ziacloud.zia_cloud_firewall_network_services_info:
         provider: "{{ zia_cloud }}"
       register: result
 
@@ -120,7 +120,7 @@
           - result.data is defined
 
     - name: Fetch this Network Services
-      zscaler.ziacloud.zia_cloud_firewall_network_services_facts:
+      zscaler.ziacloud.zia_cloud_firewall_network_services_info:
         provider: "{{ zia_cloud }}"
         name: "{{ service_name }}"
       register: result

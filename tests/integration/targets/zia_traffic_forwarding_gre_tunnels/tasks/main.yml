@@ -108,7 +108,7 @@
           - not result.changed
 
     - name: Fetch all GRE Tunnel
-      zscaler.ziacloud.zia_traffic_forwarding_gre_tunnel_facts:
+      zscaler.ziacloud.zia_traffic_forwarding_gre_tunnel_info:
         provider: "{{ zia_cloud }}"
       register: result
 
@@ -119,7 +119,7 @@
           - result.data[0] is defined
 
     - name: Fetch this GRE Tunnel
-      zscaler.ziacloud.zia_traffic_forwarding_gre_tunnel_facts:
+      zscaler.ziacloud.zia_traffic_forwarding_gre_tunnel_info:
         provider: "{{ zia_cloud }}"
         source_ip: "{{ static_ip_address }}"
       register: result

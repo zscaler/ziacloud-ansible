@@ -23,7 +23,7 @@
 - name: Main block to Fetch The Created Static IP Address Configuration
   block:
     - name: Fetch the created Static IP Address
-      zscaler.ziacloud.zia_traffic_forwarding_static_ip_facts:
+      zscaler.ziacloud.zia_traffic_forwarding_static_ip_info:
         provider: "{{ zia_cloud }}"
         id: "{{ static_ip_id }}" # assuming you have the ID stored in this variable
       register: fetched_static_ip
