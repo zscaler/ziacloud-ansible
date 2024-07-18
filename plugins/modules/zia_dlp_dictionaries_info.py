@@ -99,7 +99,7 @@ def core(module):
                     msg="Failed to retrieve dlp dictionary: '%s'" % (dict_name)
                 )
             dictionaries = [dictionary]
-    module.exit_json(changed=False, data=dictionaries)
+    module.exit_json(changed=False, dictionaries=dictionaries)
 
 
 def main():

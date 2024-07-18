@@ -99,7 +99,7 @@ def core(module):
                     msg="Failed to retrieve ip source group: '%s'" % (label_name)
                 )
             labels = [label]
-    module.exit_json(changed=False, data=labels)
+    module.exit_json(changed=False, labels=labels)
 
 
 def main():

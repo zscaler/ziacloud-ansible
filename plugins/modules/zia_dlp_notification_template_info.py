@@ -102,7 +102,7 @@ def core(module):
                     % (template_name)
                 )
             templates = [template]
-    module.exit_json(changed=False, data=templates)
+    module.exit_json(changed=False, templates=templates)
 
 
 def main():

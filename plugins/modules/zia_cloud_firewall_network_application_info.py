@@ -108,7 +108,7 @@ def core(module):
                     % (network_app_name)
                 )
             network_apps = [network_app]
-    module.exit_json(changed=False, data=network_apps)
+    module.exit_json(changed=False, network_apps=network_apps)
 
 
 def main():

@@ -105,7 +105,7 @@ def core(module):
                     msg="Failed to retrieve static ip address: '%s'" % (ip_address)
                 )
             static_ips = [static_ip]
-    module.exit_json(changed=False, data=static_ips)
+    module.exit_json(changed=False, static_ips=static_ips)
 
 
 def main():

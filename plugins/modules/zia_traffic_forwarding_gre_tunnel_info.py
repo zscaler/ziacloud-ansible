@@ -113,7 +113,7 @@ def core(module):
         else:
             gre_tunnels = all_gre_tunnels
 
-    module.exit_json(changed=False, data=gre_tunnels)
+    module.exit_json(changed=False, gre_tunnels=gre_tunnels)
 
 
 def main():

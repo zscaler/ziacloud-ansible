@@ -99,7 +99,7 @@ def core(module):
                     msg="Failed to retrieve service: '%s'" % (service_name)
                 )
             services = [service]
-    module.exit_json(changed=False, data=services)
+    module.exit_json(changed=False, services=services)
 
 
 def main():

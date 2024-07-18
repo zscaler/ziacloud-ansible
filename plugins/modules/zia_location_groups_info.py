@@ -105,7 +105,7 @@ def core(module):
                     msg="Failed to retrieve ip source group: '%s'" % (group_name)
                 )
             locations = [location]
-    module.exit_json(changed=False, data=locations)
+    module.exit_json(changed=False, locations=locations)
 
 
 def main():

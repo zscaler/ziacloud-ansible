@@ -9,8 +9,21 @@
     provider: "{{ zia_cloud }}"
     state: absent
     name: "{{ item.name }}"
-  loop: "{{ all_dlp_rules.data }}"
-  when: all_dlp_rules.data is defined
+  loop: "{{ all_dlp_rules.rules }}"
+  when: all_dlp_rules.rules is defined
+
+- name: List all DLP Templates
+  zscaler.ziacloud.zia_dlp_notification_template_info:
+    provider: "{{ zia_cloud }}"
+  register: all_dlp_templates
+
+- name: Delete all DLP DLP Templates 💥
+  zscaler.ziacloud.zia_dlp_notification_template:
+    provider: "{{ zia_cloud }}"
+    state: absent
+    name: "{{ item.name }}"
+  loop: "{{ all_dlp_templates.templates }}"
+  when: all_dlp_templates.templates is defined
 
 - name: List all Cloud Firewall Rules
   zscaler.ziacloud.zia_cloud_firewall_filtering_rule_info:
@@ -22,8 +35,8 @@
     provider: "{{ zia_cloud }}"
     state: absent
     name: "{{ item.name }}"
-  loop: "{{ all_firewall_rules.data }}"
-  when: all_firewall_rules.data is defined
+  loop: "{{ all_firewall_rules.rules }}"
+  when: all_firewall_rules.rules is defined
 
 - name: List all URL Filtering Rules
   zscaler.ziacloud.zia_url_filtering_rule_info:
@@ -35,8 +48,8 @@
     provider: "{{ zia_cloud }}"
     state: absent
     name: "{{ item.name }}"
-  loop: "{{ all_url_rules.data }}"
-  when: all_url_rules.data is defined
+  loop: "{{ all_url_rules.rules }}"
+  when: all_url_rules.rules is defined
 
 - name: List all Locations
   zscaler.ziacloud.zia_location_management_info:
@@ -48,8 +61,8 @@
     provider: "{{ zia_cloud }}"
     state: absent
     name: "{{ item.name }}"
-  loop: "{{ all_locations.data }}"
-  when: all_locations.data is defined
+  loop: "{{ all_locations.locations }}"
+  when: all_locations.locations is defined
 
 - name: List all Rule Labels
   zscaler.ziacloud.zia_rule_labels_info:
@@ -61,8 +74,8 @@
     provider: "{{ zia_cloud }}"
     state: absent
     name: "{{ item.name }}"
-  loop: "{{ all_rule_labels.data }}"
-  when: all_rule_labels.data is defined
+  loop: "{{ all_rule_labels.labels }}"
+  when: all_rule_labels.labels is defined
 
 - name: List all IP Destination Groups
   zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups_info:
@@ -74,8 +87,8 @@
     provider: "{{ zia_cloud }}"
     state: absent
     name: "{{ item.name }}"
-  loop: "{{ all_ip_dest_groups.data }}"
-  when: all_ip_dest_groups.data is defined
+  loop: "{{ all_ip_dest_groups.groups }}"
+  when: all_ip_dest_groups.groups is defined
 
 - name: List all IP Source Groups
   zscaler.ziacloud.zia_cloud_firewall_ip_source_groups_info:
@@ -88,8 +101,8 @@
     state: absent
     name: "{{ item.name }}"
     ip_addresses: "{{ item.ip_addresses }}"
-  loop: "{{ all_ip_source_groups.data }}"
-  when: all_ip_source_groups.data is defined
+  loop: "{{ all_ip_source_groups.groups }}"
+  when: all_ip_source_groups.groups is defined
 
 - name: List all Network Services
   zscaler.ziacloud.zia_cloud_firewall_network_services_info:
@@ -97,17 +110,18 @@
   register: all_network_services
 
 - name: Delete all Network Services 💥
-  zscaler.ziacloud.zia_cloud_firewall_ip_source_groups:
+  zscaler.ziacloud.zia_cloud_firewall_network_services:
     provider: "{{ zia_cloud }}"
     state: absent
     name: "{{ item.name }}"
-  loop: "{{ all_network_services.data | rejectattr('type', 'in', ['PREDEFINED', 'STANDARD']) | list }}"
-  when: all_network_services.data is defined
+  loop: "{{ all_network_services.services | rejectattr('type', 'in', ['PREDEFINED', 'STANDARD']) | list }}"
+  when: all_network_services.services is defined
 
 - name: Set fact for each task status
   ansible.builtin.set_fact:
     cloud_firewall_rules_failed: "{{ all_firewall_rules.failed | default(false) }}"
     dlp_web_rules_failed: "{{ all_dlp_rules.failed | default(false) }}"
+    dlp_template_failed: "{{ all_dlp_templates.failed | default(false) }}"
     url_rules_failed: "{{ all_url_rules.failed | default(false) }}"
     locations_failed: "{{ all_locations.failed | default(false) }}"
     rule_labels_failed: "{{ all_rule_labels.failed | default(false) }}"
@@ -121,6 +135,7 @@
       {{
         not (
           cloud_firewall_rules_failed or
+          dlp_template_failed or
           dlp_web_rules_failed or
           url_rules_failed or
           locations_failed or

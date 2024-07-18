@@ -29,6 +29,6 @@
 
     - name: Set Network Service ID as fact
       ansible.builtin.set_fact:
-        service_id0: "{{ all_network_services.data[0].id }}"
-        service_id1: "{{ all_network_services.data[1].id }}"
-        service_id2: "{{ all_network_services.data[2].id }}"
+        service_id0: "{{ all_network_services.services[0].id }}"
+        service_id1: "{{ all_network_services.services[1].id }}"
+        service_id2: "{{ all_network_services.services[2].id }}"

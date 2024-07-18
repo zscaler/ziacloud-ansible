@@ -147,7 +147,7 @@
       ansible.builtin.assert:
         that:
           - not result.changed
-          - result.data[0] is defined
+          - result.credentials[0] is defined
 
     - name: Fetch this Type "UFQDN" VPN Credentials
       zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_info:
@@ -159,9 +159,9 @@
       ansible.builtin.assert:
         that:
           - not result.changed
-          - result.data is defined
-          - result.data[0].fqdn is defined
-          - result.data[0].fqdn == vpn_fqdn
+          - result.credentials is defined
+          - result.credentials[0].fqdn is defined
+          - result.credentials[0].fqdn == vpn_fqdn
 
     - name: Give the ZIA Cloud a 5 seconds to settle
       ansible.builtin.pause:
@@ -300,7 +300,7 @@
   ansible.builtin.assert:
     that:
       - not result.changed
-      - result.data[0] is defined
+      - result.credentials[0] is defined
 
 - name: Fetch this Type "IP" VPN Credential
   zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_info:
@@ -312,9 +312,9 @@
   ansible.builtin.assert:
     that:
       - not result.changed
-      - result.data is defined
-      - result.data[0].ip_address is defined
-      - result.data[0].ip_address == ip_address
+      - result.credentials is defined
+      - result.credentials[0].ip_address is defined
+      - result.credentials[0].ip_address == ip_address
 
 - name: Give the ZIA Cloud a 5 seconds to settle
   ansible.builtin.pause:

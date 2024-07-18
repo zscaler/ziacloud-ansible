@@ -109,7 +109,7 @@ def core(module):
                 )
             service_groups = [service_group]
 
-    module.exit_json(changed=False, data=service_groups)
+    module.exit_json(changed=False, service_groups=service_groups)
 
 
 def main():

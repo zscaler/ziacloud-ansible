@@ -111,7 +111,7 @@ def core(module):
             # Return all rules if no specific name is provided
             rules = all_rules
 
-    module.exit_json(changed=False, data=rules)
+    module.exit_json(changed=False, rules=rules)
 
 
 def main():

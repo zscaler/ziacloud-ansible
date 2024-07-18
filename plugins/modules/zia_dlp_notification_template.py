@@ -161,7 +161,6 @@ def core(module):
             (t for t in templates if t.get("name") == template.get("name")), None
         )
 
-    # Define differences_detected early to ensure it's defined before check_mode check
     differences_detected = False
     if existing_template:
         updated_template = {k: v for k, v in template.items() if v is not None}
@@ -170,7 +169,6 @@ def core(module):
         )
 
     if module.check_mode:
-        # If in check mode, report changes and exit
         if state == "present" and (existing_template is None or differences_detected):
             module.exit_json(changed=True)
         elif state == "absent" and existing_template is not None:
@@ -178,20 +176,23 @@ def core(module):
         else:
             module.exit_json(changed=False)
 
-        if state == "present" and differences_detected:
-            updated_template["template_id"] = existing_template["id"]
-            response = client.dlp.update_dlp_template(**updated_template).to_dict()
+    if state == "present":
+        if existing_template:
+            if differences_detected:
+                updated_template["template_id"] = existing_template["id"]
+                response = client.dlp.update_dlp_template(**updated_template).to_dict()
+                module.exit_json(changed=True, data=response)
+            else:
+                module.exit_json(changed=False, data=existing_template)
+        else:
+            response = client.dlp.add_dlp_template(**template).to_dict()
             module.exit_json(changed=True, data=response)
-        elif state == "absent":
+    elif state == "absent":
+        if existing_template:
             client.dlp.delete_dlp_template(template_id=existing_template["id"])
             module.exit_json(changed=True, data=existing_template)
         else:
-            module.exit_json(changed=False, data=existing_template)
-    else:
-        if state == "present":
-            response = client.dlp.add_dlp_template(**template).to_dict()
-            module.exit_json(changed=True, data=response)
-        module.exit_json(changed=False, data={})
+            module.exit_json(changed=False, data={})
 
 
 def main():

@@ -102,7 +102,7 @@ def core(module):
                 module.fail_json(
                     msg="Failed to retrieve URL Filtering Rule Name: '%s'" % (rule_name)
                 )
-    module.exit_json(changed=False, data=rules)
+    module.exit_json(changed=False, rules=rules)
 
 
 def main():

@@ -112,7 +112,7 @@ def core(module):
             # Return all rules directly
             rules = list(all_rules)
 
-    module.exit_json(changed=False, data=rules)
+    module.exit_json(changed=False, rules=rules)
 
 
 def main():

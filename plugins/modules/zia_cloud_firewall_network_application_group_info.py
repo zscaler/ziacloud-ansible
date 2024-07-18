@@ -100,7 +100,7 @@ def core(module):
                     % (app_group_name)
                 )
             app_groups = [app_group]
-    module.exit_json(changed=False, data=app_groups)
+    module.exit_json(changed=False, app_groups=app_groups)
 
 
 def main():

@@ -101,7 +101,7 @@ def core(module):
         locations = [locationBox.to_dict()]
     else:
         locations = client.locations.list_locations().to_list()
-    module.exit_json(changed=False, data=locations)
+    module.exit_json(changed=False, locations=locations)
 
 
 def main():

@@ -108,7 +108,7 @@ def core(module):
 
     # If neither ID nor Configured Name is provided, return all categories
     else:
-        module.exit_json(changed=False, data=categories)
+        module.exit_json(changed=False, categories=categories)
 
 
 def main():

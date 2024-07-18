@@ -105,7 +105,7 @@ def core(module):
                     msg="Failed to retrieve zpa gateway: '%s'" % (gateway_name)
                 )
             gateways = [gateway]
-    module.exit_json(changed=False, data=gateways)
+    module.exit_json(changed=False, gateways=gateways)
 
 
 def main():

@@ -31,6 +31,6 @@
     - name: Verify App Static IP Address attributes
       ansible.builtin.assert:
         that:
-          - fetched_static_ip.data[0].ip_address == ip_address
+          - fetched_static_ip.static_ips[0].ip_address == ip_address
         fail_msg: Verification failed for Static IP Address!
         success_msg: Verification successful for Static IP Address!

@@ -87,15 +87,6 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 )
 
 
-from traceback import format_exc
-
-from ansible.module_utils._text import to_native
-from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    ZIAClientHelper,
-)
-
-
 def core(module):
     group_id = module.params.get("id")
     group_name = module.params.get("name")
@@ -122,7 +113,7 @@ def core(module):
                     msg=f"Failed to retrieve destination ip group: '{group_name}'"
                 )
             groups = [group]
-    module.exit_json(changed=False, data=groups)
+    module.exit_json(changed=False, groups=groups)
 
 
 def main():

@@ -120,7 +120,7 @@
       ansible.builtin.assert:
         that:
           - not result.changed
-          - result.data[0] is defined
+          - result.service_groups is defined
 
     - name: Fetch this Network Services Group
       zscaler.ziacloud.zia_cloud_firewall_network_services_groups_info:
@@ -132,9 +132,9 @@
       ansible.builtin.assert:
         that:
           - not result.changed
-          - result.data is defined
-          - result.data[0].name is defined
-          - result.data[0].name == group_name
+          - result.service_groups is defined
+          - result.service_groups[0].name is defined
+          - result.service_groups[0].name == group_name
 
     - name: Give the ZIA Cloud a 5 seconds to settle
       ansible.builtin.pause:

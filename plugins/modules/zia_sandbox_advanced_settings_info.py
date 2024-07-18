@@ -80,7 +80,7 @@ def core(module):
         }
 
         # Returning the results
-        module.exit_json(changed=False, data=results)
+        module.exit_json(changed=False, results=results)
 
     except Exception as e:
         module.fail_json(msg=to_native(e), exception=format_exc())

@@ -121,7 +121,7 @@ def core(module):
     else:
         credentials = client.traffic.list_vpn_credentials().to_list()
 
-    module.exit_json(changed=False, data=credentials)
+    module.exit_json(changed=False, credentials=credentials)
 
 
 def main():
