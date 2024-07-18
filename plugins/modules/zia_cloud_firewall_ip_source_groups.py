@@ -91,15 +91,17 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 def normalize_ip_group(group):
     """
-    Normalize ip source group data by setting computed values.
+    Normalize ip source group data by setting computed values and sorting ip_addresses.
     """
     normalized = group.copy()
 
-    computed_values = [
-        "id",
-    ]
+    computed_values = ["id"]
     for attr in computed_values:
         normalized.pop(attr, None)
+
+    # Sort ip_addresses for consistent comparison
+    if "ip_addresses" in normalized and normalized["ip_addresses"] is not None:
+        normalized["ip_addresses"] = sorted(normalized["ip_addresses"])
 
     return normalized
 
@@ -172,6 +174,8 @@ def core(module):
                     ip_addresses=existing_src_ip_group.get("ip_addresses", ""),
                 ).to_dict()
                 module.exit_json(changed=True, data=existing_src_ip_group)
+            else:
+                module.exit_json(changed=False, data=existing_src_ip_group)
         else:
             """Create"""
             source_group = client.firewall.add_ip_source_group(
@@ -179,7 +183,7 @@ def core(module):
                 description=source_group.get("description", ""),
                 ip_addresses=source_group.get("ip_addresses", ""),
             ).to_dict()
-            module.exit_json(changed=False, data=source_group)
+            module.exit_json(changed=True, data=source_group)
     elif state == "absent":
         if existing_src_ip_group is not None:
             code = client.firewall.delete_ip_source_group(
