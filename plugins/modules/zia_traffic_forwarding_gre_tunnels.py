@@ -219,9 +219,9 @@ def core(module):
     for key, value in desired_gre.items():
         if key not in fields_to_exclude and current_gre.get(key) != value:
             differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {current_gre.get(key)}, Desired: {value}"
-            )
+            # module.warn(
+            #     f"Difference detected in {key}. Current: {current_gre.get(key)}, Desired: {value}"
+            # )
 
     if module.check_mode:
         # If in check mode, report changes and exit

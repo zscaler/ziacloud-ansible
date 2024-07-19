@@ -65,7 +65,97 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-# Returns information on a specified ZIA DLP Web Rule.
+dlp_web_rules:
+  description: Details about the DLP web rules retrieved.
+  returned: when successful
+  type: list
+  elements: dict
+  contains:
+    id:
+      description: The unique identifier of the DLP web rule.
+      returned: always
+      type: int
+      sample: 1203349
+    name:
+      description: The name of the DLP web rule.
+      returned: always
+      type: str
+      sample: "Sample_DLP_Rule1"
+    description:
+      description: Description of the DLP web rule.
+      returned: always
+      type: str
+      sample: "Sample_DLP_Rule1"
+    action:
+      description: Action to be taken when the rule conditions are met.
+      returned: always
+      type: str
+      sample: "ALLOW"
+    access_control:
+      description: The access control setting for the rule.
+      returned: always
+      type: str
+      sample: "READ_WRITE"
+    protocols:
+      description: List of protocols to which the rule applies.
+      returned: always
+      type: list
+      sample: ["FTP_RULE", "HTTPS_RULE", "HTTP_RULE"]
+    departments:
+      description: List of departments to which the rule is applicable.
+      returned: always
+      type: list
+      elements: dict
+      contains:
+        id:
+          description: The unique identifier of the department.
+          returned: always
+          type: int
+        name:
+          description: The name of the department.
+          returned: always
+          type: str
+          sample: "A000"
+    groups:
+      description: List of user groups to which the rule applies.
+      returned: always
+      type: list
+      elements: dict
+      contains:
+        id:
+          description: The unique identifier of the user group.
+          returned: always
+          type: int
+        name:
+          description: The name of the user group.
+          returned: always
+          type: str
+          sample: "A000"
+    icap_server:
+      description: Details about the ICAP server used for the rule.
+      returned: always
+      type: dict
+      contains:
+        id:
+          description: The unique identifier of the ICAP server.
+          returned: always
+          type: int
+          sample: 1494
+        name:
+          description: The name of the ICAP server.
+          returned: always
+          type: str
+          sample: "ZS_BD_INC_RECEIVER_01"
+    severity:
+      description: Severity level of the rule.
+      returned: always
+      type: str
+      sample: "RULE_SEVERITY_HIGH"
+    state:
+      description: The current state of the rule (e.g., enabled or disabled).
+      returned: always
+      type: str
+      sample: "ENABLED"
 """
 
 

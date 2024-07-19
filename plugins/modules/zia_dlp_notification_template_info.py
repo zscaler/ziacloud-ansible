@@ -67,7 +67,47 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-# Returns information about specific DLP Notification Template.
+templates:
+  description: A list of DLP notification templates.
+  returned: always
+  type: list
+  elements: dict
+  contains:
+    id:
+      description: The unique identifier of the DLP notification template.
+      returned: always
+      type: int
+      sample: 6523
+    name:
+      description: The name of the DLP notification template.
+      returned: always
+      type: str
+      sample: "Standard_Template"
+    subject:
+      description: The subject line for the DLP notification email, potentially containing template variables.
+      returned: always
+      type: str
+      sample: "DLP Violation: ${TRANSACTION_ID} ${RULENAME}"
+    attach_content:
+      description: Indicates if the content that triggered the DLP rule is attached to the email.
+      returned: always
+      type: bool
+      sample: true
+    plain_text_message:
+      description: The plain text version of the DLP notification email body, potentially containing template variables.
+      returned: always
+      type: str
+      sample: "Detailed DLP notification message in plain text format with placeholders for transaction ID, user, URL, etc."
+    html_message:
+      description: The HTML version of the DLP notification email body, potentially containing template variables and HTML formatting.
+      returned: always
+      type: str
+      sample: "Detailed DLP notification message in HTML format with placeholders and stylings for various components like user, URL, etc."
+    tls_enabled:
+      description: Indicates if TLS is enabled for the sending of the notification email.
+      returned: always
+      type: bool
+      sample: true
 """
 
 from traceback import format_exc

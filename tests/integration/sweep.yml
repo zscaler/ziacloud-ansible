@@ -51,6 +51,26 @@
   loop: "{{ all_url_rules.rules }}"
   when: all_url_rules.rules is defined
 
+- name: Debug delete results
+  debug:
+    var: delete_result
+
+- name: List all URL Categories
+  zscaler.ziacloud.zia_url_categories_info:
+    provider: "{{ zia_cloud }}"
+  register: all_categories
+
+- name: Delete all custom URL Categories 💥
+  zscaler.ziacloud.zia_url_categories:
+    provider: "{{ zia_cloud }}"
+    state: absent
+    configured_name: "{{ item.configured_name }}"
+  loop: "{{ all_categories.categories }}"
+  when:
+    - all_categories.categories is defined
+    - item.custom_category is defined and item.custom_category == true
+  register: delete_result
+
 - name: List all Locations
   zscaler.ziacloud.zia_location_management_info:
     provider: "{{ zia_cloud }}"
@@ -122,6 +142,7 @@
     cloud_firewall_rules_failed: "{{ all_firewall_rules.failed | default(false) }}"
     dlp_web_rules_failed: "{{ all_dlp_rules.failed | default(false) }}"
     dlp_template_failed: "{{ all_dlp_templates.failed | default(false) }}"
+    url_categories_failed: "{{ all_categories.failed | default(false) }}"
     url_rules_failed: "{{ all_url_rules.failed | default(false) }}"
     locations_failed: "{{ all_locations.failed | default(false) }}"
     rule_labels_failed: "{{ all_rule_labels.failed | default(false) }}"
@@ -137,6 +158,7 @@
           cloud_firewall_rules_failed or
           dlp_template_failed or
           dlp_web_rules_failed or
+          url_categories_failed or
           url_rules_failed or
           locations_failed or
           rule_labels_failed or

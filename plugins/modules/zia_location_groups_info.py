@@ -71,9 +71,23 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-# Returns information on a specified ZIA Location.
+locations:
+  description: A list of location groups managed within the ZIA platform.
+  returned: always
+  type: list
+  elements: dict
+  contains:
+    id:
+      description: The unique identifier for the location group.
+      returned: always
+      type: int
+      sample: 64365143
+    name:
+      description: The name of the location group.
+      returned: always
+      type: str
+      sample: "SDWAN_CAN"
 """
-
 
 from traceback import format_exc
 

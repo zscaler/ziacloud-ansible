@@ -65,7 +65,109 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-# Returns information on a specified URL filtering rule
+rules:
+  description: A list of URL filtering rules fetched based on the given criteria.
+  returned: always
+  type: list
+  elements: dict
+  contains:
+    id:
+      description: The unique identifier for the URL filtering rule.
+      returned: always
+      type: int
+      sample: 1203256
+    name:
+      description: The name of the URL filtering rule.
+      returned: always
+      type: str
+      sample: "URL_Filtering_1"
+    state:
+      description: The current state of the URL filtering rule.
+      returned: always
+      type: str
+      sample: "ENABLED"
+    access_control:
+      description: Access control setting for the rule.
+      returned: always
+      type: str
+      sample: "READ_WRITE"
+    action:
+      description: Action taken when the rule is matched.
+      returned: always
+      type: str
+      sample: "ALLOW"
+    block_override:
+      description: Indicates if the block action can be overridden.
+      returned: always
+      type: bool
+      sample: false
+    departments:
+      description: List of departments to which the rule applies.
+      returned: always
+      type: list
+      elements: dict
+      contains:
+        id:
+          description: The unique identifier for the department.
+          returned: always
+          type: int
+          sample: 99364434
+        name:
+          description: The name of the department.
+          returned: always
+          type: str
+          sample: "A000"
+    groups:
+      description: List of groups to which the rule applies.
+      returned: always
+      type: list
+      elements: dict
+      contains:
+        id:
+          description: The unique identifier for the group.
+          returned: always
+          type: int
+          sample: 76662385
+        name:
+          description: The name of the group.
+          returned: always
+          type: str
+          sample: "A000"
+    protocols:
+      description: List of protocols to which the rule applies.
+      returned: always
+      type: list
+      sample: ["HTTPS_RULE", "HTTP_RULE"]
+    user_agent_types:
+      description: User agent types affected by the rule.
+      returned: always
+      type: list
+      sample: ["OPERA", "MSIE", "MSEDGE", "CHROME"]
+    device_trust_levels:
+      description: Device trust levels applicable to the rule.
+      returned: always
+      type: list
+      sample: ["UNKNOWN_DEVICETRUSTLEVEL", "LOW_TRUST", "MEDIUM_TRUST", "HIGH_TRUST"]
+    user_risk_score_levels:
+      description: User risk score levels applicable to the rule.
+      returned: always
+      type: list
+      sample: ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+    order:
+      description: The order of the rule within the ruleset.
+      returned: always
+      type: int
+      sample: 1
+    rank:
+      description: The rank of the rule for execution priority.
+      returned: always
+      type: int
+      sample: 7
+    request_methods:
+      description: HTTP request methods to which the rule applies.
+      returned: always
+      type: list
+      sample: ["GET", "POST", "HEAD"]
 """
 
 from traceback import format_exc

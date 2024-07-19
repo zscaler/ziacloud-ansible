@@ -67,7 +67,98 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-# Returns information on a specified ZIA Cloud Firewall Rule.
+rules:
+  description: Details of the ZIA Cloud Firewall Rules.
+  returned: always
+  type: list
+  elements: dict
+  contains:
+    id:
+      description: Unique identifier for the firewall rule.
+      type: int
+      sample: 1203355
+    name:
+      description: Name of the firewall rule.
+      type: str
+      sample: "Sample_Rule01"
+    description:
+      description: Description of the firewall rule.
+      type: str
+      sample: "Sample Rule01"
+    action:
+      description: Action taken when the rule is triggered.
+      type: str
+      sample: "ALLOW"
+    state:
+      description: State of the firewall rule, whether it is enabled or disabled.
+      type: str
+      sample: "ENABLED"
+    order:
+      description: The order in which the rule is applied relative to other rules.
+      type: int
+      sample: 4
+    rank:
+      description: Priority of the rule.
+      type: int
+      sample: 7
+    src_ips:
+      description: List of source IP addresses applicable to the rule.
+      type: list
+      sample: ["192.168.1.1", "192.168.1.2", "192.168.1.3"]
+    dest_addresses:
+      description: List of destination IP addresses applicable to the rule.
+      type: list
+      sample: ["10.0.0.1", "10.0.0.2"]
+    dest_countries:
+      description: List of destination countries applicable to the rule.
+      type: list
+      sample: ["COUNTRY_CA"]
+    device_trust_levels:
+      description: List of device trust levels applicable to the rule.
+      type: list
+      sample: ["UNKNOWN_DEVICETRUSTLEVEL", "LOW_TRUST", "MEDIUM_TRUST", "HIGH_TRUST"]
+    capture_p_c_a_p:
+      description: Indicates if packet capture (PCAP) is enabled for the rule.
+      type: bool
+      sample: false
+    default_rule:
+      description: Indicates if this is a default system rule.
+      type: bool
+      sample: false
+    enable_full_logging:
+      description: Indicates if full logging is enabled for the rule.
+      type: bool
+      sample: false
+    exclude_src_countries:
+      description: Indicates if source countries are excluded in the rule.
+      type: bool
+      sample: false
+    departments:
+      description: List of departments applicable to the rule.
+      type: list
+      elements: dict
+      contains:
+        id:
+          description: ID of the department.
+          type: int
+          sample: 99364434
+        name:
+          description: Name of the department.
+          type: str
+          sample: "A000"
+    groups:
+      description: List of groups applicable to the rule.
+      type: list
+      elements: dict
+      contains:
+        id:
+          description: ID of the group.
+          type: int
+          sample: 76662385
+        name:
+          description: Name of the group.
+          type: str
+          sample: "A000"
 """
 
 

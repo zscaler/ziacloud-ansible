@@ -67,7 +67,36 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-# Returns information about specific DLP Engines.
+data:
+  description: Details about the DLP engine retrieved.
+  returned: when successful
+  type: dict
+  contains:
+    id:
+      description: The unique identifier of the DLP engine.
+      returned: always
+      type: int
+      sample: 61
+    custom_dlp_engine:
+      description: Indicates whether the engine is a custom DLP engine.
+      returned: always
+      type: bool
+      sample: false
+    description:
+      description: Description of what the DLP engine is used for.
+      returned: always
+      type: str
+      sample: "Detect PCI violations"
+    engine_expression:
+      description: The logical expression defining the DLP engine rules.
+      returned: always
+      type: str
+      sample: "(D63.S > 5 AND D62.S > 5)"
+    predefined_engine_name:
+      description: The name of the predefined engine, if this is not a custom engine.
+      returned: always
+      type: str
+      sample: "PCI"
 """
 
 from traceback import format_exc

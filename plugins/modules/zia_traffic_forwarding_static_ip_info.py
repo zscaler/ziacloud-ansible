@@ -71,7 +71,77 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-# Returns information on ZIA Static IP Addresses.
+static_ips:
+  description: A list of Static IP configuration details retrieved.
+  returned: always
+  type: list
+  elements: dict
+  contains:
+    id:
+      description: The unique identifier for the Static IP.
+      returned: always
+      type: int
+      sample: 3687136
+    ip_address:
+      description: The IP address of the Static IP configuration.
+      returned: always
+      type: str
+      sample: "1.1.1.1"
+    geo_override:
+      description: Indicates if the geolocation has been manually overridden.
+      returned: always
+      type: bool
+      sample: false
+    routable_ip:
+      description: Specifies if the IP address is routable on the Internet.
+      returned: always
+      type: bool
+      sample: true
+    city:
+      description: Details about the city associated with the Static IP.
+      returned: always
+      type: dict
+      contains:
+        id:
+          description: The unique identifier for the city.
+          returned: always
+          type: int
+          sample: 3448439
+        name:
+          description: The name of the city, including additional location details.
+          returned: always
+          type: str
+          sample: "California, san Jose, United States"
+    latitude:
+      description: The latitude coordinate of the Static IP.
+      returned: always
+      type: float
+      sample: -23.6283
+    longitude:
+      description: The longitude coordinate of the Static IP.
+      returned: always
+      type: float
+      sample: -46.6409
+    last_modification_time:
+      description: The Unix timestamp when the Static IP was last modified.
+      returned: always
+      type: int
+      sample: 1721348015
+    last_modified_by:
+      description: Information about the user who last modified the Static IP.
+      returned: always
+      type: dict
+      contains:
+        id:
+          description: The unique identifier of the user who last modified the entry.
+          returned: always
+          type: int
+          sample: 44772836
+        name:
+          description: The username of the person who last modified the entry.
+          returned: always
+          type: str
+          sample: "DEFAULT ADMIN"
 """
 
 

@@ -1,0 +1,29 @@
+---
+super_category: USER_DEFINED
+configured_name: test_zia_ansible
+description: test_zia_ansible
+keywords:
+  - microsoft
+custom_category: true
+db_categorized_urls:
+  - .creditkarma.com
+  - .youku.com
+type: URL_CATEGORY
+urls:
+  - .coupons.com
+  - .resource.alaskaair.net
+  - .techrepublic.com
+  - .dailymotion.com
+  - .osiriscomm.com
+  - .uefa.com
+  - .Logz.io
+  - .alexa.com
+  - .baidu.com
+  - .cnn.com
+  - .level3.com
+
+# URL Filtering Rule Update
+description_update: test_zia_ansible_update
+urls_update:
+  - .zscaler.com
+  - .uol.com.br

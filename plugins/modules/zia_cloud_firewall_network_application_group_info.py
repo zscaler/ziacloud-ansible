@@ -66,7 +66,43 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-# Returns information on a specific or all application groups.
+app_groups:
+  description: List of application groups based on the search criteria provided.
+  returned: always
+  type: list
+  elements: dict
+  contains:
+    id:
+      description: The unique identifier for the application group.
+      returned: always
+      type: int
+      sample: 2577531
+    name:
+      description: The name of the application group.
+      returned: always
+      type: str
+      sample: "Microsoft Office365"
+    description:
+      description: A description of the application group.
+      returned: always
+      type: str
+      sample: "Microsoft Office365"
+    network_applications:
+      description: List of network applications associated with this group.
+      returned: always
+      type: list
+      sample: [
+          "YAMMER",
+          "OFFICE365",
+          "SKYPE_FOR_BUSINESS",
+          "OUTLOOK", "SHAREPOINT",
+          "SHAREPOINT_ADMIN",
+          "SHAREPOINT_BLOG",
+          "SHAREPOINT_CALENDAR",
+          "SHAREPOINT_DOCUMENT",
+          "SHAREPOINT_ONLINE",
+          "ONEDRIVE"
+        ]
 """
 
 from traceback import format_exc

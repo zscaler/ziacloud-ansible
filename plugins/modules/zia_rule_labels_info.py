@@ -66,7 +66,67 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-# Returns information specific Gets rule labels.
+labels:
+  description: A list of rule labels fetched based on the given criteria.
+  returned: always
+  type: list
+  elements: dict
+  contains:
+    id:
+      description: The unique identifier for the rule label.
+      returned: always
+      type: int
+      sample: 3687131
+    name:
+      description: The name of the rule label.
+      returned: always
+      type: str
+      sample: "Example"
+    description:
+      description: A description of the rule label.
+      returned: always
+      type: str
+      sample: "Example description"
+    created_by:
+      description: Information about the user who created the rule label.
+      returned: always
+      type: complex
+      contains:
+        id:
+          description: The identifier of the user who created the rule label.
+          returned: always
+          type: int
+          sample: 44772836
+        name:
+          description: The name of the user who created the rule label.
+          returned: always
+          type: str
+          sample: "admin@44772833.zscalertwo.net"
+    last_modified_by:
+      description: Information about the user who last modified the rule label.
+      returned: always
+      type: complex
+      contains:
+        id:
+          description: The identifier of the user who last modified the rule label.
+          returned: always
+          type: int
+          sample: 44772836
+        name:
+          description: The name of the user who last modified the rule label.
+          returned: always
+          type: str
+          sample: "admin@44772833.zscalertwo.net"
+    last_modified_time:
+      description: The Unix timestamp when the rule label was last modified.
+      returned: always
+      type: int
+      sample: 1721347034
+    referenced_rule_count:
+      description: The number of rules that reference this label.
+      returned: always
+      type: int
+      sample: 0
 """
 
 from traceback import format_exc

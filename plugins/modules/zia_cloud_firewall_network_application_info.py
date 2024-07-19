@@ -48,7 +48,7 @@ options:
     description:
         - The unique identifier for the network application
     required: false
-    type: int
+    type: str
   name:
     description:
         - The search string used to match against a network application's description attribute."
@@ -74,11 +74,35 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-# Returns information on a specified Network Application(s).
+network_apps:
+  description: List of network applications based on the search criteria provided.
+  returned: always
+  type: list
+  elements: dict
+  contains:
+    id:
+      description: The unique identifier for the network application.
+      returned: always
+      type: str
+      sample: "APNS"
+    description:
+      description: A description of the network application.
+      returned: always
+      type: str
+      sample: "APNS_DESC"
+    parent_category:
+      description: The parent category to which the network application belongs.
+      returned: always
+      type: str
+      sample: "APP_SERVICE"
+    deprecated:
+      description: Indicates whether the network application is deprecated.
+      returned: always
+      type: bool
+      sample: false
 """
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
@@ -87,38 +111,44 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 
 def core(module):
-    network_app_id = module.params.get("id", None)
-    network_app_name = module.params.get("name", None)
+    network_app_id = module.params.get("id")
+    network_app_name = module.params.get("name")
     client = ZIAClientHelper(module)
     network_apps = []
+
+    # Attempt to retrieve by ID
     if network_app_id is not None:
-        network_app = client.firewall.get_network_app(network_app_id).to_dict()
-        network_apps = [network_app]
-    else:
-        network_apps = client.firewall.list_network_apps().to_list()
-        if network_app_name is not None:
-            network_app = None
-            for app in network_apps:
-                if app.get("name", None) == network_app_name:
-                    network_app = app
-                    break
-            if network_app is None:
-                module.fail_json(
-                    msg="Failed to retrieve network application: '%s'"
-                    % (network_app_name)
-                )
+        try:
+            # Make sure ID is passed as a string to the API call
+            network_app = client.firewall.get_network_app(str(network_app_id)).to_dict()
             network_apps = [network_app]
+        except Exception as e:
+            module.fail_json(msg=f"Failed to retrieve network application by ID '{network_app_id}': {str(e)}")
+
+    # If no ID provided, handle by name or list all
+    else:
+        all_apps = client.firewall.list_network_apps().to_list()
+        if network_app_name:
+            # Filter apps by name
+            network_app = next((app for app in all_apps if app.get("name") == network_app_name), None)
+            if not network_app:
+                module.fail_json(msg=f"No network application found with name: '{network_app_name}'")
+            network_apps = [network_app]
+        else:
+            network_apps = all_apps
+
     module.exit_json(changed=False, network_apps=network_apps)
 
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
-        id=dict(type="int", required=False),
+        id=dict(type="str", required=False),  # Changed type to 'str' to accept string input
         name=dict(type="str", required=False),
         locale=dict(type="str", required=False),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+
     try:
         core(module)
     except Exception as e:

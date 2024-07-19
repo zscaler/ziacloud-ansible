@@ -66,7 +66,42 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-# Returns information a specific ip source group or groups.
+groups:
+  description: List of IP source groups based on the search criteria provided.
+  returned: always
+  type: list
+  elements: dict
+  contains:
+    id:
+      description: The unique identifier for the IP source group.
+      returned: always
+      type: int
+      sample: 3266272
+    name:
+      description: The name of the IP source group.
+      returned: always
+      type: str
+      sample: "Sample_IP_Source_Group"
+    description:
+      description: A description of the IP source group.
+      returned: always
+      type: str
+      sample: "Sample_IP_Source_Group"
+    creator_context:
+      description: The context or origin within ZIA where this group was created.
+      returned: always
+      type: str
+      sample: "ZIA"
+    ip_addresses:
+      description: List of IP addresses included in the source group.
+      returned: always
+      type: list
+      sample: ["192.168.1.1", "192.168.1.2", "192.168.1.3"]
+    is_non_editable:
+      description: Whether the IP source group is editable or not.
+      returned: always
+      type: bool
+      sample: false
 """
 
 from traceback import format_exc

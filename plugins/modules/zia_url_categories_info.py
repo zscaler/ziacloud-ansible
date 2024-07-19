@@ -66,7 +66,97 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-# Returns information on a specified url category.
+categories:
+  description: A list of URL categories fetched based on the given criteria.
+  returned: always
+  type: list
+  elements: dict
+  contains:
+    id:
+      description: The unique identifier for the URL category.
+      returned: always
+      type: str
+      sample: "CUSTOM_02"
+    configured_name:
+      description: The name configured for the URL category.
+      returned: when custom categories are queried
+      type: str
+      sample: "Example100"
+    description:
+      description: The description of the URL category.
+      returned: always
+      type: str
+      sample: "Example100"
+    type:
+      description: The type of the URL category.
+      returned: always
+      type: str
+      sample: "URL_CATEGORY"
+    custom_category:
+      description: Indicates if the category is a custom category.
+      returned: always
+      type: bool
+      sample: true
+    editable:
+      description: Indicates if the category is editable.
+      returned: always
+      type: bool
+      sample: true
+    custom_urls_count:
+      description: The count of custom URLs in the category.
+      returned: when custom categories are queried
+      type: int
+      sample: 11
+    urls:
+      description: A list of URLs categorized under this category.
+      returned: when custom categories are queried
+      type: list
+      sample: [".coupons.com", ".resource.alaskaair.net"]
+    custom_ip_ranges_count:
+      description: The count of custom IP ranges in the category.
+      returned: when custom categories are queried
+      type: int
+      sample: 2
+    ip_ranges:
+      description: A list of IP ranges categorized under this category.
+      returned: when custom categories are queried
+      type: list
+      sample: ["3.235.112.0/24", "3.217.228.0/25"]
+    ip_ranges_retaining_parent_category:
+      description: List of IP ranges retaining their parent category's classification.
+      returned: when custom categories are queried
+      type: list
+      sample: ["13.107.6.152/31"]
+    ip_ranges_retaining_parent_category_count:
+      description: The count of IP ranges retaining their parent category's classification.
+      returned: when custom categories are queried
+      type: int
+      sample: 1
+    keywords:
+      description: Keywords associated with the category.
+      returned: when custom categories are queried
+      type: list
+      sample: ["microsoft"]
+    keywords_retaining_parent_category:
+      description: Keywords retaining their parent category's classification.
+      returned: when custom categories are queried
+      type: list
+      sample: []
+    urls_retaining_parent_category_count:
+      description: The count of URLs retaining their parent category's classification.
+      returned: when custom categories are queried
+      type: int
+      sample: 2
+    db_categorized_urls:
+      description: A list of URLs categorized under this category by the database.
+      returned: when custom categories are queried
+      type: list
+      sample: [".creditkarma.com", ".youku.com"]
+    val:
+      description: A custom value associated with the category.
+      returned: when custom categories are queried
+      type: int
+      sample: 129
 """
 
 from traceback import format_exc
@@ -90,7 +180,7 @@ def core(module):
     if category_id is not None:
         for category in categories:
             if category.get("id") == category_id:
-                module.exit_json(changed=False, data=[category])
+                module.exit_json(changed=False, categories=[category])
         module.fail_json(msg="Failed to retrieve URL category ID: '%s'" % (category_id))
 
     # Search by Configured Name for Custom Categories
@@ -100,7 +190,7 @@ def core(module):
                 category.get("custom_category")
                 and category.get("configured_name") == configured_name
             ):
-                module.exit_json(changed=False, data=[category])
+                module.exit_json(changed=False, categories=[category])
         module.fail_json(
             msg="Failed to retrieve URL category with configured name: '%s'"
             % (configured_name)

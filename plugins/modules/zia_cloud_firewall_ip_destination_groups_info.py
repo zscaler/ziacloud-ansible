@@ -75,7 +75,52 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-# Returns information on a specific or all destination groups.
+groups:
+  description: List of IP destination groups based on the search criteria provided.
+  returned: always
+  type: list
+  elements: dict
+  contains:
+    id:
+      description: The unique identifier for the IP destination group.
+      returned: always
+      type: int
+      sample: 3254355
+    name:
+      description: The name of the IP destination group.
+      returned: always
+      type: str
+      sample: "Sample_IP_Destination_Group"
+    description:
+      description: A description of the IP destination group.
+      returned: always
+      type: str
+      sample: "Sample_IP_Destination_Group"
+    creator_context:
+      description: The context or origin within ZIA where this group was created.
+      returned: always
+      type: str
+      sample: "ZIA"
+    addresses:
+      description: List of IP addresses included in the destination group.
+      returned: always
+      type: list
+      sample: ["192.168.1.1", "192.168.1.2", "192.168.1.3"]
+    ip_categories:
+      description: List of IP categories associated with the destination group.
+      returned: always
+      type: list
+      sample: []
+    type:
+      description: Type of the destination group.
+      returned: always
+      type: str
+      sample: "DSTN_IP"
+    url_categories:
+      description: List of URL categories associated with the destination group.
+      returned: always
+      type: list
+      sample: []
 """
 
 from traceback import format_exc

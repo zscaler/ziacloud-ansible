@@ -67,7 +67,37 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-# Returns information about specific DLP Incident Receivers.
+receivers:
+  description: List of DLP incident receivers retrieved from the system.
+  returned: always
+  type: list
+  elements: dict
+  contains:
+    id:
+      description: Unique identifier for the DLP incident receiver.
+      type: int
+      returned: always
+      sample: 1494
+    name:
+      description: Name of the DLP incident receiver.
+      type: str
+      returned: always
+      sample: "ZS_BD_INC_RECEIVER_01"
+    status:
+      description: Operational status of the DLP incident receiver.
+      type: str
+      returned: always
+      sample: "ENABLED"
+    url:
+      description: The URL or endpoint of the incident receiver.
+      type: str
+      returned: always
+      sample: "icaps://192.168.100.1:1344/"
+    flags:
+      description: Numeric flags associated with the incident receiver, representing various settings or states.
+      type: int
+      returned: always
+      sample: 1
 """
 
 from traceback import format_exc

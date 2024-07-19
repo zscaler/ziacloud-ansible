@@ -29,7 +29,7 @@ __metaclass__ = type
 DOCUMENTATION = r"""
 ---
 module: zia_traffic_forwarding_gre_tunnel_info
-short_description: "Gets the GRE tunnel information for the specified ID.D"
+short_description: "Gets the GRE tunnel information for the specified ID"
 description: "Gets the GRE tunnel information for the specified ID."
 author:
   - William Guilherme (@willguibr)
@@ -64,7 +64,7 @@ EXAMPLES = r"""
 - name: Retrieve Details of Specific GRE Tunnel By Source IP Address.
   zscaler.ziacloud.zia_traffic_forwarding_gre_tunnel_info:
     provider: '{{ provider }}'
-    ip_address: 1.1.1.1
+    source_ip: 1.1.1.1
 
 - name: Retrieve Details of Specific GRE Tunnel By ID.
   zscaler.ziacloud.zia_traffic_forwarding_gre_tunnel_info:
@@ -73,7 +73,137 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-# Returns information on GRE Tunnel.
+gre_tunnels:
+  description: A list of GRE tunnel configurations retrieved from the ZIA platform.
+  returned: always
+  type: list
+  elements: dict
+  contains:
+    id:
+      description: The unique identifier for the GRE tunnel.
+      returned: always
+      type: int
+      sample: 3687136
+    comment:
+      description: User-provided comments about the GRE tunnel.
+      returned: always
+      type: str
+      sample: "GRE Tunnel Example"
+    internal_ip_range:
+      description: Internal IP range configured for the GRE tunnel.
+      returned: always
+      type: str
+      sample: "172.19.48.72"
+    ip_unnumbered:
+      description: Flag indicating if the tunnel uses unnumbered IP.
+      returned: always
+      type: bool
+      sample: false
+    source_ip:
+      description: The source IP address used by the GRE tunnel.
+      returned: always
+      type: str
+      sample: "1.1.1.1"
+    last_modification_time:
+      description: Unix timestamp of when the GRE tunnel configuration was last modified.
+      returned: always
+      type: int
+      sample: 1721348656
+    last_modified_by:
+      description: Details of the user who last modified the GRE tunnel configuration.
+      returned: always
+      type: dict
+      contains:
+        id:
+          description: Unique identifier of the user.
+          returned: always
+          type: int
+          sample: 44772836
+        name:
+          description: Name of the user.
+          returned: always
+          type: str
+          sample: "DEFAULT ADMIN"
+    primary_dest_vip:
+      description: Primary destination virtual IP configuration for the GRE tunnel.
+      returned: always
+      type: dict
+      contains:
+        id:
+          description: Unique identifier of the primary destination.
+          returned: always
+          type: int
+          sample: 79439
+        virtual_ip:
+          description: Virtual IP address of the primary destination.
+          returned: always
+          type: str
+          sample: "147.161.128.23"
+        city:
+          description: City of the primary destination.
+          returned: always
+          type: str
+          sample: "Sao Paulo"
+        country_code:
+          description: Country code of the primary destination.
+          returned: always
+          type: str
+          sample: "US"
+        datacenter:
+          description: Datacenter where the primary VIP is located.
+          returned: always
+          type: str
+          sample: "SAO4"
+        latitude:
+          description: Latitude of the primary destination.
+          returned: always
+          type: float
+          sample: -22.0
+        longitude:
+          description: Longitude of the primary destination.
+          returned: always
+          type: float
+          sample: -47.0
+    secondary_dest_vip:
+      description: Secondary destination virtual IP configuration for the GRE tunnel.
+      returned: always
+      type: dict
+      contains:
+        id:
+          description: Unique identifier of the secondary destination.
+          returned: always
+          type: int
+          sample: 205298
+        virtual_ip:
+          description: Virtual IP address of the secondary destination.
+          returned: always
+          type: str
+          sample: "170.85.16.65"
+        city:
+          description: City of the secondary destination.
+          returned: always
+          type: str
+          sample: "Rio de Janeiro"
+        country_code:
+          description: Country code of the secondary destination.
+          returned: always
+          type: str
+          sample: "BR"
+        datacenter:
+          description: Datacenter where the secondary VIP is located.
+          returned: always
+          type: str
+          sample: "RIO1"
+        latitude:
+          description: Latitude of the secondary destination.
+          returned: always
+          type: float
+          sample: -23.0
+        longitude:
+          description: Longitude of the secondary destination.
+          returned: always
+          type: float
+          sample: -43.0
 """
 
 

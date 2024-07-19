@@ -79,7 +79,22 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-# Returns information about GRE Internal Ranges.
+gre_ranges:
+  description: List of GRE internal IP ranges retrieved from the system.
+  returned: always
+  type: list
+  elements: dict
+  contains:
+    start_ip_address:
+      description: The starting IP address of the GRE range.
+      type: str
+      returned: always
+      sample: "172.20.225.56"
+    end_ip_address:
+      description: The ending IP address of the GRE range.
+      type: str
+      returned: always
+      sample: "172.20.225.63"
 """
 
 from traceback import format_exc

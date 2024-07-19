@@ -66,7 +66,68 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-# Returns information of all users.
+users:
+  description: List of users retrieved by the module.
+  returned: always
+  type: list
+  elements: dict
+  contains:
+    id:
+      description: The unique identifier for the user.
+      type: int
+      sample: 45513075
+    name:
+      description: The name of the user.
+      type: str
+      sample: "Adam Ashcroft"
+    email:
+      description: The email address of the user.
+      type: str
+      sample: "adam.ashcroft@bd-hashicorp.com"
+    admin_user:
+      description: Flag indicating if the user has admin privileges.
+      type: bool
+      sample: false
+    is_non_editable:
+      description: Flag indicating if the user's profile is non-editable.
+      type: bool
+      sample: false
+    deleted:
+      description: Flag indicating if the user's profile has been deleted.
+      type: bool
+      sample: false
+    department:
+      description: The department to which the user belongs.
+      type: dict
+      contains:
+        id:
+          description: The unique identifier of the department.
+          type: int
+          sample: 45513014
+        name:
+          description: The name of the department.
+          type: str
+          sample: "Engineering"
+    groups:
+      description: List of groups to which the user belongs.
+      type: list
+      elements: str
+      sample: []
+  sample: [
+    {
+      "admin_user": false,
+      "deleted": false,
+      "department": {
+        "id": 45513014,
+        "name": "Engineering"
+      },
+      "email": "adam.ashcroft@bd-hashicorp.com",
+      "groups": [],
+      "id": 45513075,
+      "is_non_editable": false,
+      "name": "Adam Ashcroft"
+    }
+  ]
 """
 
 from traceback import format_exc

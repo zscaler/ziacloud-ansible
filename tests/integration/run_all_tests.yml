@@ -40,6 +40,7 @@
         - targets/zia_traffic_forwarding_gre_tunnels/tasks/main.yml
         - targets/zia_traffic_forwarding_static_ip/tasks/main.yml
         - targets/zia_traffic_forwarding_vpn_credentials/tasks/main.yml
+        - targets/zia_url_categories/tasks/main.yml
         - targets/zia_url_filtering_rules/tasks/main.yml
 
     - name: Run final sweep to clean tenant

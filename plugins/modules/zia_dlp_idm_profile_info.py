@@ -67,7 +67,107 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-# Returns information about specific DLP IDM Profiles.
+idm_profiles:
+  description: List of DLP IDM profiles retrieved from the Zscaler system.
+  returned: always
+  type: list
+  elements: dict
+  contains:
+    idm_client:
+      description: Object containing the IDM client details.
+      type: dict
+      returned: always
+      contains:
+        id:
+          description: Unique identifier for the IDM client.
+          type: int
+          returned: always
+          sample: 38316
+        name:
+          description: Name of the IDM client.
+          type: str
+          returned: always
+          sample: "ZS_DLP_IDX01"
+    last_modified_time:
+      description: The UNIX timestamp when the profile was last modified.
+      type: int
+      returned: always
+      sample: 1702106392
+    modified_by:
+      description: Object containing details about the user who last modified the profile.
+      type: dict
+      returned: always
+      contains:
+        id:
+          description: Unique identifier of the user.
+          type: int
+          returned: always
+          sample: 44772836
+        name:
+          description: Name of the user.
+          type: str
+          returned: always
+          sample: "admin@44772833.zscalertwo.net"
+    num_documents:
+      description: Number of documents associated with the profile.
+      type: int
+      returned: always
+      sample: 1
+    port:
+      description: The network port used by the IDM client.
+      type: int
+      returned: always
+      sample: 0
+    profile_id:
+      description: Unique identifier for the IDM profile.
+      type: int
+      returned: always
+      sample: 1
+    profile_name:
+      description: Name of the IDM profile.
+      type: str
+      returned: always
+      sample: "BD_IDM_TEMPLATE01"
+    profile_type:
+      description: Type of the IDM profile.
+      type: str
+      returned: always
+      sample: "LOCAL"
+    schedule_day:
+      description: The day of the week when the profile is scheduled to run.
+      type: int
+      returned: always
+      sample: 0
+    schedule_disabled:
+      description: Boolean flag indicating whether the schedule is disabled.
+      type: bool
+      returned: always
+      sample: false
+    schedule_time:
+      description: The time of day when the profile is scheduled to run.
+      type: int
+      returned: always
+      sample: 0
+    schedule_type:
+      description: The type of scheduling used for the IDM profile.
+      type: str
+      returned: always
+      sample: "NONE"
+    upload_status:
+      description: Status of the IDM profile upload.
+      type: str
+      returned: always
+      sample: "IDM_PROF_UPLOAD_COMPLETED"
+    version:
+      description: Version number of the IDM profile.
+      type: int
+      returned: always
+      sample: 1
+    volume_of_documents:
+      description: The volume of documents associated with the profile.
+      type: int
+      returned: always
+      sample: 153025
 """
 
 from traceback import format_exc

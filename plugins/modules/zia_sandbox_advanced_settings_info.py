@@ -52,7 +52,47 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-# Default return values
+ansible_module_results:
+  description: A dictionary containing results returned by the Ansible module.
+  returned: always
+  type: dict
+  contains:
+    behavioral_analysis:
+      description: Details on behavioral analysis settings related to sandboxing.
+      returned: always
+      type: dict
+      contains:
+        file_hashes_to_be_blocked:
+          description: List of MD5 file hashes currently configured to be blocked by the sandbox.
+          returned: always
+          type: list
+          elements: str
+          sample: ["0316f6067bc02c23c1975d83c659da21", "35e38d023b253c0cd9bd3e16afc362a7", "72fe869aa394ef0a62bb8324857770dd"]
+    file_hash_count:
+      description: Information about the count of file hashes that are being blocked and the remaining quota.
+      returned: always
+      type: dict
+      contains:
+        blocked_file_hashes_count:
+          description: The number of file hashes that are currently being blocked.
+          returned: always
+          type: int
+          sample: 3
+        remaining_file_hashes:
+          description: The remaining quota of file hashes that can still be blocked.
+          returned: always
+          type: int
+          sample: 9997
+changed:
+  description: A boolean flag that indicates if any changes were made during the execution of the module.
+  returned: always
+  type: bool
+  sample: false
+failed:
+  description: A boolean flag that indicates if the execution of the module failed.
+  returned: always
+  type: bool
+  sample: false
 """
 
 from traceback import format_exc

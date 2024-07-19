@@ -66,7 +66,31 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-# Returns information of all departments.
+departments:
+  description: List of departments retrieved by the module.
+  returned: always
+  type: list
+  elements: dict
+  contains:
+    id:
+      description: The unique identifier for the department.
+      type: int
+      sample: 99364434
+    name:
+      description: The name of the department.
+      type: str
+      sample: 'A000'
+    comments:
+      description: Additional comments or metadata associated with the department.
+      type: str
+      sample: 'A000'
+  sample: [
+    {
+      "comments": "A000",
+      "id": 99364434,
+      "name": "A000"
+    }
+  ]
 """
 
 from traceback import format_exc

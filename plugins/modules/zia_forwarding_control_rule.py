@@ -628,9 +628,9 @@ def core(module):
 
         if current_value != desired_value:
             differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
-            )
+            # module.warn(
+            #     f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
+            # )
 
     if module.check_mode:
         # If in check mode, report changes and exit
@@ -646,7 +646,7 @@ def core(module):
         existing_rule.update(rule)
         existing_rule["id"] = id
 
-    module.warn(f"Final payload being sent to SDK: {rule}")
+    # module.warn(f"Final payload being sent to SDK: {rule}")
     if state == "present":
         if existing_rule is not None:
             if differences_detected:
@@ -693,7 +693,7 @@ def core(module):
                         ),
                     )
                 )
-                module.warn("Payload Update for SDK: {}".format(update_rule))
+                # module.warn("Payload Update for SDK: {}".format(update_rule))
                 updated_rule = client.forwarding_control.update_rule(
                     **update_rule
                 ).to_dict()
@@ -745,7 +745,7 @@ def core(module):
                     ),
                 )
             )
-            module.warn("Payload for SDK: {}".format(create_rule))
+            # module.warn("Payload for SDK: {}".format(create_rule))
             new_rule = client.forwarding_control.add_rule(**create_rule).to_dict()
             module.exit_json(changed=True, data=new_rule)
     elif (

@@ -66,7 +66,53 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-# Returns information on a specific Network Services Groups.
+service_groups:
+  description: Information about the network services groups retrieved.
+  returned: when successful
+  type: list
+  elements: dict
+  contains:
+    id:
+      description: The unique identifier of the network service group.
+      returned: always
+      type: int
+      sample: 3266248
+    name:
+      description: The name of the network service group.
+      returned: always
+      type: str
+      sample: "Corporate Custom SSH TCP_10022"
+    description:
+      description: A description of the network service group.
+      returned: always
+      type: str
+      sample: "Corporate Custom SSH TCP_10022"
+    creator_context:
+      description: The context in which the network service group was created (e.g., ZIA, user).
+      returned: always
+      type: str
+      sample: "ZIA"
+    services:
+      description: A list of services included in the group.
+      returned: always
+      type: list
+      elements: dict
+      contains:
+        id:
+          description: The unique identifier of the service.
+          returned: always
+          type: int
+          sample: 1300979
+        name:
+          description: The name of the service within the group.
+          returned: always
+          type: str
+          sample: "SSH"
+        is_name_l10n_tag:
+          description: Indicates if the name of the service is a localization tag.
+          returned: always
+          type: bool
+          sample: true
 """
 
 from traceback import format_exc

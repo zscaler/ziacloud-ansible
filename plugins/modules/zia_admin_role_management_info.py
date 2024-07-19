@@ -68,7 +68,39 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-# Returns information of all admin roles.
+roles:
+  description: >-
+    List of roles returned from Zscaler ZIA based on the provided criteria. Each element in the list
+    is a dictionary that describes a role.
+  returned: always
+  type: list
+  elements: dict
+  contains:
+    id:
+      description: The unique identifier for the admin role.
+      type: int
+      returned: always
+      sample: 26270
+    name:
+      description: The name of the admin role.
+      type: str
+      returned: always
+      sample: "Engineering_Role"
+    rank:
+      description: The rank associated with the admin role.
+      type: int
+      returned: when available
+      sample: 7
+    report_time_duration:
+      description: The time duration for reporting, represented in minutes. A value of -1 may indicate unlimited or not applicable.
+      type: int
+      returned: when available
+      sample: -1
+    role_type:
+      description: The type of the admin role, indicating the role's scope and permissions.
+      type: str
+      returned: always
+      sample: "EXEC_INSIGHT_AND_ORG_ADMIN"
 """
 
 from traceback import format_exc

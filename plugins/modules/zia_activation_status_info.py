@@ -57,8 +57,24 @@ EXAMPLES = """
     provider: '{{ provider }}'
 """
 
-RETURN = """
-# Gets the activation status for the saved configuration changes.
+RETURN = r"""
+current_activation_status:
+  description: Current activation status of the ZIA configuration.
+  returned: always
+  type: str
+  sample: 'ACTIVE'
+
+status_matches:
+  description: Boolean flag indicating whether the provided status matches the current activation status.
+  returned: when 'status' parameter is provided
+  type: bool
+  sample: True
+
+msg:
+  description: Provides a message if the provided status does not match the current activation status.
+  returned: when 'status' parameter is provided and does not match current activation status
+  type: str
+  sample: "Provided status 'PENDING' does not match the current activation status 'ACTIVE'."
 """
 
 from traceback import format_exc
@@ -74,7 +90,7 @@ def core(module):
     activation_status = module.params.get("status", None)
     client = ZIAClientHelper(module)
 
-    current_activation_status = client.activate.activate()
+    current_activation_status = client.activate.status()
 
     # If specific status provided, check if it matches the current activation status
     if activation_status:

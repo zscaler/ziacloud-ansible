@@ -72,7 +72,61 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-# Returns information about Workload groups.
+workload_group:
+  description: Details of the workload group fetched.
+  returned: when a specific group is requested
+  type: dict
+  contains:
+    id:
+      description: The unique identifier for the workload group.
+      type: int
+      sample: 17811899
+    name:
+      description: The name of the workload group.
+      type: str
+      sample: "BD_WORKLOAD_GROUP01"
+    description:
+      description: A brief description of the workload group.
+      type: str
+      sample: "BD_WORKLOAD_GROUP01"
+    expression:
+      description: Raw expression used in the workload group settings, typically complex and encoded.
+      type: str
+      sample: "Encoded expression string"
+    expression_json:
+      description: JSON format of the expression for more readable output, detailing the attributes and conditions used.
+      type: str
+      sample: >
+        {
+          "expression_containers": [
+            {"tag_type": "ATTR", "operator": "AND", "tag_container": {"tags": [{"key": "GroupName", "value": "example"}], "operator": "AND"}},
+            ...
+          ]
+        }
+    last_modified_by:
+      description: Information about the user who last modified the group.
+      type: dict
+      sample: {"id": 8061243, "name": "Admin User"}
+    last_modified_time:
+      description: UNIX timestamp of when the group was last modified.
+      type: int
+      sample: 1705956482
+workload_groups:
+  description: List of all workload groups retrieved if no specific group is requested.
+  returned: when listing all groups and no specific group is requested
+  type: list
+  elements: dict
+  sample: [
+    {
+      "id": 17811899,
+      "name": "BD_WORKLOAD_GROUP01",
+      "description": "BD_WORKLOAD_GROUP01",
+      "expression": "Encoded expression string",
+      "expression_json": "{...}",
+      "last_modified_by": {"id": 8061243, "name": "Admin User"},
+      "last_modified_time": 1705956482
+    }
+  ]
 """
 
 import json

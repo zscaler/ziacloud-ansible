@@ -71,12 +71,50 @@ EXAMPLES = r"""
     provider: '{{ provider }}'
     fqdn: "sjc-1-37@acme.com"
 
+- name: Retrieve Details of Specific ZPN Credentials By IP Address.
+  zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_info:
+    provider: '{{ provider }}'
+    ip_address: '1.1.1.1'
+
 - name: Retrieve Details of Specific ZPN Credentials By ID.
   zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials_info:
     provider: '{{ provider }}'
     id: 222
 """
 
+RETURN = r"""
+credentials:
+  description: A list of VPN credentials retrieved based on the given criteria.
+  returned: always
+  type: list
+  elements: dict
+  contains:
+    id:
+      description: The unique identifier for the VPN credential.
+      returned: always
+      type: int
+      sample: 108667023
+    type:
+      description: The type of VPN credential, which could be 'UFQDN' or 'IP'.
+      returned: always
+      type: str
+      sample: "UFQDN"
+    fqdn:
+      description: The Fully Qualified Domain Name associated with the VPN credential.
+      returned: when type is 'UFQDN'
+      type: str
+      sample: "sjc-1-37@acme.com"
+    ip_address:
+      description: The IP address associated with the VPN credential.
+      returned: when type is 'IP'
+      type: str
+      sample: "1.1.1.1"
+    comments:
+      description: Any additional comments or metadata associated with the VPN credential.
+      returned: always
+      type: str
+      sample: "San Jose VPN Credential 37"
+"""
 
 from traceback import format_exc
 

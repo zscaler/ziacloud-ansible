@@ -198,17 +198,52 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 def normalize_url_category(category):
     """
-    Normalize url category by setting computed values.
+    Normalize URL category data by setting computed values and sorting URLs.
     """
     normalized = category.copy()
 
-    computed_values = [
-        "super_category",
-    ]
+    computed_values = ["id"]
     for attr in computed_values:
         normalized.pop(attr, None)
 
+    # Sort URLs for consistent comparison
+    if "urls" in normalized and normalized["urls"] is not None:
+        normalized["urls"] = sorted(normalized["urls"])
+
     return normalized
+
+
+def preprocess_category(category, params):
+    """
+    Preprocess specific attributes in the category based on their type and structure.
+    :param category: Dict containing the category data.
+    :param params: List of attribute names to be processed.
+    :return: Preprocessed category.
+    """
+    preprocessed = {}
+    for attr in params:
+        if attr in category:
+            value = category[attr]
+
+            # Handling the 'editable' attribute, default to False if not provided
+            if attr == "editable":
+                preprocessed[attr] = True if value is None else value
+
+            # Handle list attributes
+            elif isinstance(value, list):
+                preprocessed[attr] = sorted(value) if value else []
+
+            else:
+                preprocessed[attr] = value
+
+        else:
+            # Assign default values for missing keys
+            if attr == "editable":
+                preprocessed[attr] = False
+            else:
+                preprocessed[attr] = None
+
+    return preprocessed
 
 
 def core(module):
@@ -219,7 +254,7 @@ def core(module):
         "id",
         "configured_name",
         "description",
-        "super_category",
+        "super_category",  # This will be excluded from the comparison
         "custom_category",
         "keywords",
         "keywords_retaining_parent_category",
@@ -252,51 +287,20 @@ def core(module):
         normalize_url_category(existing_category) if existing_category else {}
     )
 
-    def preprocess_category(category, params):
-        """
-        Preprocess specific attributes in the category based on their type and structure.
-        :param category: Dict containing the category data.
-        :param params: List of attribute names to be processed.
-        :return: Preprocessed category.
-        """
-        preprocessed = {}
-        for attr in params:
-            if attr in category:
-                value = category[attr]
-
-                # Handling the 'editable' attribute, default to False if not provided
-                if attr == "editable":
-                    preprocessed[attr] = True if value is None else value
-
-                # 'super_category' is required, so it should be directly assigned
-                elif attr == "super_category":
-                    preprocessed[attr] = value
-
-                # Handle list attributes
-                elif isinstance(value, list):
-                    preprocessed[attr] = sorted(value) if value else []
-
-                else:
-                    preprocessed[attr] = value
-
-            else:
-                # Assign default values for missing keys
-                if attr == "editable":
-                    preprocessed[attr] = False
-                elif attr == "super_category":
-                    # Assuming 'super_category' must be provided by the user
-                    preprocessed[attr] = category.get(attr, "")
-                else:
-                    preprocessed[attr] = None
-
-        return preprocessed
-
     existing_category_preprocessed = preprocess_category(current_category, params)
     desired_category_preprocessed = preprocess_category(desired_category, params)
+
+    # Exclude 'super_category' from the comparison
+    if 'super_category' in desired_category_preprocessed:
+        desired_category_preprocessed.pop('super_category')
+    if 'super_category' in existing_category_preprocessed:
+        existing_category_preprocessed.pop('super_category')
 
     # Comparison logic
     differences_detected = False
     for key in params:
+        if key == 'super_category':
+            continue
         desired_value = desired_category_preprocessed.get(key)
         current_value = existing_category_preprocessed.get(key)
 
@@ -317,9 +321,9 @@ def core(module):
 
         if current_value != desired_value:
             differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
-            )
+            # module.warn(
+            #     f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
+            # )
 
     if module.check_mode:
         # If in check mode, report changes and exit

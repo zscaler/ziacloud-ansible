@@ -66,7 +66,172 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-# Returns information on a specified ZIA Location.
+locations:
+  description: A list of ZIA locations with detailed configuration settings.
+  returned: always
+  type: list
+  elements: dict
+  contains:
+    aup_block_internet_until_accepted:
+      description: Specifies if Internet access is blocked until the Acceptable Use Policy (AUP) is accepted.
+      returned: always
+      type: bool
+      sample: false
+    aup_enabled:
+      description: Indicates if Acceptable Use Policy (AUP) is enabled for the location.
+      returned: always
+      type: bool
+      sample: false
+    aup_force_ssl_inspection:
+      description: Indicates if SSL inspection is enforced when AUP is enabled.
+      returned: always
+      type: bool
+      sample: false
+    aup_timeout_in_days:
+      description: The number of days before the AUP acceptance is timed out.
+      returned: always
+      type: int
+      sample: 0
+    auth_required:
+      description: Indicates if authentication is required for this location.
+      returned: always
+      type: bool
+      sample: true
+    caution_enabled:
+      description: Indicates if caution is enabled for this location.
+      returned: always
+      type: bool
+      sample: false
+    child_count:
+      description: The count of child locations under this location.
+      returned: always
+      type: int
+      sample: 0
+    cookies_and_proxy:
+      description: Indicates if cookies and proxy are used for this location.
+      returned: always
+      type: bool
+      sample: false
+    country:
+      description: The country where the location is based.
+      returned: always
+      type: str
+      sample: "CANADA"
+    description:
+      description: A description of the location.
+      returned: always
+      type: str
+      sample: "SJC_Location37"
+    digest_auth_enabled:
+      description: Indicates if digest authentication is enabled for this location.
+      returned: always
+      type: bool
+      sample: false
+    display_time_unit:
+      description: The unit of time used to display time-related settings.
+      returned: always
+      type: str
+      sample: "HOUR"
+    dn_bandwidth:
+      description: The downstream bandwidth for this location in Mbps.
+      returned: always
+      type: int
+      sample: 10000
+    dynamiclocation_groups:
+      description: A list of dynamic location groups associated with this location.
+      returned: always
+      type: list
+      elements: dict
+      contains:
+        id:
+          description: The ID of the dynamic location group.
+          type: int
+          sample: 44772848
+        name:
+          description: The name of the dynamic location group.
+          type: str
+          sample: "Corporate User Traffic Group"
+    ec_location:
+      description: Indicates if this is an EC location.
+      returned: always
+      type: bool
+      sample: false
+    exclude_from_dynamic_groups:
+      description: Indicates if this location is excluded from dynamic groups.
+      returned: always
+      type: bool
+      sample: false
+    exclude_from_manual_groups:
+      description: Indicates if this location is excluded from manual groups.
+      returned: always
+      type: bool
+      sample: false
+    geo_override:
+      description: Indicates if geography override is enabled for this location.
+      returned: always
+      type: bool
+      sample: false
+    id:
+      description: The ID of the location.
+      returned: always
+      type: str
+      sample: "108668017"
+    idle_time_in_minutes:
+      description: The idle time in minutes before a session is considered inactive.
+      returned: always
+      type: int
+      sample: 480
+    ip_addresses:
+      description: A list of IP addresses associated with this location.
+      returned: always
+      type: list
+      elements: str
+      sample: ["200.201.200.2"]
+    ips_control:
+      description: Indicates if IPS control is enabled for this location.
+      returned: always
+      type: bool
+      sample: true
+    name:
+      description: The name of the location.
+      returned: always
+      type: str
+      sample: "USA-SJC37"
+    ofw_enabled:
+      description: Indicates if OFW (On-the-Fly Whitelisting) is enabled for this location.
+      returned: always
+      type: bool
+      sample: true
+    profile:
+      description: The profile assigned to this location.
+      returned: always
+      type: str
+      sample: "CORPORATE"
+    ssl_scan_enabled:
+      description: Indicates if SSL scanning is enabled for this location.
+      returned: always
+      type: bool
+      sample: false
+    state:
+      description: The state or province of the location.
+      returned: always
+      type: str
+      sample: "British Columbia"
+    tz:
+      description: The timezone in which the location operates.
+      returned: always
+      type: str
+      sample: "CANADA_AMERICA_VANCOUVER"
+    up_bandwidth:
+      description: The upstream bandwidth for this location in Mbps.
+      returned: always
+      type: int
+      sample: 10000
+    xff_forward_enabled:
+      description: Indicates if X-Forwarded-For header forwarding is enabled.
+      returned: always
+      type: bool
+      sample: true
 """
 
 

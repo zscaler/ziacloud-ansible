@@ -64,7 +64,38 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-# Returns information on all time windows.
+time_windows:
+  description: Details of the ZIA time interval or a list of time intervals retrieved.
+  returned: always
+  type: list
+  elements: dict
+  contains:
+    id:
+      description: Unique identifier for the time interval.
+      type: int
+      returned: always
+      sample: 1833
+    name:
+      description: Name of the time interval.
+      type: str
+      returned: always
+      sample: "Off hours"
+    day_of_week:
+      description: List of days of the week the time window is active.
+      type: list
+      returned: always
+      elements: str
+      sample: ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
+    start_time:
+      description: Start time of the time interval, measured in minutes from midnight (0-1440).
+      type: int
+      returned: always
+      sample: 0
+    end_time:
+      description: End time of the time interval, measured in minutes from midnight (0-1440).
+      type: int
+      returned: always
+      sample: 420
 """
 
 from traceback import format_exc

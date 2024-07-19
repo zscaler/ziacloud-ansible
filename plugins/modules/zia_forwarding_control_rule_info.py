@@ -65,9 +65,102 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-# Returns information on a specified ZIA Forwarding Control Rule.
+rules:
+  description: A list of ZIA forwarding control rules.
+  returned: always
+  type: list
+  elements: dict
+  contains:
+    id:
+      description: The unique identifier of the forwarding rule.
+      returned: always
+      type: int
+      sample: 1197791
+    name:
+      description: The name of the forwarding control rule.
+      returned: always
+      type: str
+      sample: "FWD_1"
+    access_control:
+      description: Access control setting for the rule, describing the access permission.
+      returned: always
+      type: str
+      sample: "READ_WRITE"
+    dest_addresses:
+      description: List of destination IP addresses for the rule.
+      returned: always
+      type: list
+      elements: str
+      sample: ["192.168.100.1", "192.168.100.2", "192.168.100.3"]
+    dest_countries:
+      description: List of destination country codes affected by the rule.
+      returned: always
+      type: list
+      elements: str
+      sample: ["COUNTRY_CA", "COUNTRY_GB"]
+    dest_ip_categories:
+      description: List of destination IP categories specified in the rule.
+      returned: always
+      type: list
+      elements: str
+    dest_ip_groups:
+      description: List of destination IP groups affected by the rule.
+      returned: always
+      type: list
+      elements: dict
+      contains:
+        id:
+          description: The unique identifier of the IP group.
+          returned: always
+          type: int
+          sample: 3254355
+        name:
+          description: The name of the IP group.
+          returned: always
+          type: str
+          sample: "Example1000"
+    forward_method:
+      description: The forwarding method specified in the rule (e.g., DIRECT, VPN).
+      returned: always
+      type: str
+      sample: "DIRECT"
+    order:
+      description: The order of the rule in the list of forwarding rules.
+      returned: always
+      type: int
+      sample: 1
+    rank:
+      description: The rank assigned to the rule for priority.
+      returned: always
+      type: int
+      sample: 7
+    state:
+      description: The state of the rule (e.g., ENABLED, DISABLED).
+      returned: always
+      type: str
+      sample: "ENABLED"
+    type:
+      description: The type of forwarding rule.
+      returned: always
+      type: str
+      sample: "FORWARDING"
+    location_groups:
+      description: List of location groups associated with the rule.
+      returned: always
+      type: list
+      elements: dict
+      contains:
+        id:
+          description: The unique identifier of the location group.
+          returned: always
+          type: int
+          sample: 44772849
+        name:
+          description: The name of the location group.
+          returned: always
+          type: str
+          sample: "Server Traffic Group"
 """
-
 
 from traceback import format_exc
 

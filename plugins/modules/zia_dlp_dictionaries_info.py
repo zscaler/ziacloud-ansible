@@ -64,7 +64,84 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-# Returns information on a specified ZIA DLP Dictionaries.
+dictionaries:
+  description: Details about the DLP dictionaries retrieved.
+  returned: when successful
+  type: list
+  elements: dict
+  contains:
+    id:
+      description: The unique identifier of the DLP dictionary.
+      returned: always
+      type: int
+      sample: 1
+    name:
+      description: The name of the DLP dictionary.
+      returned: always
+      type: str
+      sample: "Example_Dictionary"
+    description:
+      description: Description of the DLP dictionary.
+      returned: always
+      type: str
+      sample: "Example_Dictionary"
+    custom:
+      description: Indicates whether the dictionary is custom.
+      returned: always
+      type: bool
+      sample: true
+    dictionary_type:
+      description: Type of the dictionary, indicating whether it contains patterns, phrases, or both.
+      returned: always
+      type: str
+      sample: "PATTERNS_AND_PHRASES"
+    custom_phrase_match_type:
+      description: Describes the phrase match type for the dictionary.
+      returned: always
+      type: str
+      sample: "MATCH_ANY_CUSTOM_PHRASE_PATTERN_DICTIONARY"
+    custom_phrase_supported:
+      description: Indicates if custom phrases are supported in this dictionary.
+      returned: always
+      type: bool
+      sample: false
+    dictionary_cloning_enabled:
+      description: Indicates if cloning of the dictionary is enabled.
+      returned: always
+      type: bool
+      sample: false
+    patterns:
+      description: List of patterns included in the dictionary.
+      returned: always
+      type: list
+      elements: dict
+      contains:
+        pattern:
+          description: The regex pattern included in the dictionary.
+          returned: always
+          type: str
+          sample: "test"
+        action:
+          description: The action associated with the pattern.
+          returned: always
+          type: str
+          sample: "PATTERN_COUNT_TYPE_UNIQUE"
+    phrases:
+      description: List of phrases included in the dictionary.
+      returned: always
+      type: list
+      elements: dict
+      contains:
+        phrase:
+          description: The phrase included in the dictionary.
+          returned: always
+          type: str
+          sample: "test"
+        action:
+          description: The action associated with the phrase.
+          returned: always
+          type: str
+          sample: "PHRASE_COUNT_TYPE_ALL"
 """
 
 

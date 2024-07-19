@@ -66,7 +66,26 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-# Returns information of all groups.
+groups:
+  description: List of groups retrieved by the module.
+  returned: always
+  type: list
+  elements: dict
+  contains:
+    id:
+      description: The unique identifier for the group.
+      type: int
+      sample: 76662385
+    name:
+      description: The name of the group.
+      type: str
+      sample: 'A000'
+  sample: [
+    {
+      "id": 76662385,
+      "name": "A000"
+    }
+  ]
 """
 
 from traceback import format_exc

@@ -105,9 +105,9 @@
         ip_addresses: "{{ ip_addresses }}"
       register: result_present
 
-    - name: Debug ensure present result
-      ansible.builtin.debug:
-        var: result_present
+    # - name: Debug ensure present result
+    #   ansible.builtin.debug:
+    #     var: result_present
 
     - name: Verify IP Source Group is present
       ansible.builtin.assert:
@@ -124,9 +124,9 @@
         ip_addresses: "{{ ip_addresses }}"
       register: result_idempotency_present
 
-    - name: Debug ensure present again result
-      ansible.builtin.debug:
-        var: result_idempotency_present
+    # - name: Debug ensure present again result
+    #   ansible.builtin.debug:
+    #     var: result_idempotency_present
 
     - name: Verify IP Source Group is absent (idempotency check)
       ansible.builtin.assert:

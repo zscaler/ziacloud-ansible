@@ -72,7 +72,37 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-# Returns information of all cloud browser isolation profiles.
+profiles:
+  description: List of cloud browser profiles retrieved from the Zscaler system.
+  returned: always
+  type: list
+  elements: dict
+  contains:
+    id:
+      description: Unique identifier for the profile.
+      type: str
+      returned: always
+      sample: "6d2402e9-0c3b-4f56-9d30-7d416881fae4"
+    name:
+      description: Name of the profile.
+      type: str
+      returned: always
+      sample: "BD_SA_Profile1_ZIA"
+    profile_seq:
+      description: Sequence number of the profile, used internally for ordering.
+      type: int
+      returned: always
+      sample: 0
+    url:
+      description: URL to access the profile details on the Zscaler portal.
+      type: str
+      returned: always
+      sample: "https://redirect.isolation.zscaler.com/tenant/d374ac83d089/profile/6d2402e9-0c3b-4f56-9d30-7d416881fae4"
+    default_profile:
+      description: Indicates if the profile is the default profile.
+      type: bool
+      returned: when applicable
+      sample: true
 """
 
 

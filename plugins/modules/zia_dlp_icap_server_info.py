@@ -67,7 +67,32 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-# Returns information about specific DLP ICAP Server.
+icaps:
+  description: List of DLP ICAP servers retrieved from the Zscaler system.
+  returned: always
+  type: list
+  elements: dict
+  contains:
+    id:
+      description: Unique identifier for the DLP ICAP server.
+      type: int
+      returned: always
+      sample: 1493
+    name:
+      description: Name of the DLP ICAP server.
+      type: str
+      returned: always
+      sample: "ZS_BD_ICAP_01"
+    status:
+      description: Operational status of the DLP ICAP server.
+      type: str
+      returned: always
+      sample: "ENABLED"
+    url:
+      description: The URL or endpoint of the ICAP server.
+      type: str
+      returned: always
+      sample: "icaps://192.168.100.1:1344/"
 """
 
 from traceback import format_exc

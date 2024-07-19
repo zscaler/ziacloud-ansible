@@ -66,7 +66,47 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-# Returns information on a specific network services.
+services:
+  description: Details about the network services retrieved.
+  returned: when successful
+  type: list
+  elements: dict
+  contains:
+    id:
+      description: The unique identifier of the network service.
+      returned: always
+      type: int
+      sample: 1300953
+    name:
+      description: The name of the network service.
+      returned: always
+      type: str
+      sample: "ICMP_ANY"
+    description:
+      description: Description of the network service.
+      returned: always
+      type: str
+      sample: "ICMP_ANY_DESC"
+    tag:
+      description: The tag assigned to the network service.
+      returned: always
+      type: str
+      sample: "ICMP_ANY"
+    type:
+      description: The type of network service (e.g., STANDARD or CUSTOM).
+      returned: always
+      type: str
+      sample: "STANDARD"
+    creator_context:
+      description: The context in which the network service was created (e.g., ZIA, user).
+      returned: always
+      type: str
+      sample: "ZIA"
+    is_name_l10n_tag:
+      description: Indicates if the name of the service is a localization tag.
+      returned: always
+      type: bool
+      sample: true
 """
 
 from traceback import format_exc
