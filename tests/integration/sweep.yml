@@ -51,10 +51,6 @@
   loop: "{{ all_url_rules.rules }}"
   when: all_url_rules.rules is defined
 
-- name: Debug delete results
-  debug:
-    var: delete_result
-
 - name: List all URL Categories
   zscaler.ziacloud.zia_url_categories_info:
     provider: "{{ zia_cloud }}"
@@ -68,7 +64,7 @@
   loop: "{{ all_categories.categories }}"
   when:
     - all_categories.categories is defined
-    - item.custom_category is defined and item.custom_category == true
+    - item.custom_category is defined and item.custom_category
   register: delete_result
 
 - name: List all Locations

@@ -1,5 +1,19 @@
 # Zscaler Internet Access (ZIA) Ansible Collection Changelog
 
+## v1.2.0 (July, 22 2024)
+
+### Notes
+
+- Python Versions: **v3.9, v3.10, v3.11**
+
+### BREAKING CHANGES
+
+- [PR #270](https://github.com/zscaler/zscaler-sdk-go/pull/270) All resources previously named with `_facts` have been moved to `_info` to comply with Red Hat Ansible best practices as described in the following [Ansible Developer Documentation](https://docs.ansible.com/ansible/latest/dev_guide/developing_modules_general.html#creating-an-info-or-a-facts-module)
+
+### New Feature
+
+- [PR #270](https://github.com/zscaler/zscaler-sdk-go/pull/270) All resources now support `check_mode` for simulation purposes and for validating configuration management playbooks
+
 ## v1.1.0 (June, 25 2024)
 
 ### Notes
@@ -90,7 +104,7 @@
 
 ### Bug Fixes
 
-- Remoted Beta from README page ([658b30b](https://github.com/zscaler/ziacloud-ansible/commit/658b30baa1d1f6204de53c91aeb99f394788f79d))
+- Removed Beta from README page ([658b30b](https://github.com/zscaler/ziacloud-ansible/commit/658b30baa1d1f6204de53c91aeb99f394788f79d))
 
 ## v1.0.10 (April, 23 2024)
 
