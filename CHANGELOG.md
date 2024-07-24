@@ -1,3 +1,10 @@
+## [1.2.0](https://github.com/zscaler/ziacloud-ansible/compare/v1.1.0...v1.2.0) (2024-07-24)
+
+
+### Features
+
+* Added support to Ansible check_mode ([#40](https://github.com/zscaler/ziacloud-ansible/issues/40)) ([14373dd](https://github.com/zscaler/ziacloud-ansible/commit/14373dd809ef73ebd7914371c6950bd92ee0488a))
+
 # Zscaler Internet Access (ZIA) Ansible Collection Changelog
 
 ## v1.2.0 (July, 22 2024)
