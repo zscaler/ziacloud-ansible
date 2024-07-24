@@ -18,14 +18,14 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=588f6264"></script>
+        <script src="_static/documentation_options.js?v=6efca38a"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Contributing" href="community_guides.html" />
-    <link rel="prev" title="zscaler.ziacloud.zia_workload_groups_facts module – Get a list of workload groups." href="modules/zia_workload_groups_facts_module.html" /><!-- extra head elements for Ansible beyond RTD Sphinx Theme -->
+    <link rel="prev" title="Common Return Values" href="common_return_values.html" /><!-- extra head elements for Ansible beyond RTD Sphinx Theme -->
 
 
 
@@ -82,16 +82,114 @@
 <li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Module reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common_return_values.html">Common Return Values</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Release Notes</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Releases</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#version-1-0-0">Version 1.0.0</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#zscaler-internet-access-zia-ansible-collection-changelog">Zscaler Internet Access (ZIA) Ansible Collection Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#july-22-2024">1.2.0 (July, 22 2024)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#notes">Notes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#what-s-new">What’s New</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#availability">Availability</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#breaking-changes">BREAKING CHANGES</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#new-features">NEW FEATURES</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#june-25-2024">1.1.0 (June, 25 2024)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#enhancements">Enhancements</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#may-04-2024">1.0.17 (May, 04 2024)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id5">Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bug-fixes">Bug Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id7">1.0.16 (May, 04 2024)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id8">Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">Bug Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id11">1.0.15 (May, 04 2024)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id12">Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id13">Bug Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#april-24-2024">1.0.14 (April, 24 2024)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id15">Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id16">Bug Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#april-23-2024">1.0.13 (April, 23 2024)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id18">Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id19">Bug Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id21">1.0.12 (April, 23 2024)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id22">Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id23">Bug Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id24">1.0.11 (April, 23 2024)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id25">Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id26">Bug Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id27">1.0.10 (April, 23 2024)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id28">Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id29">Bug Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id30">1.0.9 (April, 23 2024)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id31">Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id32">Bug Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id33">1.0.8 (April, 23 2024)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id34">Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id35">Bug Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id36">1.0.7 (April, 23 2024)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id37">Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id38">Bug Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id39">1.0.6 (April, 23 2024)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id40">Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id41">Bug Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id42">1.0.5 (April, 23 2024)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id43">Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id44">Bug Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id45">1.0.4 (April, 23 2024)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id46">Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id47">Bug Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id48">1.0.3 (April, 23 2024)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id49">Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id50">Bug Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id51">1.0.2 (April, 23 2024)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id52">Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id53">Bug Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id54">1.0.1 (April, 23 2024)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id55">Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id56">Bug Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#april-22-2024">1.0.0 (April, 22 2024)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id57">Notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#what-s-new">What’s New</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#availability">Availability</a></li>
 </ul>
 </li>
 </ul>
@@ -135,25 +233,322 @@
              
   <section id="releases">
 <h1>Releases<a class="headerlink" href="#releases" title="Link to this heading"></a></h1>
-<section id="version-1-0-0">
-<h2>Version 1.0.0<a class="headerlink" href="#version-1-0-0" title="Link to this heading"></a></h2>
+<section id="zscaler-internet-access-zia-ansible-collection-changelog">
+<h2>Zscaler Internet Access (ZIA) Ansible Collection Changelog<a class="headerlink" href="#zscaler-internet-access-zia-ansible-collection-changelog" title="Link to this heading"></a></h2>
+</section>
+<section id="july-22-2024">
+<h2>1.2.0 (July, 22 2024)<a class="headerlink" href="#july-22-2024" title="Link to this heading"></a></h2>
 <section id="notes">
 <h3>Notes<a class="headerlink" href="#notes" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Python Versions: <strong>v3.9, v3.10, v3.11</strong></p></li>
+</ul>
+</section>
+<section id="breaking-changes">
+<h3>BREAKING CHANGES<a class="headerlink" href="#breaking-changes" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>(<a class="reference external" href="https://github.com/zscaler/ziacloud-ansible/issues/270">#270</a>) All resources previously named with <cite>_facts</cite> have been moved to <cite>_info</cite> to comply with Red Hat Ansible best practices as described in the following (<a class="reference external" href="https://docs.ansible.com/ansible/latest/dev_guide/developing_modules_general.html#creating-an-info-or-a-facts-module">Ansible Developer Documentation</a>)</p></li>
+</ul>
+</section>
+<section id="new-features">
+<h3>NEW FEATURES<a class="headerlink" href="#new-features" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>(<a class="reference external" href="https://github.com/zscaler/ziacloud-ansible/issues/270">#270</a>) All resources now support <cite>check_mode</cite> for simulation purposes and for validating configuration management playbooks.</p></li>
+</ul>
+</section>
+</section>
+<section id="june-25-2024">
+<h2>1.1.0 (June, 25 2024)<a class="headerlink" href="#june-25-2024" title="Link to this heading"></a></h2>
+<section id="id3">
+<h3>Notes<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Python Versions: <strong>v3.9, v3.10, v3.11</strong></p></li>
+</ul>
+</section>
+<section id="enhancements">
+<h3>Enhancements<a class="headerlink" href="#enhancements" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Added Forwarding Control Rule Resource (<a class="reference external" href="https://github.com/zscaler/ziacloud-ansible/issues/37">#37</a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="may-04-2024">
+<h2>1.0.17 (May, 04 2024)<a class="headerlink" href="#may-04-2024" title="Link to this heading"></a></h2>
+<section id="id5">
+<h3>Notes<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Python Versions: <strong>v3.9, v3.10, v3.11</strong></p></li>
+</ul>
+</section>
+<section id="bug-fixes">
+<h3>Bug Fixes<a class="headerlink" href="#bug-fixes" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Updated requirements.txt and documentation (<a class="reference external" href="https://github.com/zscaler/ziacloud-ansible/issues/34">#34</a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="id7">
+<h2>1.0.16 (May, 04 2024)<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<section id="id8">
+<h3>Notes<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Python Versions: <strong>v3.9, v3.10, v3.11</strong></p></li>
+</ul>
+</section>
+<section id="id9">
+<h3>Bug Fixes<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fixed IP Destination and IP Source Group Drift (<a class="reference external" href="https://github.com/zscaler/ziacloud-ansible/issues/33">#33</a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="id11">
+<h2>1.0.15 (May, 04 2024)<a class="headerlink" href="#id11" title="Link to this heading"></a></h2>
+<section id="id12">
+<h3>Notes<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Python Versions: <strong>v3.9, v3.10, v3.11</strong></p></li>
+</ul>
+</section>
+<section id="id13">
+<h3>Bug Fixes<a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fixed zia authentication method schema (<a class="reference external" href="https://github.com/zscaler/ziacloud-ansible/issues/31">#31</a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="april-24-2024">
+<h2>1.0.14 (April, 24 2024)<a class="headerlink" href="#april-24-2024" title="Link to this heading"></a></h2>
+<section id="id15">
+<h3>Notes<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Python Versions: <strong>v3.9, v3.10, v3.11</strong></p></li>
+</ul>
+</section>
+<section id="id16">
+<h3>Bug Fixes<a class="headerlink" href="#id16" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Added collection version to user-agent header (<a class="reference external" href="https://github.com/zscaler/ziacloud-ansible/issues/30">#30</a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="april-23-2024">
+<h2>1.0.13 (April, 23 2024)<a class="headerlink" href="#april-23-2024" title="Link to this heading"></a></h2>
+<section id="id18">
+<h3>Notes<a class="headerlink" href="#id18" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Python Versions: <strong>v3.9, v3.10, v3.11</strong></p></li>
+</ul>
+</section>
+<section id="id19">
+<h3>Bug Fixes<a class="headerlink" href="#id19" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fixed release process for automation hub (<a class="reference external" href="https://github.com/zscaler/ziacloud-ansible/issues/27">#27</a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="id21">
+<h2>1.0.12 (April, 23 2024)<a class="headerlink" href="#id21" title="Link to this heading"></a></h2>
+<section id="id22">
+<h3>Notes<a class="headerlink" href="#id22" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Python Versions: <strong>v3.9, v3.10, v3.11</strong></p></li>
+</ul>
+</section>
+<section id="id23">
+<h3>Bug Fixes<a class="headerlink" href="#id23" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Removed Beta comment from README and fixed galaxy link on index (<a class="reference external" href="https://github.com/zscaler/ziacloud-ansible/commit/e47696cc8c4ea26e492547a76687dce8dcc71b2a">#e47696c</a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="id24">
+<h2>1.0.11 (April, 23 2024)<a class="headerlink" href="#id24" title="Link to this heading"></a></h2>
+<section id="id25">
+<h3>Notes<a class="headerlink" href="#id25" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Python Versions: <strong>v3.9, v3.10, v3.11</strong></p></li>
+</ul>
+</section>
+<section id="id26">
+<h3>Bug Fixes<a class="headerlink" href="#id26" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Removed Beta from README page (<a class="reference external" href="https://github.com/zscaler/ziacloud-ansible/commit/658b30baa1d1f6204de53c91aeb99f394788f79d">#658b30b</a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="id27">
+<h2>1.0.10 (April, 23 2024)<a class="headerlink" href="#id27" title="Link to this heading"></a></h2>
+<section id="id28">
+<h3>Notes<a class="headerlink" href="#id28" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Python Versions: <strong>v3.9, v3.10, v3.11</strong></p></li>
+</ul>
+</section>
+<section id="id29">
+<h3>Bug Fixes<a class="headerlink" href="#id29" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fixed linter workflow and documentation (<a class="reference external" href="https://github.com/zscaler/ziacloud-ansible/commit/45f0f98fe6e6eebfb83dab7775c847d845ede585">#45f0f98</a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="id30">
+<h2>1.0.9 (April, 23 2024)<a class="headerlink" href="#id30" title="Link to this heading"></a></h2>
+<section id="id31">
+<h3>Notes<a class="headerlink" href="#id31" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Python Versions: <strong>v3.9, v3.10, v3.11</strong></p></li>
+</ul>
+</section>
+<section id="id32">
+<h3>Bug Fixes<a class="headerlink" href="#id32" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fixed makefile doc generation section (<a class="reference external" href="https://github.com/zscaler/ziacloud-ansible/commit/26024a5073e9b2338b1f656d4ceef54f0f2e131a">#26024a5</a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="id33">
+<h2>1.0.8 (April, 23 2024)<a class="headerlink" href="#id33" title="Link to this heading"></a></h2>
+<section id="id34">
+<h3>Notes<a class="headerlink" href="#id34" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Python Versions: <strong>v3.9, v3.10, v3.11</strong></p></li>
+</ul>
+</section>
+<section id="id35">
+<h3>Bug Fixes<a class="headerlink" href="#id35" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fixed makefile doc generation section (<a class="reference external" href="https://github.com/zscaler/ziacloud-ansible/commit/165756cdab765b556c0a82e4fb01f0612b96bc41">#165756c</a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="id36">
+<h2>1.0.7 (April, 23 2024)<a class="headerlink" href="#id36" title="Link to this heading"></a></h2>
+<section id="id37">
+<h3>Notes<a class="headerlink" href="#id37" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Python Versions: <strong>v3.9, v3.10, v3.11</strong></p></li>
+</ul>
+</section>
+<section id="id38">
+<h3>Bug Fixes<a class="headerlink" href="#id38" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Removed poetry from release.yml doc generation (<a class="reference external" href="https://github.com/zscaler/ziacloud-ansible/commit/e0feb95affb02877cb2c8471dae9137f56d20ccf">#e0feb95</a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="id39">
+<h2>1.0.6 (April, 23 2024)<a class="headerlink" href="#id39" title="Link to this heading"></a></h2>
+<section id="id40">
+<h3>Notes<a class="headerlink" href="#id40" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Python Versions: <strong>v3.9, v3.10, v3.11</strong></p></li>
+</ul>
+</section>
+<section id="id41">
+<h3>Bug Fixes<a class="headerlink" href="#id41" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fixed index.rst document (<a class="reference external" href="https://github.com/zscaler/ziacloud-ansible/commit/dfef5dc53b63c3aa7f04bfa9809fdbcc3c06472d">#dfef5dc</a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="id42">
+<h2>1.0.5 (April, 23 2024)<a class="headerlink" href="#id42" title="Link to this heading"></a></h2>
+<section id="id43">
+<h3>Notes<a class="headerlink" href="#id43" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Python Versions: <strong>v3.9, v3.10, v3.11</strong></p></li>
+</ul>
+</section>
+<section id="id44">
+<h3>Bug Fixes<a class="headerlink" href="#id44" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fixed index.rst document (<a class="reference external" href="https://github.com/zscaler/ziacloud-ansible/commit/ddf8eee851c2e24af6383d39e6535d8e714e51c1">#ddf8eee</a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="id45">
+<h2>1.0.4 (April, 23 2024)<a class="headerlink" href="#id45" title="Link to this heading"></a></h2>
+<section id="id46">
+<h3>Notes<a class="headerlink" href="#id46" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Python Versions: <strong>v3.9, v3.10, v3.11</strong></p></li>
+</ul>
+</section>
+<section id="id47">
+<h3>Bug Fixes<a class="headerlink" href="#id47" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Temporarily disabled Automation Hub Workflow (<a class="reference external" href="https://github.com/zscaler/ziacloud-ansible/commit/77ccd0d306de88422f0718bdfa88c888c41e3042">#77ccd0d</a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="id48">
+<h2>1.0.3 (April, 23 2024)<a class="headerlink" href="#id48" title="Link to this heading"></a></h2>
+<section id="id49">
+<h3>Notes<a class="headerlink" href="#id49" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Python Versions: <strong>v3.9, v3.10, v3.11</strong></p></li>
+</ul>
+</section>
+<section id="id50">
+<h3>Bug Fixes<a class="headerlink" href="#id50" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Temporarily disabled Automation Hub Workflow (<a class="reference external" href="https://github.com/zscaler/ziacloud-ansible/commit/e1a4b24bb0a0d669073ce79cda7d197ea73c69f7">#e1a4b24</a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="id51">
+<h2>1.0.2 (April, 23 2024)<a class="headerlink" href="#id51" title="Link to this heading"></a></h2>
+<section id="id52">
+<h3>Notes<a class="headerlink" href="#id52" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Python Versions: <strong>v3.9, v3.10, v3.11</strong></p></li>
+</ul>
+</section>
+<section id="id53">
+<h3>Bug Fixes<a class="headerlink" href="#id53" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Temporarily disabled Automation Hub Workflow (<a class="reference external" href="https://github.com/zscaler/ziacloud-ansible/commit/78b77bdb1c576306d2c130784a6956e28d8224d6">#78b77bd</a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="id54">
+<h2>1.0.1 (April, 23 2024)<a class="headerlink" href="#id54" title="Link to this heading"></a></h2>
+<section id="id55">
+<h3>Notes<a class="headerlink" href="#id55" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Python Versions: <strong>v3.9, v3.10, v3.11</strong></p></li>
+</ul>
+</section>
+<section id="id56">
+<h3>Bug Fixes<a class="headerlink" href="#id56" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Temporarily disabled Automation Hub Workflow (<a class="reference external" href="https://github.com/zscaler/ziacloud-ansible/commit/66a363fc3541ab8998f8bd2d0ab5acd2934f0665">#66a363f</a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="april-22-2024">
+<h2>1.0.0 (April, 22 2024)<a class="headerlink" href="#april-22-2024" title="Link to this heading"></a></h2>
+<section id="id57">
+<h3>Notes<a class="headerlink" href="#id57" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Python Versions: <strong>v3.9, v3.10, v3.11</strong></p></li>
+</ul>
 <ul class="simple">
 <li><p>Initial release of Zscaler Internet Access Automation collection, referred to as <cite>ziacloud</cite>
 which is part of the Red Hat® Ansible Certified Content.</p></li>
 </ul>
 </section>
+</section>
 <section id="what-s-new">
-<h3>What’s New<a class="headerlink" href="#what-s-new" title="Link to this heading"></a></h3>
+<h2>What’s New<a class="headerlink" href="#what-s-new" title="Link to this heading"></a></h2>
 </section>
 <section id="availability">
-<h3>Availability<a class="headerlink" href="#availability" title="Link to this heading"></a></h3>
+<h2>Availability<a class="headerlink" href="#availability" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/">Galaxy</a></p></li>
 <li><p><a class="reference external" href="https://github.com/zscaler/ziacloud-ansible">GitHub</a></p></li>
 </ul>
-</section>
 </section>
 </section>
 
@@ -163,7 +558,7 @@ which is part of the Red Hat® Ansible Certified Content.</p></li>
           
 
 <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="modules/zia_workload_groups_facts_module.html" class="btn btn-neutral float-left" title="zscaler.ziacloud.zia_workload_groups_facts module – Get a list of workload groups." accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="common_return_values.html" class="btn btn-neutral float-left" title="Common Return Values" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="community_guides.html" class="btn btn-neutral float-right" title="Contributing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

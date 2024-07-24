@@ -23,7 +23,7 @@ zscaler.ziacloud.zia_traffic_forwarding_gre_tunnels module -- GRE tunnel informa
 .. Collection note
 
 .. note::
-    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 1.1.0).
+    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 1.2.0).
 
     It is not included in ``ansible-core``.
     To check whether it is installed, run :code:`ansible-galaxy collection list`.
@@ -906,6 +906,11 @@ Parameters
 
 .. Notes
 
+Notes
+-----
+
+.. note::
+   - Check mode is supported.
 
 .. Seealso
 
