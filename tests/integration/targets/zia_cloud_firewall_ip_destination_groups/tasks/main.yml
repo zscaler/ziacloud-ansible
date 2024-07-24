@@ -78,7 +78,7 @@
     - name: Verify Destination Group of Type DSTN_IP is present
       ansible.builtin.assert:
         that:
-          - not result.changed
+          - result.changed
           - result.data.name is defined
 
     - name: Ensure Destination Group of Type DSTN_IP (again; idempotency check)
@@ -97,7 +97,7 @@
           - not result.changed
 
     - name: Fetch all Destination Group of Type DSTN_IP
-      zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups_facts:
+      zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups_info:
         provider: "{{ zia_cloud }}"
       register: result
 
@@ -105,10 +105,10 @@
       ansible.builtin.assert:
         that:
           - not result.changed
-          - result.data[0] is defined
+          - result.groups[0] is defined
 
     - name: Fetch this Destination Group of Type DSTN_IP
-      zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups_facts:
+      zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups_info:
         provider: "{{ zia_cloud }}"
         name: "{{ group_name }}"
       register: result
@@ -117,9 +117,9 @@
       ansible.builtin.assert:
         that:
           - not result.changed
-          - result.data is defined
-          - result.data[0].name is defined
-          - result.data[0].name == group_name
+          - result.groups is defined
+          - result.groups[0].name is defined
+          - result.groups[0].name == group_name
 
     - name: Give the ZIA Cloud a 5 seconds to settle
       ansible.builtin.pause:
@@ -184,7 +184,7 @@
     - name: Verify Destination Group of Type DSTN_FQDN is present
       ansible.builtin.assert:
         that:
-          - not result.changed
+          - result.changed
           - result.data.name is defined
 
     - name: Ensure Destination Group of Type DSTN_FQDN (again; idempotency check)
@@ -203,7 +203,7 @@
           - not result.changed
 
     - name: Fetch all Destination Group of Type DSTN_FQDN
-      zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups_facts:
+      zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups_info:
         provider: "{{ zia_cloud }}"
       register: result
 
@@ -211,10 +211,10 @@
       ansible.builtin.assert:
         that:
           - not result.changed
-          - result.data[0] is defined
+          - result.groups[0] is defined
 
     - name: Fetch this Destination Group of Type DSTN_FQDN
-      zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups_facts:
+      zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups_info:
         provider: "{{ zia_cloud }}"
         name: "{{ group_name }}"
       register: result
@@ -223,9 +223,9 @@
       ansible.builtin.assert:
         that:
           - not result.changed
-          - result.data is defined
-          - result.data[0].name is defined
-          - result.data[0].name == group_name
+          - result.groups is defined
+          - result.groups[0].name is defined
+          - result.groups[0].name == group_name
 
     - name: Give the ZIA Cloud a 5 seconds to settle
       ansible.builtin.pause:
@@ -290,7 +290,7 @@
 - name: Verify Destination Group of Type DSTN_OTHER is present
   ansible.builtin.assert:
     that:
-      - not result.changed
+      - result.changed
       - result.data.name is defined
 
 - name: Ensure Destination Group of Type DSTN_OTHER (again; idempotency check)
@@ -309,7 +309,7 @@
       - result.changed
 
 - name: Fetch all Destination Group of Type DSTN_OTHER
-  zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups_facts:
+  zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups_info:
     provider: "{{ zia_cloud }}"
   register: result
 
@@ -317,10 +317,10 @@
   ansible.builtin.assert:
     that:
       - not result.changed
-      - result.data[0] is defined
+      - result.groups[0] is defined
 
 - name: Fetch this Destination Group of Type DSTN_OTHER
-  zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups_facts:
+  zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups_info:
     provider: "{{ zia_cloud }}"
     name: "{{ group_name }}"
   register: result
@@ -329,9 +329,9 @@
   ansible.builtin.assert:
     that:
       - not result.changed
-      - result.data is defined
-      - result.data[0].name is defined
-      - result.data[0].name == group_name
+      - result.groups is defined
+      - result.groups[0].name is defined
+      - result.groups[0].name == group_name
 
 - name: Give the ZIA Cloud a 5 seconds to settle
   ansible.builtin.pause:
@@ -396,7 +396,7 @@
 - name: Verify Destination Group of Type DSTN_DOMAIN is present
   ansible.builtin.assert:
     that:
-      - not result.changed
+      - result.changed
       - result.data.name is defined
 
 - name: Ensure Destination Group of Type DSTN_DOMAIN (again; idempotency check)
@@ -415,7 +415,7 @@
       - not result.changed
 
 - name: Fetch all Destination Group of Type DSTN_DOMAIN
-  zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups_facts:
+  zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups_info:
     provider: "{{ zia_cloud }}"
   register: result
 
@@ -423,10 +423,10 @@
   ansible.builtin.assert:
     that:
       - not result.changed
-      - result.data[0] is defined
+      - result.groups[0] is defined
 
 - name: Fetch this Destination Group of Type DSTN_DOMAIN
-  zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups_facts:
+  zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups_info:
     provider: "{{ zia_cloud }}"
     name: "{{ group_name }}"
   register: result
@@ -435,9 +435,9 @@
   ansible.builtin.assert:
     that:
       - not result.changed
-      - result.data is defined
-      - result.data[0].name is defined
-      - result.data[0].name == group_name
+      - result.groups is defined
+      - result.groups[0].name is defined
+      - result.groups[0].name == group_name
 
 - name: Give the ZIA Cloud a 5 seconds to settle
   ansible.builtin.pause:

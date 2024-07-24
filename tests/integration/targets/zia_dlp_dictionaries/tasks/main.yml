@@ -100,7 +100,7 @@
           - not result.changed
 
     - name: Fetch all DLP Dictionary
-      zscaler.ziacloud.zia_dlp_dictionaries_facts:
+      zscaler.ziacloud.zia_dlp_dictionaries_info:
         provider: "{{ zia_cloud }}"
       register: result
 
@@ -108,10 +108,10 @@
       ansible.builtin.assert:
         that:
           - not result.changed
-          - result.data[0] is defined
+          - result.dictionaries[0] is defined
 
     - name: Fetch this DLP Dictionary
-      zscaler.ziacloud.zia_dlp_dictionaries_facts:
+      zscaler.ziacloud.zia_dlp_dictionaries_info:
         provider: "{{ zia_cloud }}"
         name: "{{ dict_name }}"
       register: result
@@ -120,9 +120,9 @@
       ansible.builtin.assert:
         that:
           - not result.changed
-          - result.data is defined
-          - result.data[0].name is defined
-          - result.data[0].name == dict_name
+          - result.dictionaries is defined
+          - result.dictionaries[0].name is defined
+          - result.dictionaries[0].name == dict_name
 
     - name: Give the ZIA Cloud a 5 seconds to settle
       ansible.builtin.pause:

@@ -26,11 +26,11 @@
         - targets/zia_cloud_firewall_network_application_groups/tasks/main.yml
         - targets/zia_cloud_firewall_network_services/tasks/main.yml
         - targets/zia_cloud_firewall_network_services_groups/tasks/main.yml
-        - targets/zia_cloud_firewall_time_windows_facts/tasks/main.yml
+        - targets/zia_cloud_firewall_time_windows_info/tasks/main.yml
         - targets/zia_dlp_dictionaries/tasks/main.yml
         - targets/zia_dlp_engines/tasks/main.yml
-        - targets/zia_dlp_icap_server_facts/tasks/main.yml
-        - targets/zia_dlp_incident_receiver_facts/tasks/main.yml
+        - targets/zia_dlp_icap_server_info/tasks/main.yml
+        - targets/zia_dlp_incident_receiver_info/tasks/main.yml
         - targets/zia_dlp_notification_template/tasks/main.yml
         - targets/zia_dlp_web_rules/tasks/main.yml
         - targets/zia_forwarding_control_rule/tasks/main.yml
@@ -40,6 +40,7 @@
         - targets/zia_traffic_forwarding_gre_tunnels/tasks/main.yml
         - targets/zia_traffic_forwarding_static_ip/tasks/main.yml
         - targets/zia_traffic_forwarding_vpn_credentials/tasks/main.yml
+        - targets/zia_url_categories/tasks/main.yml
         - targets/zia_url_filtering_rules/tasks/main.yml
 
     - name: Run final sweep to clean tenant

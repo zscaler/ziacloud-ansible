@@ -38,6 +38,8 @@ version_added: "1.0.0"
 author: William Guilherme (@willguibr)
 requirements:
   - Zscaler SDK Python (obtainable from PyPI U(https://pypi.org/project/zscaler-sdk-python/))
+notes:
+    - Check mode is supported.
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
   - zscaler.ziacloud.fragments.documentation
@@ -159,26 +161,38 @@ def core(module):
             (t for t in templates if t.get("name") == template.get("name")), None
         )
 
+    differences_detected = False
     if existing_template:
         updated_template = {k: v for k, v in template.items() if v is not None}
         differences_detected = any(
             existing_template.get(k) != v for k, v in updated_template.items()
         )
 
-        if state == "present" and differences_detected:
-            updated_template["template_id"] = existing_template["id"]
-            response = client.dlp.update_dlp_template(**updated_template).to_dict()
+    if module.check_mode:
+        if state == "present" and (existing_template is None or differences_detected):
+            module.exit_json(changed=True)
+        elif state == "absent" and existing_template is not None:
+            module.exit_json(changed=True)
+        else:
+            module.exit_json(changed=False)
+
+    if state == "present":
+        if existing_template:
+            if differences_detected:
+                updated_template["template_id"] = existing_template["id"]
+                response = client.dlp.update_dlp_template(**updated_template).to_dict()
+                module.exit_json(changed=True, data=response)
+            else:
+                module.exit_json(changed=False, data=existing_template)
+        else:
+            response = client.dlp.add_dlp_template(**template).to_dict()
             module.exit_json(changed=True, data=response)
-        elif state == "absent":
+    elif state == "absent":
+        if existing_template:
             client.dlp.delete_dlp_template(template_id=existing_template["id"])
             module.exit_json(changed=True, data=existing_template)
         else:
-            module.exit_json(changed=False, data=existing_template)
-    else:
-        if state == "present":
-            response = client.dlp.add_dlp_template(**template).to_dict()
-            module.exit_json(changed=True, data=response)
-        module.exit_json(changed=False, data={})
+            module.exit_json(changed=False, data={})
 
 
 def main():

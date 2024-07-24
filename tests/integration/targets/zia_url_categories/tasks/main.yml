@@ -1,0 +1,248 @@
+---
+- name: Include default variables
+  ansible.builtin.include_vars:
+    file: ../defaults/main.yml
+
+- name: Import Random String Generator Tasks
+  ansible.builtin.import_tasks: ../../../generate_random_string.yml
+
+- name: Set dynamic name values with random string
+  ansible.builtin.set_fact:
+    configured_name: "{{ configured_name }}_{{ random_string }}"
+    description: "{{ description }}_{{ random_string }}"
+    description_update: "{{ description_update }}_{{ random_string }}"
+
+- name: Ensure required environment variables are set
+  ansible.builtin.fail:
+    msg: "{{ env_var }} is not defined as environment variable"
+  when: lookup('env', env_var) is none
+  loop:
+    - ZIA_USERNAME
+    - ZIA_PASSWORD
+    - ZIA_API_KEY
+    - ZIA_CLOUD
+  loop_control:
+    loop_var: env_var
+
+- name: Ensure ZIA Credential environment variables are set
+  ansible.builtin.set_fact:
+    zia_cloud:
+      username: "{{ lookup('env', 'ZIA_USERNAME') }}"
+      password: "{{ lookup('env', 'ZIA_PASSWORD') }}"
+      api_key: "{{ lookup('env', 'ZIA_API_KEY') }}"
+      cloud: "{{ lookup('env', 'ZIA_CLOUD') | default(omit) }}"
+  no_log: true
+
+- name: Main block to Test URL Categories Configuration
+  block:
+    - name: Ensure URL Categories (leftover)
+      zscaler.ziacloud.zia_url_categories:
+        provider: "{{ zia_cloud }}"
+        state: absent
+        configured_name: "{{ configured_name }}"
+      register: result_initial_cleanup
+
+    - name: Debug initial cleanup result
+      ansible.builtin.debug:
+        var: result_initial_cleanup
+
+    - name: Pause to allow ZIA Cloud to settle after initial cleanup
+      ansible.builtin.pause:
+        seconds: 5
+
+    - name: Ensure URL Categories is absent
+      zscaler.ziacloud.zia_url_categories:
+        provider: "{{ zia_cloud }}"
+        state: absent
+        configured_name: "{{ configured_name }}"
+      register: result_ensure_absent
+
+    - name: Debug ensure absent result
+      ansible.builtin.debug:
+        var: result_ensure_absent
+
+    - name: Verify URL Categories is absent
+      ansible.builtin.assert:
+        that:
+          - not result_ensure_absent.changed
+          - result_ensure_absent.data is defined
+
+    - name: Pause to allow ZIA Cloud to settle after ensure absent
+      ansible.builtin.pause:
+        seconds: 5
+
+    - name: Ensure URL Categories is present
+      zscaler.ziacloud.zia_url_categories:
+        provider: "{{ zia_cloud }}"
+        state: present
+        super_category: "{{ super_category }}"
+        configured_name: "{{ configured_name }}"
+        description: "{{ description }}"
+        keywords: "{{ keywords }}"
+        custom_category: "{{ custom_category }}"
+        db_categorized_urls: "{{ db_categorized_urls }}"
+        type: "{{ type }}"
+        urls: "{{ urls }}"
+      register: result_present
+
+    - name: Debug ensure present result
+      ansible.builtin.debug:
+        var: result_present
+
+    - name: Verify URL Categories is present
+      ansible.builtin.assert:
+        that:
+          - result_present.changed
+          - result_present.data is defined
+          - result_present.data.configured_name is defined
+
+    - name: Ensure URL Categories (again; idempotency check)
+      zscaler.ziacloud.zia_url_categories:
+        provider: "{{ zia_cloud }}"
+        state: present
+        super_category: "{{ super_category }}"
+        configured_name: "{{ configured_name }}"
+        description: "{{ description }}"
+        keywords: "{{ keywords }}"
+        custom_category: "{{ custom_category }}"
+        db_categorized_urls: "{{ db_categorized_urls }}"
+        type: "{{ type }}"
+        urls: "{{ urls }}"
+      register: result_idempotency_present
+
+    - name: Debug ensure present again result
+      ansible.builtin.debug:
+        var: result_idempotency_present
+
+    - name: Ensure URL Categories is present (idempotency check)
+      ansible.builtin.assert:
+        that:
+          - not result_idempotency_present.changed
+
+    - name: Update URL Categories (Present)
+      zscaler.ziacloud.zia_url_categories:
+        provider: "{{ zia_cloud }}"
+        state: present
+        super_category: "{{ super_category }}"
+        configured_name: "{{ configured_name }}"
+        description: "{{ description_update }}"
+        keywords: "{{ keywords }}"
+        custom_category: "{{ custom_category }}"
+        db_categorized_urls: "{{ db_categorized_urls }}"
+        type: "{{ type }}"
+        urls: "{{ urls_update }}"
+      register: result_update
+
+    # - name: Debug update result
+    #   ansible.builtin.debug:
+    #     var: result_update
+
+    # - name: Debug urls_update value
+    #   ansible.builtin.debug:
+    #     var: urls_update
+
+    # - name: Debug result_update.data.urls value
+    #   ansible.builtin.debug:
+    #     var: result_update.data.urls
+
+    - name: Verify URL Categories is Updated
+      ansible.builtin.assert:
+        that:
+          - result_update.changed
+          - result_update.data is defined
+          - result_update.data.configured_name == configured_name
+          - result_update.data.description == description_update
+          - (result_update.data.urls | sort) == (urls_update | sort)
+
+    - name: Ensure URL Categories is Updated (again; idempotency check)
+      zscaler.ziacloud.zia_url_categories:
+        provider: "{{ zia_cloud }}"
+        state: present
+        super_category: "{{ super_category }}"
+        configured_name: "{{ configured_name }}"
+        description: "{{ description_update }}"
+        keywords: "{{ keywords }}"
+        custom_category: "{{ custom_category }}"
+        db_categorized_urls: "{{ db_categorized_urls }}"
+        type: "{{ type }}"
+        urls: "{{ urls_update }}"
+      register: result_idempotency_update
+
+    # - name: Debug ensure updated result again
+    #   ansible.builtin.debug:
+    #     var: result_idempotency_update
+
+    - name: Ensure URL Categories update is idempotent
+      ansible.builtin.assert:
+        that:
+          - not result_idempotency_update.changed
+
+    - name: Fetch all URL Categories
+      zscaler.ziacloud.zia_url_categories_info:
+        provider: "{{ zia_cloud }}"
+      register: result_fetch_all
+
+    # - name: Debug fetch all result
+    #   ansible.builtin.debug:
+    #     var: result_fetch_all
+
+    - name: Ensure all URL Categories found
+      ansible.builtin.assert:
+        that:
+          - not result_fetch_all.changed
+          - result_fetch_all.categories is defined
+
+    - name: Fetch this URL Categories
+      zscaler.ziacloud.zia_url_categories_info:
+        provider: "{{ zia_cloud }}"
+        configured_name: "{{ configured_name }}"
+      register: result_fetch_this
+
+    # - name: Debug fetch this result
+    #   ansible.builtin.debug:
+    #     var: result_fetch_this
+
+    - name: Ensure this URL Categories is found
+      ansible.builtin.assert:
+        that:
+          - not result_fetch_this.changed
+          - result_fetch_this.categories is defined
+          - result_fetch_this.categories[0].configured_name is defined
+          - result_fetch_this.categories[0].configured_name == configured_name
+
+    - name: Give the ZIA Cloud a 5 seconds to settle
+      ansible.builtin.pause:
+        seconds: 5
+
+    - name: Delete URL Categories
+      zscaler.ziacloud.zia_url_categories:
+        provider: "{{ zia_cloud }}"
+        state: absent
+        configured_name: "{{ configured_name }}"
+      register: result_delete
+
+    # - name: Debug delete result
+    #   ansible.builtin.debug:
+    #     var: result_delete
+
+    - name: Verify URL Categories is Deleted
+      ansible.builtin.assert:
+        that:
+          - result_delete.changed
+
+    - name: Delete URL Categories (again; idempotency check)
+      zscaler.ziacloud.zia_url_categories:
+        provider: "{{ zia_cloud }}"
+        state: absent
+        configured_name: "{{ configured_name }}"
+      register: result_idempotency_delete
+
+    # - name: Debug delete again result
+    #   ansible.builtin.debug:
+    #     var: result_idempotency_delete
+
+    - name: Verify URL Categories is absent
+      ansible.builtin.assert:
+        that:
+          - not result_idempotency_delete.changed
+          - result_idempotency_delete.data is defined

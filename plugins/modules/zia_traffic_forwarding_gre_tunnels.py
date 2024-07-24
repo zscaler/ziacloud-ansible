@@ -36,6 +36,8 @@ author:
 version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
+notes:
+    - Check mode is supported.
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
   - zscaler.ziacloud.fragments.documentation
@@ -217,9 +219,18 @@ def core(module):
     for key, value in desired_gre.items():
         if key not in fields_to_exclude and current_gre.get(key) != value:
             differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {current_gre.get(key)}, Desired: {value}"
-            )
+            # module.warn(
+            #     f"Difference detected in {key}. Current: {current_gre.get(key)}, Desired: {value}"
+            # )
+
+    if module.check_mode:
+        # If in check mode, report changes and exit
+        if state == "present" and (existing_gre_tunnel is None or differences_detected):
+            module.exit_json(changed=True)
+        elif state == "absent" and existing_gre_tunnel is not None:
+            module.exit_json(changed=True)
+        else:
+            module.exit_json(changed=False)
 
     if existing_gre_tunnel is not None:
         id = existing_gre_tunnel.get("id")

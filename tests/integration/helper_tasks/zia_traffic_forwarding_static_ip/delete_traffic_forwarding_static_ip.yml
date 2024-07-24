@@ -23,7 +23,7 @@
 - name: Main block to List All Static IP Address Configuration
   block:
     - name: List all Static IP Address
-      zscaler.ziacloud.zia_traffic_forwarding_static_ip_facts:
+      zscaler.ziacloud.zia_traffic_forwarding_static_ip_info:
         provider: "{{ zia_cloud }}"
       register: all_static_ips
 
@@ -32,7 +32,7 @@
         provider: "{{ zia_cloud }}"
         state: absent
         ip_address: "{{ static.ip_address }}"
-      loop: "{{ all_static_ips.data }}"
-      when: all_static_ips.data is defined
+      loop: "{{ all_static_ips.static_ips }}"
+      when: all_static_ips.static_ips is defined
       loop_control:
         loop_var: static

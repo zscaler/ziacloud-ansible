@@ -37,6 +37,8 @@ author:
 version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
+notes:
+    - Check mode is supported.
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
   - zscaler.ziacloud.fragments.documentation
@@ -188,14 +190,23 @@ def core(module):
             if key in ["latitude", "longitude"]:  # Special handling for coordinates
                 if not diff_suppress_func_coordinate(current_static_ip.get(key), value):
                     differences_detected = True
-                    module.warn(
-                        f"Difference detected in {key}. Current: {current_static_ip.get(key)}, Desired: {value}"
-                    )
+                    # module.warn(
+                    #     f"Difference detected in {key}. Current: {current_static_ip.get(key)}, Desired: {value}"
+                    # )
             elif current_static_ip.get(key) != value:
                 differences_detected = True
-                module.warn(
-                    f"Difference detected in {key}. Current: {current_static_ip.get(key)}, Desired: {value}"
-                )
+                # module.warn(
+                #     f"Difference detected in {key}. Current: {current_static_ip.get(key)}, Desired: {value}"
+                # )
+
+    if module.check_mode:
+        # If in check mode, report changes and exit
+        if state == "present" and (existing_static_ip is None or differences_detected):
+            module.exit_json(changed=True)
+        elif state == "absent" and existing_static_ip is not None:
+            module.exit_json(changed=True)
+        else:
+            module.exit_json(changed=False)
 
     if existing_static_ip is not None:
         id = existing_static_ip.get("id")

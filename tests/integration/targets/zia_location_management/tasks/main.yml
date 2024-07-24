@@ -137,7 +137,7 @@
           - result.data.description == description
 
     - name: Fetch All Locations
-      zscaler.ziacloud.zia_location_management_facts:
+      zscaler.ziacloud.zia_location_management_info:
         provider: "{{ zia_cloud }}"
       register: result
 
@@ -145,10 +145,10 @@
       ansible.builtin.assert:
         that:
           - not result.changed
-          - result.data is defined
+          - result.locations is defined
 
     - name: Fetch this Location
-      zscaler.ziacloud.zia_location_management_facts:
+      zscaler.ziacloud.zia_location_management_info:
         provider: "{{ zia_cloud }}"
         name: "{{ location_name }}"
       register: result
@@ -157,16 +157,16 @@
       ansible.builtin.assert:
         that:
           - not result.changed
-          - result.data is defined
-          - result.data[0].name is defined
-          - result.data[0].name == location_name
+          - result.locations is defined
+          - result.locations[0].name is defined
+          - result.locations[0].name == location_name
 
     - name: Give the ZIA Cloud a 5 seconds to settle
       ansible.builtin.pause:
         seconds: 5
 
     - name: Check if Location Exists
-      zscaler.ziacloud.zia_location_management_facts:
+      zscaler.ziacloud.zia_location_management_info:
         provider: "{{ zia_cloud }}"
         name: "{{ location_name }}"
       register: location_check
@@ -176,7 +176,7 @@
         provider: "{{ zia_cloud }}"
         state: absent
         name: "{{ location_name }}"
-      when: location_check.data | length > 0
+      when: location_check.locations | length > 0
       register: deletion_result
 
     - name: Verify Location was Deleted

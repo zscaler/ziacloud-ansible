@@ -98,7 +98,7 @@
           - not result.changed
 
     - name: Fetch all Network Application Group
-      zscaler.ziacloud.zia_cloud_firewall_network_application_group_facts:
+      zscaler.ziacloud.zia_cloud_firewall_network_application_group_info:
         provider: "{{ zia_cloud }}"
       register: result
 
@@ -106,10 +106,10 @@
       ansible.builtin.assert:
         that:
           - not result.changed
-          - result.data[0] is defined
+          - result.app_groups is defined
 
     - name: Fetch this Network Application Group
-      zscaler.ziacloud.zia_cloud_firewall_network_application_group_facts:
+      zscaler.ziacloud.zia_cloud_firewall_network_application_group_info:
         provider: "{{ zia_cloud }}"
         name: "{{ group_name }}"
       register: result
@@ -118,9 +118,9 @@
       ansible.builtin.assert:
         that:
           - not result.changed
-          - result.data is defined
-          - result.data[0].name is defined
-          - result.data[0].name == group_name
+          - result.app_groups is defined
+          - result.app_groups[0].name is defined
+          - result.app_groups[0].name == group_name
 
     - name: Give the ZIA Cloud a 5 seconds to settle
       ansible.builtin.pause:

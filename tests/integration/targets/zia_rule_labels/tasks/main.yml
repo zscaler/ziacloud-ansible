@@ -91,7 +91,7 @@
           - not result.changed
 
     - name: Fetch all Rule Labels
-      zscaler.ziacloud.zia_rule_labels_facts:
+      zscaler.ziacloud.zia_rule_labels_info:
         provider: "{{ zia_cloud }}"
       register: result
 
@@ -99,7 +99,7 @@
       ansible.builtin.assert:
         that:
           - not result.changed
-          - result.data[0] is defined
+          - result.labels[0] is defined
 
     - name: Give the ZIA Cloud a 5 seconds to settle
       ansible.builtin.pause:

@@ -37,6 +37,8 @@ author:
 version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
+notes:
+    - Check mode is supported.
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
   - zscaler.ziacloud.fragments.documentation
@@ -143,16 +145,27 @@ def core(module):
     for key, value in desired_group.items():
         if key not in fields_to_exclude and current_group.get(key) != value:
             differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {current_group.get(key)}, Desired: {value}"
-            )
+            # module.warn(
+            #     f"Difference detected in {key}. Current: {current_group.get(key)}, Desired: {value}"
+            # )
+
+    if module.check_mode:
+        # If in check mode, report changes and exit
+        if state == "present" and (
+            existing_service_group is None or differences_detected
+        ):
+            module.exit_json(changed=True)
+        elif state == "absent" and existing_service_group is not None:
+            module.exit_json(changed=True)
+        else:
+            module.exit_json(changed=False)
 
     if existing_service_group is not None:
         id = existing_service_group.get("id")
         existing_service_group.update(service_group)
         existing_service_group["id"] = id
 
-    module.warn(f"Final payload being sent to SDK: {service_group}")
+    # module.warn(f"Final payload being sent to SDK: {service_group}")
     if state == "present":
         if existing_service_group is not None:
             if differences_detected:
@@ -165,7 +178,7 @@ def core(module):
                         description=existing_service_group.get("description", None),
                     )
                 )
-                module.warn("Payload Update for SDK: {}".format(existing_service_group))
+                # module.warn("Payload Update for SDK: {}".format(existing_service_group))
                 existing_service_group = client.firewall.update_network_svc_group(
                     **existing_service_group
                 ).to_dict()
@@ -185,7 +198,7 @@ def core(module):
                     description=service_group.get("description", None),
                 )
             )
-            module.warn("Payload for SDK: {}".format(service_group))
+            # module.warn("Payload for SDK: {}".format(service_group))
             service_group = client.firewall.add_network_svc_group(**service_group)
             module.exit_json(changed=True, data=service_group)
     elif (

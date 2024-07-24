@@ -162,7 +162,7 @@
           - result.changed
 
     - name: Fetch all URL Filtering Rule
-      zscaler.ziacloud.zia_url_filtering_rule_facts:
+      zscaler.ziacloud.zia_url_filtering_rule_info:
         provider: "{{ zia_cloud }}"
       register: result
 
@@ -170,10 +170,10 @@
       ansible.builtin.assert:
         that:
           - not result.changed
-          - result.data[0] is defined
+          - result.rules[0] is defined
 
     - name: Fetch this URL Filtering Rule
-      zscaler.ziacloud.zia_url_filtering_rule_facts:
+      zscaler.ziacloud.zia_url_filtering_rule_info:
         provider: "{{ zia_cloud }}"
         name: "{{ rule_name }}"
       register: result
@@ -182,9 +182,9 @@
       ansible.builtin.assert:
         that:
           - not result.changed
-          - result.data is defined
-          - result.data[0].name is defined
-          - result.data[0].name == rule_name
+          - result.rules is defined
+          - result.rules[0].name is defined
+          - result.rules[0].name == rule_name
 
     - name: Give the ZIA Cloud a 5 seconds to settle
       ansible.builtin.pause:

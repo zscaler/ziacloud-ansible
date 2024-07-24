@@ -23,7 +23,7 @@
 - name: Main block to List All Rule Labels Configuration
   block:
     - name: List all Rule Labels
-      zscaler.ziacloud.zia_rule_labels_facts:
+      zscaler.ziacloud.zia_rule_labels_info:
         provider: "{{ zia_cloud }}"
       register: all_labels
 

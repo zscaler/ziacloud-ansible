@@ -38,32 +38,30 @@
         provider: "{{ zia_cloud }}"
         state: absent
         name: "{{ template_name }}"
-      register: result
+      register: result_cleanup
 
-  rescue:
-    - name: Handle errors
+    - name: Debug result of cleanup
       ansible.builtin.debug:
-        msg: An error occurred.
-
-  always:
-    - name: Cleanup operations
-      ansible.builtin.debug:
-        msg: Cleanup complete.
+        var: result_cleanup
 
     - name: Ensure DLP Notification Template is absent
       zscaler.ziacloud.zia_dlp_notification_template:
         provider: "{{ zia_cloud }}"
         state: absent
         name: "{{ template_name }}"
-      register: result
+      register: result_absent
+
+    - name: Debug result of ensure absent
+      ansible.builtin.debug:
+        var: result_absent
 
     - name: Verify DLP Notification Template is absent
       ansible.builtin.assert:
         that:
-          - not result.changed
-          - result.data is defined
+          - not result_absent.changed
+          - result_absent.data is defined
 
-    - name: Ensure DLP Notification Template is (Present)
+    - name: Ensure DLP Notification Template is present
       zscaler.ziacloud.zia_dlp_notification_template:
         provider: "{{ zia_cloud }}"
         state: present
@@ -73,16 +71,20 @@
         subject: "{{ subject }}"
         plain_text_message: "{{ plain_text_message }}"
         html_message: "{{ html_message }}"
-      register: result
+      register: result_present
+
+    # - name: Debug result of ensure present
+    #   ansible.builtin.debug:
+    #     var: result_present
 
     - name: Verify DLP Notification Template is present
       ansible.builtin.assert:
         that:
-          - result.changed
-          - result.data is defined
-          - result.data.name is defined
+          - result_present.changed
+          - result_present.data is defined
+          - result_present.data.name is defined
 
-    - name: Ensure DLP Notification Template (again; idempotency check)
+    - name: Ensure DLP Notification Template is present (idempotency check)
       zscaler.ziacloud.zia_dlp_notification_template:
         provider: "{{ zia_cloud }}"
         state: present
@@ -92,12 +94,16 @@
         subject: "{{ subject }}"
         plain_text_message: "{{ plain_text_message }}"
         html_message: "{{ html_message }}"
-      register: result
+      register: result_idempotent
+
+    # - name: Debug result of idempotency check
+    #   ansible.builtin.debug:
+    #     var: result_idempotent
 
     - name: Ensure DLP Notification Template is present (idempotency check)
       ansible.builtin.assert:
         that:
-          - not result.changed
+          - not result_idempotent.changed
 
     - name: Update DLP Notification Template (Present)
       zscaler.ziacloud.zia_dlp_notification_template:
@@ -138,7 +144,7 @@
           - not result.changed
 
     - name: Fetch all DLP Notification Template
-      zscaler.ziacloud.zia_dlp_notification_template_facts:
+      zscaler.ziacloud.zia_dlp_notification_template_info:
         provider: "{{ zia_cloud }}"
       register: result
 
@@ -146,10 +152,10 @@
       ansible.builtin.assert:
         that:
           - not result.changed
-          - result.data[0] is defined
+          - result.templates is defined
 
     - name: Fetch this DLP Notification Template
-      zscaler.ziacloud.zia_dlp_notification_template_facts:
+      zscaler.ziacloud.zia_dlp_notification_template_info:
         provider: "{{ zia_cloud }}"
         name: "{{ template_name }}"
       register: result
@@ -158,9 +164,9 @@
       ansible.builtin.assert:
         that:
           - not result.changed
-          - result.data is defined
-          - result.data[0].name is defined
-          - result.data[0].name == template_name
+          - result.templates is defined
+          - result.templates[0].name is defined
+          - result.templates[0].name == template_name
 
     - name: Give the ZIA Cloud a 5 seconds to settle
       ansible.builtin.pause:

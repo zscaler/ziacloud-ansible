@@ -37,6 +37,8 @@ author:
 version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
+notes:
+    - Check mode is supported.
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
   - zscaler.ziacloud.fragments.documentation
@@ -95,52 +97,65 @@ def core(module):
 
     security_api = client.security
 
-    if url_type == "whitelist":
-        if state == "present":
-            current_whitelist = security_api.get_whitelist()
-            new_urls = [url for url in urls if url not in current_whitelist]
-            if new_urls:
-                updated_list = security_api.add_urls_to_whitelist(new_urls)
-                module.exit_json(changed=True, whitelist=updated_list)
-            else:
-                module.exit_json(changed=False, msg="No new URLs to add.")
-        elif state == "absent":
-            current_whitelist = security_api.get_whitelist()
-            urls_to_remove = [url for url in urls if url in current_whitelist]
-            if urls_to_remove:
-                security_api.delete_urls_from_whitelist(urls_to_remove)
-                module.exit_json(changed=True, msg="URLs removed from whitelist.")
-            else:
-                module.exit_json(changed=False, msg="URLs not in whitelist.")
+    # Determine current lists based on the type
+    current_list = (
+        security_api.get_whitelist()
+        if url_type == "whitelist"
+        else security_api.get_blacklist()
+    )
 
-    elif url_type == "blacklist":
-        if state == "present":
-            current_blacklist = security_api.get_blacklist()
-            new_urls = [url for url in urls if url not in current_blacklist]
-            if new_urls:
-                updated_list = security_api.add_urls_to_blacklist(new_urls)
-                module.exit_json(changed=True, blacklist=updated_list)
-            else:
-                module.exit_json(changed=False, msg="No new URLs to add.")
-        elif state == "absent":
-            # Remove URLs from blacklist
-            resp_code = security_api.delete_urls_from_blacklist(urls)
+    # Determine the new URLs to be added or removed
+    new_urls = [url for url in urls if url not in current_list]
+    urls_to_remove = [url for url in urls if url in current_list]
+
+    if module.check_mode:
+        # Simulate the changes based on the state
+        if state == "present" and new_urls:
+            module.exit_json(
+                changed=True,
+                msg="URLs would be added.",
+                updated_list=current_list + new_urls,
+            )
+        elif state == "absent" and urls_to_remove:
+            updated_list = [url for url in current_list if url not in urls_to_remove]
+            module.exit_json(
+                changed=True, msg="URLs would be removed.", updated_list=updated_list
+            )
+        else:
+            module.exit_json(changed=False, msg="No changes needed.")
+
+    # Actual execution when not in check mode
+    if state == "present" and new_urls:
+        updated_list = (
+            security_api.add_urls_to_whitelist(new_urls)
+            if url_type == "whitelist"
+            else security_api.add_urls_to_blacklist(new_urls)
+        )
+        module.exit_json(changed=True, updated_list=updated_list)
+    elif state == "absent" and urls_to_remove:
+        if url_type == "whitelist":
+            security_api.delete_urls_from_whitelist(urls_to_remove)
+            module.exit_json(changed=True, msg="URLs removed from whitelist.")
+        else:
+            resp_code = security_api.delete_urls_from_blacklist(urls_to_remove)
             if resp_code == 204:
                 module.exit_json(changed=True, msg="URLs removed from blacklist.")
             else:
                 module.exit_json(
                     changed=False, msg="Failed to remove URLs from blacklist."
                 )
+    else:
+        module.exit_json(changed=False, msg="No new URLs to add or remove.")
 
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         urls=dict(type="list", elements="str", required=True),
+        state=dict(type="str", choices=["present", "absent"], default="present"),
         url_type=dict(
             type="str", choices=["whitelist", "blacklist"], default="whitelist"
         ),
-        state=dict(type="str", choices=["present", "absent"], default="present"),
     )
 
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)

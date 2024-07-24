@@ -37,6 +37,8 @@ author:
 version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
+notes:
+    - Check mode is supported.
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
   - zscaler.ziacloud.fragments.documentation
@@ -89,15 +91,17 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 def normalize_ip_group(group):
     """
-    Normalize ip source group data by setting computed values.
+    Normalize ip source group data by setting computed values and sorting ip_addresses.
     """
     normalized = group.copy()
 
-    computed_values = [
-        "id",
-    ]
+    computed_values = ["id"]
     for attr in computed_values:
         normalized.pop(attr, None)
+
+    # Sort ip_addresses for consistent comparison
+    if "ip_addresses" in normalized and normalized["ip_addresses"] is not None:
+        normalized["ip_addresses"] = sorted(normalized["ip_addresses"])
 
     return normalized
 
@@ -139,9 +143,20 @@ def core(module):
     for key, value in normalized_group.items():
         if key not in fields_to_exclude and normalized_existing_group.get(key) != value:
             differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {normalized_existing_group.get(key)}, Desired: {value}"
-            )
+            # module.warn(
+            #     f"Difference detected in {key}. Current: {normalized_existing_group.get(key)}, Desired: {value}"
+            # )
+
+    if module.check_mode:
+        # If in check mode, report changes and exit
+        if state == "present" and (
+            existing_src_ip_group is None or differences_detected
+        ):
+            module.exit_json(changed=True)
+        elif state == "absent" and existing_src_ip_group is not None:
+            module.exit_json(changed=True)
+        else:
+            module.exit_json(changed=False)
 
     if existing_src_ip_group is not None:
         id = existing_src_ip_group.get("id")
@@ -159,6 +174,8 @@ def core(module):
                     ip_addresses=existing_src_ip_group.get("ip_addresses", ""),
                 ).to_dict()
                 module.exit_json(changed=True, data=existing_src_ip_group)
+            else:
+                module.exit_json(changed=False, data=existing_src_ip_group)
         else:
             """Create"""
             source_group = client.firewall.add_ip_source_group(
@@ -166,7 +183,7 @@ def core(module):
                 description=source_group.get("description", ""),
                 ip_addresses=source_group.get("ip_addresses", ""),
             ).to_dict()
-            module.exit_json(changed=False, data=source_group)
+            module.exit_json(changed=True, data=source_group)
     elif state == "absent":
         if existing_src_ip_group is not None:
             code = client.firewall.delete_ip_source_group(

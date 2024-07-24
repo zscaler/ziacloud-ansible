@@ -108,7 +108,7 @@
           - not result.changed
 
     - name: Fetch all GRE Tunnel
-      zscaler.ziacloud.zia_traffic_forwarding_gre_tunnel_facts:
+      zscaler.ziacloud.zia_traffic_forwarding_gre_tunnel_info:
         provider: "{{ zia_cloud }}"
       register: result
 
@@ -116,10 +116,10 @@
       ansible.builtin.assert:
         that:
           - not result.changed
-          - result.data[0] is defined
+          - result.gre_tunnels[0] is defined
 
     - name: Fetch this GRE Tunnel
-      zscaler.ziacloud.zia_traffic_forwarding_gre_tunnel_facts:
+      zscaler.ziacloud.zia_traffic_forwarding_gre_tunnel_info:
         provider: "{{ zia_cloud }}"
         source_ip: "{{ static_ip_address }}"
       register: result
@@ -128,9 +128,9 @@
       ansible.builtin.assert:
         that:
           - not result.changed
-          - result.data is defined
-          - result.data[0].source_ip is defined
-          - result.data[0].source_ip == source_ip
+          - result.gre_tunnels is defined
+          - result.gre_tunnels[0].source_ip is defined
+          - result.gre_tunnels[0].source_ip == source_ip
 
     - name: Give the ZIA Cloud a 5 seconds to settle
       ansible.builtin.pause:

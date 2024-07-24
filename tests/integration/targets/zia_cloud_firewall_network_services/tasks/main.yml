@@ -109,7 +109,7 @@
           - not result.changed
 
     - name: Fetch All Network Services
-      zscaler.ziacloud.zia_cloud_firewall_network_services_facts:
+      zscaler.ziacloud.zia_cloud_firewall_network_services_info:
         provider: "{{ zia_cloud }}"
       register: result
 
@@ -117,10 +117,10 @@
       ansible.builtin.assert:
         that:
           - not result.changed
-          - result.data is defined
+          - result.services is defined
 
     - name: Fetch this Network Services
-      zscaler.ziacloud.zia_cloud_firewall_network_services_facts:
+      zscaler.ziacloud.zia_cloud_firewall_network_services_info:
         provider: "{{ zia_cloud }}"
         name: "{{ service_name }}"
       register: result
@@ -129,11 +129,11 @@
       ansible.builtin.assert:
         that:
           - not result.changed
-          - result.data is defined
-          - result.data[0].name is defined
-          - result.data[0].name == service_name
-          - result.data[0].description is defined
-          - result.data[0].description == description
+          - result.services is defined
+          - result.services[0].name is defined
+          - result.services[0].name == service_name
+          - result.services[0].description is defined
+          - result.services[0].description == description
 
     - name: Delete Network Services
       zscaler.ziacloud.zia_cloud_firewall_network_services:

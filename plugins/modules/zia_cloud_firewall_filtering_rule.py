@@ -36,6 +36,8 @@ author:
 version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
+notes:
+    - Check mode is supported.
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
   - zscaler.ziacloud.fragments.documentation
@@ -509,16 +511,25 @@ def core(module):
 
         if current_value != desired_value:
             differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
-            )
+            # module.warn(
+            #     f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
+            # )
+
+    if module.check_mode:
+        # If in check mode, report changes and exit
+        if state == "present" and (existing_rule is None or differences_detected):
+            module.exit_json(changed=True)
+        elif state == "absent" and existing_rule is not None:
+            module.exit_json(changed=True)
+        else:
+            module.exit_json(changed=False)
 
     if existing_rule is not None:
         id = existing_rule.get("id")
         existing_rule.update(rule)
         existing_rule["id"] = id
 
-    module.warn(f"Final payload being sent to SDK: {rule}")
+    # module.warn(f"Final payload being sent to SDK: {rule}")
     if state == "present":
         if existing_rule is not None:
             if differences_detected:
@@ -564,11 +575,11 @@ def core(module):
                         workload_groups=existing_rule.get("workload_groups"),
                     )
                 )
-                module.warn("Payload Update for SDK: {}".format(update_rule))
+                # module.warn("Payload Update for SDK: {}".format(update_rule))
                 updated_rule = client.firewall.update_rule(**update_rule).to_dict()
                 module.exit_json(changed=True, data=updated_rule)
         else:
-            module.warn("Creating new rule as no existing rule found")
+            # module.warn("Creating new rule as no existing rule found")
             """Create"""
             create_rule = deleteNone(
                 dict(
@@ -608,7 +619,7 @@ def core(module):
                     workload_groups=rule.get("workload_groups"),
                 )
             )
-            module.warn("Payload for SDK: {}".format(create_rule))
+            # module.warn("Payload for SDK: {}".format(create_rule))
             new_rule = client.firewall.add_rule(**create_rule).to_dict()
             module.exit_json(changed=True, data=new_rule)
     elif (
