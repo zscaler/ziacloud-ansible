@@ -197,7 +197,7 @@ jobs:
           mkdir -p ziacloud-ansible/ansible_collections/zscaler/ziacloud
 
       - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4.6.1
+        uses: JamesIves/github-pages-deploy-action@v4.6.3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: gh-pages
