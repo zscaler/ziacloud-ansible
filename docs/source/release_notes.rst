@@ -20,7 +20,7 @@ Notes
 New Feature
 ^^^^^^^^^^^
 
-- (`#46 <https://github.com/zscaler/ziacloud-ansible/issues/46>`_) Added new resource `zia_cloud_app_control_rule` for Cloud Application Control rule management.
+- (`#46 <https://github.com/zscaler/ziacloud-ansible/issues/46>`_) Added new resource `zia_cloud_app_control_rule` and `zia_cloud_app_control_rule_info` for Cloud Application Control rule management.
 
 
 1.2.0 (July, 22 2024)
