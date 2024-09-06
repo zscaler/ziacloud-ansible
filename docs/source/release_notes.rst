@@ -9,6 +9,20 @@ Releases
 Zscaler Internet Access (ZIA) Ansible Collection Changelog
 ----------------------------------------------------------
 
+1.3.0 (September, 6 2024)
+-------------------------
+
+Notes
+^^^^^
+
+- Python Versions: **v3.9, v3.10, v3.11**
+
+New Feature
+^^^^^^^^^^^
+
+- (`#46 <https://github.com/zscaler/ziacloud-ansible/issues/46>`_) Added new resource `zia_cloud_app_control_rule` for Cloud Application Control rule management.
+
+
 1.2.0 (July, 22 2024)
 ----------------------
 

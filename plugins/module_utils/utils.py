@@ -371,3 +371,21 @@ def process_vpn_credentials(vpn_creds):
                 }
             )
     return processed_creds
+
+# Utility Function: normalize_boolean_attributes
+def normalize_boolean_attributes(rule, bool_attributes):
+    """
+    Ensures that boolean attributes in the rule are normalized.
+    If the attribute is None, it will be set to False.
+
+    Args:
+        rule (dict): The rule dictionary containing attributes.
+        bool_attributes (list): List of attribute names that should be treated as boolean.
+
+    Returns:
+        dict: The rule with normalized boolean attributes.
+    """
+    for attr in bool_attributes:
+        if rule.get(attr) is None:
+            rule[attr] = False
+    return rule

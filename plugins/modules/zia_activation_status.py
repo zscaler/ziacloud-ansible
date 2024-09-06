@@ -97,13 +97,13 @@ def core(module):
     if desired_status not in [None, "ACTIVE"]:
         module.fail_json(msg=f"Invalid activation status '{desired_status}'")
 
-    original_activation_status = client.config.status()
+    original_activation_status = client.activate.status()
 
     # If state is 'present' and the desired activation status does not match the current one, attempt to activate
     if module.params.get("state") == "present":
         if original_activation_status != desired_status:
-            client.config.activate()
-            new_status = client.config.status()
+            client.activate.activate()
+            new_status = client.activate.status()
 
             if new_status == "PENDING":
                 message = (
