@@ -58,4 +58,3 @@ plugins/modules/zia_forwarding_control_rule.py validate-modules:missing-gplv3-li
 plugins/modules/zia_forwarding_control_rule_info.py validate-modules:missing-gplv3-license
 plugins/modules/zia_cloud_app_control_rules.py validate-modules:missing-gplv3-license
 plugins/modules/zia_cloud_app_control_rules_info.py validate-modules:missing-gplv3-license
-
