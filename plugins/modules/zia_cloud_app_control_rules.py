@@ -319,7 +319,8 @@ from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule, missing_required_lib
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
-    deleteNone, normalize_boolean_attributes
+    deleteNone,
+    normalize_boolean_attributes,
 )
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
     ZIAClientHelper,
@@ -584,27 +585,45 @@ def core(module):
                         time_windows=existing_rule.get("time_windows", ""),
                         rank=existing_rule.get("rank", ""),
                         applications=existing_rule.get("applications", ""),
-                        tenancy_profile_ids=existing_rule.get("tenancy_profile_ids", ""),
-                        cloud_app_risk_profile=existing_rule.get("cloud_app_risk_profile", ""),
-                        cloud_app_instances=existing_rule.get("cloud_app_instances", ""),
+                        tenancy_profile_ids=existing_rule.get(
+                            "tenancy_profile_ids", ""
+                        ),
+                        cloud_app_risk_profile=existing_rule.get(
+                            "cloud_app_risk_profile", ""
+                        ),
+                        cloud_app_instances=existing_rule.get(
+                            "cloud_app_instances", ""
+                        ),
                         cascading_enabled=existing_rule.get("cascading_enabled", ""),
                         time_quota=existing_rule.get("time_quota", ""),
                         size_quota=existing_rule.get("size_quota", ""),
                         location_groups=existing_rule.get("location_groups", ""),
                         labels=existing_rule.get("labels", ""),
-                        validity_start_time=existing_rule.get("validity_start_time", ""),
+                        validity_start_time=existing_rule.get(
+                            "validity_start_time", ""
+                        ),
                         validity_end_time=existing_rule.get("validity_end_time", ""),
-                        validity_time_zone_id=existing_rule.get("validity_time_zone_id", ""),
-                        enforce_time_validity=existing_rule.get("enforce_time_validity", ""),
+                        validity_time_zone_id=existing_rule.get(
+                            "validity_time_zone_id", ""
+                        ),
+                        enforce_time_validity=existing_rule.get(
+                            "enforce_time_validity", ""
+                        ),
                         user_agent_types=existing_rule.get("user_agent_types", ""),
-                        user_risk_score_levels=existing_rule.get("user_risk_score_levels", ""),
-                        device_trust_levels=existing_rule.get("device_trust_levels", ""),
+                        user_risk_score_levels=existing_rule.get(
+                            "user_risk_score_levels", ""
+                        ),
+                        device_trust_levels=existing_rule.get(
+                            "device_trust_levels", ""
+                        ),
                         cbi_profile=existing_rule.get("cbi_profile", ""),
                     )
                 )
 
                 module.warn("Payload Update for SDK: {}".format(update_rule))
-                updated_rule = client.cloudappcontrol.update_rule(rule_type, **update_rule).to_dict()
+                updated_rule = client.cloudappcontrol.update_rule(
+                    rule_type, **update_rule
+                ).to_dict()
                 module.exit_json(changed=True, data=updated_rule)
         else:
             module.warn("Creating new rule as no existing rule found")
@@ -645,7 +664,9 @@ def core(module):
                 )
             )
             module.warn("Payload for SDK: {}".format(create_rule))
-            new_rule = client.cloudappcontrol.add_rule(rule_type, **create_rule).to_dict()
+            new_rule = client.cloudappcontrol.add_rule(
+                rule_type, **create_rule
+            ).to_dict()
             module.exit_json(changed=True, data=new_rule)
     elif (
         state == "absent"
@@ -653,7 +674,9 @@ def core(module):
         and existing_rule.get("id") is not None
     ):
         # Delete the rule with the correct rule_type
-        code = client.cloudappcontrol.delete_rule(rule_type, rule_id=existing_rule.get("id"))
+        code = client.cloudappcontrol.delete_rule(
+            rule_type, rule_id=existing_rule.get("id")
+        )
         if code > 299:
             module.exit_json(changed=False, data=None)
         module.exit_json(changed=True, data=existing_rule)
@@ -686,8 +709,6 @@ def main():
         device_groups=id_spec,
         devices=id_spec,
         users=id_spec,
-        override_users=id_spec,
-        override_groups=id_spec,
         time_windows=id_spec,
         location_groups=id_spec,
         labels=id_spec,

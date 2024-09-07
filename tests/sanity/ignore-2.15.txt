@@ -56,3 +56,6 @@ plugins/modules/zia_traffic_forwarding_static_ip_info.py validate-modules:missin
 plugins/modules/zia_cloud_firewall_network_application_group.py validate-modules:missing-gplv3-license
 plugins/modules/zia_forwarding_control_rule.py validate-modules:missing-gplv3-license
 plugins/modules/zia_forwarding_control_rule_info.py validate-modules:missing-gplv3-license
+plugins/modules/zia_cloud_app_control_rules.py validate-modules:missing-gplv3-license
+plugins/modules/zia_cloud_app_control_rules_info.py validate-modules:missing-gplv3-license
+

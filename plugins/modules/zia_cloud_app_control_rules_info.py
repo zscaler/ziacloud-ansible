@@ -41,7 +41,6 @@ notes:
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
   - zscaler.ziacloud.fragments.documentation
-  - zscaler.ziacloud.fragments.state
 
 options:
   id:
@@ -52,7 +51,7 @@ options:
   name:
     description:
         - Name of the cloud application control rule.
-    required: true
+    required: false
     type: str
   rule_type:
     description:
@@ -131,6 +130,7 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
     ZIAClientHelper,
 )
 
+
 def core(module):
     rule_id = module.params.get("id", None)
     rule_name = module.params.get("name", None)
@@ -142,7 +142,9 @@ def core(module):
         # Fetch rule by ID directly using rule_type
         rule_box = client.cloudappcontrol.get_rule(rule_type=rule_type, rule_id=rule_id)
         if rule_box is None:
-            module.fail_json(msg=f"Failed to retrieve Cloud App Control Rule with ID: '{rule_id}' under rule type: '{rule_type}'")
+            module.fail_json(
+                msg=f"Failed to retrieve Cloud App Control Rule with ID: '{rule_id}' under rule type: '{rule_type}'"
+            )
         rules = [rule_box]
     else:
         # Fetch all rules for the specified rule_type
@@ -150,9 +152,13 @@ def core(module):
 
         if rule_name is not None:
             # Search for the specific rule by name
-            rule_box = client.cloudappcontrol.get_rule_by_name(rule_type=rule_type, rule_name=rule_name)
+            rule_box = client.cloudappcontrol.get_rule_by_name(
+                rule_type=rule_type, rule_name=rule_name
+            )
             if rule_box is None:
-                module.fail_json(msg=f"Failed to retrieve Cloud App Control Rule with Name: '{rule_name}' under rule type: '{rule_type}'")
+                module.fail_json(
+                    msg=f"Failed to retrieve Cloud App Control Rule with Name: '{rule_name}' under rule type: '{rule_type}'"
+                )
             rules = [rule_box]
         else:
             # Return all rules for the specified rule_type
@@ -160,11 +166,36 @@ def core(module):
 
     module.exit_json(changed=False, rules=rules)
 
+
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         name=dict(type="str", required=False),
-        rule_type=dict(type="str", required=True),
+        rule_type=dict(  # This is mapped to `type` in the payload
+            type="str",
+            required=True,
+            choices=[
+                "SOCIAL_NETWORKING",
+                "STREAMING_MEDIA",
+                "WEBMAIL",
+                "INSTANT_MESSAGING",
+                "BUSINESS_PRODUCTIVITY",
+                "ENTERPRISE_COLLABORATION",
+                "SALES_AND_MARKETING",
+                "SYSTEM_AND_DEVELOPMENT",
+                "CONSUMER",
+                "HOSTING_PROVIDER",
+                "IT_SERVICES",
+                "FILE_SHARE",
+                "DNS_OVER_HTTPS",
+                "HUMAN_RESOURCES",
+                "LEGAL",
+                "HEALTH_CARE",
+                "FINANCE",
+                "CUSTOM_CAPP",
+                "AI_ML",
+            ],
+        ),
         id=dict(type="str", required=False),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
@@ -172,6 +203,7 @@ def main():
         core(module)
     except Exception as e:
         module.fail_json(msg=to_native(e), exception=format_exc())
+
 
 if __name__ == "__main__":
     main()

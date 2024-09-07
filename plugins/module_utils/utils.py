@@ -372,6 +372,7 @@ def process_vpn_credentials(vpn_creds):
             )
     return processed_creds
 
+
 # Utility Function: normalize_boolean_attributes
 def normalize_boolean_attributes(rule, bool_attributes):
     """
