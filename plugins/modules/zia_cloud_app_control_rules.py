@@ -301,9 +301,9 @@ EXAMPLES = r"""
     enabled: true
     order: 1
     actions:
-        - ALLOW_WEBMAIL_VIEW
-        - ALLOW_WEBMAIL_ATTACHMENT_SEND
-        - ALLOW_WEBMAIL_SEND
+      - ALLOW_WEBMAIL_VIEW
+      - ALLOW_WEBMAIL_ATTACHMENT_SEND
+      - ALLOW_WEBMAIL_SEND
     applications:
       - "GOOGLE_WEBMAIL"
       - "YAHOO_WEBMAIL"
