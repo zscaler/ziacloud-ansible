@@ -2,7 +2,7 @@
 <html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta content="2.12.0" name="antsibull-docs" />
+<meta content="2.13.1" name="antsibull-docs" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>zscaler.ziacloud.zia_cloud_firewall_filtering_rule module – Firewall Filtering policy rule. &mdash; Ansible Collections Documentation</title>
@@ -19,7 +19,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=6efca38a"></script>
+        <script src="../_static/documentation_options.js?v=1f29e9d3"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -87,6 +87,8 @@
 <li class="toctree-l2"><a class="reference internal" href="zia_activation_status_module.html">zscaler.ziacloud.zia_activation_status module – Activates the saved configuration changes.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_admin_role_management_info_module.html">zscaler.ziacloud.zia_admin_role_management_info module – Gets a list of admin roles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_authentication_settings_module.html">zscaler.ziacloud.zia_authentication_settings module – Adds or removes URLs authentication exempt list.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_cloud_app_control_rules_info_module.html">zscaler.ziacloud.zia_cloud_app_control_rules_info module – Gets the list of cloud application rules by the type of rule..</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_cloud_app_control_rules_module.html">zscaler.ziacloud.zia_cloud_app_control_rules module – Adds a new Cloud App Control rule.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_cloud_browser_isolation_profile_info_module.html">zscaler.ziacloud.zia_cloud_browser_isolation_profile_info module – Retrieves cloud browser isolation profile.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_cloud_firewall_filtering_rule_info_module.html">zscaler.ziacloud.zia_cloud_firewall_filtering_rule_info module – Retrieves rules in the Cloud Firewall module.</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">zscaler.ziacloud.zia_cloud_firewall_filtering_rule module – Firewall Filtering policy rule.</a><ul>
@@ -325,7 +327,7 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 </div></td>
 <td><div class="ansible-option-cell"><p>Destination countries for which the rule is applicable.</p>
 <p>If not set, the rule is not restricted to specific destination countries.</p>
-<p>Provide a ISO3166 Alpha2 code.  visit the following site for reference <a class="reference external" href="https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes">https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes</a></p>
+<p>Provide a ISO3166 Alpha2 code. visit the following site for reference <a class="reference external" href="https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes">https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes</a></p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
@@ -392,7 +394,7 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 <div class="ansibleOptionAnchor" id="parameter-enable_full_logging"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-cloud-firewall-filtering-rule-module-parameter-enable-full-logging"><strong>enable_full_logging</strong></p>
 <a class="ansibleOptionLink" href="#parameter-enable_full_logging" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>Aggregate The service groups together individual sessions based on  user, rule, network service, network application and records them periodically.</p>
+<td><div class="ansible-option-cell"><p>Aggregate The service groups together individual sessions based on user, rule, network service, network application and records them periodically.</p>
 <p>Full The service logs all sessions of the rule individually, except HTTPS or HTTPS.</p>
 <p>Full logging on all other rules requires the Full Logging license. Only Block rules support full logging.</p>
 <p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
@@ -421,7 +423,7 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 <td><div class="ansible-option-cell"><p>Indicates whether the countries specified in the sourceCountries field are included or excluded from the rule.</p>
 <p>A true value denotes that the specified source countries are excluded from the rule.</p>
 <p>A false value denotes that the rule is applied to the source countries if there is a match.</p>
-<p>Provide a ISO3166 Alpha2 code.  visit the following site for reference <a class="reference external" href="https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes">https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes</a></p>
+<p>Provide a ISO3166 Alpha2 code. visit the following site for reference <a class="reference external" href="https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes">https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes</a></p>
 <p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
@@ -591,7 +593,7 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 </div></td>
 <td><div class="ansible-option-cell"><p>The list of source countries that must be included or excluded from the rule based on the excludeSrcCountries field value.</p>
 <p>If no value is set, this field is ignored during policy evaluation and the rule is applied to all source countries.</p>
-<p>Provide a ISO3166 Alpha2 code.  visit the following site for reference <a class="reference external" href="https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes">https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes</a></p>
+<p>Provide a ISO3166 Alpha2 code. visit the following site for reference <a class="reference external" href="https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes">https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes</a></p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">

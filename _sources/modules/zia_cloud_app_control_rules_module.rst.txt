@@ -1,0 +1,1989 @@
+.. Document meta
+
+:orphan:
+
+.. |antsibull-internal-nbsp| unicode:: 0xA0
+    :trim:
+
+.. meta::
+  :antsibull-docs: 2.13.1
+
+.. Anchors
+
+.. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module:
+
+.. Anchors: short name for ansible.builtin
+
+.. Title
+
+zscaler.ziacloud.zia_cloud_app_control_rules module -- Adds a new Cloud App Control rule.
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+.. Collection note
+
+.. note::
+    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 1.2.0).
+
+    It is not included in ``ansible-core``.
+    To check whether it is installed, run :code:`ansible-galaxy collection list`.
+
+    To install it, use: :code:`ansible-galaxy collection install zscaler.ziacloud`.
+    You need further requirements to be able to use this module,
+    see :ref:`Requirements <ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module_requirements>` for details.
+
+    To use it in a playbook, specify: :code:`zscaler.ziacloud.zia_cloud_app_control_rules`.
+
+.. version_added
+
+.. rst-class:: ansible-version-added
+
+New in zscaler.ziacloud 1.0.0
+
+.. contents::
+   :local:
+   :depth: 1
+
+.. Deprecated
+
+
+Synopsis
+--------
+
+.. Description
+
+- Adds a new Cloud App Control rule.
+
+
+.. Aliases
+
+
+.. Requirements
+
+.. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module_requirements:
+
+Requirements
+------------
+The below requirements are needed on the host that executes this module.
+
+- Zscaler SDK Python can be obtained from PyPI \ `https://pypi.org/project/zscaler-sdk-python/ <https://pypi.org/project/zscaler-sdk-python/>`__
+
+
+
+
+
+
+.. Options
+
+Parameters
+----------
+
+.. tabularcolumns:: \X{1}{3}\X{2}{3}
+
+.. list-table::
+  :width: 100%
+  :widths: auto
+  :header-rows: 1
+  :class: longtable ansible-option-table
+
+  * - Parameter
+    - Comments
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-actions"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-actions:
+
+      .. rst-class:: ansible-option-title
+
+      **actions**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-actions" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Actions allowed for the specified type.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-api_key"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-api_key:
+
+      .. rst-class:: ansible-option-title
+
+      **api_key**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-api_key" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the obfuscated API key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-applications"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-applications:
+
+      .. rst-class:: ansible-option-title
+
+      **applications**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-applications" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      List of cloud applications for which rule will be applied
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-cascading_enabled"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-cascading_enabled:
+
+      .. rst-class:: ansible-option-title
+
+      **cascading_enabled**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-cascading_enabled" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Enforce the URL Filtering policy on a transaction, even after it is explicitly allowed by the Cloud App Control policy.
+
+      The URL Filtering policy does not apply if the transaction is blocked by the Cloud App Control policy.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-cbi_profile"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-cbi_profile:
+
+      .. rst-class:: ansible-option-title
+
+      **cbi_profile**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-cbi_profile" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`dictionary`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The cloud browser isolation profile to which the ISOLATE action is applied in the Cloud App Control Policy rules.
+
+      This parameter is required for the ISOLATE action and is not applicable to other actions.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-cbi_profile/id"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-cbi_profile/id:
+
+      .. rst-class:: ansible-option-title
+
+      **id**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-cbi_profile/id" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string` / :ansible-option-required:`required`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      The universally unique identifier (UUID) for the browser isolation profile.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-cbi_profile/name"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-cbi_profile/name:
+
+      .. rst-class:: ansible-option-title
+
+      **name**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-cbi_profile/name" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string` / :ansible-option-required:`required`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Name of the browser isolation profile.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-cbi_profile/url"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-cbi_profile/url:
+
+      .. rst-class:: ansible-option-title
+
+      **url**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-cbi_profile/url" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string` / :ansible-option-required:`required`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      The browser isolation profile URL.
+
+
+      .. raw:: html
+
+        </div>
+
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-cloud"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-cloud:
+
+      .. rst-class:: ansible-option-title
+
+      **cloud**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-cloud" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The Zscaler cloud name was provisioned for your organization.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"zscloud"`
+      - :ansible-option-choices-entry:`"zscaler"`
+      - :ansible-option-choices-entry:`"zscalerone"`
+      - :ansible-option-choices-entry:`"zscalertwo"`
+      - :ansible-option-choices-entry:`"zscalerthree"`
+      - :ansible-option-choices-entry:`"zscalerbeta"`
+      - :ansible-option-choices-entry:`"zscalergov"`
+      - :ansible-option-choices-entry:`"zscalerten"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-cloud_app_instances"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-cloud_app_instances:
+
+      .. rst-class:: ansible-option-title
+
+      **cloud_app_instances**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-cloud_app_instances" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Name-ID pair of Cloud application instances for which rule will be applied.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-cloud_app_risk_profile"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-cloud_app_risk_profile:
+
+      .. rst-class:: ansible-option-title
+
+      **cloud_app_risk_profile**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-cloud_app_risk_profile" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Name-ID pair of cloud Application Risk Profile for which rule will be applied.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-departments"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-departments:
+
+      .. rst-class:: ansible-option-title
+
+      **departments**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-departments" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Name-ID pairs of departments for which rule will be applied
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-description"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-description:
+
+      .. rst-class:: ansible-option-title
+
+      **description**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-description" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Additional information about the rule
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-device_groups"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-device_groups:
+
+      .. rst-class:: ansible-option-title
+
+      **device_groups**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-device_groups" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Name-ID pairs of device groups for which the rule must be applied.
+
+      This field is applicable for devices that are managed using Zscaler Client Connector.
+
+      If no value is set, this field is ignored during the policy evaluation.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-device_trust_levels"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-device_trust_levels:
+
+      .. rst-class:: ansible-option-title
+
+      **device_trust_levels**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-device_trust_levels" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      List of device trust levels for which the rule must be applied.
+
+      This field is applicable for devices that are managed using Zscaler Client Connector.
+
+      The trust levels are assigned to the devices based on your posture configurations.
+
+      If no value is set, this field is ignored during the policy evaluation.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"ANY"`
+      - :ansible-option-choices-entry:`"UNKNOWN\_DEVICETRUSTLEVEL"`
+      - :ansible-option-choices-entry:`"LOW\_TRUST"`
+      - :ansible-option-choices-entry:`"MEDIUM\_TRUST"`
+      - :ansible-option-choices-entry:`"HIGH\_TRUST"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-devices"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-devices:
+
+      .. rst-class:: ansible-option-title
+
+      **devices**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-devices" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Name-ID pairs of devices for which rule must be applied.
+
+      Specifies devices that are managed using Zscaler Client Connector.
+
+      If no value is set, this field is ignored during the policy evaluation.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-enabled"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-enabled:
+
+      .. rst-class:: ansible-option-title
+
+      **enabled**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-enabled" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Determines whether the Cloud App Control rule is enabled or disabled
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-enforce_time_validity"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-enforce_time_validity:
+
+      .. rst-class:: ansible-option-title
+
+      **enforce_time_validity**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-enforce_time_validity" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Enforce a set a validity time period for the Cloud App Control rule.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-groups"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-groups:
+
+      .. rst-class:: ansible-option-title
+
+      **groups**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-groups" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Name-ID pairs of groups for which rule must be applied
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-id"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-id:
+
+      .. rst-class:: ansible-option-title
+
+      **id**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-id" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Unique identifier for the Cloud App Control policy rule
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-labels"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-labels:
+
+      .. rst-class:: ansible-option-title
+
+      **labels**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-labels" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The Cloud App Control rule label. Rule labels allow you to logically group your organization policy rules.
+
+      Policy rules that are not associated with a rule label are grouped under the Untagged label.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-location_groups"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-location_groups:
+
+      .. rst-class:: ansible-option-title
+
+      **location_groups**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-location_groups" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Name-ID pairs of the location groups to which the rule must be applied.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-locations"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-locations:
+
+      .. rst-class:: ansible-option-title
+
+      **locations**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-locations" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Name-ID pairs of locations for which rule must be applied
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-name"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-name:
+
+      .. rst-class:: ansible-option-title
+
+      **name**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-name" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string` / :ansible-option-required:`required`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Name of the Cloud App Control policy rule
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-order"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-order:
+
+      .. rst-class:: ansible-option-title
+
+      **order**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-order" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Rule order number of the Cloud App Control policy rule
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-password"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-password:
+
+      .. rst-class:: ansible-option-title
+
+      **password**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-password" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the password for the API admin.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-provider:
+
+      .. rst-class:: ansible-option-title
+
+      **provider**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`dictionary`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A dict object containing connection details. This is optional; credentials can also be provided directly at the top level.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/api_key"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-provider/api_key:
+
+      .. rst-class:: ansible-option-title
+
+      **api_key**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/api_key" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      A string that contains the obfuscated API key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/cloud"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-provider/cloud:
+
+      .. rst-class:: ansible-option-title
+
+      **cloud**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/cloud" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      The Zscaler cloud name was provisioned for your organization.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"zscloud"`
+      - :ansible-option-choices-entry:`"zscaler"`
+      - :ansible-option-choices-entry:`"zscalerone"`
+      - :ansible-option-choices-entry:`"zscalertwo"`
+      - :ansible-option-choices-entry:`"zscalerthree"`
+      - :ansible-option-choices-entry:`"zscalerbeta"`
+      - :ansible-option-choices-entry:`"zscalergov"`
+      - :ansible-option-choices-entry:`"zscalerten"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/password"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-provider/password:
+
+      .. rst-class:: ansible-option-title
+
+      **password**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/password" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      A string that contains the password for the API admin.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/sandbox_token"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-provider/sandbox_token:
+
+      .. rst-class:: ansible-option-title
+
+      **sandbox_token**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/sandbox_token" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      A string that contains the Sandbox API Key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/username"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-provider/username:
+
+      .. rst-class:: ansible-option-title
+
+      **username**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/username" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      A string that contains the email ID of the API admin.
+
+
+      .. raw:: html
+
+        </div>
+
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-rank"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-rank:
+
+      .. rst-class:: ansible-option-title
+
+      **rank**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-rank" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Admin rank of the admin who creates this rule
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-default-bold:`Default:` :ansible-option-default:`7`
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-rule_type"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-rule_type:
+
+      .. rst-class:: ansible-option-title
+
+      **rule_type**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-rule_type" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string` / :ansible-option-required:`required`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The rule type selected from the available options.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"SOCIAL\_NETWORKING"`
+      - :ansible-option-choices-entry:`"STREAMING\_MEDIA"`
+      - :ansible-option-choices-entry:`"WEBMAIL"`
+      - :ansible-option-choices-entry:`"INSTANT\_MESSAGING"`
+      - :ansible-option-choices-entry:`"BUSINESS\_PRODUCTIVITY"`
+      - :ansible-option-choices-entry:`"ENTERPRISE\_COLLABORATION"`
+      - :ansible-option-choices-entry:`"SALES\_AND\_MARKETING"`
+      - :ansible-option-choices-entry:`"SYSTEM\_AND\_DEVELOPMENT"`
+      - :ansible-option-choices-entry:`"CONSUMER"`
+      - :ansible-option-choices-entry:`"HOSTING\_PROVIDER"`
+      - :ansible-option-choices-entry:`"IT\_SERVICES"`
+      - :ansible-option-choices-entry:`"FILE\_SHARE"`
+      - :ansible-option-choices-entry:`"DNS\_OVER\_HTTPS"`
+      - :ansible-option-choices-entry:`"HUMAN\_RESOURCES"`
+      - :ansible-option-choices-entry:`"LEGAL"`
+      - :ansible-option-choices-entry:`"HEALTH\_CARE"`
+      - :ansible-option-choices-entry:`"FINANCE"`
+      - :ansible-option-choices-entry:`"CUSTOM\_CAPP"`
+      - :ansible-option-choices-entry:`"AI\_ML"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-sandbox_token"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-sandbox_token:
+
+      .. rst-class:: ansible-option-title
+
+      **sandbox_token**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-sandbox_token" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the Sandbox API Key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-size_quota"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-size_quota:
+
+      .. rst-class:: ansible-option-title
+
+      **size_quota**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-size_quota" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Action must be set to CAUTION
+
+      Size quota in MB beyond which the Cloud App Control rule is applied.
+
+      The allowed range is between 10 MB and 100000 MB
+
+      If not set, no quota is enforced. If a policy rule action is set to BLOCK, this field is not applicable.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-state"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-state:
+
+      .. rst-class:: ansible-option-title
+
+      **state**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-state" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Specifies the desired state of the resource.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry-default:`"present"` :ansible-option-choices-default-mark:`← (default)`
+      - :ansible-option-choices-entry:`"absent"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-tenancy_profile_ids"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-tenancy_profile_ids:
+
+      .. rst-class:: ansible-option-title
+
+      **tenancy_profile_ids**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-tenancy_profile_ids" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Name-ID pair of Tenant Profile for which rule will be applied.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-time_quota"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-time_quota:
+
+      .. rst-class:: ansible-option-title
+
+      **time_quota**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-time_quota" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Action must be set to CAUTION
+
+      Time quota in minutes, after which the Cloud App Control rule is applied.
+
+      The allowed range is between 15 minutes and 600 minutes.
+
+      If not set, no quota is enforced. If a policy rule action is set to BLOCK, this field is not applicable.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-time_windows"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-time_windows:
+
+      .. rst-class:: ansible-option-title
+
+      **time_windows**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-time_windows" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Name-ID pairs of time interval during which rule must be enforced.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-user_agent_types"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-user_agent_types:
+
+      .. rst-class:: ansible-option-title
+
+      **user_agent_types**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-user_agent_types" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Any number of user agents to which the rule applies.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"OPERA"`
+      - :ansible-option-choices-entry:`"FIREFOX"`
+      - :ansible-option-choices-entry:`"MSIE"`
+      - :ansible-option-choices-entry:`"MSEDGE"`
+      - :ansible-option-choices-entry:`"CHROME"`
+      - :ansible-option-choices-entry:`"SAFARI"`
+      - :ansible-option-choices-entry:`"OTHER"`
+      - :ansible-option-choices-entry:`"MSCHREDGE"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-user_risk_score_levels"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-user_risk_score_levels:
+
+      .. rst-class:: ansible-option-title
+
+      **user_risk_score_levels**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-user_risk_score_levels" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates the user risk level selected for the DLP rule violation.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"LOW"`
+      - :ansible-option-choices-entry:`"MEDIUM"`
+      - :ansible-option-choices-entry:`"HIGH"`
+      - :ansible-option-choices-entry:`"CRITICAL"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-username"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-username:
+
+      .. rst-class:: ansible-option-title
+
+      **username**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-username" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the email ID of the API admin.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-users"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-users:
+
+      .. rst-class:: ansible-option-title
+
+      **users**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-users" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Name-ID pairs of users for which rule must be applied
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-validity_end_time"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-validity_end_time:
+
+      .. rst-class:: ansible-option-title
+
+      **validity_end_time**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-validity_end_time" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      If enforce\_time\_validity is set to true, the Cloud App Control rule will cease to be valid on this end date and time.
+
+      Example ( 12/21/2023 12:00 AM )
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-validity_start_time"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-validity_start_time:
+
+      .. rst-class:: ansible-option-title
+
+      **validity_start_time**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-validity_start_time" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      If enforce\_time\_validity is set to true, the Cloud App Control rule will be valid starting on this date and time.
+
+      Example ( 11/20/2023 11:59 PM )
+
+      Notice that validity\_start\_time cannot be in the past
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-validity_time_zone_id"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_cloud_app_control_rules_module__parameter-validity_time_zone_id:
+
+      .. rst-class:: ansible-option-title
+
+      **validity_time_zone_id**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-validity_time_zone_id" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      If enforceTimeValidity is set to true, the Cloud App Control rule date and time is valid based on this time zone ID.
+
+
+      .. raw:: html
+
+        </div>
+
+
+.. Attributes
+
+
+.. Notes
+
+Notes
+-----
+
+.. note::
+   - Check mode is supported.
+
+.. Seealso
+
+
+.. Examples
+
+Examples
+--------
+
+.. code-block:: yaml+jinja
+
+    - name: Create/Update/Delete a Cloud App Control Rule.
+      zscaler.ziacloud.zia_cloud_app_control_rules:
+        provider: '{{ provider }}'
+        name: "Example_WebMail_Rule"
+        description: "Example_WebMail_Rule"
+        enabled: true
+        order: 1
+        actions:
+          - ALLOW_WEBMAIL_VIEW
+          - ALLOW_WEBMAIL_ATTACHMENT_SEND
+          - ALLOW_WEBMAIL_SEND
+        applications:
+          - "GOOGLE_WEBMAIL"
+          - "YAHOO_WEBMAIL"
+
+
+
+.. Facts
+
+
+.. Return values
+
+
+..  Status (Presently only deprecated)
+
+
+.. Authors
+
+Authors
+~~~~~~~
+
+- William Guilherme (@willguibr)
+
+
+
+.. Extra links
+
+Collection links
+~~~~~~~~~~~~~~~~
+
+.. ansible-links::
+
+  - title: "Issue Tracker"
+    url: "https://github.com/zscaler/ziacloud-ansible/issues"
+    external: true
+  - title: "Repository (Sources)"
+    url: "https://github.com/zscaler/ziacloud-ansible"
+    external: true
+
+
+.. Parsing errors

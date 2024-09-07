@@ -1,4 +1,3 @@
-
 .. Document meta
 
 :orphan:
@@ -7,7 +6,7 @@
     :trim:
 
 .. meta::
-  :antsibull-docs: 2.12.0
+  :antsibull-docs: 2.13.1
 
 .. Anchors
 
@@ -66,7 +65,7 @@ Requirements
 ------------
 The below requirements are needed on the host that executes this module.
 
-- Zscaler SDK Python can be obtained from PyPI \ https://pypi.org/project/zscaler-sdk-python/\ 
+- Zscaler SDK Python can be obtained from PyPI \ `https://pypi.org/project/zscaler-sdk-python/ <https://pypi.org/project/zscaler-sdk-python/>`__
 
 
 
@@ -306,7 +305,7 @@ Parameters
       .. raw:: html
 
         </div>
-    
+
   * - .. raw:: html
 
         <div class="ansible-option-indent"></div><div class="ansible-option-cell">
@@ -622,7 +621,6 @@ Examples
 
 .. code-block:: yaml+jinja
 
-    
     - name: Gather Information Details of all ZIA DLP Web Rule
       zscaler.ziacloud.zia_dlp_web_rules_info:
         provider: '{{ provider }}'
@@ -631,7 +629,6 @@ Examples
       zscaler.ziacloud.zia_dlp_web_rules_info:
         provider: '{{ provider }}'
         name: "Example"
-
 
 
 
@@ -694,7 +691,7 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
 
         </div>
 
-    
+
   * - .. raw:: html
 
         <div class="ansible-option-indent"></div><div class="ansible-option-cell">
@@ -848,7 +845,7 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
 
         </div>
 
-    
+
   * - .. raw:: html
 
         <div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
@@ -1051,7 +1048,7 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
 
         </div>
 
-    
+
   * - .. raw:: html
 
         <div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
@@ -1201,7 +1198,7 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
 
         </div>
 
-    
+
   * - .. raw:: html
 
         <div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
@@ -1604,4 +1601,3 @@ Collection links
 
 
 .. Parsing errors
-

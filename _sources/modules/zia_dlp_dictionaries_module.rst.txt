@@ -1,4 +1,3 @@
-
 .. Document meta
 
 :orphan:
@@ -7,7 +6,7 @@
     :trim:
 
 .. meta::
-  :antsibull-docs: 2.12.0
+  :antsibull-docs: 2.13.1
 
 .. Anchors
 
@@ -66,7 +65,7 @@ Requirements
 ------------
 The below requirements are needed on the host that executes this module.
 
-- Zscaler SDK Python can be obtained from PyPI \ https://pypi.org/project/zscaler-sdk-python/\ 
+- Zscaler SDK Python can be obtained from PyPI \ `https://pypi.org/project/zscaler-sdk-python/ <https://pypi.org/project/zscaler-sdk-python/>`__
 
 
 
@@ -446,7 +445,7 @@ Parameters
       .. raw:: html
 
         </div>
-    
+
   * - .. raw:: html
 
         <div class="ansible-option-indent"></div><div class="ansible-option-cell">
@@ -748,7 +747,7 @@ Parameters
       .. raw:: html
 
         </div>
-    
+
   * - .. raw:: html
 
         <div class="ansible-option-indent"></div><div class="ansible-option-cell">
@@ -790,7 +789,7 @@ Parameters
       .. raw:: html
 
         </div>
-    
+
   * - .. raw:: html
 
         <div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
@@ -1073,7 +1072,7 @@ Parameters
       .. raw:: html
 
         </div>
-    
+
   * - .. raw:: html
 
         <div class="ansible-option-indent"></div><div class="ansible-option-cell">
@@ -1200,7 +1199,7 @@ Parameters
       .. raw:: html
 
         </div>
-    
+
   * - .. raw:: html
 
         <div class="ansible-option-indent"></div><div class="ansible-option-cell">
@@ -1371,7 +1370,7 @@ Parameters
       .. raw:: html
 
         </div>
-    
+
   * - .. raw:: html
 
         <div class="ansible-option-indent"></div><div class="ansible-option-cell">
@@ -1763,7 +1762,6 @@ Examples
 
 .. code-block:: yaml+jinja
 
-    
     - name: Create/Update/Delete dlp dictionary.
       zscaler.ziacloud.zia_dlp_dictionaries:
         provider: '{{ provider }}'
@@ -1777,7 +1775,6 @@ Examples
         patterns:
           - action: "PATTERN_COUNT_TYPE_ALL"
             pattern: "YourPattern"
-
 
 
 
@@ -1815,4 +1812,3 @@ Collection links
 
 
 .. Parsing errors
-

@@ -1,4 +1,3 @@
-
 .. Document meta
 
 :orphan:
@@ -7,7 +6,7 @@
     :trim:
 
 .. meta::
-  :antsibull-docs: 2.12.0
+  :antsibull-docs: 2.13.1
 
 .. Anchors
 
@@ -66,7 +65,7 @@ Requirements
 ------------
 The below requirements are needed on the host that executes this module.
 
-- Zscaler SDK Python can be obtained from PyPI \ https://pypi.org/project/zscaler-sdk-python/\ 
+- Zscaler SDK Python can be obtained from PyPI \ `https://pypi.org/project/zscaler-sdk-python/ <https://pypi.org/project/zscaler-sdk-python/>`__
 
 
 
@@ -419,7 +418,7 @@ Parameters
 
       If not set, the rule is not restricted to specific destination countries.
 
-      Provide a ISO3166 Alpha2 code.  visit the following site for reference \ https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes\ 
+      Provide a ISO3166 Alpha2 code. visit the following site for reference \ `https://en.wikipedia.org/wiki/List\_of\_ISO\_3166\_country\_codes <https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes>`__
 
 
       .. raw:: html
@@ -688,7 +687,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      Aggregate The service groups together individual sessions based on  user, rule, network service, network application and records them periodically.
+      Aggregate The service groups together individual sessions based on user, rule, network service, network application and records them periodically.
 
       Full The service logs all sessions of the rule individually, except HTTPS or HTTPS.
 
@@ -782,7 +781,7 @@ Parameters
 
       A false value denotes that the rule is applied to the source countries if there is a match.
 
-      Provide a ISO3166 Alpha2 code.  visit the following site for reference \ https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes\ 
+      Provide a ISO3166 Alpha2 code. visit the following site for reference \ `https://en.wikipedia.org/wiki/List\_of\_ISO\_3166\_country\_codes <https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes>`__
 
 
       .. rst-class:: ansible-option-line
@@ -1246,7 +1245,7 @@ Parameters
       .. raw:: html
 
         </div>
-    
+
   * - .. raw:: html
 
         <div class="ansible-option-indent"></div><div class="ansible-option-cell">
@@ -1575,7 +1574,7 @@ Parameters
 
       If no value is set, this field is ignored during policy evaluation and the rule is applied to all source countries.
 
-      Provide a ISO3166 Alpha2 code.  visit the following site for reference \ https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes\ 
+      Provide a ISO3166 Alpha2 code. visit the following site for reference \ `https://en.wikipedia.org/wiki/List\_of\_ISO\_3166\_country\_codes <https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes>`__
 
 
       .. raw:: html
@@ -1890,7 +1889,6 @@ Examples
 
 .. code-block:: yaml+jinja
 
-    
     - name: Create/update  firewall filtering rule
       zscaler.ziacloud.zia_cloud_firewall_filtering_rule:
         provider: '{{ provider }}'
@@ -1915,7 +1913,6 @@ Examples
           - "LOW_TRUST"
           - "MEDIUM_TRUST"
           - "HIGH_TRUST"
-
 
 
 
@@ -1953,4 +1950,3 @@ Collection links
 
 
 .. Parsing errors
-
