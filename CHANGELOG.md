@@ -1,3 +1,10 @@
+## [1.3.0](https://github.com/zscaler/ziacloud-ansible/compare/v1.2.0...v1.3.0) (2024-09-07)
+
+
+### Features
+
+* Added new resource for Cloud Application Control rule management ([#46](https://github.com/zscaler/ziacloud-ansible/issues/46)) ([1537a09](https://github.com/zscaler/ziacloud-ansible/commit/1537a090f73ece76bec996e5e1b229832797bb1f))
+
 # Zscaler Internet Access (ZIA) Ansible Collection Changelog
 
 ## v1.3.0 (September, 6 2024)
