@@ -123,16 +123,22 @@ def core(module):
             network_app = client.firewall.get_network_app(str(network_app_id)).to_dict()
             network_apps = [network_app]
         except Exception as e:
-            module.fail_json(msg=f"Failed to retrieve network application by ID '{network_app_id}': {str(e)}")
+            module.fail_json(
+                msg=f"Failed to retrieve network application by ID '{network_app_id}': {str(e)}"
+            )
 
     # If no ID provided, handle by name or list all
     else:
         all_apps = client.firewall.list_network_apps().to_list()
         if network_app_name:
             # Filter apps by name
-            network_app = next((app for app in all_apps if app.get("name") == network_app_name), None)
+            network_app = next(
+                (app for app in all_apps if app.get("name") == network_app_name), None
+            )
             if not network_app:
-                module.fail_json(msg=f"No network application found with name: '{network_app_name}'")
+                module.fail_json(
+                    msg=f"No network application found with name: '{network_app_name}'"
+                )
             network_apps = [network_app]
         else:
             network_apps = all_apps
@@ -143,7 +149,9 @@ def core(module):
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
-        id=dict(type="str", required=False),  # Changed type to 'str' to accept string input
+        id=dict(
+            type="str", required=False
+        ),  # Changed type to 'str' to accept string input
         name=dict(type="str", required=False),
         locale=dict(type="str", required=False),
     )

@@ -20,6 +20,7 @@
       ansible.builtin.include_tasks: "{{ item }}"
       loop:
         - targets/zia_authentication_settings/tasks/main.yml
+        - targets/zia_cloud_app_control_rules/tasks/main.yml
         - targets/zia_cloud_firewall_filtering_rule/tasks/main.yml
         - targets/zia_cloud_firewall_ip_destination_groups/tasks/main.yml
         - targets/zia_cloud_firewall_ip_source_groups/tasks/main.yml
