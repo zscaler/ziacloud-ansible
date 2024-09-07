@@ -291,15 +291,15 @@ def core(module):
     desired_category_preprocessed = preprocess_category(desired_category, params)
 
     # Exclude 'super_category' from the comparison
-    if 'super_category' in desired_category_preprocessed:
-        desired_category_preprocessed.pop('super_category')
-    if 'super_category' in existing_category_preprocessed:
-        existing_category_preprocessed.pop('super_category')
+    if "super_category" in desired_category_preprocessed:
+        desired_category_preprocessed.pop("super_category")
+    if "super_category" in existing_category_preprocessed:
+        existing_category_preprocessed.pop("super_category")
 
     # Comparison logic
     differences_detected = False
     for key in params:
-        if key == 'super_category':
+        if key == "super_category":
             continue
         desired_value = desired_category_preprocessed.get(key)
         current_value = existing_category_preprocessed.get(key)

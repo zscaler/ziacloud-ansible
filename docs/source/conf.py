@@ -21,7 +21,7 @@ author = "Zscaler Inc"
 html_title = "Ansible Collections Documentation"
 
 # The full version, including alpha/beta/rc tags
-release = "1.2.0"
+release = "1.3.0"
 
 # Disable the Copyright footer for Read the docs at the bottom of the page
 # by setting property html_show_copyright = False
