@@ -1,11 +1,14 @@
-## [1.3.0](https://github.com/zscaler/ziacloud-ansible/compare/v1.2.0...v1.3.0) (2024-09-07)
-
-
-### Features
-
-* Added new resource for Cloud Application Control rule management ([#46](https://github.com/zscaler/ziacloud-ansible/issues/46)) ([1537a09](https://github.com/zscaler/ziacloud-ansible/commit/1537a090f73ece76bec996e5e1b229832797bb1f))
-
 # Zscaler Internet Access (ZIA) Ansible Collection Changelog
+
+## v1.3.1 (September, 12 2024)
+
+### Notes
+
+- Python Versions: **v3.9, v3.10, v3.11**
+
+### New Feature
+
+- [PR #47](https://github.com/zscaler/ziacloud-ansible/pull/47) Fixed DLP Engine tests.
 
 ## v1.3.0 (September, 6 2024)
 
@@ -15,7 +18,17 @@
 
 ### New Feature
 
-- [PR #46](https://github.com/zscaler/zscaler-sdk-go/pull/46) Added new resource `zia_cloud_app_control_rule` for Cloud Application Control rule management.
+- [PR #46](https://github.com/zscaler/ziacloud-ansible/pull/46) Added new resource `zia_cloud_app_control_rule` for Cloud Application Control rule management.
+
+## v1.3.0 (September, 6 2024)
+
+### Notes
+
+- Python Versions: **v3.9, v3.10, v3.11**
+
+### New Feature
+
+- [PR #46](https://github.com/zscaler/ziacloud-ansible/pull/46) Added new resource `zia_cloud_app_control_rule` for Cloud Application Control rule management.
 
 ## v1.2.0 (July, 22 2024)
 
@@ -25,11 +38,11 @@
 
 ### BREAKING CHANGES
 
-- [PR #270](https://github.com/zscaler/zscaler-sdk-go/pull/270) All resources previously named with `_facts` have been moved to `_info` to comply with Red Hat Ansible best practices as described in the following [Ansible Developer Documentation](https://docs.ansible.com/ansible/latest/dev_guide/developing_modules_general.html#creating-an-info-or-a-facts-module)
+- [PR #40](https://github.com/zscaler/ziacloud-ansible/pull/40) All resources previously named with `_facts` have been moved to `_info` to comply with Red Hat Ansible best practices as described in the following [Ansible Developer Documentation](https://docs.ansible.com/ansible/latest/dev_guide/developing_modules_general.html#creating-an-info-or-a-facts-module)
 
 ### New Feature
 
-- [PR #270](https://github.com/zscaler/zscaler-sdk-go/pull/270) All resources now support `check_mode` for simulation purposes and for validating configuration management playbooks
+- [PR #40](https://github.com/zscaler/ziacloud-ansible/pull/40) All resources now support `check_mode` for simulation purposes and for validating configuration management playbooks
 
 ## v1.1.0 (June, 25 2024)
 
