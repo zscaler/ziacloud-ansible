@@ -13,9 +13,6 @@
       }
     ],
     [
-      "@semantic-release/changelog"
-    ],
-    [
       "@semantic-release/git",
       {
         "assets": [
