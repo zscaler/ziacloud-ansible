@@ -9,6 +9,20 @@ Releases
 Zscaler Internet Access (ZIA) Ansible Collection Changelog
 ----------------------------------------------------------
 
+1.3.1 (September, 12 2024)
+-------------------------
+
+Notes
+^^^^^
+
+- Python Versions: **v3.9, v3.10, v3.11**
+
+New Feature
+^^^^^^^^^^^
+
+- (`#47 <https://github.com/zscaler/ziacloud-ansible/issues/47>`_) Fixed DLP Engine tests.
+
+
 1.3.0 (September, 6 2024)
 -------------------------
 
