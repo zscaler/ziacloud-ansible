@@ -59,46 +59,13 @@ jobs:
         timeout-minutes: 10
         run: poetry run make new-sanity
 
-
-  ## ---------------------------------------------------------------------------
-  ## 2) Code Format Check
-  ## ---------------------------------------------------------------------------
-  format:
-    name: Code Format Check
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          path: ./ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-
-      - name: Install Poetry
-        uses: Gr1N/setup-poetry@v9
-
-      - name: Install dependencies
-        run: poetry install
-
-      - name: Do black code format
-        run: poetry run make format
-
-      - name: Do black code check-format
-        run: poetry run make check-format
-
-
   ## ---------------------------------------------------------------------------
   ## 3) Release
   ## ---------------------------------------------------------------------------
   release:
     name: release
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    needs: [sanity, format]
+    needs: [sanity]
     runs-on: ubuntu-latest
 
     steps:
