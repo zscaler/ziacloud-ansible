@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ziacloud-ansible"
-version = "1.3.2"
+version = "1.3.3"
 description = "Ansible collection for Zscaler Internet Access"
 authors = ["Zscaler Technology Alliances <devrel@zscaler.com>"]
 license = "MIT"
@@ -8,12 +8,13 @@ keywords = ["ziacloud", "ziacloud-ansible", "zia"]
 readme = "README.md"
 homepage = "https://github.com/zscaler/ziacloud-ansible"
 repository = "https://github.com/zscaler/ziacloud-ansible"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.9"
-zscaler-sdk-python = ">=0.9.2"
+zscaler-sdk-python = ">=0.10.4"
 xmltodict = ">=0.12.0"
-aiohttp = ">=3.10.5"
+aiohttp = ">=3.10.11"
 dpath = "^2.1.5"
 pytz = ">=2024.1"
 netaddr = ">=1.2.1"
@@ -23,8 +24,9 @@ python-box = "^7.2.0"
 responses = ">=0.25.3"
 flake8 = "*"
 pydash = "*"
+jinja2 = ">=3.0.0"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 black = ">=24.3.0"
 pytest = "^8.2.1"
 coverage = ">=4.5.4"
@@ -48,7 +50,7 @@ pycodestyle = "*"
 # from requirements.txt
 certifi = ">=2023.11.17"
 chardet = ">=5.2.0"
-idna = "3.7"
+idna = "3.10"
 requests = ">=2.22.0"
 urllib3 = ">=2.0"
 
