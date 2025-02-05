@@ -1,4 +1,4 @@
-name: Release
+name: CI
 
 on:
   push:
@@ -11,9 +11,10 @@ env:
   PYTHON_VERSION: 3.8
 
 jobs:
-  ## Sanity is required:
-  #
-  # https://docs.ansible.com/ansible/latest/dev_guide/testing_sanity.html
+  ## ---------------------------------------------------------------------------
+  ## 1) Sanity is required:
+  ## https://docs.ansible.com/ansible/latest/dev_guide/testing_sanity.html
+  ## ---------------------------------------------------------------------------
   sanity:
     name: Sanity (Ⓐ${{ matrix.ansible }})
     strategy:
@@ -58,6 +59,9 @@ jobs:
         timeout-minutes: 10
         run: poetry run make new-sanity
 
+  ## ---------------------------------------------------------------------------
+  ## 3) Release
+  ## ---------------------------------------------------------------------------
   release:
     name: release
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -68,7 +72,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # This task could be removed once the task below is confirmed working
+      # (A) OLD TASK: This writes ~/.ansible/galaxy_token
+      #     We'll remove it later so it's not included in the final tarball.
       - name: Set up Galaxy auth
         run: |
           mkdir -p ~/.ansible
@@ -77,8 +82,9 @@ jobs:
           GALAXY_API_KEY: ${{ secrets.GALAXY_API_KEY }}
         shell: bash
 
-      # New task for combined Galaxy and AutomationHub publishing
-      - name: Set up Automation Hub and Galaxy ansible.cfg file
+      # (B) Create ansible.cfg with credentials for Galaxy and Automation Hub
+      #     We'll remove this file before building or packaging the collection.
+      - name: Set up Automation Hub and Galaxy ansible.cfg
         run: |
           cat << EOF > ansible.cfg
           [galaxy]
@@ -93,11 +99,22 @@ jobs:
           EOF
         shell: bash
 
+      # (C) Remove the ansible.cfg and galaxy_token
+      #     so they don't leak into the final built artifact or logs.
       - name: Remove temporary auth files
         run: |
           rm -f ansible.cfg
           rm -rf ~/.ansible
 
+      # (D) Import GPG key (signing)
+      - name: Import GPG key
+        id: import_gpg
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.PASSPHRASE }}
+
+      # (E) Create release and publish to GitHub Releases (semantic-release)
       - name: Create release and publish
         id: release
         uses: cycjimmy/semantic-release-action@v4
@@ -109,8 +126,10 @@ jobs:
             @semantic-release/git@^9.0.0
             @semantic-release/exec@^5.0.0
         env:
+          GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # (F) Store built collection (artifact) AFTER we removed ansible.cfg
       - name: Store built collection
         uses: actions/upload-artifact@v4
         with:
@@ -118,6 +137,10 @@ jobs:
           path: |
             *.tar.gz
 
+
+  ## ---------------------------------------------------------------------------
+  ## 4) Documentation
+  ## ---------------------------------------------------------------------------
   docs:
     name: docs
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -129,10 +152,6 @@ jobs:
         working-directory: ./ansible_collections/zscaler/ziacloud
 
     steps:
-      # Just a note here:  The Ansible stuff is apparently doing realpath
-      # checks, so trying to simlink stuff and then run Ansible commands
-      # such as ansible-test in the symlink directory fails.  Thus we need
-      # to have the real path contain ansible_collections/zscaler/ziacloud.
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -175,7 +194,7 @@ jobs:
           mkdir -p ziacloud-ansible/ansible_collections/zscaler/ziacloud
 
       - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4.7.2
+        uses: JamesIves/github-pages-deploy-action@v4.6.8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: gh-pages
