@@ -26,6 +26,6 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 # Make sure to keep this file in sync with the version in the galaxy.yml
-__version__ = "1.3.4"
+__version__ = "1.3.3"
 __author__ = "Zscaler, Inc."
 __email__ = "devrel@zscaler.com"
