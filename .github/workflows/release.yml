@@ -2,8 +2,7 @@ name: CI
 
 on:
   push:
-    branches:
-      - master
+    branches: [master]
   pull_request:
 
 env:
@@ -12,9 +11,10 @@ env:
   PYTHON_VERSION: 3.8
 
 jobs:
-  ################################################################
-  # 1) Sanity Job (unchanged from your example)
-  ################################################################
+  ## ---------------------------------------------------------------------------
+  ## 1) Sanity is required:
+  ## https://docs.ansible.com/ansible/latest/dev_guide/testing_sanity.html
+  ## ---------------------------------------------------------------------------
   sanity:
     name: Sanity (Ⓐ${{ matrix.ansible }})
     strategy:
@@ -45,6 +45,7 @@ jobs:
       - name: Install Poetry
         uses: Gr1N/setup-poetry@v9
 
+      # Install the head of the given branch (devel, stable-2.10)
       - name: Install ansible-base (${{ matrix.ansible }})
         run: poetry run pip install https://github.com/ansible/ansible/archive/stable-${{ matrix.ansible }}.tar.gz --disable-pip-version-check
 
@@ -58,19 +59,87 @@ jobs:
         timeout-minutes: 10
         run: poetry run make new-sanity
 
-  ################################################################
-  # 2) pre_release Job (local steps you MUST run first)
-  ################################################################
-  pre_release:
-    name: pre_release
-    needs: [sanity]
+
+  ## ---------------------------------------------------------------------------
+  ## 2) Code Format Check
+  ## ---------------------------------------------------------------------------
+  format:
+    name: Code Format Check
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: ./ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Poetry
+        uses: Gr1N/setup-poetry@v9
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Do black code format
+        run: poetry run make format
+
+      - name: Do black code check-format
+        run: poetry run make check-format
+
+
+  ## ---------------------------------------------------------------------------
+  ## 3) Release
+  ## ---------------------------------------------------------------------------
+  release:
+    name: release
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    needs: [sanity, format]
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # 2.1) Import GPG Key
+      # (A) OLD TASK: This writes ~/.ansible/galaxy_token
+      #     We'll remove it later so it's not included in the final tarball.
+      - name: Set up Galaxy auth
+        run: |
+          mkdir -p ~/.ansible
+          echo "token: $GALAXY_API_KEY" > ~/.ansible/galaxy_token
+        env:
+          GALAXY_API_KEY: ${{ secrets.GALAXY_API_KEY }}
+        shell: bash
+
+      # (B) Create ansible.cfg with credentials for Galaxy and Automation Hub
+      #     We'll remove this file before building or packaging the collection.
+      - name: Set up Automation Hub and Galaxy ansible.cfg
+        run: |
+          cat << EOF > ansible.cfg
+          [galaxy]
+          server_list = automation_hub, release_galaxy
+          [galaxy_server.automation_hub]
+          url=${{ secrets.AUTOMATION_HUB_URL }}
+          auth_url=${{ secrets.AUTOMATION_HUB_SSO_URL }}
+          token=${{ secrets.AUTOMATION_HUB_API_TOKEN }}
+          [galaxy_server.release_galaxy]
+          url=https://galaxy.ansible.com/
+          token=${{ secrets.GALAXY_API_KEY }}
+          EOF
+        shell: bash
+
+      # (C) Remove the ansible.cfg and galaxy_token
+      #     so they don't leak into the final built artifact or logs.
+      - name: Remove temporary auth files
+        run: |
+          rm -f ansible.cfg
+          rm -rf ~/.ansible
+
+      # (D) Import GPG key (signing)
       - name: Import GPG key
         id: import_gpg
         uses: crazy-max/ghaction-import-gpg@v6
@@ -78,7 +147,7 @@ jobs:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
 
-      # 2.2) Create release and publish via semantic-release
+      # (E) Create release and publish to GitHub Releases (semantic-release)
       - name: Create release and publish
         id: release
         uses: cycjimmy/semantic-release-action@v4
@@ -93,40 +162,22 @@ jobs:
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # 2.3) (Optional) Build your collection here, if you want.
-      #      Or let the next job build it.
-      #      If you do build it, store it as an artifact:
-      - name: Build collection
-        run: |
-          ansible-galaxy collection build
-
+      # (F) Store built collection (artifact) AFTER we removed ansible.cfg
       - name: Store built collection
-        if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
-          name: built-collection
+          name: collection
           path: |
             *.tar.gz
 
-  ################################################################
-  # 3) release Job (calls Red Hat's Reusable Workflow)
-  ################################################################
-  release:
-    needs: [pre_release]
-    uses: ansible/team-devtools/.github/workflows/release_collection.yml@main
-    with:
-      environment: release
-    secrets:
-      ah_token: ${{ secrets.AH_TOKEN }}
-      ansible_galaxy_api_key: ${{ secrets.ANSIBLE_GALAXY_API_KEY }}
 
-  ################################################################
-  # 4) docs Job (unchanged)
-  ################################################################
+  ## ---------------------------------------------------------------------------
+  ## 4) Documentation
+  ## ---------------------------------------------------------------------------
   docs:
     name: docs
-    needs: [release]  # Wait for release to finish
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    needs: [release]
     runs-on: ubuntu-latest
 
     defaults:
@@ -165,6 +216,9 @@ jobs:
       - name: Generate documentation
         run: poetry run make docs
 
+      # This is here for right now because the action to deploy seems to assume
+      # (and not have a configuration option to) mirror the actions/checkout@v4
+      # the with.path spec.
       - name: Move the repo to where the deploy action is looking for it
         run: |
           cd ../../../..
@@ -173,7 +227,7 @@ jobs:
           mkdir -p ziacloud-ansible/ansible_collections/zscaler/ziacloud
 
       - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4.7.2
+        uses: JamesIves/github-pages-deploy-action@v4.6.8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: gh-pages
