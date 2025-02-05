@@ -11,7 +11,7 @@ repository = "https://github.com/zscaler/ziacloud-ansible"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-zscaler-sdk-python = ">=0.9.2"
+zscaler-sdk-python = ">=0.10.4"
 xmltodict = ">=0.12.0"
 aiohttp = ">=3.10.5"
 dpath = "^2.1.5"
@@ -48,7 +48,7 @@ pycodestyle = "*"
 # from requirements.txt
 certifi = ">=2023.11.17"
 chardet = ">=5.2.0"
-idna = "3.7"
+idna = "3.10"
 requests = ">=2.22.0"
 urllib3 = ">=2.0"
 
