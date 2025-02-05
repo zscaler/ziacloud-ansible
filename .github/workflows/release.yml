@@ -112,7 +112,7 @@ jobs:
   # 3) release Job (calls Red Hat's Reusable Workflow)
   ################################################################
   release:
-    uses: ansible/devtools/.github/workflows/release_collection.yml@main
+    uses: ansible/team-devtools/.github/workflows/release_collection.yml@main
     with:
       environment: release
     secrets:
