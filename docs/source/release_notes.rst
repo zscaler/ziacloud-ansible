@@ -9,6 +9,21 @@ Releases
 Zscaler Internet Access (ZIA) Ansible Collection Changelog
 ----------------------------------------------------------
 
+Version 1.3.3
+==============
+
+1.3.3 (February, 5 2025)
+---------------------------
+
+### Notes
+
+- Python Versions: **v3.9, v3.10, v3.11**
+
+### Bug Fixes
+
+* (`#56 <https://github.com/zscaler/ziacloud-ansible/pull/56>`_) Removed `ansible.cfg` from Ansible Automation Hub and Galaxy GitHub Actions workflow
+
+
 1.3.1 (September, 12 2024)
 -------------------------
 
