@@ -71,6 +71,10 @@ options:
     description: "Country Name"
     type: str
     required: false
+  city:
+    description: "Geolocation of the IoT device."
+    type: str
+    required: false
   tz:
     description: "Timezone of the location. If not specified, it defaults to GMT."
     type: str
@@ -210,6 +214,42 @@ options:
     description: "If this field is set to true, IoT discovery is enabled for this location."
     type: bool
     required: false
+  iot_enforce_policy_set:
+    description: "Enforces IOT Policy set"
+    type: bool
+    required: false
+  geo_override:
+    description: "If this field is set to true, the latitude and longitude values must be provided. By default, it's set to false."
+    type: bool
+    required: false
+  ipv6_enabled:
+    description: "If set to true, IPv6 is enabled for the location and IPv6 traffic from the location can be forwarded"
+    type: bool
+    required: false
+  ipv6_dns64_prefix:
+    description: "Name-ID pair of the NAT64 prefix configured as the DNS64 prefix for the location"
+    type: bool
+    required: false
+  latitude:
+    description:
+      - Required only if the geoOverride attribute is set.
+      - Latitude with 7 digit precision after decimal point, ranges between -90 and 90 degrees.
+    required: false
+    type: float
+  longitude:
+    description:
+      - Required only if the geoOverride attribute is set.
+      - Longitude with 7 digit precision after decimal point, ranges between -180 and 180 degrees.
+    required: false
+    type: float
+  other_sub_location:
+    description: "If set to true, indicates that this is a default sub-location created by the Zscaler service to accommodate IPv4 addresses"
+    type: bool
+    required: false
+  other6_sub_location:
+    description: "If set to true, indicates that this is a default sub-location created by the Zscaler service to accommodate IPv6 addresses"
+    type: bool
+    required: false
   description:
     description: "Additional notes or information regarding the location or sub-location. The description cannot exceed 1024 characters."
     type: str
@@ -330,12 +370,30 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 def normalize_location(location):
     """
-    Normalize location data by setting computed values.
+    Normalize location data by removing known server-populated or read-only fields.
     """
     normalized = location.copy()
 
     computed_values = [
         "id",
+        "comments",
+        "child_count",
+        "cookies_and_proxy",
+        "default_extranet_dns",
+        "default_extranet_ts_pool",
+        "digest_auth_enabled",
+        "dynamiclocation_groups",
+        "ec_location",
+        "exclude_from_dynamic_groups",
+        "exclude_from_manual_groups",
+        "extranet",
+        "extranet_dns",
+        "extranet_ip_pool",
+        "kerberos_auth",
+        "language",
+        "match_in_child",
+        "non_editable",
+        "static_location_groups",
     ]
     for attr in computed_values:
         normalized.pop(attr, None)
@@ -345,168 +403,163 @@ def normalize_location(location):
 
 def normalize_vpn_credentials(vpn_creds):
     """
-    Normalize the VPN credentials list to have consistent keys for comparison.
-    If vpn_creds is None, return an empty list.
+    Normalize the VPN credentials list to ensure consistent keys and ignore read-only fields.
     """
-    if vpn_creds is None:
+    if not vpn_creds:
         return []
 
     normalized_creds = []
     for cred in vpn_creds:
-        # Ensure all required keys are present, set to None if missing
+        # 'ipAddress' is how the API typically returns it; unify to 'ipAddress' internally
+        ip_val = cred.get("ip_address", cred.get("ipAddress"))
         normalized_cred = {
             "id": cred.get("id"),
             "type": cred.get("type"),
             "fqdn": cred.get("fqdn"),
-            "ip_address": cred.get("ip_address"),
+            "ipAddress": ip_val,
         }
+        # If the API returns "comments" or other read-only fields in the credential,
+        # we simply don't include them in normalized_cred.
         normalized_creds.append(normalized_cred)
     return normalized_creds
 
 
 def core(module):
     client = ZIAClientHelper(module)
-    state = module.params.get("state", None)
-    location_mgmt = dict()
+    state = module.params.get("state", "present")
 
-    # Processing and adding VPN credentials to location_mgmt as before
+    # Build a dict of the "desired" fields from Ansible
+    location_mgmt = {}
     params = [
-        "id",
-        "name",
-        "parent_id",
-        "up_bandwidth",
-        "dn_bandwidth",
-        "country",
-        "tz",
-        "ip_addresses",
-        "ports",
-        "auth_required",
-        "ssl_scan_enabled",
-        "zapp_ssl_scan_enabled",
-        "xff_forward_enabled",
-        "surrogate_ip",
-        "idle_time_in_minutes",
-        "display_time_unit",
-        "surrogate_ip_enforced_for_known_browsers",
-        "surrogate_refresh_time_in_minutes",
-        "surrogate_refresh_time_unit",
-        "ofw_enabled",
-        "ips_control",
-        "aup_enabled",
-        "caution_enabled",
-        "aup_block_internet_until_accepted",
-        "aup_force_ssl_inspection",
-        "aup_timeout_in_days",
-        "profile",
-        "description",
+        "id", "name", "parent_id", "up_bandwidth", "dn_bandwidth",
+        "country", "city", "tz", "ip_addresses", "ports",
+        "auth_required", "ssl_scan_enabled", "zapp_ssl_scan_enabled",
+        "xff_forward_enabled", "surrogate_ip", "idle_time_in_minutes",
+        "display_time_unit", "surrogate_ip_enforced_for_known_browsers",
+        "surrogate_refresh_time_in_minutes", "surrogate_refresh_time_unit",
+        "ofw_enabled", "ips_control", "aup_enabled", "caution_enabled",
+        "aup_block_internet_until_accepted", "aup_force_ssl_inspection",
+        "aup_timeout_in_days", "profile", "description", "geo_override",
+        "latitude", "longitude", "other_sub_location", "other6_sub_location",
+        "ipv6_enabled", "ipv6_dns64_prefix", "iot_discovery_enabled",
+        "iot_enforce_policy_set",
     ]
-    for param_name in params:
-        location_mgmt[param_name] = module.params.get(param_name, None)
+    for p in params:
+        location_mgmt[p] = module.params.get(p)
 
+    # Normalize the VPN creds from user input
     location_mgmt["vpn_credentials"] = normalize_vpn_credentials(
         module.params.get("vpn_credentials", [])
     )
 
     validate_location_mgmt(location_mgmt)
 
-    # Set default values for attributes that have system defaults
+    # Set defaults if not provided
     if location_mgmt["parent_id"] is None:
-        location_mgmt["parent_id"] = 0  # Assuming 0 is the system default
+        location_mgmt["parent_id"] = 0
     if location_mgmt["aup_enabled"] is None:
-        location_mgmt["aup_enabled"] = False  # Default behavior if not specified
+        location_mgmt["aup_enabled"] = False
     if location_mgmt["aup_timeout_in_days"] is None:
-        location_mgmt["aup_timeout_in_days"] = 0  # Default value
+        location_mgmt["aup_timeout_in_days"] = 0
     if location_mgmt["profile"] is None:
-        location_mgmt["profile"] = "CORPORATE"  # Default or retain current state
+        location_mgmt["profile"] = "CORPORATE"
 
-    location_name = location_mgmt.get("name", None)
-    location_id = location_mgmt.get("id", None)
-
+    # Look up existing resource if we have either an id or a name
     existing_location_mgmt = None
-    if location_id is not None:
-        existing_location_mgmt = client.locations.get_location(location_id=location_id)
-    elif location_name is not None:
-        existing_location_mgmt = client.locations.get_location(
-            location_name=location_name
-        )
+    if location_mgmt["id"]:
+        existing_location_mgmt = client.locations.get_location(location_id=location_mgmt["id"])
+    elif location_mgmt["name"]:
+        existing_location_mgmt = client.locations.get_location(location_name=location_mgmt["name"])
 
-    # Normalize and compare existing and desired data
+    # Normalize server's current location data and local "desired" data
     desired_location = normalize_location(location_mgmt)
-    current_location = (
-        normalize_location(existing_location_mgmt) if existing_location_mgmt else {}
-    )
+    current_location = normalize_location(existing_location_mgmt) if existing_location_mgmt else {}
 
+    # Compare differences
     differences_detected = False
     differences_summary = {}
-    for key, desired_value in desired_location.items():
-        current_value = current_location.get(key)
-        if desired_value != current_value:
-            differences_detected = True
-            differences_summary[key] = {
-                "current": current_value,
-                "desired": desired_value,
-            }
 
+    for key in desired_location:
+        desired_value = desired_location[key]
+        current_value = current_location.get(key)
+
+        # If it's vpn_credentials, compare the normalized lists only
         if key == "vpn_credentials":
             normalized_current_creds = normalize_vpn_credentials(current_value)
             normalized_desired_creds = normalize_vpn_credentials(desired_value)
 
             if normalized_current_creds != normalized_desired_creds:
                 differences_detected = True
-                # module.warn(
-                #     f"Difference detected in {key}. Current: {normalized_current_creds}, Desired: {normalized_desired_creds}"
-                # )
-        elif desired_value is None:
-            continue
-        elif desired_value != current_value:
-            differences_detected = True
-            # module.warn(
-            #     f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
-            # )
+                differences_summary[key] = {
+                    "current": normalized_current_creds,
+                    "desired": normalized_desired_creds,
+                }
+                module.warn(
+                    f"Difference detected in {key}. "
+                    f"Current: {normalized_current_creds}, "
+                    f"Desired: {normalized_desired_creds}"
+                )
+        else:
+            # If desired is None, skip. (Means we didn't want to set that field at all)
+            if desired_value is None:
+                continue
 
+            if desired_value != current_value:
+                differences_detected = True
+                differences_summary[key] = {
+                    "current": current_value,
+                    "desired": desired_value,
+                }
+                module.warn(
+                    f"Difference detected in {key}. "
+                    f"Current: {current_value}, "
+                    f"Desired: {desired_value}"
+                )
+
+    # Honor check_mode
     if module.check_mode:
-        # Provide a preview of changes
         if differences_detected:
             module.exit_json(changed=True, differences=differences_summary)
-        module.exit_json(changed=False)
+        else:
+            module.exit_json(changed=False)
 
+    # Proceed with create/update/delete
     if state == "present":
         if existing_location_mgmt:
-            location_id = existing_location_mgmt.get(
-                "id"
-            )  # Ensure we have the location ID
-            if location_id and differences_detected:
-                # Include location_id in the update call
+            # We already have a location; update if needed
+            location_id = existing_location_mgmt["id"]
+            if differences_detected:
+                # Filter out any None values
                 update_location = deleteNone(desired_location)
-                # module.warn("Payload Update for SDK: {}".format(update_location))
+                module.warn(f"Payload Update for SDK: {update_location}")
                 try:
                     updated_location = client.locations.update_location(
                         location_id, **update_location
                     ).to_dict()
                     module.exit_json(changed=True, data=updated_location)
                 except Exception as e:
-                    module.fail_json(msg="Failed to update location: {}".format(str(e)))
+                    module.fail_json(msg=f"Failed to update location: {e}")
             else:
-                module.warn("Creating new location as no existing location found")
-                create_location = deleteNone(desired_location)
-                # module.warn("Payload for SDK: {}".format(create_location))
+                # Nothing to do
+                module.exit_json(changed=False, data=existing_location_mgmt)
+        else:
+            # Create new location
+            create_location = deleteNone(desired_location)
+            module.warn(f"Payload for SDK: {create_location}")
+            try:
                 new_location = client.locations.add_location(**create_location)
                 module.exit_json(changed=True, data=new_location)
-
+            except Exception as e:
+                module.fail_json(msg=f"Failed to create location: {e}")
+    else:  # state == "absent"
+        if existing_location_mgmt:
+            try:
+                client.locations.delete_location(existing_location_mgmt["id"])
+                module.exit_json(changed=True, message="Location deleted successfully.")
+            except Exception as e:
+                module.fail_json(msg=f"Failed to delete location: {e}")
         else:
-            module.warn("Creating new location as no existing location found")
-            create_location = deleteNone(desired_location)
-            # module.warn("Payload for SDK: {}".format(create_location))
-            new_location = client.locations.add_location(**create_location)
-            module.exit_json(changed=True, data=new_location)
-    elif state == "absent" and existing_location_mgmt:
-        try:
-            client.locations.delete_location(location_id=existing_location_mgmt["id"])
-            module.exit_json(changed=True, message="Location deleted successfully.")
-        except Exception as e:
-            module.fail_json(msg="Failed to delete location: {}".format(str(e)))
-    else:
-        module.exit_json(changed=False, message="No applicable changes to apply.")
+            module.exit_json(changed=False, message="Location not found, nothing to delete.")
 
 
 def main():
@@ -515,10 +568,13 @@ def main():
         id=dict(type="int", required=False),
         name=dict(type="str", required=True),
         parent_id=dict(type="int", required=False),
-        up_bandwidth=dict(type="int", required=False),
-        dn_bandwidth=dict(type="int", required=False),
+        description=dict(type="str", required=False),
         country=dict(type="str", required=False),
+        city=dict(type="str", required=False),
         tz=dict(type="str", required=False),
+        geo_override=dict(type="bool", required=False),
+        latitude=dict(type="float", required=False),
+        longitude=dict(type="float", required=False),
         ip_addresses=dict(type="list", elements="str", required=False),
         ports=dict(type="list", elements="int", required=False),
         auth_required=dict(type="bool", required=False),
@@ -527,32 +583,30 @@ def main():
         xff_forward_enabled=dict(type="bool", required=False),
         surrogate_ip=dict(type="bool", required=False),
         idle_time_in_minutes=dict(type="int", required=False),
+        display_time_unit=dict(type="str", required=False, choices=["MINUTE", "HOUR", "DAY"]),
         surrogate_ip_enforced_for_known_browsers=dict(type="bool", required=False),
         surrogate_refresh_time_in_minutes=dict(type="int", required=False),
-        display_time_unit=dict(
-            type="str",
-            required=False,
-            choices=["MINUTE", "HOUR", "DAY"],
-        ),
-        surrogate_refresh_time_unit=dict(
-            type="str",
-            required=False,
-            choices=["MINUTE", "HOUR", "DAY"],
-        ),
+        surrogate_refresh_time_unit=dict(type="str", required=False, choices=["MINUTE", "HOUR", "DAY"]),
+        other_sub_location=dict(type="bool", required=False),
+        other6_sub_location=dict(type="bool", required=False),
         ofw_enabled=dict(type="bool", required=False),
         ips_control=dict(type="bool", required=False),
         aup_enabled=dict(type="bool", required=False),
-        caution_enabled=dict(type="bool", required=False),
         aup_block_internet_until_accepted=dict(type="bool", required=False),
         aup_force_ssl_inspection=dict(type="bool", required=False),
-        iot_discovery_enabled=dict(type="bool", required=False),
         aup_timeout_in_days=dict(type="int", required=False),
+        caution_enabled=dict(type="bool", required=False),
+        ipv6_enabled=dict(type="bool", required=False),
+        ipv6_dns64_prefix=dict(type="bool", required=False),
+        iot_discovery_enabled=dict(type="bool", required=False),
+        iot_enforce_policy_set=dict(type="bool", required=False),
+        up_bandwidth=dict(type="int", required=False),
+        dn_bandwidth=dict(type="int", required=False),
         profile=dict(
             type="str",
             default="NONE",
-            choices=["NONE", "CORPORATE", "SERVER", "GUESTWIFI", "IOT"],
+            choices=["NONE", "CORPORATE", "SERVER", "GUESTWIFI", "IOT"]
         ),
-        description=dict(type="str", required=False),
         vpn_credentials=dict(
             type="list",
             elements="dict",
