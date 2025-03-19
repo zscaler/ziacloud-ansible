@@ -1,5 +1,16 @@
 # Zscaler Internet Access (ZIA) Ansible Collection Changelog
 
+## v1.3.4 (March, 19 2025)
+
+### Notes
+
+- Python Versions: **v3.9, v3.10, v3.11**
+
+### New Feature
+
+- [PR #60](https://github.com/zscaler/ziacloud-ansible/pull/60) Removed `ansible.cfg` from Ansible Automation Hub and Galaxy GitHub Actions workflow
+- [PR #60](https://github.com/zscaler/ziacloud-ansible/pull/60) Fixed Location management drift issues
+
 ## v1.3.3 (February, 5 2025)
 
 ### Notes
@@ -8,7 +19,7 @@
 
 ### New Feature
 
-- [PR #56](https://github.com/zscaler/ziacloud-ansible/pull/56) Removed `ansible.cfg` from Ansible Automation Hub and Galaxy GitHub Actions workflow
+- [PR #60](https://github.com/zscaler/ziacloud-ansible/pull/60) Removed `ansible.cfg` from Ansible Automation Hub and Galaxy GitHub Actions workflow
 
 ## v1.3.2 (September, 12 2024)
 
