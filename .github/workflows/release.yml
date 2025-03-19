@@ -77,12 +77,14 @@ jobs:
 
       - name: Install Poetry
         uses: Gr1N/setup-poetry@v9
+        with:
+          poetry-version: "2.1.1"
 
       - name: Install dependencies
         run: poetry install
 
-      # - name: Do black code format
-      #   run: poetry run make format
+      - name: Do black code format
+        run: poetry run make format
 
       - name: Do black code check-format
         run: poetry run make check-format
