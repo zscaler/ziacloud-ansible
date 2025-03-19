@@ -322,6 +322,13 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-city"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-city"><strong>city</strong></p>
+<a class="ansibleOptionLink" href="#parameter-city" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Geolocation of the IoT device.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-cloud"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-cloud"><strong>cloud</strong></p>
 <a class="ansibleOptionLink" href="#parameter-cloud" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -339,21 +346,21 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-country"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-country"><strong>country</strong></p>
 <a class="ansibleOptionLink" href="#parameter-country" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Country Name</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-description"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-description"><strong>description</strong></p>
 <a class="ansibleOptionLink" href="#parameter-description" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Additional notes or information regarding the location or sub-location. The description cannot exceed 1024 characters.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-display_time_unit"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-display-time-unit"><strong>display_time_unit</strong></p>
 <a class="ansibleOptionLink" href="#parameter-display_time_unit" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -366,11 +373,23 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-dn_bandwidth"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-dn-bandwidth"><strong>dn_bandwidth</strong></p>
 <a class="ansibleOptionLink" href="#parameter-dn_bandwidth" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Download bandwidth in kbps. The value 0 implies no Bandwidth Control enforcement.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-geo_override"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-geo-override"><strong>geo_override</strong></p>
+<a class="ansibleOptionLink" href="#parameter-geo_override" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>If this field is set to true, the latitude and longitude values must be provided. By default, it’s set to false.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
@@ -400,6 +419,18 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-iot_enforce_policy_set"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-iot-enforce-policy-set"><strong>iot_enforce_policy_set</strong></p>
+<a class="ansibleOptionLink" href="#parameter-iot_enforce_policy_set" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Enforces IOT Policy set</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-ip_addresses"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-ip-addresses"><strong>ip_addresses</strong></p>
 <a class="ansibleOptionLink" href="#parameter-ip_addresses" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
 </div></td>
@@ -409,7 +440,7 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 <p>Each entry is either a single IP address, CIDR (e.g., 10.10.33.0/24), or range (e.g., 10.10.33.1-10.10.33.10)).</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-ips_control"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-ips-control"><strong>ips_control</strong></p>
 <a class="ansibleOptionLink" href="#parameter-ips_control" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -421,14 +452,54 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 </ul>
 </div></td>
 </tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-ipv6_dns64_prefix"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-ipv6-dns64-prefix"><strong>ipv6_dns64_prefix</strong></p>
+<a class="ansibleOptionLink" href="#parameter-ipv6_dns64_prefix" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Name-ID pair of the NAT64 prefix configured as the DNS64 prefix for the location</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-ipv6_enabled"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-ipv6-enabled"><strong>ipv6_enabled</strong></p>
+<a class="ansibleOptionLink" href="#parameter-ipv6_enabled" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>If set to true, IPv6 is enabled for the location and IPv6 traffic from the location can be forwarded</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-latitude"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-latitude"><strong>latitude</strong></p>
+<a class="ansibleOptionLink" href="#parameter-latitude" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">float</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Required only if the geoOverride attribute is set.</p>
+<p>Latitude with 7 digit precision after decimal point, ranges between -90 and 90 degrees.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-longitude"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-longitude"><strong>longitude</strong></p>
+<a class="ansibleOptionLink" href="#parameter-longitude" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">float</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Required only if the geoOverride attribute is set.</p>
+<p>Longitude with 7 digit precision after decimal point, ranges between -180 and 180 degrees.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-name"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-name"><strong>name</strong></p>
 <a class="ansibleOptionLink" href="#parameter-name" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span> / <span class="ansible-option-required">required</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Location Name</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-ofw_enabled"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-ofw-enabled"><strong>ofw_enabled</strong></p>
 <a class="ansibleOptionLink" href="#parameter-ofw_enabled" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -440,7 +511,31 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 </ul>
 </div></td>
 </tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-other6_sub_location"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-other6-sub-location"><strong>other6_sub_location</strong></p>
+<a class="ansibleOptionLink" href="#parameter-other6_sub_location" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>If set to true, indicates that this is a default sub-location created by the Zscaler service to accommodate IPv6 addresses</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-other_sub_location"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-other-sub-location"><strong>other_sub_location</strong></p>
+<a class="ansibleOptionLink" href="#parameter-other_sub_location" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>If set to true, indicates that this is a default sub-location created by the Zscaler service to accommodate IPv4 addresses</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-parent_id"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-parent-id"><strong>parent_id</strong></p>
 <a class="ansibleOptionLink" href="#parameter-parent_id" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
@@ -449,21 +544,21 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 <p>Otherwise it is a sub-location whose parent has this ID. x-applicableTo: SUB</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-password"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-password"><strong>password</strong></p>
 <a class="ansibleOptionLink" href="#parameter-password" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>A string that contains the password for the API admin.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-ports"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-ports"><strong>ports</strong></p>
 <a class="ansibleOptionLink" href="#parameter-ports" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=integer</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>IP ports that are associated with the location.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-profile"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-profile"><strong>profile</strong></p>
 <a class="ansibleOptionLink" href="#parameter-profile" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -484,21 +579,21 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-provider"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-provider"><strong>provider</strong></p>
 <a class="ansibleOptionLink" href="#parameter-provider" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>A dict object containing connection details. This is optional; credentials can also be provided directly at the top level.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-provider/api_key"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-provider-api-key"><strong>api_key</strong></p>
 <a class="ansibleOptionLink" href="#parameter-provider/api_key" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>A string that contains the obfuscated API key.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-provider/cloud"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-provider-cloud"><strong>cloud</strong></p>
 <a class="ansibleOptionLink" href="#parameter-provider/cloud" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -516,35 +611,35 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-provider/password"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-provider-password"><strong>password</strong></p>
 <a class="ansibleOptionLink" href="#parameter-provider/password" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>A string that contains the password for the API admin.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-provider/sandbox_token"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-provider-sandbox-token"><strong>sandbox_token</strong></p>
 <a class="ansibleOptionLink" href="#parameter-provider/sandbox_token" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>A string that contains the Sandbox API Key.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-provider/username"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-provider-username"><strong>username</strong></p>
 <a class="ansibleOptionLink" href="#parameter-provider/username" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>A string that contains the email ID of the API admin.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-sandbox_token"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-sandbox-token"><strong>sandbox_token</strong></p>
 <a class="ansibleOptionLink" href="#parameter-sandbox_token" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>A string that contains the Sandbox API Key.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-ssl_scan_enabled"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-ssl-scan-enabled"><strong>ssl_scan_enabled</strong></p>
 <a class="ansibleOptionLink" href="#parameter-ssl_scan_enabled" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -560,7 +655,7 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-state"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-state"><strong>state</strong></p>
 <a class="ansibleOptionLink" href="#parameter-state" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -572,7 +667,7 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-surrogate_ip"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-surrogate-ip"><strong>surrogate_ip</strong></p>
 <a class="ansibleOptionLink" href="#parameter-surrogate_ip" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -585,7 +680,7 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-surrogate_ip_enforced_for_known_browsers"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-surrogate-ip-enforced-for-known-browsers"><strong>surrogate_ip_enforced_for_known_browsers</strong></p>
 <a class="ansibleOptionLink" href="#parameter-surrogate_ip_enforced_for_known_browsers" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -598,7 +693,7 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-surrogate_refresh_time_in_minutes"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-surrogate-refresh-time-in-minutes"><strong>surrogate_refresh_time_in_minutes</strong></p>
 <a class="ansibleOptionLink" href="#parameter-surrogate_refresh_time_in_minutes" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
@@ -606,7 +701,7 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 <p>The surrogate refresh time (in minutes) to re-validate the IP surrogates.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-surrogate_refresh_time_unit"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-surrogate-refresh-time-unit"><strong>surrogate_refresh_time_unit</strong></p>
 <a class="ansibleOptionLink" href="#parameter-surrogate_refresh_time_unit" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -620,49 +715,49 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-tz"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-tz"><strong>tz</strong></p>
 <a class="ansibleOptionLink" href="#parameter-tz" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Timezone of the location. If not specified, it defaults to GMT.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-up_bandwidth"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-up-bandwidth"><strong>up_bandwidth</strong></p>
 <a class="ansibleOptionLink" href="#parameter-up_bandwidth" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Upload bandwidth in kbps. The value 0 implies no Bandwidth Control enforcement.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-username"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-username"><strong>username</strong></p>
 <a class="ansibleOptionLink" href="#parameter-username" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>A string that contains the email ID of the API admin.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-vpn_credentials"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-vpn-credentials"><strong>vpn_credentials</strong></p>
 <a class="ansibleOptionLink" href="#parameter-vpn_credentials" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=dictionary</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>VPN User Credentials that are associated with the location.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-vpn_credentials/fqdn"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-vpn-credentials-fqdn"><strong>fqdn</strong></p>
 <a class="ansibleOptionLink" href="#parameter-vpn_credentials/fqdn" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Fully Qualified Domain Name. Applicable only to UFQDN (or HOSTED_MOBILE_USERS) auth type.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-vpn_credentials/id"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-vpn-credentials-id"><strong>id</strong></p>
 <a class="ansibleOptionLink" href="#parameter-vpn_credentials/id" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>VPN credential id</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-vpn_credentials/ip_address"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-vpn-credentials-ip-address"><strong>ip_address</strong></p>
 <a class="ansibleOptionLink" href="#parameter-vpn_credentials/ip_address" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -671,7 +766,7 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 <p>Note: If you want Zscaler to provision static IP addresses for your organization, contact Zscaler Support.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-vpn_credentials/type"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-vpn-credentials-type"><strong>type</strong></p>
 <a class="ansibleOptionLink" href="#parameter-vpn_credentials/type" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -684,7 +779,7 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-xff_forward_enabled"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-xff-forward-enabled"><strong>xff_forward_enabled</strong></p>
 <a class="ansibleOptionLink" href="#parameter-xff_forward_enabled" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -698,7 +793,7 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-zapp_ssl_scan_enabled"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-location-management-module-parameter-zapp-ssl-scan-enabled"><strong>zapp_ssl_scan_enabled</strong></p>
 <a class="ansibleOptionLink" href="#parameter-zapp_ssl_scan_enabled" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>

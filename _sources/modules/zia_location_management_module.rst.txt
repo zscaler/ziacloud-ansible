@@ -377,6 +377,40 @@ Parameters
   * - .. raw:: html
 
         <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-city"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_location_management_module__parameter-city:
+
+      .. rst-class:: ansible-option-title
+
+      **city**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-city" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Geolocation of the IoT device.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
         <div class="ansibleOptionAnchor" id="parameter-cloud"></div>
 
       .. _ansible_collections.zscaler.ziacloud.zia_location_management_module__parameter-cloud:
@@ -570,6 +604,48 @@ Parameters
   * - .. raw:: html
 
         <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-geo_override"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_location_management_module__parameter-geo_override:
+
+      .. rst-class:: ansible-option-title
+
+      **geo_override**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-geo_override" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      If this field is set to true, the latitude and longitude values must be provided. By default, it's set to false.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
         <div class="ansibleOptionAnchor" id="parameter-id"></div>
 
       .. _ansible_collections.zscaler.ziacloud.zia_location_management_module__parameter-id:
@@ -680,6 +756,48 @@ Parameters
   * - .. raw:: html
 
         <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-iot_enforce_policy_set"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_location_management_module__parameter-iot_enforce_policy_set:
+
+      .. rst-class:: ansible-option-title
+
+      **iot_enforce_policy_set**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-iot_enforce_policy_set" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Enforces IOT Policy set
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
         <div class="ansibleOptionAnchor" id="parameter-ip_addresses"></div>
 
       .. _ansible_collections.zscaler.ziacloud.zia_location_management_module__parameter-ip_addresses:
@@ -762,6 +880,162 @@ Parameters
   * - .. raw:: html
 
         <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-ipv6_dns64_prefix"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_location_management_module__parameter-ipv6_dns64_prefix:
+
+      .. rst-class:: ansible-option-title
+
+      **ipv6_dns64_prefix**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-ipv6_dns64_prefix" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Name-ID pair of the NAT64 prefix configured as the DNS64 prefix for the location
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-ipv6_enabled"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_location_management_module__parameter-ipv6_enabled:
+
+      .. rst-class:: ansible-option-title
+
+      **ipv6_enabled**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-ipv6_enabled" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      If set to true, IPv6 is enabled for the location and IPv6 traffic from the location can be forwarded
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-latitude"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_location_management_module__parameter-latitude:
+
+      .. rst-class:: ansible-option-title
+
+      **latitude**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-latitude" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`float`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Required only if the geoOverride attribute is set.
+
+      Latitude with 7 digit precision after decimal point, ranges between -90 and 90 degrees.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-longitude"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_location_management_module__parameter-longitude:
+
+      .. rst-class:: ansible-option-title
+
+      **longitude**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-longitude" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`float`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Required only if the geoOverride attribute is set.
+
+      Longitude with 7 digit precision after decimal point, ranges between -180 and 180 degrees.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
         <div class="ansibleOptionAnchor" id="parameter-name"></div>
 
       .. _ansible_collections.zscaler.ziacloud.zia_location_management_module__parameter-name:
@@ -821,6 +1095,90 @@ Parameters
         <div class="ansible-option-cell">
 
       Enable Firewall. When set to true, Firewall is enabled for the location.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-other6_sub_location"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_location_management_module__parameter-other6_sub_location:
+
+      .. rst-class:: ansible-option-title
+
+      **other6_sub_location**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-other6_sub_location" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      If set to true, indicates that this is a default sub-location created by the Zscaler service to accommodate IPv6 addresses
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-other_sub_location"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_location_management_module__parameter-other_sub_location:
+
+      .. rst-class:: ansible-option-title
+
+      **other_sub_location**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-other_sub_location" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      If set to true, indicates that this is a default sub-location created by the Zscaler service to accommodate IPv4 addresses
 
 
       .. rst-class:: ansible-option-line
