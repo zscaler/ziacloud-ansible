@@ -431,17 +431,43 @@ def core(module):
     # Build a dict of the "desired" fields from Ansible
     location_mgmt = {}
     params = [
-        "id", "name", "parent_id", "up_bandwidth", "dn_bandwidth",
-        "country", "city", "tz", "ip_addresses", "ports",
-        "auth_required", "ssl_scan_enabled", "zapp_ssl_scan_enabled",
-        "xff_forward_enabled", "surrogate_ip", "idle_time_in_minutes",
-        "display_time_unit", "surrogate_ip_enforced_for_known_browsers",
-        "surrogate_refresh_time_in_minutes", "surrogate_refresh_time_unit",
-        "ofw_enabled", "ips_control", "aup_enabled", "caution_enabled",
-        "aup_block_internet_until_accepted", "aup_force_ssl_inspection",
-        "aup_timeout_in_days", "profile", "description", "geo_override",
-        "latitude", "longitude", "other_sub_location", "other6_sub_location",
-        "ipv6_enabled", "ipv6_dns64_prefix", "iot_discovery_enabled",
+        "id",
+        "name",
+        "parent_id",
+        "up_bandwidth",
+        "dn_bandwidth",
+        "country",
+        "city",
+        "tz",
+        "ip_addresses",
+        "ports",
+        "auth_required",
+        "ssl_scan_enabled",
+        "zapp_ssl_scan_enabled",
+        "xff_forward_enabled",
+        "surrogate_ip",
+        "idle_time_in_minutes",
+        "display_time_unit",
+        "surrogate_ip_enforced_for_known_browsers",
+        "surrogate_refresh_time_in_minutes",
+        "surrogate_refresh_time_unit",
+        "ofw_enabled",
+        "ips_control",
+        "aup_enabled",
+        "caution_enabled",
+        "aup_block_internet_until_accepted",
+        "aup_force_ssl_inspection",
+        "aup_timeout_in_days",
+        "profile",
+        "description",
+        "geo_override",
+        "latitude",
+        "longitude",
+        "other_sub_location",
+        "other6_sub_location",
+        "ipv6_enabled",
+        "ipv6_dns64_prefix",
+        "iot_discovery_enabled",
         "iot_enforce_policy_set",
     ]
     for p in params:
@@ -467,13 +493,19 @@ def core(module):
     # Look up existing resource if we have either an id or a name
     existing_location_mgmt = None
     if location_mgmt["id"]:
-        existing_location_mgmt = client.locations.get_location(location_id=location_mgmt["id"])
+        existing_location_mgmt = client.locations.get_location(
+            location_id=location_mgmt["id"]
+        )
     elif location_mgmt["name"]:
-        existing_location_mgmt = client.locations.get_location(location_name=location_mgmt["name"])
+        existing_location_mgmt = client.locations.get_location(
+            location_name=location_mgmt["name"]
+        )
 
     # Normalize server's current location data and local "desired" data
     desired_location = normalize_location(location_mgmt)
-    current_location = normalize_location(existing_location_mgmt) if existing_location_mgmt else {}
+    current_location = (
+        normalize_location(existing_location_mgmt) if existing_location_mgmt else {}
+    )
 
     # Compare differences
     differences_detected = False
@@ -559,7 +591,9 @@ def core(module):
             except Exception as e:
                 module.fail_json(msg=f"Failed to delete location: {e}")
         else:
-            module.exit_json(changed=False, message="Location not found, nothing to delete.")
+            module.exit_json(
+                changed=False, message="Location not found, nothing to delete."
+            )
 
 
 def main():
@@ -583,10 +617,14 @@ def main():
         xff_forward_enabled=dict(type="bool", required=False),
         surrogate_ip=dict(type="bool", required=False),
         idle_time_in_minutes=dict(type="int", required=False),
-        display_time_unit=dict(type="str", required=False, choices=["MINUTE", "HOUR", "DAY"]),
+        display_time_unit=dict(
+            type="str", required=False, choices=["MINUTE", "HOUR", "DAY"]
+        ),
         surrogate_ip_enforced_for_known_browsers=dict(type="bool", required=False),
         surrogate_refresh_time_in_minutes=dict(type="int", required=False),
-        surrogate_refresh_time_unit=dict(type="str", required=False, choices=["MINUTE", "HOUR", "DAY"]),
+        surrogate_refresh_time_unit=dict(
+            type="str", required=False, choices=["MINUTE", "HOUR", "DAY"]
+        ),
         other_sub_location=dict(type="bool", required=False),
         other6_sub_location=dict(type="bool", required=False),
         ofw_enabled=dict(type="bool", required=False),
@@ -605,7 +643,7 @@ def main():
         profile=dict(
             type="str",
             default="NONE",
-            choices=["NONE", "CORPORATE", "SERVER", "GUESTWIFI", "IOT"]
+            choices=["NONE", "CORPORATE", "SERVER", "GUESTWIFI", "IOT"],
         ),
         vpn_credentials=dict(
             type="list",
