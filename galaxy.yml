@@ -59,3 +59,7 @@ homepage: https://github.com/zscaler/ziacloud-ansible
 
 # The URL to the collection issue tracker
 issues: https://github.com/zscaler/ziacloud-ansible/issues
+
+build_ignore:
+  - local_dev
+  - ansible.cfg
