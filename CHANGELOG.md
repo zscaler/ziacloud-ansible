@@ -1,5 +1,15 @@
 # Zscaler Internet Access (ZIA) Ansible Collection Changelog
 
+## v1.3.5 (March, 20 2025)
+
+### Notes
+
+- Python Versions: **v3.9, v3.10, v3.11**
+
+### New Feature
+
+- [PR #62](https://github.com/zscaler/ziacloud-ansible/pull/62) Added `docs/html` within the `galaxy.yml` file under the `build_ignore` key
+
 ## v1.3.4 (March, 19 2025)
 
 ### Notes
