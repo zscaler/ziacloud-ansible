@@ -74,8 +74,7 @@ EXAMPLES = r"""
 - name: Retrieve Details of Specific GRE Internal Range.
   zscaler.ziacloud.zia_traffic_forwarding_gre_internal_ranges_info:
     provider: '{{ provider }}'
-    start_ip_address: 1.1.1.1
-    end_ip_address:
+    internal_ip_range: '172.17.47.247-172.17.47.240'
 """
 
 RETURN = r"""
@@ -100,43 +99,31 @@ gre_ranges:
 from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    ZIAClientHelper,
-)
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
 
 
 def core(module):
-    # Retrieve parameters
-    internal_ip_range = module.params.get("internal_ip_range", None)
-    static_ip = module.params.get("static_ip", None)
-    start_ip_address = module.params.get("start_ip_address", None)
-    end_ip_address = module.params.get("end_ip_address", None)
-    limit = module.params.get("limit", 10)  # Set default limit to 10 if not provided
+    internal_ip_range = module.params.get("internal_ip_range")
+    static_ip = module.params.get("static_ip")
+    limit = module.params.get("limit")
 
     client = ZIAClientHelper(module)
 
-    # Create a dictionary of query parameters
     query_params = {}
+
     if internal_ip_range:
-        query_params["internalIpRange"] = internal_ip_range
+        query_params["internal_ip_range"] = internal_ip_range
     if static_ip:
-        query_params["staticIp"] = static_ip
-    if start_ip_address:
-        query_params["startIpAddress"] = start_ip_address
-    if end_ip_address:
-        query_params["endIpAddress"] = end_ip_address
-    query_params["limit"] = limit
+        query_params["static_ip"] = static_ip
+    if limit is not None:
+        query_params["limit"] = limit
 
-    # Debugging: Print the query parameters to check if they are set correctly
-    # module.warn("Query Parameters: {}".format(query_params))
+    result, _, error = client.gre_tunnel.list_gre_ranges(query_params=query_params if query_params else None)
+    if error:
+        module.fail_json(msg=f"Error retrieving GRE ranges: {to_native(error)}")
 
-    # Call the SDK method with the query parameters
-    gre_ranges = client.traffic.list_gre_ranges(**query_params).to_list()
+    gre_ranges = result if result else []
 
-    # Debugging: Print the number of ranges returned
-    module.warn("Number of GRE Ranges Returned: {}".format(len(gre_ranges)))
-
-    # Return the response
     module.exit_json(changed=False, gre_ranges=gre_ranges)
 
 
@@ -145,10 +132,9 @@ def main():
     argument_spec.update(
         internal_ip_range=dict(type="str", required=False),
         static_ip=dict(type="str", required=False),
-        start_ip_address=dict(type="str", required=False),
-        end_ip_address=dict(type="str", required=False),
         limit=dict(type="int", required=False, default=10),
     )
+
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
 
     try:

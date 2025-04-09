@@ -196,10 +196,6 @@ options:
     type: list
     elements: int
     required: false
-  ocr_enabled:
-    description: "Enables or disables image file scanning."
-    required: false
-    type: bool
   excluded_groups:
     description: "The groups that are excluded from the DLP policy rule."
     type: list
@@ -326,204 +322,184 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 
 def normalize_dlp_rule(rule):
-    """
-    Normalize rule data by setting computed values.
-    """
-    normalized = rule.copy()
+    """Normalize rule data by removing computed values."""
+    if not rule:
+        return {}
 
+    normalized = rule.copy()
     computed_values = []
     for attr in computed_values:
         normalized.pop(attr, None)
-
     return normalized
+
+
+def get_external_dlp_engine_id(client):
+    """Get the ID of the EXTERNAL DLP engine using list_dlp_engines_lite."""
+    # Search specifically for EXTERNAL engine
+    engines, _, error = client.dlp_engine.list_dlp_engines_lite(
+        query_params={"search": "EXTERNAL"}
+    )
+    if error:
+        raise Exception(f"Failed to search DLP engines: {to_native(error)}")
+
+    if not engines:
+        # Fallback to full list if search didn't work
+        engines, _, error = client.dlp_engine.list_dlp_engines_lite()
+        if error:
+            raise Exception(f"Failed to list DLP engines: {to_native(error)}")
+
+    # Find EXTERNAL engine by predefined_engine_name
+    for engine in engines:
+        if hasattr(engine, 'predefined_engine_name') and \
+           str(engine.predefined_engine_name).upper() == "EXTERNAL":
+            return engine.id
+
+    raise Exception(
+        "EXTERNAL DLP engine not found. Please ensure your account has access to the EXTERNAL DLP engine"
+    )
 
 
 def core(module):
     state = module.params.get("state", None)
     client = ZIAClientHelper(module)
-    rule = dict()
+
     params = [
-        "id",
-        "name",
-        "description",
-        "order",
-        "protocols",
-        "rank",
-        "locations",
-        "location_groups",
-        "groups",
-        "departments",
-        "users",
-        "url_categories",
-        "dlp_engines",
-        "file_types",
-        "cloud_applications",
-        "min_size",
-        "action",
-        "enabled",
-        "time_windows",
-        "auditor",
-        "external_auditor_email",
-        "notification_template",
-        "match_only",
-        "icap_server",
-        "without_content_inspection",
-        "labels",
-        "ocr_enabled",
-        "excluded_groups",
-        "excluded_departments",
-        "excluded_users",
-        "zscaler_incident_receiver",
-        "dlp_download_scan_enabled",
-        "zcc_notifications_enabled",
-        "user_risk_score_levels",
-        "severity",
-        "parent_rule",
-        "sub_rules",
-        "workload_groups",
-        "include_domain_profiles",
-        "exclude_domain_profiles",
+        "id", "name", "description", "order", "protocols", "rank", "locations",
+        "location_groups", "groups", "departments", "users", "url_categories",
+        "dlp_engines", "file_types", "cloud_applications", "min_size", "action",
+        "enabled", "time_windows", "auditor", "external_auditor_email",
+        "notification_template", "match_only", "icap_server",
+        "without_content_inspection", "labels", "excluded_groups",
+        "excluded_departments", "excluded_users", "zscaler_incident_receiver",
+        "dlp_download_scan_enabled", "zcc_notifications_enabled",
+        "user_risk_score_levels", "severity", "parent_rule",
+        "workload_groups", "include_domain_profiles", "exclude_domain_profiles"
+        # "sub_rules"
     ]
-    for param_name in params:
-        rule[param_name] = module.params.get(param_name, None)
 
-    # Validation logic for file_types
-    ocr_enabled = rule.get("ocr_enabled", False)
+    rule = {param: module.params.get(param) for param in params}
+
+    # Initialize file_types as empty list if None
+    rule["file_types"] = rule.get("file_types") or []
+
+    # Handle without_content_inspection logic
     without_content_inspection = rule.get("without_content_inspection", False)
-    file_types = rule.get("file_types") or []  # Defaults to an empty list if None
+    if without_content_inspection:
+        try:
+            # Automatically set dlp_engines to EXTERNAL (requirements 1b and 2c)
+            rule["dlp_engines"] = [get_external_dlp_engine_id(client)]
 
-    valid_types_for_ocr = ["BITMAP", "JPEG", "PNG", "TIFF"]
-
-    # Check for OCR enabled and without content inspection conditions
-    if ocr_enabled and not without_content_inspection:
-        if not all(file_type in valid_types_for_ocr for file_type in file_types):
-            # Invalid condition, fail with detailed error message
+            # If user hasn't explicitly set file_types, set to FTCATEGORY_ALL_OUTBOUND (requirements 1a and 2b)
+            if not module.params.get("file_types"):
+                rule["file_types"] = ["FTCATEGORY_ALL_OUTBOUND"]
+        except Exception as e:
             module.fail_json(
-                msg="Supported file types with OCR enabled are: "
-                + ", ".join(valid_types_for_ocr)
+                msg=f"Error configuring for without_content_inspection: {to_native(e)}",
+                exception=format_exc()
             )
+    # When without_content_inspection is false, both fields are optional (requirement 3)
+    # No validation needed here as per requirements
 
-    # Check for ALL_OUTBOUND file type and external DLP engine condition
-    if "ALL_OUTBOUND" in file_types:
-        if rule.get("dlp_engines") and not without_content_inspection:
-            # Valid condition, continue processing
-            pass
-        else:
-            module.fail_json(
-                msg="ALL_OUTBOUND file type is only valid with an external DLP engine and without content inspection disabled."
-            )
-
-    # Ensure file_types is a list of strings
-    if rule.get("file_types"):
-        rule["file_types"] = list(rule["file_types"])
-
-    rule_id = rule.get("id", None)
-    rule_name = rule.get("name", None)
+    rule_id = rule.get("id")
+    rule_name = rule.get("name")
 
     existing_rule = None
     if rule_id is not None:
-        ruleBox = client.web_dlp.get_rule(rule_id=rule_id)
-        if ruleBox is not None:
-            existing_rule = ruleBox.to_dict()
-    elif rule_name is not None:
-        rules = client.web_dlp.list_rules().to_list()
-        for rule_ in rules:
-            if rule_.get("name") == rule_name:
-                existing_rule = rule_
+        result, _, error = client.dlp_web_rules.get_rule(rule_id=rule_id)
+        if error:
+            module.fail_json(msg=f"Error fetching rule with id {rule_id}: {to_native(error)}")
+        if result:
+            existing_rule = result.as_dict()
+    else:
+        result, _, error = client.dlp_web_rules.list_rules()
+        if error:
+            module.fail_json(msg=f"Error listing rules: {to_native(error)}")
+        if result:
+            for rule_ in result:
+                if rule_.name == rule_name:
+                    existing_rule = rule_.as_dict()
+                    break
 
-    # Normalize and compare existing and desired data
+    # Normalize and compare rules
     desired_rule = normalize_dlp_rule(rule)
     current_rule = normalize_dlp_rule(existing_rule) if existing_rule else {}
 
-    def preprocess_rules(rule, params):
-        """
-        Preprocess specific attributes in the rule based on their type and structure.
-        :param rule: Dict containing the rule data.
-        :param params: List of attribute names to be processed.
-        :return: Preprocessed rule.
-        """
+    def preprocess_rule(rule_dict, params):
+        """Preprocess rule attributes for comparison."""
+        processed = rule_dict.copy()
         for attr in params:
-            if attr in rule:
-                value = rule[attr]
+            if attr in processed:
+                value = processed[attr]
 
                 # Handle list attributes
                 if isinstance(value, list):
-                    # Extract IDs if list contains dictionaries with 'id'
                     if all(isinstance(item, dict) and "id" in item for item in value):
-                        rule[attr] = [item["id"] for item in value]
+                        processed[attr] = [item["id"] for item in value]
                     else:
-                        # Sort lists for consistent order
-                        rule[attr] = sorted(value)
+                        processed[attr] = sorted(value)
 
-                # Handle dictionary attributes, specifically icap_server
+                # Handle icap_server dictionary
                 elif isinstance(value, dict) and attr == "icap_server":
-                    # Extract ID if present, else set to empty dictionary
-                    rule[attr] = value.get("id", {})
+                    processed[attr] = value.get("id", {})
 
-                # Handle attributes that should default to a certain value if not provided
-                elif attr in [
-                    "min_size",
-                    "match_only",
-                    "dlp_download_scan_enabled",
-                    "zcc_notifications_enabled",
-                    "zscaler_incident_receiver",
-                ]:
+                # Set defaults for certain attributes
+                elif attr == "min_size" and value is None:
+                    processed[attr] = 0
+                elif attr in ["match_only", "dlp_download_scan_enabled",
+                            "zcc_notifications_enabled", "zscaler_incident_receiver"]:
                     if value is None:
-                        # Set to default value if not provided
-                        if attr == "min_size":
-                            rule[attr] = 0
-                        elif attr in [
-                            "match_only",
-                            "dlp_download_scan_enabled",
-                            "zcc_notifications_enabled",
-                            "zscaler_incident_receiver",
-                        ]:
-                            rule[attr] = False
+                        processed[attr] = False
 
-        return rule
+        return processed
 
-    existing_rule_preprocessed = preprocess_rules(current_rule, params)
-    desired_rule_preprocessed = preprocess_rules(desired_rule, params)
+    desired_processed = preprocess_rule(desired_rule, params)
+    current_processed = preprocess_rule(current_rule, params)
 
-    # Then proceed with your comparison logic
+    # List of attributes where empty list and None should be treated as equivalent
+    list_attributes = [
+        "locations", "location_groups", "groups", "departments", "users",
+        "url_categories", "dlp_engines", "file_types", "cloud_applications",
+        "time_windows", "labels", "excluded_groups", "excluded_departments",
+        "excluded_users", "workload_groups", "include_domain_profiles",
+        "exclude_domain_profiles",
+        # "sub_rules"
+    ]
+
     differences_detected = False
     for key in params:
-        desired_value = desired_rule_preprocessed.get(key)
-        current_value = existing_rule_preprocessed.get(key)
+        desired_value = desired_processed.get(key)
+        current_value = current_processed.get(key)
 
-        # Handling for list attributes where None should be treated as an empty list
-        if isinstance(current_value, list) and desired_value is None:
-            desired_value = []
-
-        # Skip comparison for 'id' if it's not in the desired rule but present in the existing rule
+        # Skip ID comparison if not in desired rule
         if key == "id" and desired_value is None and current_value is not None:
             continue
 
-        # Convert 'state' in current_rule to boolean 'enabled'
+        # Convert state to enabled boolean
         if key == "enabled" and "state" in current_rule:
             current_value = current_rule["state"] == "ENABLED"
 
-        # Handling None values for all attributes
-        if desired_value is None and key != "enabled":
-            # Explicitly setting to empty list or empty value based on type
-            rule[key] = [] if isinstance(current_value, list) else None
+        # Handle list attributes - treat None and [] as equivalent
+        if key in list_attributes:
+            if desired_value in (None, []) and current_value in (None, []):
+                continue
+            if desired_value is None:
+                desired_value = []
+            if current_value is None:
+                current_value = []
 
-        # Special handling for lists of IDs like locations and others
+        # Sort lists of IDs for comparison
         if isinstance(desired_value, list) and isinstance(current_value, list):
-            if all(isinstance(x, int) for x in desired_value) and all(
-                isinstance(x, int) for x in current_value
-            ):
+            if all(isinstance(x, int) for x in desired_value) and all(isinstance(x, int) for x in current_value):
                 desired_value = sorted(desired_value)
                 current_value = sorted(current_value)
 
         if current_value != desired_value:
             differences_detected = True
-            # module.warn(
-            #     f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
-            # )
+            module.warn(
+                f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
+            )
 
     if module.check_mode:
-        # If in check mode, report changes and exit
         if state == "present" and (existing_rule is None or differences_detected):
             module.exit_json(changed=True)
         elif state == "absent" and existing_rule is not None:
@@ -531,136 +507,126 @@ def core(module):
         else:
             module.exit_json(changed=False)
 
-    if existing_rule is not None:
-        id = existing_rule.get("id")
-        existing_rule.update(rule)
-        existing_rule["id"] = id
-
-    # Log the final payload for debugging
-    # module.warn(f"Final payload being sent to SDK: {rule}")
     if state == "present":
-        if existing_rule is not None:
+        if existing_rule:
             if differences_detected:
-                """Update"""
-                update_rule = deleteNone(
-                    dict(
-                        rule_id=existing_rule.get("id"),
-                        name=existing_rule.get("name"),
-                        description=existing_rule.get("description"),
-                        order=existing_rule.get("order"),
-                        protocols=existing_rule.get("protocols"),
-                        rank=existing_rule.get("rank"),
-                        action=existing_rule.get("action"),
-                        enabled=existing_rule.get("enabled"),
-                        locations=existing_rule.get("locations"),
-                        location_groups=existing_rule.get("location_groups"),
-                        groups=existing_rule.get("groups"),
-                        departments=existing_rule.get("departments"),
-                        users=existing_rule.get("users"),
-                        url_categories=existing_rule.get("url_categories"),
-                        dlp_engines=existing_rule.get("dlp_engines"),
-                        file_types=existing_rule.get("file_types"),
-                        cloud_applications=existing_rule.get("cloud_applications"),
-                        min_size=existing_rule.get("min_size"),
-                        time_windows=existing_rule.get("time_windows"),
-                        auditor=existing_rule.get("auditor"),
-                        external_auditor_email=existing_rule.get(
-                            "external_auditor_email"
-                        ),
-                        notification_template=existing_rule.get(
-                            "notification_template"
-                        ),
-                        match_only=existing_rule.get("match_only"),
-                        icap_server=existing_rule.get("icap_server"),
-                        without_content_inspection=existing_rule.get(
-                            "without_content_inspection"
-                        ),
-                        labels=existing_rule.get("labels"),
-                        ocr_enabled=existing_rule.get("ocr_enabled"),
-                        excluded_groups=existing_rule.get("excluded_groups"),
-                        excluded_departments=existing_rule.get("excluded_departments"),
-                        excluded_users=existing_rule.get("excluded_users"),
-                        zscaler_incident_receiver=existing_rule.get(
-                            "zscaler_incident_receiver"
-                        ),
-                        user_risk_score_levels=existing_rule.get(
-                            "user_risk_score_levels"
-                        ),
-                        severity=existing_rule.get("severity"),
-                        parent_rule=existing_rule.get("parent_rule"),
-                        sub_rules=existing_rule.get("sub_rules"),
-                        workload_groups=existing_rule.get("workload_groups"),
-                        include_domain_profiles=existing_rule.get(
-                            "include_domain_profiles"
-                        ),
-                        exclude_domain_profiles=existing_rule.get(
-                            "exclude_domain_profiles"
-                        ),
-                    )
-                )
-                # module.warn("Payload Update for SDK: {}".format(update_rule))
-                updated_rule = client.web_dlp.update_rule(**update_rule).to_dict()
-                module.exit_json(changed=True, data=updated_rule)
+                rule_id_to_update = existing_rule.get("id")
+                if not rule_id_to_update:
+                    module.fail_json(msg="Cannot update rule: ID is missing from the existing resource.")
+
+                update_data = deleteNone({
+                    "rule_id": existing_rule.get("id"),
+                    "name": desired_rule.get("name"),
+                    "description": desired_rule.get("description"),
+                    "order": desired_rule.get("order"),
+                    "rank": desired_rule.get("rank"),
+                    "action": desired_rule.get("action"),
+                    "enabled": desired_rule.get("enabled"),
+                    "protocols": desired_rule.get("protocols"),
+                    "locations": desired_rule.get("locations"),
+                    "location_groups": desired_rule.get("location_groups"),
+                    "groups": desired_rule.get("groups"),
+                    "departments": desired_rule.get("departments"),
+                    "users": desired_rule.get("users"),
+                    "url_categories": desired_rule.get("url_categories"),
+                    "dlp_engines": desired_rule.get("dlp_engines"),
+                    "file_types": desired_rule.get("file_types"),
+                    "cloud_applications": desired_rule.get("cloud_applications"),
+                    "min_size": desired_rule.get("min_size"),
+                    "time_windows": desired_rule.get("time_windows"),
+                    "auditor": desired_rule.get("auditor"),
+                    "external_auditor_email": desired_rule.get("external_auditor_email"),
+                    "notification_template": desired_rule.get("notification_template"),
+                    "match_only": desired_rule.get("match_only"),
+                    "icap_server": desired_rule.get("icap_server"),
+                    "without_content_inspection": desired_rule.get("without_content_inspection"),
+                    "labels": desired_rule.get("labels"),
+                    "excluded_groups": desired_rule.get("excluded_groups"),
+                    "excluded_departments": desired_rule.get("excluded_departments"),
+                    "excluded_users": desired_rule.get("excluded_users"),
+                    "zscaler_incident_receiver": desired_rule.get("zscaler_incident_receiver"),
+                    "dlp_download_scan_enabled": desired_rule.get("dlp_download_scan_enabled"),
+                    "zcc_notifications_enabled": desired_rule.get("zcc_notifications_enabled"),
+                    "user_risk_score_levels": desired_rule.get("user_risk_score_levels"),
+                    "severity": desired_rule.get("severity"),
+                    "parent_rule": desired_rule.get("parent_rule"),
+                    # "sub_rules": desired_rule.get("sub_rules"),
+                    "workload_groups": desired_rule.get("workload_groups"),
+                    "include_domain_profiles": desired_rule.get("include_domain_profiles"),
+                    "exclude_domain_profiles": desired_rule.get("exclude_domain_profiles"),
+                })
+
+                module.warn("Payload Update for SDK: {}".format(update_data))
+                updated_rule, _, error = client.dlp_web_rules.update_rule(**update_data)
+                if error:
+                    module.fail_json(msg=f"Error updating rule: {to_native(error)}")
+                module.exit_json(changed=True, data=updated_rule.as_dict())
+            else:
+                module.exit_json(changed=False, data=existing_rule)
         else:
-            # Log to check if we are attempting to create a new rule
-            # module.warn("Creating new rule as no existing rule found")
-            """Create"""
-            create_rule = deleteNone(
-                dict(
-                    name=rule.get("name"),
-                    description=rule.get("description"),
-                    order=rule.get("order"),
-                    rank=rule.get("rank"),
-                    action=rule.get("action"),
-                    enabled=rule.get("enabled"),
-                    protocols=rule.get("protocols"),
-                    locations=rule.get("locations"),
-                    location_groups=rule.get("location_groups"),
-                    groups=rule.get("groups"),
-                    departments=rule.get("departments"),
-                    users=rule.get("users"),
-                    url_categories=rule.get("url_categories"),
-                    dlp_engines=rule.get("dlp_engines"),
-                    file_types=rule.get("file_types"),
-                    cloud_applications=rule.get("cloud_applications"),
-                    min_size=rule.get("min_size"),
-                    time_windows=rule.get("time_windows"),
-                    auditor=rule.get("auditor"),
-                    external_auditor_email=rule.get("external_auditor_email"),
-                    notification_template=rule.get("notification_template"),
-                    match_only=rule.get("match_only"),
-                    icap_server=rule.get("icap_server"),
-                    without_content_inspection=rule.get("without_content_inspection"),
-                    labels=rule.get("labels"),
-                    ocr_enabled=rule.get("ocr_enabled"),
-                    excluded_groups=rule.get("excluded_groups"),
-                    excluded_departments=rule.get("excluded_departments"),
-                    excluded_users=rule.get("excluded_users"),
-                    zscaler_incident_receiver=rule.get("zscaler_incident_receiver"),
-                    dlp_download_scan_enabled=rule.get("dlp_download_scan_enabled"),
-                    zcc_notifications_enabled=rule.get("zcc_notifications_enabled"),
-                    user_risk_score_levels=rule.get("user_risk_score_levels"),
-                    severity=rule.get("severity"),
-                    parent_rule=rule.get("parent_rule"),
-                    sub_rules=rule.get("sub_rules"),
-                    workload_groups=rule.get("workload_groups"),
-                    include_domain_profiles=rule.get("include_domain_profiles"),
-                    exclude_domain_profiles=rule.get("exclude_domain_profiles"),
-                )
+            create_data = deleteNone({
+                "name": desired_rule.get("name"),
+                "description": desired_rule.get("description"),
+                "order": desired_rule.get("order"),
+                "rank": desired_rule.get("rank"),
+                "action": desired_rule.get("action"),
+                "enabled": desired_rule.get("enabled"),
+                "protocols": desired_rule.get("protocols"),
+                "locations": desired_rule.get("locations"),
+                "location_groups": desired_rule.get("location_groups"),
+                "groups": desired_rule.get("groups"),
+                "departments": desired_rule.get("departments"),
+                "users": desired_rule.get("users"),
+                "url_categories": desired_rule.get("url_categories"),
+                "dlp_engines": desired_rule.get("dlp_engines"),
+                "file_types": desired_rule.get("file_types"),
+                "cloud_applications": desired_rule.get("cloud_applications"),
+                "min_size": desired_rule.get("min_size"),
+                "time_windows": desired_rule.get("time_windows"),
+                "auditor": desired_rule.get("auditor"),
+                "external_auditor_email": desired_rule.get("external_auditor_email"),
+                "notification_template": desired_rule.get("notification_template"),
+                "match_only": desired_rule.get("match_only"),
+                "icap_server": desired_rule.get("icap_server"),
+                "without_content_inspection": desired_rule.get("without_content_inspection"),
+                "labels": desired_rule.get("labels"),
+                "excluded_groups": desired_rule.get("excluded_groups"),
+                "excluded_departments": desired_rule.get("excluded_departments"),
+                "excluded_users": desired_rule.get("excluded_users"),
+                "zscaler_incident_receiver": desired_rule.get("zscaler_incident_receiver"),
+                "dlp_download_scan_enabled": desired_rule.get("dlp_download_scan_enabled"),
+                "zcc_notifications_enabled": desired_rule.get("zcc_notifications_enabled"),
+                "user_risk_score_levels": desired_rule.get("user_risk_score_levels"),
+                "severity": desired_rule.get("severity"),
+                "parent_rule": desired_rule.get("parent_rule"),
+                # "sub_rules": desired_rule.get("sub_rules"),
+                "workload_groups": desired_rule.get("workload_groups"),
+                "include_domain_profiles": desired_rule.get("include_domain_profiles"),
+                "exclude_domain_profiles": desired_rule.get("exclude_domain_profiles"),
+            })
+            module.warn("Payload Update for SDK: {}".format(create_data))
+            new_rule, _, error = client.dlp_web_rules.add_rule(**create_data)
+            if error:
+                module.fail_json(msg=f"Error creating rule: {to_native(error)}")
+            module.exit_json(changed=True, data=new_rule.as_dict())
+
+    elif state == "absent":
+        if existing_rule:
+            rule_id_to_delete = existing_rule.get("id")
+            if not rule_id_to_delete:
+                module.fail_json(msg="Cannot delete rule: ID is missing from the existing resource.")
+
+            _, _, error = client.dlp_web_rules.delete_rule(
+                rule_id=rule_id_to_delete
             )
-            # module.warn("Payload for SDK: {}".format(create_rule))
-            new_rule = client.web_dlp.add_rule(**create_rule).to_dict()
-            module.exit_json(changed=True, data=new_rule)
-    elif (
-        state == "absent"
-        and existing_rule is not None
-        and existing_rule.get("id") is not None
-    ):
-        code = client.web_dlp.delete_rule(rule_id=existing_rule.get("id"))
-        if code > 299:
-            module.exit_json(changed=False, data=None)
-        module.exit_json(changed=True, data=existing_rule)
-    module.exit_json(changed=False, data={})
+            if error:
+                module.fail_json(msg=f"Error deleting rule: {to_native(error)}")
+            module.exit_json(changed=True, data=existing_rule)
+        else:
+            module.exit_json(changed=False, data={})
+
+    else:
+        module.exit_json(changed=False, data={})
 
 
 def main():
@@ -701,14 +667,13 @@ def main():
         ),
         url_categories=dict(type="list", elements="int", required=False),
         cloud_applications=dict(type="list", elements="str", required=False),
-        sub_rules=dict(type="list", elements="str", required=False),
+        # sub_rules=dict(type="list", elements="str", required=False),
         external_auditor_email=dict(type="str", required=False),
         min_size=dict(type="int", required=False),
         parent_rule=dict(type="int", required=False),
         match_only=dict(type="bool", required=False),
         without_content_inspection=dict(type="bool", required=False),
-        ocr_enabled=dict(type="bool", required=False),
-        zscaler_incident_receiver=dict(type="bool", required=False),
+        zscaler_incident_receiver=dict(type="bool", default=True, required=False),
         zcc_notifications_enabled=dict(type="bool", required=False),
         dlp_download_scan_enabled=dict(type="bool", required=False),
         icap_server=dict(type="list", elements="int", required=False),
@@ -725,6 +690,7 @@ def main():
         ),
         severity=dict(
             type="str",
+            default="RULE_SEVERITY_INFO",
             required=False,
             choices=[
                 "RULE_SEVERITY_HIGH",

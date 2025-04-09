@@ -95,21 +95,23 @@ def core(module):
 
     client = ZIAClientHelper(module)
 
-    security_api = client.security
+    # ✅ Get current whitelist/blacklist using tuple unpacking
+    if url_type == "whitelist":
+        current_list_obj, _, error = client.security_policy_settings.get_whitelist()
+        if error or not current_list_obj:
+            module.fail_json(msg=f"Failed to fetch whitelist: {to_native(error)}")
+        current_list = current_list_obj.whitelist_urls
+    else:
+        current_list_obj, _, error = client.security_policy_settings.get_blacklist()
+        if error or not current_list_obj:
+            module.fail_json(msg=f"Failed to fetch blacklist: {to_native(error)}")
+        current_list = current_list_obj.blacklist_urls
 
-    # Determine current lists based on the type
-    current_list = (
-        security_api.get_whitelist()
-        if url_type == "whitelist"
-        else security_api.get_blacklist()
-    )
-
-    # Determine the new URLs to be added or removed
+    # Calculate differences
     new_urls = [url for url in urls if url not in current_list]
     urls_to_remove = [url for url in urls if url in current_list]
 
     if module.check_mode:
-        # Simulate the changes based on the state
         if state == "present" and new_urls:
             module.exit_json(
                 changed=True,
@@ -119,31 +121,42 @@ def core(module):
         elif state == "absent" and urls_to_remove:
             updated_list = [url for url in current_list if url not in urls_to_remove]
             module.exit_json(
-                changed=True, msg="URLs would be removed.", updated_list=updated_list
+                changed=True,
+                msg="URLs would be removed.",
+                updated_list=updated_list,
             )
         else:
             module.exit_json(changed=False, msg="No changes needed.")
 
-    # Actual execution when not in check mode
+    # Perform actual change
     if state == "present" and new_urls:
+        if url_type == "whitelist":
+            updated_list_obj, _, error = client.security_policy_settings.add_urls_to_whitelist(new_urls)
+        else:
+            updated_list_obj, _, error = client.security_policy_settings.add_urls_to_blacklist(new_urls)
+
+        if error or not updated_list_obj:
+            module.fail_json(msg=f"Failed to add URLs: {to_native(error)}")
+
         updated_list = (
-            security_api.add_urls_to_whitelist(new_urls)
+            updated_list_obj.whitelist_urls
             if url_type == "whitelist"
-            else security_api.add_urls_to_blacklist(new_urls)
+            else updated_list_obj.blacklist_urls
         )
         module.exit_json(changed=True, updated_list=updated_list)
+
     elif state == "absent" and urls_to_remove:
         if url_type == "whitelist":
-            security_api.delete_urls_from_whitelist(urls_to_remove)
+            _, _, error = client.security_policy_settings.delete_urls_from_whitelist(urls_to_remove)
+            if error:
+                module.fail_json(msg=f"Failed to remove URLs from whitelist: {to_native(error)}")
             module.exit_json(changed=True, msg="URLs removed from whitelist.")
         else:
-            resp_code = security_api.delete_urls_from_blacklist(urls_to_remove)
-            if resp_code == 204:
-                module.exit_json(changed=True, msg="URLs removed from blacklist.")
-            else:
-                module.exit_json(
-                    changed=False, msg="Failed to remove URLs from blacklist."
-                )
+            _, _, error = client.security_policy_settings.delete_urls_from_blacklist(urls_to_remove)
+            if error:
+                module.exit_json(changed=False, msg="Failed to remove URLs from blacklist.")
+            module.exit_json(changed=True, msg="URLs removed from blacklist.")
+
     else:
         module.exit_json(changed=False, msg="No new URLs to add or remove.")
 

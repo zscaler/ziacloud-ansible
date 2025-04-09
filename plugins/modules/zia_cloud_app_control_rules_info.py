@@ -123,46 +123,45 @@ rules:
 """
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    ZIAClientHelper,
-)
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
 
 
 def core(module):
-    rule_id = module.params.get("id", None)
-    rule_name = module.params.get("name", None)
-    rule_type = module.params.get("rule_type", None)
+    rule_id = module.params.get("id")
+    rule_name = module.params.get("name")
+    rule_type = module.params.get("rule_type")
+
     client = ZIAClientHelper(module)
     rules = []
 
-    if rule_id is not None:
-        # Fetch rule by ID directly using rule_type
-        rule_box = client.cloudappcontrol.get_rule(rule_type=rule_type, rule_id=rule_id)
-        if rule_box is None:
+    if rule_id:
+        # Fetch rule by ID
+        rule, _, error = client.cloudappcontrol.get_rule(rule_type=rule_type, rule_id=rule_id)
+        if error or rule is None:
             module.fail_json(
                 msg=f"Failed to retrieve Cloud App Control Rule with ID: '{rule_id}' under rule type: '{rule_type}'"
             )
-        rules = [rule_box]
+        rules = [rule.as_dict()]
     else:
-        # Fetch all rules for the specified rule_type
-        all_rules = client.cloudappcontrol.list_rules(rule_type=rule_type)
+        # Always get full list and search in-memory
+        result, _, error = client.cloudappcontrol.list_rules(rule_type=rule_type)
+        if error:
+            module.fail_json(msg=f"Error retrieving rules for type '{rule_type}': {to_native(error)}")
 
-        if rule_name is not None:
-            # Search for the specific rule by name
-            rule_box = client.cloudappcontrol.get_rule_by_name(
-                rule_type=rule_type, rule_name=rule_name
-            )
-            if rule_box is None:
+        all_rules = [r.as_dict() for r in result] if result else []
+
+        if rule_name:
+            # Perform local name match
+            matched = [r for r in all_rules if r.get("description") == rule_name or r.get("name") == rule_name]
+            if not matched:
                 module.fail_json(
-                    msg=f"Failed to retrieve Cloud App Control Rule with Name: '{rule_name}' under rule type: '{rule_type}'"
+                    msg=f"Rule with name '{rule_name}' not found under rule type '{rule_type}'"
                 )
-            rules = [rule_box]
+            rules = matched
         else:
-            # Return all rules for the specified rule_type
-            rules = list(all_rules)
+            rules = all_rules
 
     module.exit_json(changed=False, rules=rules)
 
@@ -171,34 +170,21 @@ def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         name=dict(type="str", required=False),
-        rule_type=dict(  # This is mapped to `type` in the payload
+        id=dict(type="str", required=False),
+        rule_type=dict(
             type="str",
             required=True,
             choices=[
-                "SOCIAL_NETWORKING",
-                "STREAMING_MEDIA",
-                "WEBMAIL",
-                "INSTANT_MESSAGING",
-                "BUSINESS_PRODUCTIVITY",
-                "ENTERPRISE_COLLABORATION",
-                "SALES_AND_MARKETING",
-                "SYSTEM_AND_DEVELOPMENT",
-                "CONSUMER",
-                "HOSTING_PROVIDER",
-                "IT_SERVICES",
-                "FILE_SHARE",
-                "DNS_OVER_HTTPS",
-                "HUMAN_RESOURCES",
-                "LEGAL",
-                "HEALTH_CARE",
-                "FINANCE",
-                "CUSTOM_CAPP",
-                "AI_ML",
+                "SOCIAL_NETWORKING", "STREAMING_MEDIA", "WEBMAIL", "INSTANT_MESSAGING",
+                "BUSINESS_PRODUCTIVITY", "ENTERPRISE_COLLABORATION", "SALES_AND_MARKETING",
+                "SYSTEM_AND_DEVELOPMENT", "CONSUMER", "HOSTING_PROVIDER", "IT_SERVICES",
+                "FILE_SHARE", "DNS_OVER_HTTPS", "HUMAN_RESOURCES", "LEGAL", "HEALTH_CARE",
+                "FINANCE", "CUSTOM_CAPP", "AI_ML"
             ],
         ),
-        id=dict(type="str", required=False),
     )
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+
+    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=False)
     try:
         core(module)
     except Exception as e:

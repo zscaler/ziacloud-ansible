@@ -91,129 +91,107 @@ RETURN = r"""
 """
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
-    deleteNone,
-)
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    ZIAClientHelper,
-)
-
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import deleteNone
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
 
 def normalize_dlp_engine(engine):
-    """
-    Normalize dlp engine data by setting computed values.
-    """
-    normalized = engine.copy()
-
-    computed_values = [
-        "id",
-    ]
+    """Normalize dlp engine data by removing computed values"""
+    normalized = engine.copy() if engine else {}
+    computed_values = ["id"]
     for attr in computed_values:
         normalized.pop(attr, None)
-
     return normalized
 
-
 def core(module):
-    state = module.params.get("state", None)
+    state = module.params.get("state")
     client = ZIAClientHelper(module)
-    dlp_engine = dict()
+
     params = [
         "id",
         "name",
         "description",
         "engine_expression",
-        "custom_dlp_engine",
+        "custom_dlp_engine"
     ]
-    for param_name in params:
-        dlp_engine[param_name] = module.params.get(param_name, None)
-    engine_id = dlp_engine.get("id", None)
-    engine_name = dlp_engine.get("name", None)
+
+    dlp_engine = {param: module.params.get(param) for param in params}
+    engine_id = dlp_engine.get("id")
+    engine_name = dlp_engine.get("name")
 
     existing_engine = None
-    if engine_id is not None:
-        existing_engine = client.dlp.get_dlp_engines(engine_id).to_dict()
+    if engine_id:
+        result = client.dlp_engine.get_dlp_engines(engine_id)
+        if result[2]:  # Error check
+            module.fail_json(msg=f"Error fetching DLP engine ID {engine_id}: {to_native(result[2])}")
+        existing_engine = result[0].as_dict() if result[0] else None  # Changed to_dict() to as_dict()
     else:
-        dlp_engines = client.dlp.list_dlp_engines().to_list()
-        if engine_name is not None:
-            for dlp in dlp_engines:
-                if dlp.get("name", None) == engine_name:
-                    existing_engine = dlp
-                    break
+        result = client.dlp_engine.list_dlp_engines()
+        if result[2]:  # Error check
+            module.fail_json(msg=f"Error listing DLP engines: {to_native(result[2])}")
+        for engine in result[0]:
+            if engine.name == engine_name:
+                existing_engine = engine.as_dict()  # Changed to_dict() to as_dict()
+                break
 
-    # Normalize and compare existing and desired data
-    desired_engine = normalize_dlp_engine(dlp_engine)
-    current_engine = normalize_dlp_engine(existing_engine) if existing_engine else {}
+    # Normalize and compare states
+    desired = normalize_dlp_engine(dlp_engine)
+    current = normalize_dlp_engine(existing_engine) if existing_engine else {}
 
-    fields_to_exclude = ["id"]
+    # Drift detection
     differences_detected = False
-    for key, value in desired_engine.items():
-        if key not in fields_to_exclude and current_engine.get(key) != value:
+    for key, value in desired.items():
+        if current.get(key) != value:
             differences_detected = True
-            # module.warn(
-            #     f"Difference detected in {key}. Current: {current_engine.get(key)}, Desired: {value}"
-            # )
+            module.warn(
+                f"Difference detected in {key}. Current: {current.get(key)}, Desired: {value}"
+            )
 
     if module.check_mode:
-        # If in check mode, report changes and exit
         if state == "present" and (existing_engine is None or differences_detected):
             module.exit_json(changed=True)
-        elif state == "absent" and existing_engine is not None:
+        elif state == "absent" and existing_engine:
             module.exit_json(changed=True)
         else:
             module.exit_json(changed=False)
 
-    if existing_engine is not None:
-        id = existing_engine.get("id")
-        existing_engine.update(desired_engine)
-        existing_engine["id"] = id
-
     if state == "present":
         if existing_engine:
             if differences_detected:
-                """Update"""
-                update_engine = deleteNone(
-                    dict(
-                        engine_id=existing_engine.get("id", ""),
-                        name=existing_engine.get("name", ""),
-                        description=existing_engine.get("description", ""),
-                        engine_expression=existing_engine.get("engine_expression", ""),
-                        custom_dlp_engine=existing_engine.get("custom_dlp_engine", ""),
-                    )
-                )
-                updated_engine = client.dlp.update_dlp_engine(**update_engine).to_dict()
-                module.exit_json(changed=True, data=updated_engine)
+                update_data = deleteNone({
+                    "engine_id": existing_engine["id"],
+                    "name": dlp_engine.get("name"),
+                    "description": dlp_engine.get("description"),
+                    "engine_expression": dlp_engine.get("engine_expression"),
+                    "custom_dlp_engine": dlp_engine.get("custom_dlp_engine")
+                })
+                module.warn("Payload Update for SDK: {}".format(update_data))
+                updated = client.dlp_engine.update_dlp_engine(**update_data)
+                if updated[2]:
+                    module.fail_json(msg=f"Error updating DLP engine: {to_native(updated[2])}")
+                module.exit_json(changed=True, data=updated[0].as_dict())  # Changed to_dict() to as_dict()
             else:
-                """No changes needed"""
-                module.exit_json(
-                    changed=False, data=existing_engine, msg="No changes detected."
-                )
+                module.exit_json(changed=False, data=existing_engine)
         else:
-            """Create"""
-            create_engine = deleteNone(
-                dict(
-                    name=dlp_engine.get("name", ""),
-                    description=dlp_engine.get("description", ""),
-                    engine_expression=dlp_engine.get("engine_expression", ""),
-                    custom_dlp_engine=dlp_engine.get("custom_dlp_engine", ""),
-                )
-            )
-            new_engine = client.dlp.add_dlp_engine(**create_engine).to_dict()
-            module.exit_json(changed=True, data=new_engine)
-    elif (
-        state == "absent"
-        and existing_engine is not None
-        and existing_engine.get("id") is not None
-    ):
-        code = client.dlp.delete_dlp_engine(engine_id=existing_engine.get("id"))
-        if code > 299:
-            module.exit_json(changed=False, data=None)
-        module.exit_json(changed=True, data=existing_engine)
-    module.exit_json(changed=False, data={})
-
+            create_data = deleteNone({
+                "name": dlp_engine.get("name"),
+                "description": dlp_engine.get("description"),
+                "engine_expression": dlp_engine.get("engine_expression"),
+                "custom_dlp_engine": dlp_engine.get("custom_dlp_engine")
+            })
+            module.warn("Payload Update for SDK: {}".format(create_data))
+            created = client.dlp_engine.add_dlp_engine(**create_data)
+            if created[2]:
+                module.fail_json(msg=f"Error creating DLP engine: {to_native(created[2])}")
+            module.exit_json(changed=True, data=created[0].as_dict())  # Changed to_dict() to as_dict()
+    elif state == "absent":
+        if existing_engine:
+            deleted = client.dlp_engine.delete_dlp_engine(engine_id=existing_engine["id"])
+            if deleted[2]:
+                module.fail_json(msg=f"Error deleting DLP engine: {to_native(deleted[2])}")
+            module.exit_json(changed=True, data=existing_engine)
+        module.exit_json(changed=False, data={})
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
@@ -230,7 +208,6 @@ def main():
         core(module)
     except Exception as e:
         module.fail_json(msg=to_native(e), exception=format_exc())
-
 
 if __name__ == "__main__":
     main()

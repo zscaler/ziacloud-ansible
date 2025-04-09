@@ -99,41 +99,39 @@ time_windows:
 """
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    ZIAClientHelper,
-)
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
 
 
 def core(module):
     time_window_id = module.params.get("id")
     time_window_name = module.params.get("name")
+
     client = ZIAClientHelper(module)
 
-    time_windows = client.firewall.list_time_windows()
-    if time_windows is None:
-        module.fail_json(msg="Failed to retrieve time windows list")
+    result, _, error = client.cloud_firewall.list_time_windows()
+    if error:
+        module.fail_json(msg=f"Error retrieving time windows: {to_native(error)}")
+
+    all_windows = [tw.as_dict() for tw in result] if result else []
 
     if time_window_id is not None:
-        time_window = next(
-            (tw for tw in time_windows if str(tw.get("id")) == str(time_window_id)),
-            None,
-        )
+        matched = next((tw for tw in all_windows if str(tw.get("id")) == str(time_window_id)), None)
+        if not matched:
+            ids = [tw.get("id") for tw in all_windows]
+            module.fail_json(msg=f"Time window with ID '{time_window_id}' not found. Available IDs: {ids}")
+        time_windows = [matched]
     elif time_window_name is not None:
-        time_window = next(
-            (tw for tw in time_windows if tw.get("name") == time_window_name), None
-        )
+        matched = next((tw for tw in all_windows if tw.get("name") == time_window_name), None)
+        if not matched:
+            names = [tw.get("name") for tw in all_windows]
+            module.fail_json(msg=f"Time window named '{time_window_name}' not found. Available names: {names}")
+        time_windows = [matched]
     else:
-        module.exit_json(changed=False, time_windows=time_windows)
-        return
+        time_windows = all_windows
 
-    if time_window:
-        module.exit_json(changed=False, time_windows=time_window)
-    else:
-        msg = f"Time window {'with ID ' + str(time_window_id) if time_window_id is not None else 'named ' + time_window_name} not found"
-        module.fail_json(msg=msg)
+    module.exit_json(changed=False, time_windows=time_windows)
 
 
 def main():
@@ -142,7 +140,13 @@ def main():
         name=dict(type="str", required=False),
         id=dict(type="int", required=False),
     )
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=False,
+        mutually_exclusive=[["name", "id"]],
+    )
+
     try:
         core(module)
     except Exception as e:

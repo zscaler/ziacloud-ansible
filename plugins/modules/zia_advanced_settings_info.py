@@ -28,13 +28,12 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 ---
-module: zia_ip_source_anchoring_zpa_gateway_info
-short_description: "Gets the list of Zscaler Private Access (ZPA) gateways."
-description:
-  - "Gets the list of Zscaler Private Access (ZPA) gateways."
+module: zia_cloud_app_control_rules_info
+short_description: Gets the list of cloud application rules by the type of rule..
+description: Gets the list of cloud application rules by the type of rule..
 author:
   - William Guilherme (@willguibr)
-version_added: "1.0.0"
+version_added: "1.3.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 notes:
@@ -45,95 +44,110 @@ extends_documentation_fragment:
 
 options:
   id:
-    description: "A unique identifier assigned to the ZPA gateway"
-    type: int
+    description:
+        - The universally unique identifier (UUID) for the browser isolation profile.
+    type: str
     required: false
   name:
-    description: "The name of the ZPA gateway"
+    description:
+        - Name of the cloud application control rule.
     required: false
     type: str
+  rule_type:
+    description:
+        - The rule type selected from the available options.
+    required: true
+    type: str
+    choices:
+      - SOCIAL_NETWORKING
+      - STREAMING_MEDIA
+      - WEBMAIL
+      - INSTANT_MESSAGING
+      - BUSINESS_PRODUCTIVITY
+      - ENTERPRISE_COLLABORATION
+      - SALES_AND_MARKETING
+      - SYSTEM_AND_DEVELOPMENT
+      - CONSUMER
+      - HOSTING_PROVIDER
+      - IT_SERVICES
+      - FILE_SHARE
+      - DNS_OVER_HTTPS
+      - HUMAN_RESOURCES
+      - LEGAL
+      - HEALTH_CARE
+      - FINANCE
+      - CUSTOM_CAPP
+      - AI_ML
 """
 
 EXAMPLES = r"""
-- name: Gather Information Details of all ZPA Gateways
-  zscaler.ziacloud.zia_ip_source_anchoring_zpa_gateway_info:
+- name: Gather Information Details of a cloud application control rule by Name
+  zscaler.ziacloud.zia_cloud_app_control_rules_info:
     provider: '{{ provider }}'
-
-- name: Gather Information Details of ZPA Gateways By ID
-  zscaler.ziacloud.zia_ip_source_anchoring_zpa_gateway_info:
-    provider: '{{ provider }}'
-    id: "845875645"
-
-- name: Gather Information Details of ZPA Gateways By Name
-  zscaler.ziacloud.zia_ip_source_anchoring_zpa_gateway_info:
-    provider: '{{ provider }}'
-    name: "USA-SJC37"
+    name: "Webmail Rule-1"
+    rule_type: "WEBMAIL"
 """
 
 RETURN = r"""
-# Returns information on a specified ZIA Location.
+rules:
+    description: A list of cloud application control rules that match the specified criteria.
+    returned: always
+    type: list
+    elements: dict
+    sample: [
+        {
+            "access_control": "READ_WRITE",
+            "actions": [
+                "ALLOW_WEBMAIL_VIEW",
+                "ALLOW_WEBMAIL_ATTACHMENT_SEND"
+            ],
+            "applications": [
+                "GOOGLE_WEBMAIL",
+                "YAHOO_WEBMAIL",
+                "WINDOWS_LIVE_HOTMAIL"
+            ],
+            "browser_eun_template_id": 0,
+            "cascading_enabled": false,
+            "enforce_time_validity": false,
+            "eun_enabled": false,
+            "eun_template_id": 0,
+            "id": 552617,
+            "name": "Webmail Rule-1",
+            "order": 2,
+            "predefined": false,
+            "rank": 7,
+            "state": "DISABLED",
+            "type": "WEBMAIL"
+        }
+    ]
 """
-
 
 from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
 
-
 def core(module):
-    gateway_id = module.params.get("id")
-    gateway_name = module.params.get("name")
-
     client = ZIAClientHelper(module)
-    gateways = []
 
-    if gateway_id is not None:
-        gateway_obj, _, error = client.zpa_gateway.get_gateway(gateway_id)
-        if error or gateway_obj is None:
-            module.fail_json(msg=f"Failed to retrieve ZPA Gateway with ID '{gateway_id}': {to_native(error)}")
-        gateways = [gateway_obj.as_dict()]
-    else:
-        query_params = {}
-        if gateway_name:
-            query_params["search"] = gateway_name
+    settings, _, error = client.advanced_settings.get_advanced_settings()
+    if error:
+        module.fail_json(msg=f"Error fetching advanced settings: {to_native(error)}")
 
-        result, _, error = client.zpa_gateway.list_gateways(query_params=query_params)
-        if error:
-            module.fail_json(msg=f"Error retrieving ZPA Gateways: {to_native(error)}")
-
-        gateway_list = [g.as_dict() for g in result] if result else []
-
-        if gateway_name:
-            matched = next((g for g in gateway_list if g.get("name") == gateway_name), None)
-            if not matched:
-                available = [g.get("name") for g in gateway_list]
-                module.fail_json(msg=f"ZPA Gateway named '{gateway_name}' not found. Available: {available}")
-            gateways = [matched]
-        else:
-            gateways = gateway_list
-
-    module.exit_json(changed=False, gateways=gateways)
-
+    module.exit_json(changed=False, advanced_settings=settings.as_dict())
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
-    argument_spec.update(
-        name=dict(type="str", required=False),
-        id=dict(type="int", required=False),
-    )
 
     module = AnsibleModule(
         argument_spec=argument_spec,
-        supports_check_mode=False,
-        mutually_exclusive=[["name", "id"]],
+        supports_check_mode=True
     )
 
     try:
         core(module)
     except Exception as e:
         module.fail_json(msg=to_native(e), exception=format_exc())
-
 
 if __name__ == "__main__":
     main()

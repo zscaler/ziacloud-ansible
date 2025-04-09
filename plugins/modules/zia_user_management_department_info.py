@@ -97,32 +97,46 @@ from traceback import format_exc
 
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
+    collect_all_items
+)
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
     ZIAClientHelper,
 )
 
 
 def core(module):
-    department_id = module.params.get("id", None)
-    department_name = module.params.get("name", None)
+    department_id = module.params.get("id")
+    department_name = module.params.get("name")
+
     client = ZIAClientHelper(module)
     departments = []
+
     if department_id is not None:
-        department = client.users.get_department(department_id).to_dict()
-        departments = [department]
+        result, _, error = client.user_management.get_department(department_id)
+        if error or result is None:
+            module.fail_json(msg=f"Failed to retrieve Department with ID '{department_id}': {to_native(error)}")
+        departments = [result.as_dict()]
     else:
-        departments = client.users.list_departments().to_list()
-        if department_name is not None:
-            department = None
-            for dept in departments:
-                if dept.get("name", None) == department_name:
-                    department = dept
-                    break
-            if department is None:
-                module.fail_json(
-                    msg="Failed to retrieve department: '%s'" % (department_name)
-                )
-            departments = [department]
+        query_params = {}
+        if department_name:
+            query_params["search"] = department_name
+
+        result, err = collect_all_items(client.user_management.list_departments, query_params)
+        if err:
+            module.fail_json(msg=f"Error retrieving Departments: {to_native(err)}")
+
+        department_list = [d.as_dict() if hasattr(d, "as_dict") else d for d in result] if result else []
+
+        if department_name:
+            matched = next((d for d in department_list if d.get("name") == department_name), None)
+            if not matched:
+                available = [d.get("name") for d in department_list]
+                module.fail_json(msg=f"Department with name '{department_name}' not found. Available departments: {available}")
+            departments = [matched]
+        else:
+            departments = department_list
+
     module.exit_json(changed=False, departments=departments)
 
 
@@ -132,7 +146,13 @@ def main():
         name=dict(type="str", required=False),
         id=dict(type="int", required=False),
     )
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=False,
+        mutually_exclusive=[["name", "id"]],
+    )
+
     try:
         core(module)
     except Exception as e:

@@ -33,7 +33,7 @@ short_description: Adds or removes URLs authentication exempt list.
 description: Adds or removes URLs from the cookie authentication exempt list.
 author:
   - William Guilherme (@willguibr)
-version_added: "1.0.0"
+version_added: "2.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 notes:
@@ -67,12 +67,9 @@ RETURN = r"""
 """
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    ZIAClientHelper,
-)
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
 
 
 def core(module):
@@ -80,43 +77,55 @@ def core(module):
     urls = module.params.get("urls", [])
 
     client = ZIAClientHelper(module)
-
     auth_settings_api = client.authentication_settings
 
-    current_exempted_urls = auth_settings_api.get_exempted_urls()
+    # Get current exempted URLs
+    current_urls, response, error = auth_settings_api.get_exempted_urls()
+    if error:
+        module.fail_json(msg=f"Failed to get exempted URLs: {to_native(error)}")
 
     if state == "present":
-        new_urls = [url for url in urls if url not in current_exempted_urls]
+        # Filter URLs that aren't already exempted
+        new_urls = [url for url in urls if url not in current_urls]
+
         if new_urls:
             if module.check_mode:
-                # Just simulate adding URLs without making any changes
+                # Simulate adding URLs without making changes
                 module.exit_json(
                     changed=True,
                     msg="URLs would be added.",
-                    exempted_urls=current_exempted_urls + new_urls,
+                    exempted_urls=current_urls + new_urls,
                 )
-            updated_list = auth_settings_api.add_urls_to_exempt_list(new_urls)
-            module.exit_json(changed=True, exempted_urls=updated_list)
+
+            # Add new URLs to exempt list
+            updated_urls, response, error = auth_settings_api.add_urls_to_exempt_list(new_urls)
+            if error:
+                module.fail_json(msg=f"Failed to add URLs to exempt list: {to_native(error)}")
+
+            module.exit_json(changed=True, exempted_urls=updated_urls)
         else:
             module.exit_json(changed=False, msg="No new URLs to add.")
 
     elif state == "absent":
-        urls_to_remove = [url for url in urls if url in current_exempted_urls]
+        # Filter URLs that are currently exempted
+        urls_to_remove = [url for url in urls if url in current_urls]
+
         if urls_to_remove:
             if module.check_mode:
-                # Simulate removing URLs without making any changes
-                updated_list = [
-                    url for url in current_exempted_urls if url not in urls_to_remove
-                ]
+                # Simulate removing URLs without making changes
+                updated_list = [url for url in current_urls if url not in urls_to_remove]
                 module.exit_json(
                     changed=True,
                     msg="URLs would be removed.",
                     exempted_urls=updated_list,
                 )
-            updated_list = auth_settings_api.delete_urls_from_exempt_list(
-                urls_to_remove
-            )
-            module.exit_json(changed=True, exempted_urls=updated_list)
+
+            # Remove URLs from exempt list
+            updated_urls, response, error = auth_settings_api.delete_urls_from_exempt_list(urls_to_remove)
+            if error:
+                module.fail_json(msg=f"Failed to remove URLs from exempt list: {to_native(error)}")
+
+            module.exit_json(changed=True, exempted_urls=updated_urls)
         else:
             module.exit_json(changed=False, msg="URLs not in the exempted list.")
 

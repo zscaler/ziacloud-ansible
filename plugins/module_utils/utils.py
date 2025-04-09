@@ -390,3 +390,21 @@ def normalize_boolean_attributes(rule, bool_attributes):
         if rule.get(attr) is None:
             rule[attr] = False
     return rule
+
+def collect_all_items(list_fn, query_params=None):
+    """
+    Collects all pages of results from a paginated ZIA SDK list_* method.
+    """
+    items, resp, err = list_fn(query_params)
+    if err:
+        return None, err
+
+    all_items = items or []
+    while resp and resp.has_next():
+        page, err = resp.next()
+        if err:
+            return None, err
+        if page:
+            all_items.extend(page)
+
+    return all_items, None

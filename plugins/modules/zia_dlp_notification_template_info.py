@@ -111,37 +111,39 @@ templates:
 """
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    ZIAClientHelper,
-)
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
 
 
 def core(module):
-    template_id = module.params.get("id", None)
-    template_name = module.params.get("name", None)
+    template_id = module.params.get("id")
+    template_name = module.params.get("name")
+
     client = ZIAClientHelper(module)
     templates = []
-    if template_id is not None:
-        template = client.dlp.get_dlp_templates(template_id).to_dict()
-        templates = [template]
-    else:
-        templates = client.dlp.list_dlp_templates().to_list()
-        if template_name is not None:
-            template = None
-            for dlp in templates:
-                if dlp.get("name", None) == template_name:
-                    template = dlp
-                    break
 
-            if template is None:
-                module.fail_json(
-                    msg="Failed to retrieve dlp notification template: '%s'"
-                    % (template_name)
-                )
-            templates = [template]
+    if template_id is not None:
+        template_obj, _, error = client.dlp_templates.get_dlp_templates(template_id)
+        if error or template_obj is None:
+            module.fail_json(msg=f"Failed to retrieve DLP Notification Template with ID '{template_id}': {to_native(error)}")
+        templates = [template_obj.as_dict()]
+    else:
+        result, _, error = client.dlp_templates.list_dlp_templates()
+        if error:
+            module.fail_json(msg=f"Error retrieving DLP Notification Templates: {to_native(error)}")
+
+        template_list = [t.as_dict() for t in result] if result else []
+
+        if template_name:
+            matched = next((t for t in template_list if t.get("name") == template_name), None)
+            if not matched:
+                available = [t.get("name") for t in template_list]
+                module.fail_json(msg=f"DLP Notification Template named '{template_name}' not found. Available: {available}")
+            templates = [matched]
+        else:
+            templates = template_list
+
     module.exit_json(changed=False, templates=templates)
 
 
@@ -151,7 +153,13 @@ def main():
         name=dict(type="str", required=False),
         id=dict(type="int", required=False),
     )
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=False,
+        mutually_exclusive=[["name", "id"]],
+    )
+
     try:
         core(module)
     except Exception as e:

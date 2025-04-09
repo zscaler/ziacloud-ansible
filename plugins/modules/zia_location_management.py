@@ -366,14 +366,16 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
     ZIAClientHelper,
 )
-
+import json
 
 def normalize_location(location):
     """
-    Normalize location data by removing known server-populated or read-only fields.
+    Normalize location data by removing computed values.
     """
-    normalized = location.copy()
+    if not location:
+        return {}
 
+    normalized = location.copy()
     computed_values = [
         "id",
         "comments",
@@ -394,84 +396,48 @@ def normalize_location(location):
         "match_in_child",
         "non_editable",
         "static_location_groups",
+
     ]
     for attr in computed_values:
         normalized.pop(attr, None)
-
     return normalized
 
 
 def normalize_vpn_credentials(vpn_creds):
     """
-    Normalize the VPN credentials list to ensure consistent keys and ignore read-only fields.
+    Normalize VPN credentials to only include the fields we actually want to manage.
+    For comparison purposes, we only care about id and type.
     """
     if not vpn_creds:
         return []
 
-    normalized_creds = []
-    for cred in vpn_creds:
-        # 'ipAddress' is how the API typically returns it; unify to 'ipAddress' internally
-        ip_val = cred.get("ip_address", cred.get("ipAddress"))
-        normalized_cred = {
-            "id": cred.get("id"),
-            "type": cred.get("type"),
-            "fqdn": cred.get("fqdn"),
-            "ipAddress": ip_val,
+    return [
+        {
+            'id': cred['id'],
+            'type': cred['type'].upper()  # Normalize to uppercase for consistent comparison
         }
-        # If the API returns "comments" or other read-only fields in the credential,
-        # we simply don't include them in normalized_cred.
-        normalized_creds.append(normalized_cred)
-    return normalized_creds
-
+        for cred in vpn_creds
+        if cred.get('id') and cred.get('type')
+    ]
 
 def core(module):
+    state = module.params.get("state", None)
     client = ZIAClientHelper(module)
-    state = module.params.get("state", "present")
 
-    # Build a dict of the "desired" fields from Ansible
-    location_mgmt = {}
     params = [
-        "id",
-        "name",
-        "parent_id",
-        "up_bandwidth",
-        "dn_bandwidth",
-        "country",
-        "city",
-        "tz",
-        "ip_addresses",
-        "ports",
-        "auth_required",
-        "ssl_scan_enabled",
-        "zapp_ssl_scan_enabled",
-        "xff_forward_enabled",
-        "surrogate_ip",
-        "idle_time_in_minutes",
-        "display_time_unit",
-        "surrogate_ip_enforced_for_known_browsers",
-        "surrogate_refresh_time_in_minutes",
-        "surrogate_refresh_time_unit",
-        "ofw_enabled",
-        "ips_control",
-        "aup_enabled",
-        "caution_enabled",
-        "aup_block_internet_until_accepted",
-        "aup_force_ssl_inspection",
-        "aup_timeout_in_days",
-        "profile",
-        "description",
-        "geo_override",
-        "latitude",
-        "longitude",
-        "other_sub_location",
-        "other6_sub_location",
-        "ipv6_enabled",
-        "ipv6_dns64_prefix",
-        "iot_discovery_enabled",
-        "iot_enforce_policy_set",
+        "id", "name", "parent_id", "up_bandwidth", "dn_bandwidth", "country",
+        "city", "tz", "ip_addresses", "ports", "auth_required", "ssl_scan_enabled",
+        "zapp_ssl_scan_enabled", "xff_forward_enabled", "surrogate_ip",
+        "idle_time_in_minutes", "display_time_unit", "surrogate_ip_enforced_for_known_browsers",
+        "surrogate_refresh_time_in_minutes", "surrogate_refresh_time_unit",
+        "ofw_enabled", "ips_control", "aup_enabled", "caution_enabled",
+        "aup_block_internet_until_accepted", "aup_force_ssl_inspection",
+        "aup_timeout_in_days", "profile", "description", "geo_override",
+        "latitude", "longitude", "other_sub_location", "other6_sub_location", "ipv6_enabled",
+        "ipv6_dns64_prefix", "iot_discovery_enabled", "iot_enforce_policy_set", "vpn_credentials"
     ]
-    for p in params:
-        location_mgmt[p] = module.params.get(p)
+
+    location_mgmt = {param: module.params.get(param) for param in params}
 
     # Normalize the VPN creds from user input
     location_mgmt["vpn_credentials"] = normalize_vpn_credentials(
@@ -480,36 +446,36 @@ def core(module):
 
     validate_location_mgmt(location_mgmt)
 
-    # Set defaults if not provided
-    if location_mgmt["parent_id"] is None:
-        location_mgmt["parent_id"] = 0
-    if location_mgmt["aup_enabled"] is None:
-        location_mgmt["aup_enabled"] = False
-    if location_mgmt["aup_timeout_in_days"] is None:
-        location_mgmt["aup_timeout_in_days"] = 0
-    if location_mgmt["profile"] is None:
-        location_mgmt["profile"] = "CORPORATE"
+    location_id = location_mgmt.get("id")
+    location_name = location_mgmt.get("name")
 
-    # Look up existing resource if we have either an id or a name
-    existing_location_mgmt = None
-    if location_mgmt["id"]:
-        existing_location_mgmt = client.locations.get_location(
-            location_id=location_mgmt["id"]
-        )
-    elif location_mgmt["name"]:
-        existing_location_mgmt = client.locations.get_location(
-            location_name=location_mgmt["name"]
-        )
+    existing_location = None
+    if location_id is not None:
+        result, _, error = client.locations.get_location(location_id=location_id)
+        if error:
+            module.fail_json(msg=f"Error fetching location with id {location_id}: {to_native(error)}")
+        if result:
+            existing_location = result.as_dict()
+    else:
+        result, _, error = client.locations.list_locations()
+        if error:
+            module.fail_json(msg=f"Error listing locations: {to_native(error)}")
+        if result:
+            for location_ in result:
+                if location_.name == location_name:
+                    existing_location = location_.as_dict()
+                    break
 
     # Normalize server's current location data and local "desired" data
     desired_location = normalize_location(location_mgmt)
     current_location = (
-        normalize_location(existing_location_mgmt) if existing_location_mgmt else {}
+        normalize_location(existing_location) if existing_location else {}
     )
 
     # Compare differences
     differences_detected = False
     differences_summary = {}
+
 
     for key in desired_location:
         desired_value = desired_location[key]
@@ -517,20 +483,16 @@ def core(module):
 
         # If it's vpn_credentials, compare the normalized lists only
         if key == "vpn_credentials":
-            normalized_current_creds = normalize_vpn_credentials(current_value)
-            normalized_desired_creds = normalize_vpn_credentials(desired_value)
+            # Simplify comparison - only check id and type match
+            current_ids_types = {(c['id'], c['type'].upper()) for c in (current_value or [])}
+            desired_ids_types = {(c['id'], c['type'].upper()) for c in (desired_value or [])}
 
-            if normalized_current_creds != normalized_desired_creds:
+            if current_ids_types != desired_ids_types:
                 differences_detected = True
                 differences_summary[key] = {
-                    "current": normalized_current_creds,
-                    "desired": normalized_desired_creds,
+                    "current": list(current_ids_types),
+                    "desired": list(desired_ids_types),
                 }
-                module.warn(
-                    f"Difference detected in {key}. "
-                    f"Current: {normalized_current_creds}, "
-                    f"Desired: {normalized_desired_creds}"
-                )
         else:
             # If desired is None, skip. (Means we didn't want to set that field at all)
             if desired_value is None:
@@ -548,53 +510,119 @@ def core(module):
                     f"Desired: {desired_value}"
                 )
 
-    # Honor check_mode
     if module.check_mode:
-        if differences_detected:
+        if state == "present" and (existing_location is None or differences_detected):
             module.exit_json(changed=True, differences=differences_summary)
+        elif state == "absent" and existing_location is not None:
+            module.exit_json(changed=True)
         else:
             module.exit_json(changed=False)
 
-    # Proceed with create/update/delete
     if state == "present":
-        if existing_location_mgmt:
-            # We already have a location; update if needed
-            location_id = existing_location_mgmt["id"]
+        if existing_location:
             if differences_detected:
-                # Filter out any None values
-                update_location = deleteNone(desired_location)
-                module.warn(f"Payload Update for SDK: {update_location}")
-                try:
-                    updated_location = client.locations.update_location(
-                        location_id, **update_location
-                    ).to_dict()
-                    module.exit_json(changed=True, data=updated_location)
-                except Exception as e:
-                    module.fail_json(msg=f"Failed to update location: {e}")
+                update_location = deleteNone({
+                    "location_id": existing_location.get("id"),
+                    "name": desired_location.get("name"),
+                    "description": desired_location.get("description"),
+                    "parent_id": desired_location.get("parent_id"),
+                    "up_bandwidth": desired_location.get("up_bandwidth"),
+                    "dn_bandwidth": desired_location.get("dn_bandwidth"),
+                    "country": desired_location.get("country"),
+                    "city": desired_location.get("city"),
+                    "tz": desired_location.get("tz"),
+                    "ip_addresses": desired_location.get("ip_addresses"),
+                    "auth_required": desired_location.get("auth_required"),
+                    "ssl_scan_enabled": desired_location.get("ssl_scan_enabled"),
+                    "idle_time_in_minutes": desired_location.get("idle_time_in_minutes"),
+                    "display_time_unit": desired_location.get("display_time_unit"),
+                    "surrogate_ip": desired_location.get("surrogate_ip"),
+                    "surrogate_ip_enforced_for_known_browsers": desired_location.get("surrogate_ip_enforced_for_known_browsers"),
+                    "surrogate_refresh_time_in_minutes": desired_location.get("surrogate_refresh_time_in_minutes"),
+                    "surrogate_refresh_time_unit": desired_location.get("surrogate_refresh_time_unit"),
+                    "ofw_enabled": desired_location.get("ofw_enabled"),
+                    "ips_control": desired_location.get("ips_control"),
+                    "aup_enabled": desired_location.get("aup_enabled"),
+                    "xff_forward_enabled": desired_location.get("xff_forward_enabled"),
+                    "caution_enabled": desired_location.get("caution_enabled"),
+                    "aup_block_internet_until_accepted": desired_location.get("aup_block_internet_until_accepted"),
+                    "aup_force_ssl_inspection": desired_location.get("aup_force_ssl_inspection"),
+                    "aup_timeout_in_days": desired_location.get("aup_timeout_in_days"),
+                    "profile": desired_location.get("profile"),
+                    "geo_override": desired_location.get("geo_override"),
+                    "latitude": desired_location.get("latitude"),
+                    "longitude": desired_location.get("longitude"),
+                    "other_sub_location": desired_location.get("other_sub_location"),
+                    "other6_sub_location": desired_location.get("other6_sub_location"),
+                    "ipv6_enabled": desired_location.get("ipv6_enabled"),
+                    "ipv6_dns64_prefix": desired_location.get("ipv6_dns64_prefix"),
+                    "iot_discovery_enabled": desired_location.get("iot_discovery_enabled"),
+                    "iot_enforce_policy_set": desired_location.get("iot_enforce_policy_set"),
+                    "vpn_credentials": desired_location.get("vpn_credentials"),
+                })
+                module.warn("Payload Update for SDK: {}".format(update_location))
+                module.warn("🚨 FINAL PAYLOAD: " + json.dumps(update_location, indent=2))
+                updated_location, _, error = client.locations.update_location(**update_location)
+                if error:
+                    module.fail_json(msg=f"Error updating location: {to_native(error)}")
+                module.exit_json(changed=True, data=updated_location.as_dict())
             else:
-                # Nothing to do
-                module.exit_json(changed=False, data=existing_location_mgmt)
+                module.exit_json(changed=False, data=existing_location)
         else:
-            # Create new location
-            create_location = deleteNone(desired_location)
-            module.warn(f"Payload for SDK: {create_location}")
-            try:
-                new_location = client.locations.add_location(**create_location)
-                module.exit_json(changed=True, data=new_location)
-            except Exception as e:
-                module.fail_json(msg=f"Failed to create location: {e}")
-    else:  # state == "absent"
-        if existing_location_mgmt:
-            try:
-                client.locations.delete_location(existing_location_mgmt["id"])
-                module.exit_json(changed=True, message="Location deleted successfully.")
-            except Exception as e:
-                module.fail_json(msg=f"Failed to delete location: {e}")
-        else:
-            module.exit_json(
-                changed=False, message="Location not found, nothing to delete."
-            )
+            create_location = deleteNone({
+                    "name": desired_location.get("name"),
+                    "description": desired_location.get("description"),
+                    "parent_id": desired_location.get("parent_id"),
+                    "up_bandwidth": desired_location.get("up_bandwidth"),
+                    "dn_bandwidth": desired_location.get("dn_bandwidth"),
+                    "city": desired_location.get("city"),
+                    "country": desired_location.get("country"),
+                    "tz": desired_location.get("tz"),
+                    "ip_addresses": desired_location.get("ip_addresses"),
+                    "auth_required": desired_location.get("auth_required"),
+                    "ssl_scan_enabled": desired_location.get("ssl_scan_enabled"),
+                    "idle_time_in_minutes": desired_location.get("idle_time_in_minutes"),
+                    "display_time_unit": desired_location.get("display_time_unit"),
+                    "surrogate_ip": desired_location.get("surrogate_ip"),
+                    "surrogate_ip_enforced_for_known_browsers": desired_location.get("surrogate_ip_enforced_for_known_browsers"),
+                    "surrogate_refresh_time_in_minutes": desired_location.get("surrogate_refresh_time_in_minutes"),
+                    "surrogate_refresh_time_unit": desired_location.get("surrogate_refresh_time_unit"),
+                    "ofw_enabled": desired_location.get("ofw_enabled"),
+                    "ips_control": desired_location.get("ips_control"),
+                    "aup_enabled": desired_location.get("aup_enabled"),
+                    "xff_forward_enabled": desired_location.get("xff_forward_enabled"),
+                    "caution_enabled": desired_location.get("caution_enabled"),
+                    "aup_block_internet_until_accepted": desired_location.get("aup_block_internet_until_accepted"),
+                    "aup_force_ssl_inspection": desired_location.get("aup_force_ssl_inspection"),
+                    "aup_timeout_in_days": desired_location.get("aup_timeout_in_days"),
+                    "profile": desired_location.get("profile"),
+                    "geo_override": desired_location.get("geo_override"),
+                    "latitude": desired_location.get("latitude"),
+                    "longitude": desired_location.get("longitude"),
+                    "other_sub_location": desired_location.get("other_sub_location"),
+                    "other6_sub_location": desired_location.get("other6_sub_location"),
+                    "ipv6_enabled": desired_location.get("ipv6_enabled"),
+                    "ipv6_dns64_prefix": desired_location.get("ipv6_dns64_prefix"),
+                    "iot_discovery_enabled": desired_location.get("iot_discovery_enabled"),
+                    "iot_enforce_policy_set": desired_location.get("iot_enforce_policy_set"),
+                    "vpn_credentials": desired_location.get("vpn_credentials"),
+            })
+            module.warn("Payload Update for SDK: {}".format(create_location))
+            new_location, _, error = client.locations.add_location(**create_location)
+            if error:
+                module.fail_json(msg=f"Error creating location: {to_native(error)}")
+            module.exit_json(changed=True, data=new_location.as_dict())
 
+    elif state == "absent":
+        if existing_location:
+            _, _, error = client.locations.delete_location(location_id=existing_location.get("id"))
+            if error:
+                module.fail_json(msg=f"Error deleting location: {to_native(error)}")
+            module.exit_json(changed=True, data=existing_location)
+        else:
+            module.exit_json(changed=False, data={})
+
+    module.exit_json(changed=False, data={})
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()

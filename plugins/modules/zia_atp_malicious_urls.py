@@ -28,13 +28,13 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 ---
-module: zia_rule_labels_info
-short_description: "Gets a list of rule labels"
+module: zia_atp_malicious_urls_info
+short_description: "Retrieves the malicious URLs added to the denylist"
 description:
-  - "Gets a list of rule labels"
+  - "Retrieves the malicious URLs added to the denylist in the (ATP) policy"
 author:
   - William Guilherme (@willguibr)
-version_added: "1.0.0"
+version_added: "2.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 notes:
@@ -130,67 +130,68 @@ labels:
 """
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    ZIAClientHelper,
-)
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
 
+def normalize_urls(malicious_urls):
+    """Utility to normalize and sort URLs for comparison."""
+    return sorted(set([url.strip().lower() for url in malicious_urls if url]))
 
 def core(module):
-    label_id = module.params.get("id")
-    label_name = module.params.get("name")
-
     client = ZIAClientHelper(module)
-    labels = []
 
-    if label_id is not None:
-        label_obj, _, error = client.rule_labels.get_label(label_id)
-        if error or label_obj is None:
-            module.fail_json(msg=f"Failed to retrieve Rule Label with ID '{label_id}': {to_native(error)}")
-        labels = [label_obj.as_dict()]
-    else:
-        query_params = {}
-        if label_name:
-            query_params["search"] = label_name
+    malicious_urls = module.params.get("malicious_urls")
+    state = module.params.get("state")
 
-        result, _, error = client.rule_labels.list_labels(query_params=query_params)
+    current_list, _, error = client.atp_policy.get_atp_malicious_urls()
+    if error:
+        module.fail_json(msg=f"Error fetching malicious URLs: {to_native(error)}")
+
+    current_normalized = normalize_urls(current_list)
+    desired_normalized = normalize_urls(malicious_urls)
+
+    urls_to_add = list(set(desired_normalized) - set(current_normalized))
+    urls_to_remove = list(set(current_normalized) & set(desired_normalized)) if state == "absent" else []
+
+    module.warn(f"✅ Current list: {current_normalized}")
+    module.warn(f"🎯 Desired list: {desired_normalized}")
+    module.warn(f"➕ URLs to add: {urls_to_add}")
+    module.warn(f"➖ URLs to remove: {urls_to_remove}")
+
+    if module.check_mode:
+        module.exit_json(changed=bool(urls_to_add or urls_to_remove))
+
+    updated_urls = current_normalized
+    changed = False
+
+    if state == "present" and urls_to_add:
+        updated_urls, _, error = client.atp_policy.add_atp_malicious_urls(urls_to_add)
         if error:
-            module.fail_json(msg=f"Error retrieving Rule Labels: {to_native(error)}")
+            module.fail_json(msg=f"Error adding malicious URLs: {to_native(error)}")
+        changed = True
 
-        label_list = [g.as_dict() for g in result] if result else []
+    elif state == "absent" and urls_to_remove:
+        updated_urls, _, error = client.atp_policy.delete_atp_malicious_urls(urls_to_remove)
+        if error:
+            module.fail_json(msg=f"Error removing malicious URLs: {to_native(error)}")
+        changed = True
 
-        if label_name:
-            matched = next((g for g in label_list if g.get("name") == label_name), None)
-            if not matched:
-                available = [g.get("name") for g in label_list]
-                module.fail_json(msg=f"Rule Label with name '{label_name}' not found. Available labels: {available}")
-            labels = [matched]
-        else:
-            labels = label_list
-
-    module.exit_json(changed=False, labels=labels)
-
+    module.exit_json(changed=changed, malicious_urls=updated_urls)
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
-        name=dict(type="str", required=False),
-        id=dict(type="int", required=False),
+        malicious_urls=dict(type="list", elements="str", required=True),
+        state=dict(type="str", choices=["present", "absent"], default="present"),
     )
 
-    module = AnsibleModule(
-        argument_spec=argument_spec,
-        supports_check_mode=False,
-        mutually_exclusive=[["name", "id"]],
-    )
+    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
 
     try:
         core(module)
     except Exception as e:
         module.fail_json(msg=to_native(e), exception=format_exc())
-
 
 if __name__ == "__main__":
     main()

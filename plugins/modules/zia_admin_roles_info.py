@@ -28,13 +28,13 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 ---
-module: zia_admin_role_management_info
+module: zia_admin_roles_info
 short_description: "Gets a list of admin roles"
 description:
   - "Gets a list of admin roles"
 author:
   - William Guilherme (@willguibr)
-version_added: "1.0.0"
+version_added: "2.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 notes:
@@ -104,32 +104,48 @@ roles:
 """
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    ZIAClientHelper,
-)
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
 
 
 def core(module):
-    # role_id = module.params.get("id", None)
+    role_id = module.params.get("id", None)
     role_name = module.params.get("name", None)
     client = ZIAClientHelper(module)
     roles = []
-    if role_name is not None:
-        roles = client.admin_and_role_management.list_roles().to_list()
-        if role_name is not None:
-            role = None
-            for rol in roles:
-                if rol.get("name", None) == role_name:
-                    role = rol
+
+    if role_id:
+        # Get role by ID
+        result, _, error = client.admin_roles.get_role(role_id)
+        if error:
+            module.fail_json(msg=f"Error fetching role with id {role_id}: {to_native(error)}")
+        if result:
+            roles = [result.as_dict()]
+    else:
+        # List roles with optional name filter
+        query_params = {}
+        if role_name:
+            query_params["search"] = role_name
+
+        result, _, error = client.admin_roles.list_roles(query_params=query_params)
+        if error:
+            module.fail_json(msg=f"Error listing roles: {to_native(error)}")
+
+        roles = [role.as_dict() for role in result] if result else []
+
+        # If name was specified but not found in search, try exact match
+        if role_name and not roles:
+            result, _, error = client.admin_roles.list_roles()
+            if error:
+                module.fail_json(msg=f"Error listing all roles: {to_native(error)}")
+
+            all_roles = [role.as_dict() for role in result] if result else []
+            for role in all_roles:
+                if role.get("name") == role_name:
+                    roles = [role]
                     break
-            if role is None:
-                module.fail_json(
-                    msg="Failed to retrieve admin role management: '%s'" % (role_name)
-                )
-            roles = [role]
+
     module.exit_json(changed=False, roles=roles)
 
 
@@ -139,12 +155,15 @@ def main():
         name=dict(type="str", required=False),
         id=dict(type="int", required=False),
     )
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=True,
+        mutually_exclusive=[("name", "id")],
+    )
     try:
         core(module)
     except Exception as e:
         module.fail_json(msg=to_native(e), exception=format_exc())
-
 
 if __name__ == "__main__":
     main()

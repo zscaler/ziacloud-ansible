@@ -31,6 +31,5 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
-
       - name: Run ansible-lint
         uses: ansible/ansible-lint@main

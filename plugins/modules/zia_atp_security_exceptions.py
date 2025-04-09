@@ -28,13 +28,13 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 ---
-module: zia_rule_labels_info
-short_description: "Gets a list of rule labels"
+module: zia_atp_malicious_urls_info
+short_description: "Retrieves the malicious URLs added to the denylist"
 description:
-  - "Gets a list of rule labels"
+  - "Retrieves the malicious URLs added to the denylist in the (ATP) policy"
 author:
   - William Guilherme (@willguibr)
-version_added: "1.0.0"
+version_added: "2.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 notes:
@@ -130,67 +130,73 @@ labels:
 """
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    ZIAClientHelper,
-)
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
 
+def normalize_urls(bypass_urls):
+    """Utility to normalize and sort URLs for comparison."""
+    return sorted(set([url.strip().lower() for url in bypass_urls if url]))
 
 def core(module):
-    label_id = module.params.get("id")
-    label_name = module.params.get("name")
-
     client = ZIAClientHelper(module)
-    labels = []
 
-    if label_id is not None:
-        label_obj, _, error = client.rule_labels.get_label(label_id)
-        if error or label_obj is None:
-            module.fail_json(msg=f"Failed to retrieve Rule Label with ID '{label_id}': {to_native(error)}")
-        labels = [label_obj.as_dict()]
-    else:
-        query_params = {}
-        if label_name:
-            query_params["search"] = label_name
+    bypass_urls = module.params.get("bypass_urls")
+    if bypass_urls is None:
+        module.fail_json(
+            msg="The 'bypass_urls' parameter must be a list. Use `bypass_urls: []` to explicitly provide an empty list."
+        )
 
-        result, _, error = client.rule_labels.list_labels(query_params=query_params)
-        if error:
-            module.fail_json(msg=f"Error retrieving Rule Labels: {to_native(error)}")
+    state = module.params.get("state")
 
-        label_list = [g.as_dict() for g in result] if result else []
+    current_list, _, error = client.atp_policy.get_atp_security_exceptions()
+    if error:
+        module.fail_json(msg=f"Error fetching URLs from bypass list: {to_native(error)}")
 
-        if label_name:
-            matched = next((g for g in label_list if g.get("name") == label_name), None)
-            if not matched:
-                available = [g.get("name") for g in label_list]
-                module.fail_json(msg=f"Rule Label with name '{label_name}' not found. Available labels: {available}")
-            labels = [matched]
+    current_normalized = normalize_urls(current_list)
+    desired_normalized = normalize_urls(bypass_urls)
+
+    module.warn(f"✅ Current list: {current_normalized}")
+    module.warn(f"🎯 Desired list: {desired_normalized}")
+
+    changed = False
+
+    if state == "present":
+        if desired_normalized != current_normalized:
+            changed = True
+
+    elif state == "absent":
+        remaining = [url for url in current_normalized if url not in desired_normalized]
+        if remaining != current_normalized:
+            desired_normalized = remaining
+            changed = True
         else:
-            labels = label_list
+            desired_normalized = current_normalized
 
-    module.exit_json(changed=False, labels=labels)
+    if module.check_mode:
+        module.exit_json(changed=changed)
 
+    if changed:
+        updated, _, error = client.atp_policy.update_atp_security_exceptions(desired_normalized)
+        if error:
+            module.fail_json(msg=f"Error updating ATP security exception list: {to_native(error)}")
+        module.exit_json(changed=True, security_exceptions=updated)
+
+    module.exit_json(changed=False, security_exceptions=current_list)
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
-        name=dict(type="str", required=False),
-        id=dict(type="int", required=False),
+        bypass_urls=dict(type="list", elements="str"),
+        state=dict(type="str", choices=["present", "absent"], default="present"),
     )
 
-    module = AnsibleModule(
-        argument_spec=argument_spec,
-        supports_check_mode=False,
-        mutually_exclusive=[["name", "id"]],
-    )
+    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
 
     try:
         core(module)
     except Exception as e:
         module.fail_json(msg=to_native(e), exception=format_exc())
-
 
 if __name__ == "__main__":
     main()

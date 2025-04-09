@@ -88,12 +88,9 @@ RETURN = r"""
 """
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    ZIAClientHelper,
-)
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
 
 
 def normalize_app_group(group):
@@ -101,102 +98,99 @@ def normalize_app_group(group):
     Normalize network application group data by setting computed values.
     """
     normalized = group.copy()
-
-    computed_values = [
-        "id",
-        "name",
-        "description",
-        "network_applications",
-    ]
+    computed_values = ["id"]
     for attr in computed_values:
         normalized.pop(attr, None)
-
     return normalized
 
 
 def core(module):
-    state = module.params.get("state", None)
+    state = module.params.get("state")
     client = ZIAClientHelper(module)
-    app_group = dict()
-    params = [
-        "id",
-        "name",
-        "description",
-        "network_applications",
-    ]
-    for param_name in params:
-        app_group[param_name] = module.params.get(param_name, None)
-    group_id = app_group.get("id", None)
-    group_name = app_group.get("name", None)
-    existing_app_group = None
-    if group_id is not None:
-        existing_app_group = client.firewall.get_network_app_group(group_id).to_dict()
+
+    app_group = {p: module.params.get(p) for p in ["id", "name", "description", "network_applications"]}
+    group_id = app_group.get("id")
+    group_name = app_group.get("name")
+
+    existing_group = None
+
+    if group_id:
+        result, _, error = client.cloud_firewall.get_network_app_group(group_id)
+        if error:
+            module.fail_json(msg=f"Error fetching network app group with id {group_id}: {to_native(error)}")
+        existing_group = result.as_dict()
     else:
-        app_groups = client.firewall.list_network_app_groups().to_list()
-        if group_name is not None:
-            for app in app_groups:
-                if app.get("name", None) == group_name:
-                    existing_app_group = app
+        result, _, error = client.cloud_firewall.list_network_app_groups()
+        if error:
+            module.fail_json(msg=f"Error listing network app groups: {to_native(error)}")
+        group_list = [g.as_dict() for g in result]
+        if group_name:
+            for g in group_list:
+                if g.get("name") == group_name:
+                    existing_group = g
                     break
 
-    # Normalize and compare existing and desired data
-    normalized_group = normalize_app_group(app_group)
-    normalized_existing_group = (
-        normalize_app_group(existing_app_group) if existing_app_group else {}
+    normalized_desired = normalize_app_group(app_group)
+    normalized_existing = normalize_app_group(existing_group) if existing_group else {}
+
+    differences_detected = any(
+        normalized_desired[k] != normalized_existing.get(k)
+        for k in normalized_desired if k != "id"
     )
 
-    fields_to_exclude = ["id"]
-    differences_detected = False
-    for key, value in normalized_group.items():
-        if key not in fields_to_exclude and normalized_existing_group.get(key) != value:
-            differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {normalized_existing_group.get(key)}, Desired: {value}"
-            )
-
     if module.check_mode:
-        # If in check mode, report changes and exit
-        if state == "present" and (existing_app_group is None or differences_detected):
+        if state == "present" and (existing_group is None or differences_detected):
             module.exit_json(changed=True)
-        elif state == "absent" and existing_app_group is not None:
+        elif state == "absent" and existing_group:
             module.exit_json(changed=True)
         else:
             module.exit_json(changed=False)
 
-    if existing_app_group is not None:
-        id = existing_app_group.get("id")
-        existing_app_group.update(normalized_group)
-        existing_app_group["id"] = id
+    if existing_group:
+        existing_group.update(normalized_desired)
+        existing_group["id"] = existing_group.get("id") or group_id
 
     if state == "present":
-        if existing_app_group is not None:
+        if existing_group:
             if differences_detected:
-                """Update"""
-                existing_app_group = client.firewall.update_network_app_group(
-                    group_id=existing_app_group.get("id", ""),
-                    name=existing_app_group.get("name", ""),
-                    network_applications=existing_app_group.get(
-                        "network_applications", ""
-                    ),
-                    description=existing_app_group.get("description", ""),
-                ).to_dict()
-                module.exit_json(changed=True, data=existing_app_group)
+                group_id_to_update = existing_group.get("id")
+                if not group_id_to_update:
+                    module.fail_json(msg="Cannot update network app group: ID is missing.")
+
+                updated_group, _, error = client.cloud_firewall.update_network_app_group(
+                    group_id=group_id_to_update,
+                    name=app_group.get("name"),
+                    network_applications=app_group.get("network_applications"),
+                    description=app_group.get("description", ""),
+                )
+                if error:
+                    module.fail_json(msg=f"Error updating network app group: {to_native(error)}")
+                module.exit_json(changed=True, data=updated_group.as_dict())
+            else:
+                module.exit_json(changed=False, data=existing_group)
         else:
-            """Create"""
-            app_group = client.firewall.add_network_app_group(
-                name=app_group.get("name", ""),
-                network_applications=app_group.get("network_applications", ""),
+            new_group, _, error = client.cloud_firewall.add_network_app_group(
+                name=app_group.get("name"),
+                network_applications=app_group.get("network_applications"),
                 description=app_group.get("description", ""),
-            ).to_dict()
-            module.exit_json(changed=False, data=app_group)
-    elif state == "absent":
-        if existing_app_group is not None:
-            code = client.firewall.delete_network_app_group(
-                existing_app_group.get("id")
             )
-            if code > 299:
-                module.exit_json(changed=False, data=None)
-            module.exit_json(changed=True, data=existing_app_group)
+            if error:
+                module.fail_json(msg=f"Error creating network app group: {to_native(error)}")
+            module.exit_json(changed=True, data=new_group.as_dict())
+
+    elif state == "absent":
+        if existing_group:
+            group_id_to_delete = existing_group.get("id")
+            if not group_id_to_delete:
+                module.fail_json(msg="Cannot delete network app group: ID is missing.")
+
+            _, _, error = client.cloud_firewall.delete_network_app_group(group_id_to_delete)
+            if error:
+                module.fail_json(msg=f"Error deleting network app group: {to_native(error)}")
+            module.exit_json(changed=True, data=existing_group)
+        else:
+            module.exit_json(changed=False, data={})
+
     module.exit_json(changed=False, data={})
 
 

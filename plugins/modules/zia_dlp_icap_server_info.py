@@ -96,35 +96,39 @@ icaps:
 """
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    ZIAClientHelper,
-)
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
 
 
 def core(module):
-    icap_server_id = module.params.get("id", None)
-    icap_server_name = module.params.get("name", None)
+    icap_server_id = module.params.get("id")
+    icap_server_name = module.params.get("name")
+
     client = ZIAClientHelper(module)
     icaps = []
+
     if icap_server_id is not None:
-        icap = client.dlp.get_dlp_icap_servers(icap_server_id).to_dict()
-        icaps = [icap]
+        icap_obj, _, error = client.dlp_resources.get_dlp_icap_servers(icap_server_id)
+        if error or icap_obj is None:
+            module.fail_json(msg=f"Failed to retrieve DLP ICAP Server with ID '{icap_server_id}': {to_native(error)}")
+        icaps = [icap_obj.as_dict()]
     else:
-        icaps = client.dlp.list_dlp_icap_servers().to_list()
-        if icap_server_name is not None:
-            icap = None
-            for dlp in icaps:
-                if dlp.get("name", None) == icap_server_name:
-                    icap = dlp
-                    break
-            if icap is None:
-                module.fail_json(
-                    msg="Failed to retrieve dlp icap server: '%s'" % (icap_server_name)
-                )
-            icaps = [icap]
+        result, _, error = client.dlp_resources.list_dlp_icap_servers()
+        if error:
+            module.fail_json(msg=f"Error retrieving DLP ICAP Servers: {to_native(error)}")
+
+        icap_list = [i.as_dict() for i in result] if result else []
+
+        if icap_server_name:
+            matched = next((i for i in icap_list if i.get("name") == icap_server_name), None)
+            if not matched:
+                available = [i.get("name") for i in icap_list]
+                module.fail_json(msg=f"DLP ICAP Server named '{icap_server_name}' not found. Available: {available}")
+            icaps = [matched]
+        else:
+            icaps = icap_list
+
     module.exit_json(changed=False, icaps=icaps)
 
 
@@ -134,7 +138,13 @@ def main():
         name=dict(type="str", required=False),
         id=dict(type="int", required=False),
     )
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=False,
+        mutually_exclusive=[["name", "id"]],
+    )
+
     try:
         core(module)
     except Exception as e:

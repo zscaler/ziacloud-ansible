@@ -236,46 +236,64 @@ locations:
 
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    ZIAClientHelper,
-)
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
 
 
 def core(module):
+    location_id = module.params.get("id")
+    location_name = module.params.get("name")
+
     client = ZIAClientHelper(module)
-    location_name = module.params.get("name", None)
-    location_id = module.params.get("id", None)
     locations = []
+
     if location_id is not None:
-        locationBox = client.locations.get_location(location_id=location_id)
-        if locationBox is None:
-            module.fail_json(
-                msg="Failed to retrieve location management ID: '%s'" % (location_id)
-            )
-        locations = [locationBox.to_dict()]
-    elif location_name is not None:
-        locationBox = client.locations.get_location(location_name=location_name)
-        if locationBox is None:
-            module.fail_json(
-                msg="Failed to retrieve location management Name: '%s'"
-                % (location_name)
-            )
-        locations = [locationBox.to_dict()]
+        location_obj, _, error = client.locations.get_location(location_id)
+        if error or location_obj is None:
+            module.fail_json(msg=f"Failed to retrieve location with ID '{location_id}': {to_native(error)}")
+        locations = [location_obj.as_dict()]
     else:
-        locations = client.locations.list_locations().to_list()
+        # ✅ Collect all parameters into query_params
+        query_params = {}
+        if location_name:
+            query_params["search"] = location_name
+
+        for param in [
+            "ssl_scan_enabled", "xff_enabled",
+            "auth_required", "bw_enforced", "enable_iot"
+        ]:
+            val = module.params.get(param)
+            if val is not None:
+                query_params[param] = val
+
+        result, _, error = client.locations.list_locations(query_params=query_params)
+        if error:
+            module.fail_json(msg=f"Error retrieving locations: {to_native(error)}")
+
+        locations = [l.as_dict() for l in result] if result else []
+
     module.exit_json(changed=False, locations=locations)
 
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
-        name=dict(type="str", required=False),
         id=dict(type="int", required=False),
+        name=dict(type="str", required=False),
+        ssl_scan_enabled=dict(type="bool", required=False),
+        xff_enabled=dict(type="bool", required=False),
+        auth_required=dict(type="bool", required=False),
+        bw_enforced=dict(type="bool", required=False),
+        enable_iot=dict(type="bool", required=False),
     )
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=False,
+        mutually_exclusive=[["id", "name"]],
+    )
+
     try:
         core(module)
     except Exception as e:

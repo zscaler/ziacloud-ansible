@@ -102,7 +102,6 @@ RETURN = r"""
 
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
@@ -115,24 +114,18 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
     ZIAClientHelper,
 )
 
-
-def normalize_static_ip(static):
-    """
-    Normalize static ip data by setting computed values.
-    """
-    normalized = static.copy()
-
+def normalize_static_ip(static_ip):
+    """Normalize static ip data by removing computed values"""
+    normalized = static_ip.copy() if static_ip else {}
     computed_values = ["id"]
     for attr in computed_values:
         normalized.pop(attr, None)
-
     return normalized
 
-
 def core(module):
-    state = module.params.get("state", None)
+    state = module.params.get("state")
     client = ZIAClientHelper(module)
-    static_ip = dict()
+
     params = [
         "id",
         "ip_address",
@@ -141,10 +134,21 @@ def core(module):
         "longitude",
         "routable_ip",
         "comment",
+        "city"
     ]
-    for param_name in params:
-        static_ip[param_name] = module.params.get(param_name, None)
 
+    static_ip = {param: module.params.get(param) for param in params}
+    static_ip_id = static_ip.get("id")
+    ip_address = static_ip.get("ip_address")
+
+    # Fix city parameter if it's a list (from playbook input)
+    if isinstance(static_ip.get("city"), list):
+        if len(static_ip["city"]) > 0 and isinstance(static_ip["city"][0], dict):
+            static_ip["city"] = static_ip["city"][0]
+        else:
+            static_ip["city"] = None
+
+    # Validate geo override requirements
     if static_ip.get("geo_override") and (
         static_ip.get("latitude") is None or static_ip.get("longitude") is None
     ):
@@ -152,10 +156,9 @@ def core(module):
             msg="When 'geo_override' is set to True, 'latitude' and 'longitude' must be provided."
         )
 
-    # Validate latitude and longitude if provided
+    # Validate coordinates if provided
     latitude = static_ip.get("latitude")
     longitude = static_ip.get("longitude")
-
     if latitude is not None and longitude is not None:
         unused_result_lat, lat_errors = validate_latitude(latitude)
         unused_result_lon, lon_errors = validate_longitude(longitude)
@@ -164,123 +167,93 @@ def core(module):
         if lon_errors:
             module.fail_json(msg="; ".join(lon_errors))
 
-    static_ip_id = static_ip.get("id", None)
-    ip_address = static_ip.get("ip_address", None)
     existing_static_ip = None
-    if static_ip_id is not None:
-        existing_static_ip = client.traffic.get_static_ip(static_ip_id).to_dict()
+    if static_ip_id:
+        result = client.traffic_static_ip.get_static_ip(static_ip_id)
+        if result[2]:  # Error check
+            module.fail_json(msg=f"Error fetching static IP ID {static_ip_id}: {to_native(result[2])}")
+        existing_static_ip = result[0].as_dict() if result[0] else None
     else:
-        static_ips = client.traffic.list_static_ips().to_list()
-        if ip_address is not None:
-            for ip in static_ips:
-                if ip.get("ip_address", None) == ip_address:
-                    existing_static_ip = ip
-                    break
+        result = client.traffic_static_ip.list_static_ips()
+        if result[2]:  # Error check
+            module.fail_json(msg=f"Error listing static IPs: {to_native(result[2])}")
+        for ip in result[0]:
+            if ip.ip_address == ip_address:
+                existing_static_ip = ip.as_dict()
+                break
 
-    # Normalize and compare existing and desired application data
-    desired_static_ip = normalize_static_ip(static_ip)
-    current_static_ip = (
-        normalize_static_ip(existing_static_ip) if existing_static_ip else {}
-    )
+    # Normalize and compare states
+    desired = normalize_static_ip(static_ip)
+    current = normalize_static_ip(existing_static_ip) if existing_static_ip else {}
 
-    fields_to_exclude = ["id"]
+    # Drift detection
     differences_detected = False
-    for key, value in desired_static_ip.items():
-        if key not in fields_to_exclude:
-            if key in ["latitude", "longitude"]:  # Special handling for coordinates
-                if not diff_suppress_func_coordinate(current_static_ip.get(key), value):
-                    differences_detected = True
-                    # module.warn(
-                    #     f"Difference detected in {key}. Current: {current_static_ip.get(key)}, Desired: {value}"
-                    # )
-            elif current_static_ip.get(key) != value:
+    for key, value in desired.items():
+        if key in ["latitude", "longitude"]:  # Special handling for coordinates
+            if not diff_suppress_func_coordinate(current.get(key), value):
                 differences_detected = True
-                # module.warn(
-                #     f"Difference detected in {key}. Current: {current_static_ip.get(key)}, Desired: {value}"
-                # )
+                module.warn(
+                    f"Difference detected in {key}. Current: {current.get(key)}, Desired: {value}"
+                )
+        elif current.get(key) != value:
+            differences_detected = True
+            module.warn(
+                f"Difference detected in {key}. Current: {current.get(key)}, Desired: {value}"
+            )
 
     if module.check_mode:
-        # If in check mode, report changes and exit
         if state == "present" and (existing_static_ip is None or differences_detected):
             module.exit_json(changed=True)
-        elif state == "absent" and existing_static_ip is not None:
+        elif state == "absent" and existing_static_ip:
             module.exit_json(changed=True)
         else:
             module.exit_json(changed=False)
 
-    if existing_static_ip is not None:
-        id = existing_static_ip.get("id")
-        existing_static_ip.update(desired_static_ip)
-        existing_static_ip["id"] = id
-
     if state == "present":
-        if existing_static_ip is not None:
-            if latitude is not None and longitude is not None:
-                existing_lat = existing_static_ip.get("latitude")
-                existing_long = existing_static_ip.get("longitude")
-                new_lat = static_ip.get("latitude")
-                new_long = static_ip.get("longitude")
-
-                # Compare and update latitude and longitude if necessary
-                if new_lat is not None and not diff_suppress_func_coordinate(
-                    existing_lat, new_lat
-                ):
-                    existing_static_ip["latitude"] = new_lat
-                if new_long is not None and not diff_suppress_func_coordinate(
-                    existing_long, new_long
-                ):
-                    existing_static_ip["longitude"] = new_long
+        if existing_static_ip:
             if differences_detected:
-                existing_static_ip.update(desired_static_ip)
-                existing_static_ip["id"] = id
-                """Update"""
-                existing_static_ip = deleteNone(
-                    dict(
-                        static_ip_id=existing_static_ip.get("id", ""),
-                        comment=existing_static_ip.get("comment", ""),
-                        geo_override=existing_static_ip.get("geo_override", ""),
-                        routable_ip=existing_static_ip.get("routable_ip", ""),
-                        latitude=existing_static_ip.get("latitude", ""),
-                        longitude=existing_static_ip.get("longitude", ""),
-                    )
-                )
-                existing_static_ip = client.traffic.update_static_ip(
-                    **existing_static_ip
-                ).to_dict()
-                module.exit_json(changed=True, data=existing_static_ip)
-            else:
-                """No Changes Needed"""
+                update_data = deleteNone({
+                    "static_ip_id": existing_static_ip["id"],
+                    "ip_address": existing_static_ip.get("ip_address"),
+                    "comment": static_ip.get("comment"),
+                    "geo_override": static_ip.get("geo_override"),
+                    "routable_ip": static_ip.get("routable_ip"),
+                    "latitude": static_ip.get("latitude"),
+                    "longitude": static_ip.get("longitude"),
+                    "city": static_ip.get("city"),
+                })
+                module.warn("Payload Update for SDK: {}".format(update_data))
+                module.warn("Static IP address attributes cannot be modified at this time. Update skipped.")
+                # Skip the actual API call but return the desired state
                 module.exit_json(
-                    changed=False, data=existing_static_ip, msg="No changes detected."
+                    changed=False,
+                    data=existing_static_ip,
+                    msg="Static IP updates are currently not supported by the API. Update skipped."
                 )
+            else:
+                module.exit_json(changed=False, data=existing_static_ip)
         else:
-            """Create"""
-            static_ip = deleteNone(
-                dict(
-                    ip_address=static_ip.get("ip_address", ""),
-                    comment=static_ip.get("comment", ""),
-                    geo_override=static_ip.get("geo_override", ""),
-                    routable_ip=static_ip.get("routable_ip", ""),
-                    latitude=static_ip.get("latitude", ""),
-                    longitude=static_ip.get("longitude", ""),
-                )
-            )
-            static_ip = client.traffic.add_static_ip(**static_ip).to_dict()
-            module.exit_json(changed=True, data=static_ip)
-    elif (
-        state == "absent"
-        and existing_static_ip is not None
-        and existing_static_ip.get("id") is not None
-    ):
-        code = client.traffic.delete_static_ip(
-            static_ip_id=existing_static_ip.get("id")
-        )
-        if code > 299:
-            module.exit_json(changed=False, data=None)
-        module.exit_json(changed=True, data=existing_static_ip)
-
-    module.exit_json(changed=False, data={})
-
+            create_data = deleteNone({
+                "ip_address": static_ip.get("ip_address"),
+                "comment": static_ip.get("comment"),
+                "geo_override": static_ip.get("geo_override"),
+                "routable_ip": static_ip.get("routable_ip"),
+                "latitude": static_ip.get("latitude"),
+                "longitude": static_ip.get("longitude"),
+                "city": static_ip.get("city"),
+            })
+            module.warn("Payload Update for SDK: {}".format(create_data))
+            created = client.traffic_static_ip.add_static_ip(**create_data)
+            if created[2]:
+                module.fail_json(msg=f"Error creating static IP: {to_native(created[2])}")
+            module.exit_json(changed=True, data=created[0].as_dict())
+    elif state == "absent":
+        if existing_static_ip:
+            deleted = client.traffic_static_ip.delete_static_ip(static_ip_id=existing_static_ip["id"])
+            if deleted[2]:
+                module.fail_json(msg=f"Error deleting static IP: {to_native(deleted[2])}")
+            module.exit_json(changed=True, data=existing_static_ip)
+        module.exit_json(changed=False, data={})
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
@@ -288,6 +261,13 @@ def main():
         id=dict(type="int", required=False),
         ip_address=dict(type="str", required=False),
         comment=dict(type="str", required=False),
+        city=dict(
+            type="dict",
+            options=dict(
+                id=dict(type="int", required=True)
+            ),
+            required=False
+        ),
         geo_override=dict(type="bool", required=False),
         latitude=dict(type="float", required=False),
         longitude=dict(type="float", required=False),
@@ -299,7 +279,6 @@ def main():
         core(module)
     except Exception as e:
         module.fail_json(msg=to_native(e), exception=format_exc())
-
 
 if __name__ == "__main__":
     main()

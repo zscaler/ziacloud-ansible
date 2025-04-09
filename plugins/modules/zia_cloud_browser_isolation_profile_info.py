@@ -107,46 +107,35 @@ profiles:
 
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    ZIAClientHelper,
-)
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
 
 
 def core(module):
-    profile_id = module.params.get("id", None)
-    profile_name = module.params.get("name", None)
-    client = ZIAClientHelper(module)
-    profiles = []
+    profile_id = module.params.get("id")
+    profile_name = module.params.get("name")
 
-    if profile_id is not None:
-        # Fetch rule by ID
-        profilesBox = client.isolation_profile.get_profiles_by_id(profile_id=profile_id)
-        if profilesBox is None:
-            module.fail_json(
-                msg="Failed to retrieve cloud browser profile ID: '%s'" % (profile_id)
-            )
-        profiles = [profilesBox.to_dict()]
+    client = ZIAClientHelper(module)
+
+    result, _, error = client.cloud_browser_isolation.list_isolation_profiles()
+    if error:
+        module.fail_json(msg=f"Error retrieving isolation profiles: {to_native(error)}")
+
+    all_profiles = [p.as_dict() for p in result] if result else []
+
+    # Apply in-memory filtering
+    profiles = []
+    if profile_id:
+        profiles = [p for p in all_profiles if str(p.get("id")) == str(profile_id)]
+        if not profiles:
+            module.fail_json(msg=f"Isolation profile with ID '{profile_id}' not found.")
+    elif profile_name:
+        profiles = [p for p in all_profiles if p.get("name") == profile_name]
+        if not profiles:
+            module.fail_json(msg=f"Isolation profile with name '{profile_name}' not found.")
     else:
-        # Fetch all profiles and search by name
-        all_profiles = client.isolation_profile.list_isolation_profiles().to_list()
-        if profile_name is not None:
-            # Iterate over profiles to find the matching name
-            for profile in all_profiles:
-                if profile.get("name") == profile_name:
-                    profiles = [profile]
-                    break
-            # Handle case where no rule with the given name is found
-            if not profiles:
-                module.fail_json(
-                    msg="Failed to retrieve cloud browser profile : '%s'"
-                    % (profile_name)
-                )
-        else:
-            # Return all profiles if no specific name is provided
-            profiles = all_profiles
+        profiles = all_profiles
 
     module.exit_json(changed=False, profiles=profiles)
 
@@ -157,7 +146,8 @@ def main():
         name=dict(type="str", required=False),
         id=dict(type="str", required=False),
     )
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+
+    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=False)
     try:
         core(module)
     except Exception as e:

@@ -137,15 +137,10 @@ RETURN = r"""
 """
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
-    validate_iso3166_alpha2,
-)
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    ZIAClientHelper,
-)
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import validate_iso3166_alpha2
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
 
 
 def normalize_ip_group(group):
@@ -154,20 +149,13 @@ def normalize_ip_group(group):
     """
     normalized = group.copy()
 
-    computed_values = [
-        "id",
-        "creation_time",
-        "modified_by",
-        "modified_time",
-    ]
+    computed_values = ["id", "creation_time", "modified_by", "modified_time"]
     for attr in computed_values:
         normalized.pop(attr, None)
 
-    # Sort the addresses list to ensure order is ignored during comparison
     if "addresses" in normalized and normalized["addresses"]:
         normalized["addresses"] = sorted(normalized["addresses"])
 
-    # Convert None values for lists to empty lists for comparison purposes
     list_fields = ["ip_categories", "url_categories", "countries"]
     for field in list_fields:
         if normalized.get(field) is None:
@@ -177,128 +165,117 @@ def normalize_ip_group(group):
 
 
 def core(module):
-    state = module.params.get("state", None)
+    state = module.params.get("state")
     client = ZIAClientHelper(module)
-    destination_group = {}
-    params = [
-        "id",
-        "name",
-        "description",
-        "type",
-        "addresses",
-        "ip_categories",
-        "url_categories",
-        "countries",
-    ]
-    for param_name in params:
-        destination_group[param_name] = module.params.get(param_name)
 
-    # Perform validation and prepending 'COUNTRY_' for countries list
+    destination_group = {p: module.params.get(p) for p in [
+        "id", "name", "description", "type",
+        "addresses", "ip_categories", "url_categories", "countries"
+    ]}
+
+    # Validate countries and convert to COUNTRY_ prefix
     countries = destination_group.get("countries")
     if countries:
-        validated_countries = []
-        for country_code in countries:
-            if validate_iso3166_alpha2(country_code):
-                validated_countries.append(f"COUNTRY_{country_code}")
+        validated = []
+        for code in countries:
+            if validate_iso3166_alpha2(code):
+                validated.append(f"COUNTRY_{code}")
             else:
-                module.fail_json(
-                    msg=f"The country code '{country_code}' is not a valid ISO3166 Alpha2 code."
-                )
-        destination_group["countries"] = validated_countries
+                module.fail_json(msg=f"The country code '{code}' is not valid.")
+        destination_group["countries"] = validated
 
-    # Now that destination_group is populated, perform the conditional validation check
-    destination_type = destination_group["type"]
-    ip_categories = destination_group["ip_categories"]
-    countries = destination_group["countries"]
+    # If type is DSTN_OTHER, either ip_categories or countries must be provided
+    if destination_group["type"] == "DSTN_OTHER" and not (
+        destination_group.get("ip_categories") or destination_group.get("countries")
+    ):
+        module.fail_json(msg="'ip_categories' or 'countries' must be set when 'type' is 'DSTN_OTHER'.")
 
-    # Check if the type is DSTN_OTHER, then either ip_categories or countries should be set
-    if destination_type == "DSTN_OTHER" and not (ip_categories or countries):
-        module.fail_json(
-            msg="'ip_categories' or 'countries' must be set when 'type' is 'DSTN_OTHER'."
-        )
+    group_id = destination_group.get("id")
+    group_name = destination_group.get("name")
+    existing_group = None
 
-    group_id = destination_group.get("id", None)
-    group_name = destination_group.get("name", None)
-    existing_dest_ip_group = None
-
-    if group_id is not None:
-        existing_dest_ip_group = client.firewall.get_ip_destination_group(
-            group_id
-        ).to_dict()
+    if group_id:
+        result, _, error = client.cloud_firewall.get_ip_destination_group(group_id)
+        if error:
+            module.fail_json(msg=f"Error retrieving group with ID {group_id}: {to_native(error)}")
+        existing_group = result.as_dict()
     else:
-        dest_groups = client.firewall.list_ip_destination_groups().to_list()
-        if group_name is not None:
-            for ip in dest_groups:
-                if ip.get("name", None) == group_name:
-                    existing_dest_ip_group = ip
-                    break
+        result, _, error = client.cloud_firewall.list_ip_destination_groups()
+        if error:
+            module.fail_json(msg=f"Error listing groups: {to_native(error)}")
+        all_groups = [g.as_dict() for g in result]
+        for g in all_groups:
+            if g.get("name") == group_name:
+                existing_group = g
+                break
 
-    # Normalize and compare existing and desired data
-    normalized_group = normalize_ip_group(destination_group)
-    normalized_existing_group = (
-        normalize_ip_group(existing_dest_ip_group) if existing_dest_ip_group else {}
+    normalized_desired = normalize_ip_group(destination_group)
+    normalized_existing = normalize_ip_group(existing_group) if existing_group else {}
+
+    differences_detected = any(
+        normalized_desired[k] != normalized_existing.get(k)
+        for k in normalized_desired if k != "id"
     )
 
-    fields_to_exclude = ["id"]
-    differences_detected = False
-    for key, value in normalized_group.items():
-        if key not in fields_to_exclude and normalized_existing_group.get(key) != value:
-            differences_detected = True
-            # module.warn(
-            #     f"Difference detected in {key}. Current: {normalized_existing_group.get(key)}, Desired: {value}"
-            # )
-
     if module.check_mode:
-        # If in check mode, report changes and exit
-        if state == "present" and (
-            existing_dest_ip_group is None or differences_detected
-        ):
+        if state == "present" and (existing_group is None or differences_detected):
             module.exit_json(changed=True)
-        elif state == "absent" and existing_dest_ip_group is not None:
+        if state == "absent" and existing_group:
             module.exit_json(changed=True)
-        else:
-            module.exit_json(changed=False)
+        module.exit_json(changed=False)
 
-    if existing_dest_ip_group is not None:
-        id = existing_dest_ip_group.get("id")
-        existing_dest_ip_group.update(normalized_group)
-        existing_dest_ip_group["id"] = id
+    if existing_group:
+        existing_group.update(normalized_desired)
+        existing_group["id"] = existing_group.get("id") or group_id
 
     if state == "present":
-        if existing_dest_ip_group is not None:
+        if existing_group:
             if differences_detected:
-                """Update"""
-                existing_dest_ip_group = client.firewall.update_ip_destination_group(
-                    group_id=existing_dest_ip_group.get("id", ""),
-                    name=existing_dest_ip_group.get("name", ""),
-                    type=existing_dest_ip_group.get("type", ""),
-                    addresses=existing_dest_ip_group.get("addresses", ""),
-                    description=existing_dest_ip_group.get("description", ""),
-                    ip_categories=existing_dest_ip_group.get("ip_categories", ""),
-                    url_categories=existing_dest_ip_group.get("url_categories", ""),
-                    countries=existing_dest_ip_group.get("countries", ""),
-                ).to_dict()
-                module.exit_json(changed=True, data=existing_dest_ip_group)
+                group_id_to_update = existing_group.get("id")
+                if not group_id_to_update:
+                    module.fail_json(msg="Cannot update destination group: ID is missing.")
+
+                updated_group, _, error = client.cloud_firewall.update_ip_destination_group(
+                    group_id=group_id_to_update,
+                    name=destination_group.get("name"),
+                    type=destination_group.get("type"),
+                    addresses=destination_group.get("addresses", []),
+                    description=destination_group.get("description", ""),
+                    ip_categories=destination_group.get("ip_categories", []),
+                    url_categories=destination_group.get("url_categories", []),
+                    countries=destination_group.get("countries", []),
+                )
+                if error:
+                    module.fail_json(msg=f"Error updating group: {to_native(error)}")
+                module.exit_json(changed=True, data=updated_group.as_dict())
+            else:
+                module.exit_json(changed=False, data=existing_group)
         else:
-            """Create"""
-            destination_group = client.firewall.add_ip_destination_group(
-                name=destination_group.get("name", ""),
-                type=destination_group.get("type", ""),
-                addresses=destination_group.get("addresses", ""),
+            new_group, _, error = client.cloud_firewall.add_ip_destination_group(
+                name=destination_group["name"],
+                type=destination_group["type"],
+                addresses=destination_group.get("addresses", []),
                 description=destination_group.get("description", ""),
-                ip_categories=destination_group.get("ip_categories", ""),
-                url_categories=destination_group.get("url_categories", ""),
-                countries=destination_group.get("countries", ""),
-            ).to_dict()
-            module.exit_json(changed=True, data=destination_group)
-    elif state == "absent":
-        if existing_dest_ip_group is not None:
-            code = client.firewall.delete_ip_destination_group(
-                existing_dest_ip_group.get("id")
+                ip_categories=destination_group.get("ip_categories", []),
+                url_categories=destination_group.get("url_categories", []),
+                countries=destination_group.get("countries", []),
             )
-            if code > 299:
-                module.exit_json(changed=False, data=None)
-            module.exit_json(changed=True, data=existing_dest_ip_group)
+            if error:
+                module.fail_json(msg=f"Error creating group: {to_native(error)}")
+            module.exit_json(changed=True, data=new_group.as_dict())
+
+    elif state == "absent":
+        if existing_group:
+            group_id_to_delete = existing_group.get("id")
+            if not group_id_to_delete:
+                module.fail_json(msg="Cannot delete destination group: ID is missing.")
+            _, _, error = client.cloud_firewall.delete_ip_destination_group(group_id_to_delete)
+            if error:
+                module.fail_json(msg=f"Error deleting group: {to_native(error)}")
+            module.exit_json(changed=True, data=existing_group)
+        else:
+            module.exit_json(changed=False, data={})
+
     module.exit_json(changed=False, data={})
 
 
@@ -308,11 +285,7 @@ def main():
         id=dict(type="int", required=False),
         name=dict(type="str", required=True),
         description=dict(type="str", required=False),
-        type=dict(
-            type="str",
-            required=False,
-            choices=["DSTN_IP", "DSTN_FQDN", "DSTN_DOMAIN", "DSTN_OTHER"],
-        ),
+        type=dict(type="str", required=False, choices=["DSTN_IP", "DSTN_FQDN", "DSTN_DOMAIN", "DSTN_OTHER"]),
         addresses=dict(type="list", elements="str", required=False),
         ip_categories=dict(type="list", elements="str", required=False),
         url_categories=dict(type="list", elements="str", required=False),
