@@ -115,13 +115,12 @@ def core(module):
 
         module.exit_json(
             changed=False,
-            behavioral_analysis=behavioral_analysis_data,
-            file_hash_count=file_hash_count_data,
+            behavioral_analysis=behavioral_analysis_data.as_dict() if hasattr(behavioral_analysis_data, "as_dict") else behavioral_analysis_data,
+            file_hash_count=file_hash_count_data.as_dict() if hasattr(file_hash_count_data, "as_dict") else file_hash_count_data,
         )
 
     except Exception as e:
         module.fail_json(msg=to_native(e), exception=format_exc())
-
 
 
 def main():

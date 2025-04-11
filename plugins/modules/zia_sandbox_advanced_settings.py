@@ -122,7 +122,6 @@ def core(module):
     client = ZIAClientHelper(module)
     sandbox_api = client.sandbox
 
-    # ✅ Unpack tuple for behavioral analysis
     current_data, _, error = sandbox_api.get_behavioral_analysis()
     if error or not current_data:
         module.fail_json(msg=f"Error retrieving behavioral analysis config: {to_native(error)}")

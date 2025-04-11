@@ -70,64 +70,50 @@ from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import normalize_list
 
 
 def core(module):
-    state = module.params.get("state", None)
-    urls = module.params.get("urls", [])
-
     client = ZIAClientHelper(module)
-    auth_settings_api = client.authentication_settings
 
-    # Get current exempted URLs
-    current_urls, response, error = auth_settings_api.get_exempted_urls()
+    state = module.params.get("state")
+    bypass_urls = module.params.get("urls") or []
+
+    current_urls, _, error = client.authentication_settings.get_exempted_urls()
     if error:
         module.fail_json(msg=f"Failed to get exempted URLs: {to_native(error)}")
 
+    current_normalized = normalize_list(current_urls)
+    desired_normalized = normalize_list(bypass_urls)
+
+    module.warn(f"📦 Current exempt list: {current_normalized}")
+    module.warn(f"📥 Desired exempt list: {desired_normalized}")
+
+    changed = False
+
     if state == "present":
-        # Filter URLs that aren't already exempted
-        new_urls = [url for url in urls if url not in current_urls]
-
-        if new_urls:
-            if module.check_mode:
-                # Simulate adding URLs without making changes
-                module.exit_json(
-                    changed=True,
-                    msg="URLs would be added.",
-                    exempted_urls=current_urls + new_urls,
-                )
-
-            # Add new URLs to exempt list
-            updated_urls, response, error = auth_settings_api.add_urls_to_exempt_list(new_urls)
-            if error:
-                module.fail_json(msg=f"Failed to add URLs to exempt list: {to_native(error)}")
-
-            module.exit_json(changed=True, exempted_urls=updated_urls)
-        else:
-            module.exit_json(changed=False, msg="No new URLs to add.")
+        urls_to_add = list(set(desired_normalized) - set(current_normalized))
+        if urls_to_add:
+            changed = True
+            if not module.check_mode:
+                updated, _, error = client.authentication_settings.add_urls_to_exempt_list(urls_to_add)
+                if error:
+                    module.fail_json(msg=f"Failed to add URLs to exempt list: {to_native(error)}")
+                module.exit_json(changed=True, exempted_urls=updated)
+        module.exit_json(changed=changed, exempted_urls=current_normalized)
 
     elif state == "absent":
-        # Filter URLs that are currently exempted
-        urls_to_remove = [url for url in urls if url in current_urls]
-
+        urls_to_remove = list(set(desired_normalized) & set(current_normalized))
         if urls_to_remove:
-            if module.check_mode:
-                # Simulate removing URLs without making changes
-                updated_list = [url for url in current_urls if url not in urls_to_remove]
-                module.exit_json(
-                    changed=True,
-                    msg="URLs would be removed.",
-                    exempted_urls=updated_list,
-                )
+            changed = True
+            if not module.check_mode:
+                updated, _, error = client.authentication_settings.delete_urls_from_exempt_list(urls_to_remove)
+                if error:
+                    module.fail_json(msg=f"Failed to remove URLs from exempt list: {to_native(error)}")
+                module.exit_json(changed=True, exempted_urls=updated)
+        module.exit_json(changed=changed, exempted_urls=current_normalized)
 
-            # Remove URLs from exempt list
-            updated_urls, response, error = auth_settings_api.delete_urls_from_exempt_list(urls_to_remove)
-            if error:
-                module.fail_json(msg=f"Failed to remove URLs from exempt list: {to_native(error)}")
-
-            module.exit_json(changed=True, exempted_urls=updated_urls)
-        else:
-            module.exit_json(changed=False, msg="URLs not in the exempted list.")
+    module.exit_json(changed=False, exempted_urls=current_normalized)
 
 
 def main():
