@@ -28,10 +28,10 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 ---
-module: zia_atp_malicious_urls_info
-short_description: "Retrieves the malicious URLs added to the denylist"
+module: zia_atp_security_exceptions
+short_description: "Updates security exceptions for the ATP policy"
 description:
-  - "Retrieves the malicious URLs added to the denylist in the (ATP) policy"
+  - "Updates security exceptions for the ATP policy"
 author:
   - William Guilherme (@willguibr)
 version_added: "2.0.0"
@@ -42,101 +42,45 @@ notes:
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
   - zscaler.ziacloud.fragments.documentation
+  - zscaler.ziacloud.fragments.state
 
 options:
-  id:
-    description: "The unique identifier for the rule label."
-    type: int
+  bypass_urls:
+    description: "Allowlist URLs that are not inspected by the ATP policy"
+    type: list
+    elements: str
     required: false
-  name:
-    description: "The rule label name."
-    required: false
-    type: str
 """
 
 EXAMPLES = r"""
-- name: Gets all list of rule label
-  zscaler.ziacloud.zia_rule_labels_info:
+- name: Updates security exceptions for the ATP policy
+  zscaler.ziacloud.zia_atp_security_exceptions:
     provider: '{{ provider }}'
-
-- name: Gets a list of rule label by name
-  zscaler.ziacloud.zia_rule_labels_info:
-    provider: '{{ provider }}'
-    name: "example"
+    bypass_urls:
+      - goodurl01.acme.com
+      - goodurl02.acme.com
+      - goodurl03.acme.com
+      - goodurl04.acme.com
+      - goodurl05.acme.com
+      - goodurl06.acme.com
 """
 
 RETURN = r"""
-labels:
-  description: A list of rule labels fetched based on the given criteria.
-  returned: always
-  type: list
-  elements: dict
-  contains:
-    id:
-      description: The unique identifier for the rule label.
-      returned: always
-      type: int
-      sample: 3687131
-    name:
-      description: The name of the rule label.
-      returned: always
-      type: str
-      sample: "Example"
-    description:
-      description: A description of the rule label.
-      returned: always
-      type: str
-      sample: "Example description"
-    created_by:
-      description: Information about the user who created the rule label.
-      returned: always
-      type: complex
-      contains:
-        id:
-          description: The identifier of the user who created the rule label.
-          returned: always
-          type: int
-          sample: 44772836
-        name:
-          description: The name of the user who created the rule label.
-          returned: always
-          type: str
-          sample: "admin@44772833.zscalertwo.net"
-    last_modified_by:
-      description: Information about the user who last modified the rule label.
-      returned: always
-      type: complex
-      contains:
-        id:
-          description: The identifier of the user who last modified the rule label.
-          returned: always
-          type: int
-          sample: 44772836
-        name:
-          description: The name of the user who last modified the rule label.
-          returned: always
-          type: str
-          sample: "admin@44772833.zscalertwo.net"
-    last_modified_time:
-      description: The Unix timestamp when the rule label was last modified.
-      returned: always
-      type: int
-      sample: 1721347034
-    referenced_rule_count:
-      description: The number of rules that reference this label.
-      returned: always
-      type: int
-      sample: 0
+#  Bypass URL exceptions.
 """
 
 from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
+
 
 def normalize_urls(bypass_urls):
     """Utility to normalize and sort URLs for comparison."""
     return sorted(set([url.strip().lower() for url in bypass_urls if url]))
+
 
 def core(module):
     client = ZIAClientHelper(module)
@@ -149,9 +93,11 @@ def core(module):
 
     state = module.params.get("state")
 
-    current_list, _, error = client.atp_policy.get_atp_security_exceptions()
+    current_list, _unused, error = client.atp_policy.get_atp_security_exceptions()
     if error:
-        module.fail_json(msg=f"Error fetching URLs from bypass list: {to_native(error)}")
+        module.fail_json(
+            msg=f"Error fetching URLs from bypass list: {to_native(error)}"
+        )
 
     current_normalized = normalize_urls(current_list)
     desired_normalized = normalize_urls(bypass_urls)
@@ -177,17 +123,22 @@ def core(module):
         module.exit_json(changed=changed)
 
     if changed:
-        updated, _, error = client.atp_policy.update_atp_security_exceptions(desired_normalized)
+        updated, _unused, error = client.atp_policy.update_atp_security_exceptions(
+            desired_normalized
+        )
         if error:
-            module.fail_json(msg=f"Error updating ATP security exception list: {to_native(error)}")
+            module.fail_json(
+                msg=f"Error updating ATP security exception list: {to_native(error)}"
+            )
         module.exit_json(changed=True, security_exceptions=updated)
 
     module.exit_json(changed=False, security_exceptions=current_list)
 
+
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
-        bypass_urls=dict(type="list", elements="str"),
+        bypass_urls=dict(type="list", elements="str", required=False, no_log=False),
         state=dict(type="str", choices=["present", "absent"], default="present"),
     )
 
@@ -197,6 +148,7 @@ def main():
         core(module)
     except Exception as e:
         module.fail_json(msg=to_native(e), exception=format_exc())
+
 
 if __name__ == "__main__":
     main()

@@ -28,12 +28,12 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 ---
-module: zia_forwarding_control_rule_info
+module: zia_file_type_control_rules_info
 short_description: "Gets all rules in the Forwarding Control policy."
 description: "Gets the list of forwarding rules configured in the ZIA Admin Portal."
 author:
   - William Guilherme (@willguibr)
-version_added: "1.0.0"
+version_added: "2.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 notes:
@@ -172,34 +172,40 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 
 def core(module):
-    receiver_id = module.params.get("id")
-    receiver_name = module.params.get("name")
+    rule_id = module.params.get("id")
+    rule_name = module.params.get("name")
 
     client = ZIAClientHelper(module)
-    receivers = []
+    rules = []
 
-    if receiver_id is not None:
-        receivers_obj, _, error = client.file_type_control_rule.get_rule(receiver_id)
-        if error or receivers_obj is None:
-            module.fail_json(msg=f"Failed to retrieve File Type Control Rule with ID '{receiver_id}': {to_native(error)}")
-        receivers = [receivers_obj.as_dict()]
+    if rule_id is not None:
+        rule_obj, _unused, error = client.file_type_control_rule.get_rule(rule_id)
+        if error or rule_obj is None:
+            module.fail_json(
+                msg=f"Failed to retrieve File Type Control Rule with ID '{rule_id}': {to_native(error)}"
+            )
+        rules = [rule_obj.as_dict()]
     else:
-        result, _, error = client.file_type_control_rule.list_rules()
+        result, _unused, error = client.file_type_control_rule.list_rules()
         if error:
-            module.fail_json(msg=f"Error retrieving File Type Control Rules: {to_native(error)}")
+            module.fail_json(
+                msg=f"Error retrieving File Type Control Rules: {to_native(error)}"
+            )
 
-        receiver_list = [i.as_dict() for i in result] if result else []
+        rule_list = [i.as_dict() for i in result] if result else []
 
-        if receiver_name:
-            matched = next((i for i in receiver_list if i.get("name") == receiver_name), None)
+        if rule_name:
+            matched = next((i for i in rule_list if i.get("name") == rule_name), None)
             if not matched:
-                available = [i.get("name") for i in receiver_list]
-                module.fail_json(msg=f"File Type Control named '{receiver_name}' not found. Available: {available}")
-            receivers = [matched]
+                available = [i.get("name") for i in rule_list]
+                module.fail_json(
+                    msg=f"File Type Control named '{rule_name}' not found. Available: {available}"
+                )
+            rules = [matched]
         else:
-            receivers = receiver_list
+            rules = rule_list
 
-    module.exit_json(changed=False, receivers=receivers)
+    module.exit_json(changed=False, rules=rules)
 
 
 def main():
@@ -211,7 +217,7 @@ def main():
 
     module = AnsibleModule(
         argument_spec=argument_spec,
-        supports_check_mode=False,
+        supports_check_mode=True,
         mutually_exclusive=[["name", "id"]],
     )
 

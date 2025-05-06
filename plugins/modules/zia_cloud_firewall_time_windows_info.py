@@ -101,7 +101,9 @@ time_windows:
 from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
 
 
 def core(module):
@@ -110,23 +112,31 @@ def core(module):
 
     client = ZIAClientHelper(module)
 
-    result, _, error = client.cloud_firewall.list_time_windows()
+    result, _unused, error = client.cloud_firewall.list_time_windows()
     if error:
         module.fail_json(msg=f"Error retrieving time windows: {to_native(error)}")
 
     all_windows = [tw.as_dict() for tw in result] if result else []
 
     if time_window_id is not None:
-        matched = next((tw for tw in all_windows if str(tw.get("id")) == str(time_window_id)), None)
+        matched = next(
+            (tw for tw in all_windows if str(tw.get("id")) == str(time_window_id)), None
+        )
         if not matched:
             ids = [tw.get("id") for tw in all_windows]
-            module.fail_json(msg=f"Time window with ID '{time_window_id}' not found. Available IDs: {ids}")
+            module.fail_json(
+                msg=f"Time window with ID '{time_window_id}' not found. Available IDs: {ids}"
+            )
         time_windows = [matched]
     elif time_window_name is not None:
-        matched = next((tw for tw in all_windows if tw.get("name") == time_window_name), None)
+        matched = next(
+            (tw for tw in all_windows if tw.get("name") == time_window_name), None
+        )
         if not matched:
             names = [tw.get("name") for tw in all_windows]
-            module.fail_json(msg=f"Time window named '{time_window_name}' not found. Available names: {names}")
+            module.fail_json(
+                msg=f"Time window named '{time_window_name}' not found. Available names: {names}"
+            )
         time_windows = [matched]
     else:
         time_windows = all_windows
@@ -143,7 +153,7 @@ def main():
 
     module = AnsibleModule(
         argument_spec=argument_spec,
-        supports_check_mode=False,
+        supports_check_mode=True,
         mutually_exclusive=[["name", "id"]],
     )
 

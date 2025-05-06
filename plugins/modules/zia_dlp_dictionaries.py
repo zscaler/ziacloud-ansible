@@ -79,12 +79,12 @@ options:
     type: list
     elements: dict
     description:
-      - List containing the phrases used within a custom DLP dictionary. This attribute is not applicable to predefined DLP dictionaries.
+      - List containing the phrases used within a custom DLP dictionary.
     required: false
     suboptions:
       action:
         type: str
-        required: false
+        required: true
         description:
           - The action applied to a DLP dictionary using phrases.
         choices:
@@ -92,7 +92,7 @@ options:
           - PHRASE_COUNT_TYPE_ALL
       phrase:
         type: str
-        required: false
+        required: true
         description:
           - DLP dictionary phrase.
   custom_phrase_match_type:
@@ -107,12 +107,12 @@ options:
     type: list
     elements: dict
     description:
-      - List containing the patterns used within a custom DLP dictionary. This attribute is not applicable to predefined DLP dictionaries
+      - List containing the patterns used within a custom DLP dictionary.
     required: false
     suboptions:
       action:
         type: str
-        required: false
+        required: true
         description:
           - The action applied to a DLP dictionary using patterns.
         choices:
@@ -120,7 +120,7 @@ options:
           - PATTERN_COUNT_TYPE_UNIQUE
       pattern:
         type: str
-        required: false
+        required: true
         description:
           - DLP dictionary pattern.
   dictionary_type:
@@ -271,7 +271,10 @@ from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import deleteNone
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
+
 
 def normalize_phrases_patterns(data):
     """Normalize phrases/patterns to comparable format (tuples)"""
@@ -280,32 +283,37 @@ def normalize_phrases_patterns(data):
         for item in data:
             if isinstance(item, dict):
                 # Convert dict to tuple
-                if 'phrase' in item:
-                    normalized.append((item['action'], item['phrase']))
-                elif 'pattern' in item:
-                    normalized.append((item['action'], item['pattern']))
+                if "phrase" in item:
+                    normalized.append((item["action"], item["phrase"]))
+                elif "pattern" in item:
+                    normalized.append((item["action"], item["pattern"]))
             elif isinstance(item, (tuple, list)) and len(item) == 2:
                 # Already in tuple format
                 normalized.append(tuple(item))
         return normalized
     return data
 
+
 def normalize_dict(dict_):
     normalized = dict_.copy() if dict_ else {}
-    for attr in ["id", "exact_data_match_details",
-                 "ignore_exact_match_idm_dict",
-                 "include_bin_numbers", "dict_template_id",
-                 "proximity"
-              ]:
+    for attr in [
+        "id",
+        "exact_data_match_details",
+        "ignore_exact_match_idm_dict",
+        "include_bin_numbers",
+        "dict_template_id",
+        "proximity",
+    ]:
         normalized.pop(attr, None)
 
     # Normalize phrases and patterns if they exist
-    if 'phrases' in normalized:
-        normalized['phrases'] = normalize_phrases_patterns(normalized['phrases'])
-    if 'patterns' in normalized:
-        normalized['patterns'] = normalize_phrases_patterns(normalized['patterns'])
+    if "phrases" in normalized:
+        normalized["phrases"] = normalize_phrases_patterns(normalized["phrases"])
+    if "patterns" in normalized:
+        normalized["patterns"] = normalize_phrases_patterns(normalized["patterns"])
 
     return normalized
+
 
 def transform_phrases_patterns(dictionary):
     """Transform phrases and patterns from dict format to tuple format expected by SDK"""
@@ -322,21 +330,35 @@ def transform_phrases_patterns(dictionary):
         transformed["patterns"] = [
             (pattern["action"], pattern["pattern"])
             for pattern in transformed["patterns"]
-            if isinstance(pattern, dict) and "action" in pattern and "pattern" in pattern
+            if isinstance(pattern, dict)
+            and "action" in pattern
+            and "pattern" in pattern
         ]
 
     return transformed
+
 
 def core(module):
     state = module.params.get("state")
     client = ZIAClientHelper(module)
 
     params = [
-        "id", "name", "description", "confidence_threshold",
-        "predefined_count_action_type", "custom_phrase_match_type", "dictionary_type",
-        "patterns", "phrases", "exact_data_match_details", "idm_profile_match_accuracy",
-        "ignore_exact_match_idm_dict", "include_bin_numbers", "bin_numbers",
-        "dict_template_id", "proximity"
+        "id",
+        "name",
+        "description",
+        "confidence_threshold",
+        "predefined_count_action_type",
+        "custom_phrase_match_type",
+        "dictionary_type",
+        "patterns",
+        "phrases",
+        "exact_data_match_details",
+        "idm_profile_match_accuracy",
+        "ignore_exact_match_idm_dict",
+        "include_bin_numbers",
+        "bin_numbers",
+        "dict_template_id",
+        "proximity",
     ]
 
     dictionary = {param: module.params.get(param) for param in params}
@@ -345,12 +367,14 @@ def core(module):
     existing_dict = None
 
     if dict_id:
-        result, _, error = client.dlp_dictionary.get_dict(dict_id)
+        result, _unused, error = client.dlp_dictionary.get_dict(dict_id)
         if error:
-            module.fail_json(msg=f"Error fetching dictionary ID {dict_id}: {to_native(error)}")
+            module.fail_json(
+                msg=f"Error fetching dictionary ID {dict_id}: {to_native(error)}"
+            )
         existing_dict = result.as_dict() if result else None
     else:
-        result, _, error = client.dlp_dictionary.list_dicts()
+        result, _unused, error = client.dlp_dictionary.list_dicts()
         if error:
             module.fail_json(msg=f"Error listing dictionaries: {to_native(error)}")
         for item in result:
@@ -363,17 +387,17 @@ def core(module):
     current = normalize_dict(existing_dict) if existing_dict else {}
 
     # NEW: Handle custom field explicitly if not specified
-    if 'custom' not in dictionary:
-        desired.pop('custom', None)
-        current.pop('custom', None)
+    if "custom" not in dictionary:
+        desired.pop("custom", None)
+        current.pop("custom", None)
 
     # Enhanced drift detection
     changed_fields = {}
     for key in desired:
         if desired.get(key) != current.get(key):
             changed_fields[key] = {
-                'desired': desired.get(key),
-                'current': current.get(key)
+                "desired": desired.get(key),
+                "current": current.get(key),
             }
 
     if changed_fields:
@@ -398,60 +422,92 @@ def core(module):
     if state == "present":
         if existing_dict:
             if changed:
-                update_data = deleteNone({
-                    "dict_id": existing_dict["id"],
+                update_data = deleteNone(
+                    {
+                        "dict_id": existing_dict["id"],
+                        "name": dictionary.get("name"),
+                        "description": dictionary.get("description"),
+                        "confidence_threshold": dictionary.get("confidence_threshold"),
+                        "predefined_count_action_type": dictionary.get(
+                            "predefined_count_action_type"
+                        ),
+                        "custom_phrase_match_type": dictionary.get(
+                            "custom_phrase_match_type"
+                        ),
+                        "dictionary_type": dictionary.get("dictionary_type"),
+                        "patterns": dictionary.get("patterns"),
+                        "phrases": dictionary.get("phrases"),
+                        "exact_data_match_details": dictionary.get(
+                            "exact_data_match_details"
+                        ),
+                        "idm_profile_match_accuracy": dictionary.get(
+                            "idm_profile_match_accuracy"
+                        ),
+                        "ignore_exact_match_idm_dict": dictionary.get(
+                            "ignore_exact_match_idm_dict"
+                        ),
+                        "include_bin_numbers": dictionary.get("include_bin_numbers"),
+                        "bin_numbers": dictionary.get("bin_numbers"),
+                        "dict_template_id": dictionary.get("dict_template_id"),
+                        "proximity": dictionary.get("proximity"),
+                    }
+                )
+                module.warn("Final update payload being sent to API:")
+                module.warn(str(update_data))
+                updated, _unused, error = client.dlp_dictionary.update_dict(
+                    **update_data
+                )
+                if error:
+                    module.fail_json(
+                        msg=f"Error updating dictionary: {to_native(error)}"
+                    )
+                module.exit_json(
+                    changed=True, data=updated.as_dict(), drift_details=changed_fields
+                )
+            else:
+                module.exit_json(changed=False, data=existing_dict)
+        else:
+            create_data = deleteNone(
+                {
                     "name": dictionary.get("name"),
                     "description": dictionary.get("description"),
-                    "confidence_threshold": dictionary.get("confidence_threshold"),
-                    "predefined_count_action_type": dictionary.get("predefined_count_action_type"),
-                    "custom_phrase_match_type": dictionary.get("custom_phrase_match_type"),
+                    "custom_phrase_match_type": dictionary.get(
+                        "custom_phrase_match_type"
+                    ),
                     "dictionary_type": dictionary.get("dictionary_type"),
+                    "confidence_threshold": dictionary.get("confidence_threshold"),
+                    "predefined_count_action_type": dictionary.get(
+                        "predefined_count_action_type"
+                    ),
                     "patterns": dictionary.get("patterns"),
                     "phrases": dictionary.get("phrases"),
-                    "exact_data_match_details": dictionary.get("exact_data_match_details"),
-                    "idm_profile_match_accuracy": dictionary.get("idm_profile_match_accuracy"),
-                    "ignore_exact_match_idm_dict": dictionary.get("ignore_exact_match_idm_dict"),
+                    "exact_data_match_details": dictionary.get(
+                        "exact_data_match_details"
+                    ),
+                    "idm_profile_match_accuracy": dictionary.get(
+                        "idm_profile_match_accuracy"
+                    ),
+                    "ignore_exact_match_idm_dict": dictionary.get(
+                        "ignore_exact_match_idm_dict"
+                    ),
                     "include_bin_numbers": dictionary.get("include_bin_numbers"),
                     "bin_numbers": dictionary.get("bin_numbers"),
                     "dict_template_id": dictionary.get("dict_template_id"),
                     "proximity": dictionary.get("proximity"),
-                })
-                module.warn("Final update payload being sent to API:")
-                module.warn(str(update_data))
-                updated, _, error = client.dlp_dictionary.update_dict(**update_data)
-                if error:
-                    module.fail_json(msg=f"Error updating dictionary: {to_native(error)}")
-                module.exit_json(changed=True, data=updated.as_dict(), drift_details=changed_fields)
-            else:
-                module.exit_json(changed=False, data=existing_dict)
-        else:
-            create_data = deleteNone({
-                "name": dictionary.get("name"),
-                "description": dictionary.get("description"),
-                "custom_phrase_match_type": dictionary.get("custom_phrase_match_type"),
-                "dictionary_type": dictionary.get("dictionary_type"),
-                "confidence_threshold": dictionary.get("confidence_threshold"),
-                "predefined_count_action_type": dictionary.get("predefined_count_action_type"),
-                "patterns": dictionary.get("patterns"),
-                "phrases": dictionary.get("phrases"),
-                "exact_data_match_details": dictionary.get("exact_data_match_details"),
-                "idm_profile_match_accuracy": dictionary.get("idm_profile_match_accuracy"),
-                "ignore_exact_match_idm_dict": dictionary.get("ignore_exact_match_idm_dict"),
-                "include_bin_numbers": dictionary.get("include_bin_numbers"),
-                "bin_numbers": dictionary.get("bin_numbers"),
-                "dict_template_id": dictionary.get("dict_template_id"),
-                "proximity": dictionary.get("proximity"),
-            })
+                }
+            )
             module.warn("Final create payload being sent to API:")
             module.warn(str(create_data))
-            created, _, error = client.dlp_dictionary.add_dict(**create_data)
+            created, _unused, error = client.dlp_dictionary.add_dict(**create_data)
             if error:
                 module.fail_json(msg=f"Error creating dictionary: {to_native(error)}")
             module.exit_json(changed=True, data=created.as_dict())
 
     elif state == "absent":
         if existing_dict:
-            _, _, error = client.dlp_dictionary.delete_dict(dict_id=existing_dict["id"])
+            _unused, _unused, error = client.dlp_dictionary.delete_dict(
+                dict_id=existing_dict["id"]
+            )
             if error:
                 module.fail_json(msg=f"Error deleting dictionary: {to_native(error)}")
             module.exit_json(changed=True, data=existing_dict)

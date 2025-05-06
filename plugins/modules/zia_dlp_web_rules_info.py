@@ -162,38 +162,44 @@ dlp_web_rules:
 from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
 
 
 def core(module):
-    receiver_id = module.params.get("id")
-    receiver_name = module.params.get("name")
+    rule_id = module.params.get("id")
+    rule_name = module.params.get("name")
 
     client = ZIAClientHelper(module)
-    receivers = []
+    rules = []
 
-    if receiver_id is not None:
-        receivers_obj, _, error = client.dlp_web_rules.get_rule(receiver_id)
-        if error or receivers_obj is None:
-            module.fail_json(msg=f"Failed to retrieve DLP Web Rule with ID '{receiver_id}': {to_native(error)}")
-        receivers = [receivers_obj.as_dict()]
+    if rule_id is not None:
+        rules_obj, _unused, error = client.dlp_web_rules.get_rule(rule_id)
+        if error or rules_obj is None:
+            module.fail_json(
+                msg=f"Failed to retrieve DLP Web Rule with ID '{rule_id}': {to_native(error)}"
+            )
+        rules = [rules_obj.as_dict()]
     else:
-        result, _, error = client.dlp_web_rules.list_rules()
+        result, _unused, error = client.dlp_web_rules.list_rules()
         if error:
             module.fail_json(msg=f"Error retrieving DLP Web Rules: {to_native(error)}")
 
-        receiver_list = [i.as_dict() for i in result] if result else []
+        rule_list = [i.as_dict() for i in result] if result else []
 
-        if receiver_name:
-            matched = next((i for i in receiver_list if i.get("name") == receiver_name), None)
+        if rule_name:
+            matched = next((i for i in rule_list if i.get("name") == rule_name), None)
             if not matched:
-                available = [i.get("name") for i in receiver_list]
-                module.fail_json(msg=f"DLP Web Rule named '{receiver_name}' not found. Available: {available}")
-            receivers = [matched]
+                available = [i.get("name") for i in rule_list]
+                module.fail_json(
+                    msg=f"DLP Web Rule named '{rule_name}' not found. Available: {available}"
+                )
+            rules = [matched]
         else:
-            receivers = receiver_list
+            rules = rule_list
 
-    module.exit_json(changed=False, receivers=receivers)
+    module.exit_json(changed=False, rules=rules)
 
 
 def main():
@@ -205,7 +211,7 @@ def main():
 
     module = AnsibleModule(
         argument_spec=argument_spec,
-        supports_check_mode=False,
+        supports_check_mode=True,
         mutually_exclusive=[["name", "id"]],
     )
 

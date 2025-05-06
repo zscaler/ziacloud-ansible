@@ -32,7 +32,7 @@ short_description: "Forwarding Control policy rule"
 description: "Adds a new Forwarding Control policy rule"
 author:
   - William Guilherme (@willguibr)
-version_added: "0.1.0"
+version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 notes:
@@ -363,8 +363,7 @@ def normalize_rule(rule):
     """
     normalized = rule.copy()
 
-    computed_values = [
-    ]
+    computed_values = []
 
     for attr in computed_values:
         if attr in normalized and normalized[attr] is None:
@@ -442,13 +441,39 @@ def core(module):
     client = ZIAClientHelper(module)
     rule = dict()
     params = [
-        "id", "name", "enabled", "order", "rank", "locations", "location_groups",
-        "ec_groups", "departments", "groups", "users", "type", "forward_method",
-        "src_ips", "src_ip_groups", "src_ipv6_groups", "dest_addresses",
-        "dest_ip_categories", "dest_countries", "res_categories", "dest_ip_groups",
-        "dest_ipv6_groups", "nw_services", "nw_service_groups", "nw_applications",
-        "nw_application_groups", "app_service_groups", "labels", "proxy_gateway",
-        "zpa_gateway", "zpa_app_segments", "zpa_application_segments",
+        "id",
+        "name",
+        "description",
+        "enabled",
+        "order",
+        "rank",
+        "locations",
+        "location_groups",
+        "ec_groups",
+        "departments",
+        "groups",
+        "users",
+        "type",
+        "forward_method",
+        "src_ips",
+        "src_ip_groups",
+        "src_ipv6_groups",
+        "dest_addresses",
+        "dest_ip_categories",
+        "dest_countries",
+        "res_categories",
+        "dest_ip_groups",
+        "dest_ipv6_groups",
+        "nw_services",
+        "nw_service_groups",
+        "nw_applications",
+        "nw_application_groups",
+        "app_service_groups",
+        "labels",
+        "proxy_gateway",
+        "zpa_gateway",
+        "zpa_app_segments",
+        "zpa_application_segments",
         "zpa_application_segment_groups",
     ]
 
@@ -480,19 +505,13 @@ def core(module):
     def preprocess_attributes(rule):
         proxy = rule.get("proxy_gateway")
         if isinstance(proxy, dict) and proxy.get("id"):
-            rule["proxy_gateway"] = {
-                "id": proxy["id"],
-                "name": proxy.get("name", "")
-            }
+            rule["proxy_gateway"] = {"id": proxy["id"], "name": proxy.get("name", "")}
         else:
             rule["proxy_gateway"] = None
 
         zpa = rule.get("zpa_gateway")
         if isinstance(zpa, dict) and zpa.get("id"):
-            rule["zpa_gateway"] = {
-                "id": zpa["id"],
-                "name": zpa.get("name", "")
-            }
+            rule["zpa_gateway"] = {"id": zpa["id"], "name": zpa.get("name", "")}
         else:
             rule["zpa_gateway"] = None
 
@@ -522,13 +541,15 @@ def core(module):
 
     existing_rule = None
     if rule_id is not None:
-        result, _, error = client.forwarding_control.get_rule(rule_id=rule_id)
+        result, _unused, error = client.forwarding_control.get_rule(rule_id=rule_id)
         if error:
-            module.fail_json(msg=f"Error fetching rule with id {rule_id}: {to_native(error)}")
+            module.fail_json(
+                msg=f"Error fetching rule with id {rule_id}: {to_native(error)}"
+            )
         if result:
             existing_rule = result.as_dict()
     else:
-        result, _, error = client.forwarding_control.list_rules()
+        result, _unused, error = client.forwarding_control.list_rules()
         if error:
             module.fail_json(msg=f"Error listing rules: {to_native(error)}")
         if result:
@@ -538,12 +559,16 @@ def core(module):
                     break
 
     # Handle predefined/default rules
-    if state == "absent" and existing_rule and (
-        existing_rule.get("default_rule", False) or existing_rule.get("predefined", False)
+    if (
+        state == "absent"
+        and existing_rule
+        and (
+            existing_rule.get("default_rule", False)
+            or existing_rule.get("predefined", False)
+        )
     ):
         module.exit_json(
-            changed=False,
-            msg="Deletion of default or predefined rule is not allowed."
+            changed=False, msg="Deletion of default or predefined rule is not allowed."
         )
 
     # Normalize and compare existing and desired data
@@ -556,7 +581,10 @@ def core(module):
         for attr in params:
             if attr in processed and processed[attr] is not None:
                 if isinstance(processed[attr], list):
-                    if all(isinstance(item, dict) and "id" in item for item in processed[attr]):
+                    if all(
+                        isinstance(item, dict) and "id" in item
+                        for item in processed[attr]
+                    ):
                         processed[attr] = [item["id"] for item in processed[attr]]
                     else:
                         processed[attr] = sorted(processed[attr])
@@ -567,13 +595,32 @@ def core(module):
 
     # List of attributes where empty list and None should be treated as equivalent
     list_attributes = [
-        "locations", "location_groups", "ec_groups", "departments", "groups", "users",
-        "src_ips", "src_ip_groups", "src_ipv6_groups", "dest_addresses",
-        "dest_ip_categories", "dest_countries", "res_categories", "dest_ip_groups",
-        "dest_ipv6_groups", "nw_services", "nw_service_groups", "nw_applications",
-        "nw_application_groups", "app_service_groups", "labels", "proxy_gateway",
-        "zpa_gateway", "zpa_app_segments", "zpa_application_segments",
-        "zpa_application_segment_groups"
+        "locations",
+        "location_groups",
+        "ec_groups",
+        "departments",
+        "groups",
+        "users",
+        "src_ips",
+        "src_ip_groups",
+        "src_ipv6_groups",
+        "dest_addresses",
+        "dest_ip_categories",
+        "dest_countries",
+        "res_categories",
+        "dest_ip_groups",
+        "dest_ipv6_groups",
+        "nw_services",
+        "nw_service_groups",
+        "nw_applications",
+        "nw_application_groups",
+        "app_service_groups",
+        "labels",
+        "proxy_gateway",
+        "zpa_gateway",
+        "zpa_app_segments",
+        "zpa_application_segments",
+        "zpa_application_segment_groups",
     ]
 
     differences_detected = False
@@ -600,7 +647,9 @@ def core(module):
 
         # Sort lists of IDs for comparison
         if isinstance(desired_value, list) and isinstance(current_value, list):
-            if all(isinstance(x, int) for x in desired_value) and all(isinstance(x, int) for x in current_value):
+            if all(isinstance(x, int) for x in desired_value) and all(
+                isinstance(x, int) for x in current_value
+            ):
                 desired_value = sorted(desired_value)
                 current_value = sorted(current_value)
 
@@ -623,11 +672,68 @@ def core(module):
             if differences_detected:
                 rule_id_to_update = existing_rule.get("id")
                 if not rule_id_to_update:
-                    module.fail_json(msg="Cannot update rule: ID is missing from the existing resource.")
+                    module.fail_json(
+                        msg="Cannot update rule: ID is missing from the existing resource."
+                    )
 
-                update_rule = deleteNone({
-                    "rule_id": existing_rule.get("id"),
+                update_rule = deleteNone(
+                    {
+                        "rule_id": existing_rule.get("id"),
+                        "name": desired_rule.get("name"),
+                        "description": desired_rule.get("description"),
+                        "order": desired_rule.get("order"),
+                        "rank": desired_rule.get("rank"),
+                        "type": desired_rule.get("type"),
+                        "forward_method": desired_rule.get("forward_method"),
+                        "enabled": desired_rule.get("enabled", True),
+                        "src_ips": desired_rule.get("src_ips"),
+                        "dest_addresses": desired_rule.get("dest_addresses"),
+                        "dest_ip_categories": desired_rule.get("dest_ip_categories"),
+                        "dest_countries": desired_rule.get("dest_countries"),
+                        "res_categories": desired_rule.get("res_categories"),
+                        "nw_applications": desired_rule.get("nw_applications"),
+                        "dest_ip_groups": desired_rule.get("dest_ip_groups"),
+                        "nw_services": desired_rule.get("nw_services"),
+                        "nw_service_groups": desired_rule.get("nw_service_groups"),
+                        "nw_application_groups": desired_rule.get(
+                            "nw_application_groups"
+                        ),
+                        "app_service_groups": desired_rule.get("app_service_groups"),
+                        "labels": desired_rule.get("labels"),
+                        "locations": desired_rule.get("locations"),
+                        "location_groups": desired_rule.get("location_groups"),
+                        "ec_groups": desired_rule.get("ec_groups"),
+                        "departments": desired_rule.get("departments"),
+                        "groups": desired_rule.get("groups"),
+                        "users": desired_rule.get("users"),
+                        "src_ip_groups": desired_rule.get("src_ip_groups"),
+                        "src_ipv6_groups": desired_rule.get("src_ipv6_groups"),
+                        "proxy_gateway": desired_rule.get("proxy_gateway"),
+                        "zpa_gateway": desired_rule.get("zpa_gateway"),
+                        "zpa_app_segments": desired_rule.get("zpa_app_segments"),
+                        "zpa_application_segments": desired_rule.get(
+                            "zpa_application_segments"
+                        ),
+                        "zpa_application_segment_groups": desired_rule.get(
+                            "zpa_application_segment_groups"
+                        ),
+                    }
+                )
+
+                module.warn("Payload Update for SDK: {}".format(update_rule))
+                updated_rule, _unused, error = client.forwarding_control.update_rule(
+                    **update_rule
+                )
+                if error:
+                    module.fail_json(msg=f"Error updating rule: {to_native(error)}")
+                module.exit_json(changed=True, data=updated_rule.as_dict())
+            else:
+                module.exit_json(changed=False, data=existing_rule)
+        else:
+            create_rule = deleteNone(
+                {
                     "name": desired_rule.get("name"),
+                    "description": desired_rule.get("description"),
                     "order": desired_rule.get("order"),
                     "rank": desired_rule.get("rank"),
                     "type": desired_rule.get("type"),
@@ -656,53 +762,16 @@ def core(module):
                     "proxy_gateway": desired_rule.get("proxy_gateway"),
                     "zpa_gateway": desired_rule.get("zpa_gateway"),
                     "zpa_app_segments": desired_rule.get("zpa_app_segments"),
-                    "zpa_application_segments": desired_rule.get("zpa_application_segments"),
-                    "zpa_application_segment_groups": desired_rule.get("zpa_application_segment_groups"),
-                })
-
-                module.warn("Payload Update for SDK: {}".format(update_rule))
-                updated_rule, _, error = client.forwarding_control.update_rule(**update_rule)
-                if error:
-                    module.fail_json(msg=f"Error updating rule: {to_native(error)}")
-                module.exit_json(changed=True, data=updated_rule.as_dict())
-            else:
-                module.exit_json(changed=False, data=existing_rule)
-        else:
-            create_rule = deleteNone({
-                "name": desired_rule.get("name"),
-                "order": desired_rule.get("order"),
-                "rank": desired_rule.get("rank"),
-                "type": desired_rule.get("type"),
-                "forward_method": desired_rule.get("forward_method"),
-                "enabled": desired_rule.get("enabled", True),
-                "src_ips": desired_rule.get("src_ips"),
-                "dest_addresses": desired_rule.get("dest_addresses"),
-                "dest_ip_categories": desired_rule.get("dest_ip_categories"),
-                "dest_countries": desired_rule.get("dest_countries"),
-                "res_categories": desired_rule.get("res_categories"),
-                "nw_applications": desired_rule.get("nw_applications"),
-                "dest_ip_groups": desired_rule.get("dest_ip_groups"),
-                "nw_services": desired_rule.get("nw_services"),
-                "nw_service_groups": desired_rule.get("nw_service_groups"),
-                "nw_application_groups": desired_rule.get("nw_application_groups"),
-                "app_service_groups": desired_rule.get("app_service_groups"),
-                "labels": desired_rule.get("labels"),
-                "locations": desired_rule.get("locations"),
-                "location_groups": desired_rule.get("location_groups"),
-                "ec_groups": desired_rule.get("ec_groups"),
-                "departments": desired_rule.get("departments"),
-                "groups": desired_rule.get("groups"),
-                "users": desired_rule.get("users"),
-                "src_ip_groups": desired_rule.get("src_ip_groups"),
-                "src_ipv6_groups": desired_rule.get("src_ipv6_groups"),
-                "proxy_gateway": desired_rule.get("proxy_gateway"),
-                "zpa_gateway": desired_rule.get("zpa_gateway"),
-                "zpa_app_segments": desired_rule.get("zpa_app_segments"),
-                "zpa_application_segments": desired_rule.get("zpa_application_segments"),
-                "zpa_application_segment_groups": desired_rule.get("zpa_application_segment_groups"),
-            })
+                    "zpa_application_segments": desired_rule.get(
+                        "zpa_application_segments"
+                    ),
+                    "zpa_application_segment_groups": desired_rule.get(
+                        "zpa_application_segment_groups"
+                    ),
+                }
+            )
             module.warn("Payload for SDK: {}".format(create_rule))
-            new_rule, _, error = client.forwarding_control.add_rule(**create_rule)
+            new_rule, _unused, error = client.forwarding_control.add_rule(**create_rule)
             if error:
                 module.fail_json(msg=f"Error creating rule: {to_native(error)}")
             module.exit_json(changed=True, data=new_rule.as_dict())
@@ -711,9 +780,11 @@ def core(module):
         if existing_rule:
             rule_id_to_delete = existing_rule.get("id")
             if not rule_id_to_delete:
-                module.fail_json(msg="Cannot delete rule: ID is missing from the existing resource.")
+                module.fail_json(
+                    msg="Cannot delete rule: ID is missing from the existing resource."
+                )
 
-            _, _, error = client.forwarding_control.delete_rule(
+            _unused, _unused, error = client.forwarding_control.delete_rule(
                 rule_id=rule_id_to_delete
             )
             if error:

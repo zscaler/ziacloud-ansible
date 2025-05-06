@@ -1,0 +1,54 @@
+---
+rule_name: test_zia_ansible
+description: test_zia_ansible
+ba_rule_action: BLOCK
+rule_order: 1
+enabled: true
+first_time_enable: true
+ml_action_enabled: true
+by_threat_score: 40
+first_time_operation: ALLOW_SCAN
+url_categories:
+  - GENERAL_AI_ML
+  - AI_ML_APPS
+protocols:
+  - FOHTTP_RULE
+  - FTP_RULE
+  - HTTPS_RULE
+  - HTTP_RULE
+ba_policy_categories:
+  - ADWARE_BLOCK
+  - BOTMAL_BLOCK
+  - ANONYP2P_BLOCK
+  - RANSOMWARE_BLOCK
+  - OFFSEC_TOOLS_BLOCK
+  - SUSPICIOUS_BLOCK
+file_types:
+  - FTCATEGORY_BZIP2
+  - FTCATEGORY_P7Z
+
+# Cloud Firewall Rule Update
+name_update: test_zia_ansible
+description_update: test_zia_ansible_update
+ba_rule_action_update: BLOCK
+rule_order_update: 2
+enabled_update: false
+first_time_enable_update: true
+ml_action_enabled_update: true
+by_threat_score_update: 50
+first_time_operation_update: ALLOW_SCAN
+url_categories_update:
+  - GENERAL_AI_ML
+protocols_update:
+  - FOHTTP_RULE
+  - FTP_RULE
+  - HTTPS_RULE
+  - HTTP_RULE
+ba_policy_categories_update:
+  - ADWARE_BLOCK
+  - BOTMAL_BLOCK
+  - ANONYP2P_BLOCK
+  - RANSOMWARE_BLOCK
+  - OFFSEC_TOOLS_BLOCK
+file_types_update:
+  - FTCATEGORY_BZIP2

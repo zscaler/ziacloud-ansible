@@ -28,10 +28,10 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 ---
-module: zia_atp_malware_policy
-short_description: "Retrieves the malicious URLs added to the denylist"
+module: zia_remote_assistance
+short_description: "Retrieves information about the Remote Assistance "
 description:
-  - "Retrieves the malicious URLs added to the denylist in the (ATP) policy"
+  - "Retrieves information about the Remote Assistance option configured in the ZIA Admin Portal"
 author:
   - William Guilherme (@willguibr)
 version_added: "2.0.0"
@@ -42,102 +42,56 @@ notes:
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
   - zscaler.ziacloud.fragments.documentation
+  - zscaler.ziacloud.fragments.modified_state
 
 options:
-  id:
-    description: "The unique identifier for the rule label."
-    type: int
+  view_only_until:
+    description:
+        - The time until when view-only access is granted.
+        - Use RFC 1123 format i.e Tue, 15 Apr 2025 12:00:00 UTC
+    type: str
     required: false
-  name:
-    description: "The rule label name."
+  full_access_until:
+    description:
+        - The time until when full-access is granted.
+        - Use RFC 1123 format i.e Tue, 15 Apr 2025 12:00:00 UTC
     required: false
     type: str
+  username_obfuscated:
+    description: "The rule label name."
+    required: false
+    type: bool
+  device_info_obfuscate:
+    description: "The rule label name."
+    required: false
+    type: bool
 """
 
 EXAMPLES = r"""
-- name: Gets all list of rule label
-  zscaler.ziacloud.zia_rule_labels_info:
+- name: Configure Remote Assistance
+  zscaler.ziacloud.zia_remote_assistance:
     provider: '{{ provider }}'
-
-- name: Gets a list of rule label by name
-  zscaler.ziacloud.zia_rule_labels_info:
-    provider: '{{ provider }}'
-    name: "example"
+    view_only_until: "Tue, 15 Apr 2025 12:00:00 UTC"
+    full_access_until: "Tue, 15 Apr 2025 13:00:00 UTC"
+    username_obfuscated: true
+    device_info_obfuscate: true
 """
 
 RETURN = r"""
-labels:
-  description: A list of rule labels fetched based on the given criteria.
-  returned: always
-  type: list
-  elements: dict
-  contains:
-    id:
-      description: The unique identifier for the rule label.
-      returned: always
-      type: int
-      sample: 3687131
-    name:
-      description: The name of the rule label.
-      returned: always
-      type: str
-      sample: "Example"
-    description:
-      description: A description of the rule label.
-      returned: always
-      type: str
-      sample: "Example description"
-    created_by:
-      description: Information about the user who created the rule label.
-      returned: always
-      type: complex
-      contains:
-        id:
-          description: The identifier of the user who created the rule label.
-          returned: always
-          type: int
-          sample: 44772836
-        name:
-          description: The name of the user who created the rule label.
-          returned: always
-          type: str
-          sample: "admin@44772833.zscalertwo.net"
-    last_modified_by:
-      description: Information about the user who last modified the rule label.
-      returned: always
-      type: complex
-      contains:
-        id:
-          description: The identifier of the user who last modified the rule label.
-          returned: always
-          type: int
-          sample: 44772836
-        name:
-          description: The name of the user who last modified the rule label.
-          returned: always
-          type: str
-          sample: "admin@44772833.zscalertwo.net"
-    last_modified_time:
-      description: The Unix timestamp when the rule label was last modified.
-      returned: always
-      type: int
-      sample: 1721347034
-    referenced_rule_count:
-      description: The number of rules that reference this label.
-      returned: always
-      type: int
-      sample: 0
 """
 
 from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
     deleteNone,
-    parse_rfc1123_to_epoch_millis
+    parse_rfc1123_to_epoch_millis,
 )
 from datetime import datetime, timezone
+
 
 def normalize_eun_values(data: dict) -> dict:
     """Normalize current and desired EUN values by removing computed fields and empty strings."""
@@ -161,15 +115,19 @@ def core(module):
 
     # Define all valid fields supported in the EUN payload
     params = [
-        "view_only_until", "full_access_until",
-        "username_obfuscated", "device_info_obfuscate",
+        "view_only_until",
+        "full_access_until",
+        "username_obfuscated",
+        "device_info_obfuscate",
     ]
 
     settings_data = {
         k: module.params.get(k)
         for k in params
         if module.params.get(k) is not None
-           and not (isinstance(module.params.get(k), str) and module.params.get(k).strip() == "")
+        and not (
+            isinstance(module.params.get(k), str) and module.params.get(k).strip() == ""
+        )
     }
 
     for date_field in ["view_only_until", "full_access_until"]:
@@ -179,15 +137,19 @@ def core(module):
                 timestamp = parse_rfc1123_to_epoch_millis(value)
                 now_ms = int(datetime.now(timezone.utc).timestamp() * 1000)
                 if timestamp < now_ms:
-                    module.fail_json(msg=f"The value for '{date_field}' must be a future date. Provided: {value}")
+                    module.fail_json(
+                        msg=f"The value for '{date_field}' must be a future date. Provided: {value}"
+                    )
                 settings_data[date_field] = timestamp
             except ValueError as ve:
                 module.fail_json(msg=str(ve))
 
     # 1) Fetch current EUN settings from the SDK
-    current_settings, _, error = client.remote_assistance.get_remote_assistance()
+    current_settings, _unused, error = client.remote_assistance.get_remote_assistance()
     if error:
-        module.fail_json(msg=f"Error fetching remote assistance settings: {to_native(error)}")
+        module.fail_json(
+            msg=f"Error fetching remote assistance settings: {to_native(error)}"
+        )
 
     # 2) Convert both current/desired data to normalized dicts
     current_dict = normalize_eun_values(current_settings.as_dict())
@@ -209,7 +171,9 @@ def core(module):
     if drift:
         module.warn("🔎 Drift found in these keys:")
         for k in diff_keys:
-            module.warn(f"  {k}: current={current_dict.get(k)}, desired={desired_dict.get(k)}")
+            module.warn(
+                f"  {k}: current={current_dict.get(k)}, desired={desired_dict.get(k)}"
+            )
 
     # 4) Respect check_mode
     if module.check_mode:
@@ -229,9 +193,13 @@ def core(module):
 
         module.warn(f"🧼 Cleaned payload sent to SDK: {payload}")
 
-        updated, _, error = client.remote_assistance.update_remote_assistance(**payload)
+        updated, _unused, error = client.remote_assistance.update_remote_assistance(
+            **payload
+        )
         if error:
-            module.fail_json(msg=f"Error updating remote assistance settings: {to_native(error)}")
+            module.fail_json(
+                msg=f"Error updating remote assistance settings: {to_native(error)}"
+            )
 
         module.exit_json(changed=True, end_user_notifications=updated.as_dict())
     else:
@@ -240,13 +208,15 @@ def core(module):
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
-    argument_spec.update(dict(
-        view_only_until=dict(type="str", required=False),
-        full_access_until=dict(type="str", required=False),
-        username_obfuscated=dict(type="bool", required=False),
-        device_info_obfuscate=dict(type="bool", required=False),
-        state=dict(type="str", choices=["present"], default="present")
-    ))
+    argument_spec.update(
+        dict(
+            view_only_until=dict(type="str", required=False),
+            full_access_until=dict(type="str", required=False),
+            username_obfuscated=dict(type="bool", required=False),
+            device_info_obfuscate=dict(type="bool", required=False),
+            state=dict(type="str", choices=["present"], default="present"),
+        )
+    )
 
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
 

@@ -49,11 +49,26 @@ options:
       - Admin user ID.
     type: int
     required: false
-  name:
+  login_name:
     description:
-      - Name of the admin user.
+      - Admin or auditor login name
     required: false
     type: str
+  user_name:
+    description:
+      - Admin or auditor's username
+    required: false
+    type: str
+  include_auditor_users:
+    description:
+      - Include or exclude auditor user information in the list.
+    required: false
+    type: bool
+  include_admin_users:
+    description:
+      - Include or exclude admin user information in the list.
+    required: false
+    type: bool
 """
 
 EXAMPLES = r"""
@@ -96,7 +111,9 @@ admins:
 from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
 
 
 def core(module):
@@ -110,9 +127,11 @@ def core(module):
     users = []
 
     if user_id:
-        result, _, error = client.admin_users.get_admin_user(user_id)
+        result, _unused, error = client.admin_users.get_admin_user(user_id)
         if error:
-            module.fail_json(msg=f"Error fetching user with id {user_id}: {to_native(error)}")
+            module.fail_json(
+                msg=f"Error fetching user with id {user_id}: {to_native(error)}"
+            )
         if result:
             users = [result.as_dict()]
     else:
@@ -128,7 +147,9 @@ def core(module):
         if include_admin_users is not None:
             query_params["include_admin_users"] = include_admin_users
 
-        result, _, error = client.admin_users.list_admin_users(query_params=query_params)
+        result, _unused, error = client.admin_users.list_admin_users(
+            query_params=query_params
+        )
         if error:
             module.fail_json(msg=f"Error listing users: {to_native(error)}")
 
@@ -136,7 +157,7 @@ def core(module):
 
         # Fallback: do exact match if initial search returned nothing
         if search_string and not users:
-            result, _, error = client.admin_users.list_admin_users()
+            result, _unused, error = client.admin_users.list_admin_users()
             if error:
                 module.fail_json(msg=f"Error listing all users: {to_native(error)}")
 
@@ -152,16 +173,16 @@ def core(module):
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
+        id=dict(type="int", required=False),
         login_name=dict(type="str", required=False),
         user_name=dict(type="str", required=False),
-        id=dict(type="int", required=False),
         include_auditor_users=dict(type="bool", required=False, default=None),
         include_admin_users=dict(type="bool", required=False, default=None),
     )
 
     module = AnsibleModule(
         argument_spec=argument_spec,
-        supports_check_mode=False,  # optional, can be omitted
+        supports_check_mode=True,  # optional, can be omitted
         mutually_exclusive=[("id", "login_name"), ("id", "user_name")],
     )
 
@@ -169,6 +190,7 @@ def main():
         core(module)
     except Exception as e:
         module.fail_json(msg=to_native(e), exception=format_exc())
+
 
 if __name__ == "__main__":
     main()

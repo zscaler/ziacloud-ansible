@@ -1,0 +1,131 @@
+---
+- name: Include default variables
+  ansible.builtin.include_vars:
+    file: ../defaults/main.yml
+
+- name: Import Random String Generator Tasks
+  ansible.builtin.import_tasks: ../../../generate_random_string.yml
+
+- name: Set dynamic name values with random string
+  ansible.builtin.set_fact:
+    appended_name: "{{ nss_server_name }}_{{ random_string }}"
+
+- name: Ensure required environment variables are set
+  ansible.builtin.fail:
+    msg: "{{ env_var }} is not defined as environment variable"
+  when: lookup('env', env_var) is none
+  loop:
+    - ZSCALER_CLIENT_ID
+    - ZSCALER_CLIENT_SECRET
+    - ZSCALER_VANITY_DOMAIN
+    - ZSCALER_CLOUD
+  loop_control:
+    loop_var: env_var
+
+- name: Ensure ZIA Credential environment variables are set
+  ansible.builtin.set_fact:
+    zia_cloud:
+      client_id: "{{ lookup('env', 'ZSCALER_CLIENT_ID') }}"
+      client_secret: "{{ lookup('env', 'ZSCALER_CLIENT_SECRET') }}"
+      vanity_domain: "{{ lookup('env', 'ZSCALER_VANITY_DOMAIN') }}"
+      cloud: "{{ lookup('env', 'ZSCALER_CLOUD') | default(omit) }}"
+  no_log: true
+
+- name: Main block for NSS Servers Configuration
+  block:
+    - name: Ensure NSS Server is absent (leftover)
+      zscaler.ziacloud.zia_nss_servers:
+        provider: "{{ zia_cloud }}"
+        state: absent
+        name: "{{ appended_name }}"
+      register: result
+
+  rescue:
+    - name: Handle errors
+      ansible.builtin.debug:
+        msg: An error occurred.
+
+  always:
+    - name: Cleanup operations
+      ansible.builtin.debug:
+        msg: Cleanup complete.
+
+    - name: Ensure NSS Server is absent
+      zscaler.ziacloud.zia_nss_servers:
+        provider: "{{ zia_cloud }}"
+        state: absent
+        name: "{{ appended_name }}"
+      register: result
+
+    - name: Verify NSS Server is absent
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+
+    - name: Ensure NSS Server is (Present)
+      zscaler.ziacloud.zia_nss_servers:
+        provider: "{{ zia_cloud }}"
+        state: present
+        name: "{{ appended_name }}"
+        status: "{{ status }}"
+        type: "{{ type }}"
+      register: result
+
+    - name: Verify NSS Server is present
+      ansible.builtin.assert:
+        that:
+          - result.data
+          - result.data.name is defined
+
+    - name: Create the NSS Server (again; idempotency check)
+      zscaler.ziacloud.zia_nss_servers:
+        provider: "{{ zia_cloud }}"
+        state: present
+        name: "{{ appended_name }}"
+        status: "{{ status }}"
+        type: "{{ type }}"
+      register: result
+
+    - name: Ensure NSS Server is absent (idempotency check)
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+
+    - name: Fetch all NSS Servers
+      zscaler.ziacloud.zia_nss_servers_info:
+        provider: "{{ zia_cloud }}"
+      register: result
+
+    - name: Ensure all NSS Servers found
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+          - result.servers[0] is defined
+
+    - name: Give the ZIA Cloud a 5 seconds to settle
+      ansible.builtin.pause:
+        seconds: 5
+
+    - name: Delete NSS Server
+      zscaler.ziacloud.zia_nss_servers:
+        provider: "{{ zia_cloud }}"
+        state: absent
+        name: "{{ appended_name }}"
+      register: result
+
+    - name: Verify NSS Server is Deleted
+      ansible.builtin.assert:
+        that:
+          - result.changed
+
+    - name: Delete NSS Server (again; idempotency check)
+      zscaler.ziacloud.zia_nss_servers:
+        provider: "{{ zia_cloud }}"
+        state: absent
+        name: "{{ appended_name }}"
+      register: result
+
+    - name: Verify NSS Server is absent
+      ansible.builtin.assert:
+        that:
+          - not result.changed

@@ -67,9 +67,6 @@ RETURN = r"""
 # Activates the saved configuration changes.
 """
 
-from ansible.module_utils.basic import AnsibleModule
-import traceback
-
 # Initialize the variable at the module level
 zia_client_import_error = None
 
@@ -107,27 +104,33 @@ def core(module):
         module.fail_json(msg=f"Invalid activation status '{desired_status}'")
 
     # Get current activation status
-    status_result, _, error = client.activate.status()
+    status_result, _unused, error = client.activate.status()
     if error:
         module.fail_json(msg=f"Failed to get activation status: {to_native(error)}")
 
     original_activation_status = status_result.as_dict() if status_result else None
-    current_status = original_activation_status.get('status') if original_activation_status else None
+    current_status = (
+        original_activation_status.get("status") if original_activation_status else None
+    )
 
     # If state is 'present' and the desired activation status does not match the current one, attempt to activate
     if module.params.get("state") == "present":
         if current_status != desired_status:
             # Activate the changes
-            _, _, error = client.activate.activate()
+            _unused, _unused, error = client.activate.activate()
             if error:
                 module.fail_json(msg=f"Failed to activate changes: {to_native(error)}")
 
             # Get new status after activation
-            new_status_result, _, error = client.activate.status()
+            new_status_result, _unused, error = client.activate.status()
             if error:
-                module.fail_json(msg=f"Failed to get new activation status: {to_native(error)}")
+                module.fail_json(
+                    msg=f"Failed to get new activation status: {to_native(error)}"
+                )
 
-            new_status = new_status_result.as_dict().get('status') if new_status_result else None
+            new_status = (
+                new_status_result.as_dict().get("status") if new_status_result else None
+            )
 
             if new_status == "PENDING":
                 message = (
@@ -136,14 +139,12 @@ def core(module):
                     "Please check with other admins or try again later."
                 )
                 module.exit_json(
-                    changed=False,
-                    data={"status": new_status, "message": message}
+                    changed=False, data={"status": new_status, "message": message}
                 )
             else:
                 message = f"Status was '{current_status}' and is now '{new_status}'."
                 module.exit_json(
-                    changed=True,
-                    data={"status": new_status, "message": message}
+                    changed=True, data={"status": new_status, "message": message}
                 )
         else:
             message = f"Status remains '{current_status}'."
@@ -169,8 +170,7 @@ def main():
         core(module)
     except Exception as e:
         module.fail_json(
-            msg=f"Unhandled exception: {to_native(e)}",
-            exception=format_exc()
+            msg=f"Unhandled exception: {to_native(e)}", exception=format_exc()
         )
 
 

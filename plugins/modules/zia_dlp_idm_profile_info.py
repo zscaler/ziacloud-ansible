@@ -44,11 +44,11 @@ extends_documentation_fragment:
   - zscaler.ziacloud.fragments.documentation
 
 options:
-  profile_id:
+  id:
     description: "The identifier (1-64) for the IDM template (i.e., IDM profile) that is unique within the organization"
     type: int
     required: false
-  profile_name:
+  name:
     type: str
     required: false
     description:
@@ -186,12 +186,16 @@ def core(module):
     idm_profiles = []
 
     if profile_id:
-        result, _, error = client.dlp_resources.get_dlp_idm_profiles(profile_id)
+        result, _unused, error = client.dlp_resources.get_dlp_idm_profiles(profile_id)
         if error:
-            module.fail_json(msg=f"Error retrieving IDM profile ID {profile_id}: {to_native(error)}")
+            module.fail_json(
+                msg=f"Error retrieving IDM profile ID {profile_id}: {to_native(error)}"
+            )
         idm_profiles = [result.as_dict()]
     elif name:
-        result, _, error = client.dlp_resources.list_dlp_idm_profiles(query_params={"search": name})
+        result, _unused, error = client.dlp_resources.list_dlp_idm_profiles(
+            query_params={"search": name}
+        )
         if error:
             module.fail_json(msg=f"Error searching IDM profiles: {to_native(error)}")
         matching = [p.as_dict() for p in result if p.name == name]
@@ -199,7 +203,7 @@ def core(module):
             module.fail_json(msg=f"No IDM profile found with name '{name}'")
         idm_profiles = matching
     else:
-        result, _, error = client.dlp_resources.list_dlp_idm_profiles()
+        result, _unused, error = client.dlp_resources.list_dlp_idm_profiles()
         if error:
             module.fail_json(msg=f"Error listing IDM profiles: {to_native(error)}")
         idm_profiles = [p.as_dict() for p in result]

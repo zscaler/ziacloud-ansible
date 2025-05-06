@@ -105,12 +105,12 @@ def core(module):
 
     # Fetch current list
     if url_type == "whitelist":
-        current_obj, _, error = client.security_policy_settings.get_whitelist()
+        current_obj, _unused, error = client.security_policy_settings.get_whitelist()
         if error or not current_obj:
             module.fail_json(msg=f"Failed to fetch whitelist: {to_native(error)}")
         current_urls = normalize_urls(current_obj.whitelist_urls)
     else:
-        current_obj, _, error = client.security_policy_settings.get_blacklist()
+        current_obj, _unused, error = client.security_policy_settings.get_blacklist()
         if error or not current_obj:
             module.fail_json(msg=f"Failed to fetch blacklist: {to_native(error)}")
         current_urls = normalize_urls(current_obj.blacklist_urls)
@@ -120,10 +120,14 @@ def core(module):
 
     # Determine changes
     urls_to_add = [u for u in desired_urls if u not in current_urls]
-    urls_to_remove = [u for u in current_urls if u in desired_urls] if state == "absent" else []
+    urls_to_remove = (
+        [u for u in current_urls if u in desired_urls] if state == "absent" else []
+    )
 
     if module.check_mode:
-        if (state == "present" and urls_to_add) or (state == "absent" and urls_to_remove):
+        if (state == "present" and urls_to_add) or (
+            state == "absent" and urls_to_remove
+        ):
             module.exit_json(changed=True)
         else:
             module.exit_json(changed=False)
@@ -131,26 +135,46 @@ def core(module):
     # Perform updates
     if state == "present" and urls_to_add:
         if url_type == "whitelist":
-            updated_obj, _, error = client.security_policy_settings.add_urls_to_whitelist(urls_to_add)
+            updated_obj, _unused, error = (
+                client.security_policy_settings.add_urls_to_whitelist(urls_to_add)
+            )
         else:
-            updated_obj, _, error = client.security_policy_settings.add_urls_to_blacklist(urls_to_add)
+            updated_obj, _unused, error = (
+                client.security_policy_settings.add_urls_to_blacklist(urls_to_add)
+            )
 
         if error:
             module.fail_json(msg=f"Failed to add URLs: {to_native(error)}")
 
-        updated_urls = normalize_urls(updated_obj.whitelist_urls if url_type == "whitelist" else updated_obj.blacklist_urls)
+        updated_urls = normalize_urls(
+            updated_obj.whitelist_urls
+            if url_type == "whitelist"
+            else updated_obj.blacklist_urls
+        )
         module.exit_json(changed=True, updated_list=updated_urls)
 
     elif state == "absent" and urls_to_remove:
         if url_type == "whitelist":
-            updated_obj, _, error = client.security_policy_settings.delete_urls_from_whitelist(urls_to_remove)
+            updated_obj, _unused, error = (
+                client.security_policy_settings.delete_urls_from_whitelist(
+                    urls_to_remove
+                )
+            )
         else:
-            updated_obj, _, error = client.security_policy_settings.delete_urls_from_blacklist(urls_to_remove)
+            updated_obj, _unused, error = (
+                client.security_policy_settings.delete_urls_from_blacklist(
+                    urls_to_remove
+                )
+            )
 
         if error:
             module.fail_json(msg=f"Failed to remove URLs: {to_native(error)}")
 
-        updated_urls = normalize_urls(updated_obj.whitelist_urls if url_type == "whitelist" else updated_obj.blacklist_urls)
+        updated_urls = normalize_urls(
+            updated_obj.whitelist_urls
+            if url_type == "whitelist"
+            else updated_obj.blacklist_urls
+        )
         module.exit_json(changed=True, updated_list=updated_urls)
 
     module.exit_json(changed=False, msg="No updates were necessary.")

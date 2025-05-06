@@ -106,7 +106,9 @@ roles:
 from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
 
 
 def core(module):
@@ -117,9 +119,11 @@ def core(module):
 
     if role_id:
         # Get role by ID
-        result, _, error = client.admin_roles.get_role(role_id)
+        result, _unused, error = client.admin_roles.get_role(role_id)
         if error:
-            module.fail_json(msg=f"Error fetching role with id {role_id}: {to_native(error)}")
+            module.fail_json(
+                msg=f"Error fetching role with id {role_id}: {to_native(error)}"
+            )
         if result:
             roles = [result.as_dict()]
     else:
@@ -128,7 +132,9 @@ def core(module):
         if role_name:
             query_params["search"] = role_name
 
-        result, _, error = client.admin_roles.list_roles(query_params=query_params)
+        result, _unused, error = client.admin_roles.list_roles(
+            query_params=query_params
+        )
         if error:
             module.fail_json(msg=f"Error listing roles: {to_native(error)}")
 
@@ -136,7 +142,7 @@ def core(module):
 
         # If name was specified but not found in search, try exact match
         if role_name and not roles:
-            result, _, error = client.admin_roles.list_roles()
+            result, _unused, error = client.admin_roles.list_roles()
             if error:
                 module.fail_json(msg=f"Error listing all roles: {to_native(error)}")
 
@@ -164,6 +170,7 @@ def main():
         core(module)
     except Exception as e:
         module.fail_json(msg=to_native(e), exception=format_exc())
+
 
 if __name__ == "__main__":
     main()

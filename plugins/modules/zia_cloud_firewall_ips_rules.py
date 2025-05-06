@@ -28,12 +28,12 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 ---
-module: zia_cloud_firewall_filtering_rule
-short_description: "Firewall Filtering policy rule."
-description: "Adds a new Firewall Filtering policy rule."
+module: zia_cloud_firewall_ips_rules
+short_description: "Firewall Filtering policy IPS rule."
+description: "Adds a new Firewall Filtering policy IPS rule."
 author:
   - William Guilherme (@willguibr)
-version_added: "1.0.0"
+version_added: "2.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 notes:
@@ -52,6 +52,10 @@ options:
     description: "Name of the Firewall Filtering policy rule"
     required: true
     type: str
+  description:
+    description: "Additional information about the rule"
+    required: false
+    type: str
   order:
     description: "Rule order number of the Firewall Filtering policy rule"
     required: false
@@ -61,6 +65,22 @@ options:
     required: false
     default: 7
     type: int
+  action:
+    description:
+      - The action configured for the rule that must take place if the traffic matches the rule criteria
+      - such as allowing or blocking the traffic or bypassing the rule.
+    required: false
+    type: str
+    choices:
+        - ALLOW
+        - BLOCK_DROP
+        - BLOCK_RESET
+        - BYPASS_IPS
+  enabled:
+    description:
+        - Determines whether the Firewall Filtering policy ips rule is enabled or disabled
+    required: false
+    type: bool
   enable_full_logging:
     description:
       - Aggregate The service groups together individual sessions based on  user, rule, network service, network application and records them periodically.
@@ -68,6 +88,11 @@ options:
       - Full logging on all other rules requires the Full Logging license. Only Block rules support full logging.
     required: false
     default: false
+    type: bool
+  capture_pcap:
+    description:
+        - Indicates whether packet capture (PCAP) is enabled or not
+    required: false
     type: bool
   locations:
     description: "The locations to which the Firewall Filtering policy rule applies"
@@ -99,30 +124,6 @@ options:
     type: list
     elements: int
     required: false
-  workload_groups:
-    description: "The list of preconfigured workload groups to which the policy must be applied."
-    type: list
-    elements: int
-    required: false
-  action:
-    description: "The action the Firewall Filtering policy rule takes when packets match the rule"
-    required: false
-    type: str
-    choices:
-        - ALLOW
-        - BLOCK_DROP
-        - BLOCK_RESET
-        - BLOCK_ICMP
-        - EVAL_NWAPP
-  enabled:
-    description:
-        - Determines whether the Firewall Filtering policy rule is enabled or disabled
-    required: false
-    type: bool
-  description:
-    description: "Additional information about the rule"
-    required: false
-    type: str
   src_ips:
     description:
       - User-defined source IP addresses for which the rule is applicable.
@@ -155,7 +156,7 @@ options:
     description:
       - Destination countries for which the rule is applicable.
       - If not set, the rule is not restricted to specific destination countries.
-      - Provide a ISO3166 Alpha2 code.  visit the following site for reference U(https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes)
+      - Provide a ISO3166 Alpha2 code. Visit the following site for reference U(https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes)
     type: list
     elements: str
     required: false
@@ -174,51 +175,10 @@ options:
     type: list
     elements: str
     required: false
-  exclude_src_countries:
-    description:
-      - Indicates whether the countries specified in the sourceCountries field are included or excluded from the rule.
-      - A true value denotes that the specified source countries are excluded from the rule.
-      - A false value denotes that the rule is applied to the source countries if there is a match.
-      - Provide a ISO3166 Alpha2 code.  visit the following site for reference U(https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes)
-    type: bool
-    required: false
-  nw_services:
-    description:
-        - User-defined network services on which the rule is applied.
-        - If not set, the rule is not restricted to a specific network service.
+  res_categories:
+    description: List of destination domain categories to which the rule applies
     type: list
-    elements: int
-    required: false
-  nw_service_groups:
-    description:
-        - User-defined network service group on which the rule is applied.
-        - If not set, the rule is not restricted to a specific network service group.
-    type: list
-    elements: int
-    required: false
-  nw_applications:
-    description:
-      - User-defined network service applications on which the rule is applied.
-      - If not set, the rule is not restricted to a specific network service application.
-    type: list
-    elements: int
-    required: false
-  nw_application_groups:
-    description:
-        - User-defined network service application group on which the rule is applied.
-        - If not set, the rule is not restricted to a specific network service application group.
-    type: list
-    elements: int
-    required: false
-  app_services:
-    description: "Application services on which this rule is applied"
-    type: list
-    elements: int
-    required: false
-  app_service_groups:
-    description: "Application service groups on which this rule is applied"
-    type: list
-    elements: int
+    elements: str
     required: false
   labels:
     description: "Labels that are applicable to the rule."
@@ -239,42 +199,32 @@ options:
     type: list
     elements: int
     required: false
-  device_groups:
-    description:
-      - Name-ID pairs of device groups for which the rule must be applied.
-      - This field is applicable for devices that are managed using Zscaler Client Connector.
-      - If no value is set, this field is ignored during the policy evaluation.
+  threat_categories:
+    description: Advanced threat categories to which the rule applies
     type: list
     elements: int
     required: false
-  devices:
+  zpa_app_segments:
     description:
-      - Name-ID pairs of devices for which rule must be applied.
-      - Specifies devices that are managed using Zscaler Client Connector.
-      - If no value is set, this field is ignored during the policy evaluation.
+      - The list of ZPA Application Segments for which this rule is applicable.
+      - This field is applicable only for the ZPA forwarding method.
     type: list
-    elements: int
+    elements: dict
     required: false
-  device_trust_levels:
-    description:
-        - List of device trust levels for which the rule must be applied.
-        - This field is applicable for devices that are managed using Zscaler Client Connector.
-        - The trust levels are assigned to the devices based on your posture configurations.
-        - If no value is set, this field is ignored during the policy evaluation.
-    type: list
-    elements: str
-    required: false
-    choices:
-        - ANY
-        - UNKNOWN_DEVICETRUSTLEVEL
-        - LOW_TRUST
-        - MEDIUM_TRUST
-        - HIGH_TRUST
+    suboptions:
+      external_id:
+        description: Indicates the external ID. Applicable only when this reference is of an external entity.
+        type: str
+        required: true
+      name:
+        description: The name of the Application Segment
+        type: str
+        required: true
 """
 
 EXAMPLES = r"""
-- name: Create/update  firewall filtering rule
-  zscaler.ziacloud.zia_cloud_firewall_filtering_rule:
+- name: Create/update  firewall filtering ips rule
+  zscaler.ziacloud.zia_cloud_firewall_ips_rules:
     provider: '{{ provider }}'
     state: present
     name: "Ansible_Example_Rule"
@@ -283,7 +233,6 @@ EXAMPLES = r"""
     enabled: true
     order: 1
     enable_full_logging: true
-    exclude_src_countries: true
     source_countries:
       - BR
       - CA
@@ -292,15 +241,10 @@ EXAMPLES = r"""
       - BR
       - CA
       - US
-    device_trust_levels:
-      - "UNKNOWN_DEVICETRUSTLEVEL"
-      - "LOW_TRUST"
-      - "MEDIUM_TRUST"
-      - "HIGH_TRUST"
 """
 
 RETURN = r"""
-# Returns information on the newly created cloud firewall filtering rule.
+# Returns information on the newly created cloud firewall filtering ips rule.
 """
 
 
@@ -336,17 +280,41 @@ def core(module):
     client = ZIAClientHelper(module)
 
     params = [
-        "id", "name", "description", "order", "rank", "locations", "location_groups",
-        "departments", "groups", "users", "time_windows", "action", "enabled",
-        "device_groups", "devices", "enable_full_logging", "capture_pcap",
-        "src_ips", "src_ip_groups", "src_ipv6_groups", "dest_addresses",
-        "dest_ip_categories", "dest_countries", "source_countries",
-        "dest_ip_groups", "dest_ipv6_groups", "nw_services", "nw_service_groups",
-        "labels", "threat_categories", "res_categories", "zpa_app_segments"
+        "id",
+        "name",
+        "description",
+        "order",
+        "rank",
+        "locations",
+        "location_groups",
+        "departments",
+        "groups",
+        "users",
+        "time_windows",
+        "action",
+        "enabled",
+        "enable_full_logging",
+        "capture_pcap",
+        "src_ips",
+        "src_ip_groups",
+        "src_ipv6_groups",
+        "dest_addresses",
+        "dest_ip_categories",
+        "dest_countries",
+        "source_countries",
+        "dest_ip_groups",
+        "dest_ipv6_groups",
+        "labels",
+        "threat_categories",
+        "res_categories",
+        "zpa_app_segments",
     ]
 
-    rule = {param: module.params.get(param) for param in params if module.params.get(param) is not None}
-
+    rule = {
+        param: module.params.get(param)
+        for param in params
+        if module.params.get(param) is not None
+    }
 
     # Validate and format country codes
     source_countries = rule.get("source_countries")
@@ -378,13 +346,15 @@ def core(module):
 
     existing_rule = None
     if rule_id is not None:
-        result, _, error = client.cloud_firewall_ips.get_rule(rule_id=rule_id)
+        result, _unused, error = client.cloud_firewall_ips.get_rule(rule_id=rule_id)
         if error:
-            module.fail_json(msg=f"Error fetching rule with id {rule_id}: {to_native(error)}")
+            module.fail_json(
+                msg=f"Error fetching rule with id {rule_id}: {to_native(error)}"
+            )
         if result:
             existing_rule = result.as_dict()
     else:
-        result, _, error = client.cloud_firewall_ips.list_rules()
+        result, _unused, error = client.cloud_firewall_ips.list_rules()
         if error:
             module.fail_json(msg=f"Error listing rules: {to_native(error)}")
         if result:
@@ -394,12 +364,16 @@ def core(module):
                     break
 
     # Handle predefined/default rules
-    if state == "absent" and existing_rule and (
-        existing_rule.get("default_rule", False) or existing_rule.get("predefined", False)
+    if (
+        state == "absent"
+        and existing_rule
+        and (
+            existing_rule.get("default_rule", False)
+            or existing_rule.get("predefined", False)
+        )
     ):
         module.exit_json(
-            changed=False,
-            msg="Deletion of default or predefined rule is not allowed."
+            changed=False, msg="Deletion of default or predefined rule is not allowed."
         )
 
     # Normalize and compare rules
@@ -412,7 +386,10 @@ def core(module):
         for attr in params:
             if attr in processed and processed[attr] is not None:
                 if isinstance(processed[attr], list):
-                    if all(isinstance(item, dict) and "id" in item for item in processed[attr]):
+                    if all(
+                        isinstance(item, dict) and "id" in item
+                        for item in processed[attr]
+                    ):
                         processed[attr] = [item["id"] for item in processed[attr]]
                     else:
                         processed[attr] = sorted(processed[attr])
@@ -423,12 +400,25 @@ def core(module):
 
     # List of attributes where empty list and None should be treated as equivalent
     list_attributes = [
-        "locations", "location_groups", "departments", "groups",
-        "users", "time_windows", "device_groups", "devices",
-        "src_ips", "src_ip_groups", "src_ipv6_groups", "dest_addresses",
-        "dest_ip_categories", "dest_countries", "source_countries",
-        "dest_ip_groups", "dest_ipv6_groups", "nw_services", "nw_service_groups",
-        "labels", "threat_categories", "res_categories", "zpa_app_segments"
+        "locations",
+        "location_groups",
+        "departments",
+        "groups",
+        "users",
+        "time_windows",
+        "src_ips",
+        "src_ip_groups",
+        "src_ipv6_groups",
+        "dest_addresses",
+        "dest_ip_categories",
+        "dest_countries",
+        "source_countries",
+        "dest_ip_groups",
+        "dest_ipv6_groups",
+        "labels",
+        "threat_categories",
+        "res_categories",
+        "zpa_app_segments",
     ]
 
     differences_detected = False
@@ -455,7 +445,9 @@ def core(module):
 
         # Sort lists of IDs for comparison
         if isinstance(desired_value, list) and isinstance(current_value, list):
-            if all(isinstance(x, int) for x in desired_value) and all(isinstance(x, int) for x in current_value):
+            if all(isinstance(x, int) for x in desired_value) and all(
+                isinstance(x, int) for x in current_value
+            ):
                 desired_value = sorted(desired_value)
                 current_value = sorted(current_value)
 
@@ -468,55 +460,56 @@ def core(module):
     if module.check_mode:
         module.exit_json(
             changed=bool(
-                (state == "present" and (not existing_rule or differences_detected)) or
-                (state == "absent" and existing_rule)
+                (state == "present" and (not existing_rule or differences_detected))
+                or (state == "absent" and existing_rule)
             )
         )
 
     if state == "present":
         if existing_rule:
             if differences_detected:
-                update_data = deleteNone({
-                    "rule_id": existing_rule.get("id"),
-                    "name": desired_rule.get("name"),
-                    "order": desired_rule.get("order"),
-                    "rank": desired_rule.get("rank"),
-                    "action": desired_rule.get("action"),
-                    "enabled": desired_rule.get("enabled"),
-                    "description": desired_rule.get("description"),
-                    "enable_full_logging": desired_rule.get("enable_full_logging"),
-                    "capture_pcap": desired_rule.get("capture_pcap"),
-                    "src_ips": desired_rule.get("src_ips"),
-                    "dest_addresses": desired_rule.get("dest_addresses"),
-                    "dest_ip_categories": desired_rule.get("dest_ip_categories"),
-                    "dest_countries": desired_rule.get("dest_countries"),
-                    "res_categories": desired_rule.get("res_categories"),
-                    "source_countries": desired_rule.get("source_countries"),
-                    "device_groups": desired_rule.get("device_groups"),
-                    "devices": desired_rule.get("devices"),
-                    "dest_ip_groups": desired_rule.get("dest_ip_groups"),
-                    "nw_services": desired_rule.get("nw_services"),
-                    "nw_service_groups": desired_rule.get("nw_service_groups"),
-                    "labels": desired_rule.get("labels"),
-                    "locations": desired_rule.get("locations"),
-                    "location_groups": desired_rule.get("location_groups"),
-                    "departments": desired_rule.get("departments"),
-                    "groups": desired_rule.get("groups"),
-                    "users": desired_rule.get("users"),
-                    "time_windows": desired_rule.get("time_windows"),
-                    "src_ip_groups": desired_rule.get("src_ip_groups"),
-                    "zpa_app_segments": desired_rule.get("zpa_app_segments"),
-                    "threat_categories": desired_rule.get("threat_categories"),
-                })
+                update_data = deleteNone(
+                    {
+                        "rule_id": existing_rule.get("id"),
+                        "name": desired_rule.get("name"),
+                        "order": desired_rule.get("order"),
+                        "rank": desired_rule.get("rank"),
+                        "action": desired_rule.get("action"),
+                        "enabled": desired_rule.get("enabled"),
+                        "description": desired_rule.get("description"),
+                        "enable_full_logging": desired_rule.get("enable_full_logging"),
+                        "capture_pcap": desired_rule.get("capture_pcap"),
+                        "src_ips": desired_rule.get("src_ips"),
+                        "dest_addresses": desired_rule.get("dest_addresses"),
+                        "dest_ip_categories": desired_rule.get("dest_ip_categories"),
+                        "dest_countries": desired_rule.get("dest_countries"),
+                        "res_categories": desired_rule.get("res_categories"),
+                        "source_countries": desired_rule.get("source_countries"),
+                        "dest_ip_groups": desired_rule.get("dest_ip_groups"),
+                        "labels": desired_rule.get("labels"),
+                        "locations": desired_rule.get("locations"),
+                        "location_groups": desired_rule.get("location_groups"),
+                        "departments": desired_rule.get("departments"),
+                        "groups": desired_rule.get("groups"),
+                        "users": desired_rule.get("users"),
+                        "time_windows": desired_rule.get("time_windows"),
+                        "src_ip_groups": desired_rule.get("src_ip_groups"),
+                        "zpa_app_segments": desired_rule.get("zpa_app_segments"),
+                        "threat_categories": desired_rule.get("threat_categories"),
+                    }
+                )
                 module.warn("Payload Update for SDK: {}".format(update_data))
-                updated_rule, _, error = client.cloud_firewall_ips.update_rule(**update_data)
+                updated_rule, _unused, error = client.cloud_firewall_ips.update_rule(
+                    **update_data
+                )
                 if error:
                     module.fail_json(msg=f"Error updating rule: {to_native(error)}")
                 module.exit_json(changed=True, data=updated_rule.as_dict())
             else:
                 module.exit_json(changed=False, data=existing_rule)
         else:
-            create_data = deleteNone({
+            create_data = deleteNone(
+                {
                     "name": desired_rule.get("name"),
                     "order": desired_rule.get("order"),
                     "rank": desired_rule.get("rank"),
@@ -531,11 +524,7 @@ def core(module):
                     "dest_countries": desired_rule.get("dest_countries"),
                     "res_categories": desired_rule.get("res_categories"),
                     "source_countries": desired_rule.get("source_countries"),
-                    "device_groups": desired_rule.get("device_groups"),
-                    "devices": desired_rule.get("devices"),
                     "dest_ip_groups": desired_rule.get("dest_ip_groups"),
-                    "nw_services": desired_rule.get("nw_services"),
-                    "nw_service_groups": desired_rule.get("nw_service_groups"),
                     "labels": desired_rule.get("labels"),
                     "locations": desired_rule.get("locations"),
                     "location_groups": desired_rule.get("location_groups"),
@@ -546,16 +535,19 @@ def core(module):
                     "src_ip_groups": desired_rule.get("src_ip_groups"),
                     "zpa_app_segments": desired_rule.get("zpa_app_segments"),
                     "threat_categories": desired_rule.get("threat_categories"),
-            })
+                }
+            )
             module.warn("Payload Update for SDK: {}".format(create_data))
-            new_rule, _, error = client.cloud_firewall_ips.add_rule(**create_data)
+            new_rule, _unused, error = client.cloud_firewall_ips.add_rule(**create_data)
             if error:
                 module.fail_json(msg=f"Error creating rule: {to_native(error)}")
             module.exit_json(changed=True, data=new_rule.as_dict())
 
     elif state == "absent":
         if existing_rule:
-            _, _, error = client.cloud_firewall_ips.delete_rule(rule_id=existing_rule.get("id"))
+            _unused, _unused, error = client.cloud_firewall_ips.delete_rule(
+                rule_id=existing_rule.get("id")
+            )
             if error:
                 module.fail_json(msg=f"Error deleting rule: {to_native(error)}")
             module.exit_json(changed=True, data=existing_rule)
@@ -572,6 +564,19 @@ def main():
         elements="int",
         required=False,
     )
+
+    external_id_name_dict_spec = dict(
+        external_id=dict(type="str", required=True),
+        name=dict(type="str", required=True),
+    )
+
+    external_id_name_list_spec = dict(
+        type="list",
+        elements="dict",
+        required=False,
+        options=external_id_name_dict_spec,
+    )
+
     argument_spec.update(
         id=dict(type="int", required=False),
         name=dict(type="str", required=True),
@@ -579,12 +584,8 @@ def main():
         enabled=dict(type="bool", required=False),
         order=dict(type="int", required=False),
         rank=dict(type="int", required=False, default=7),
-        device_groups=id_spec,
-        devices=id_spec,
         dest_ip_groups=id_spec,
         dest_ipv6_groups=id_spec,
-        nw_services=id_spec,
-        nw_service_groups=id_spec,
         labels=id_spec,
         locations=id_spec,
         location_groups=id_spec,
@@ -594,7 +595,7 @@ def main():
         time_windows=id_spec,
         src_ip_groups=id_spec,
         src_ipv6_groups=id_spec,
-        zpa_app_segments=id_spec,
+        zpa_app_segments=external_id_name_list_spec,
         threat_categories=id_spec,
         src_ips=dict(type="list", elements="str", required=False),
         dest_addresses=dict(type="list", elements="str", required=False),

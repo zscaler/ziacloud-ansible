@@ -28,13 +28,13 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 ---
-module: zia_cloud_firewall_ip_destination_groups_info
-short_description: "Gets a list of all IP destination groups"
+module: zia_devices_info
+short_description: "Gets a list of devices"
 description:
-  - "Gets a list of all IP destination groups"
+  - "Gets a list of devices"
 author:
   - William Guilherme (@willguibr)
-version_added: "1.0.0"
+version_added: "2.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 notes:
@@ -45,89 +45,135 @@ extends_documentation_fragment:
 
 options:
   id:
-    description: "Unique identifer for the destination IP group"
+    description: The unique identifier for the device
     required: false
     type: int
   name:
-    description: "Destination IP group name"
+    description: The device name
     required: false
     type: str
-  exclude_type:
-    description: Filter based on the IP destination group's type.
+  model:
+    description: The device models
+    required: false
+    type: str
+  owner:
+    description: The device owners
+    required: false
+    type: str
+  os_type:
+    description: The operating system (OS)
     required: false
     type: str
     choices:
-      - DSTN_IP
-      - DSTN_FQDN
-      - DSTN_DOMAIN
-      - DSTN_OTHER
+      - ANY
+      - OTHER_OS
+      - IOS
+      - ANDROID_OS
+      - WINDOWS_OS
+      - MAC_OS
+      - LINUX
+  os_version:
+    description: The device's operating system version
+    required: false
+    type: str
+  device_group_id:
+    description: The unique identifier for the device group
+    required: false
+    type: int
+  user_ids:
+    description: Used to list devices for specific users
+    type: list
+    elements: int
+    required: false
+  search_all:
+    description: Used to match against all device attribute information
+    required: false
+    type: str
+  include_all:
+    description: Used to include or exclude Cloud Browser Isolation devices
+    required: false
+    type: bool
 """
 
 EXAMPLES = r"""
-- name: Gather Information of all Destination Group
-  zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups_info:
+- name: Gather Information of all Devices
+  zscaler.ziacloud.zia_devices_info:
     provider: '{{ provider }}'
 
-- name: Gather Information of a Destination Group by Name
-  zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups_info:
+- name: Gather Information of a Device by ID
+  zscaler.ziacloud.zia_devices_info:
     provider: '{{ provider }}'
-    name: "example"
+    id: 79215323
+
+- name: Gather Information of a Device by Name
+  zscaler.ziacloud.zia_devices_info:
+    provider: '{{ provider }}'
+    name: ManufactoringDevice
 """
 
 RETURN = r"""
-groups:
-  description: List of IP destination groups based on the search criteria provided.
+devices:
+  description: List of devices
   returned: always
   type: list
   elements: dict
   contains:
     id:
-      description: The unique identifier for the IP destination group.
+      description: The unique identifier for the device
       returned: always
       type: int
-      sample: 3254355
+      sample: 79215323
     name:
-      description: The name of the IP destination group.
+      description: The device name
       returned: always
       type: str
       sample: "Sample_IP_Destination_Group"
-    description:
-      description: A description of the IP destination group.
+    model:
+      description: The device models
       returned: always
       type: str
-      sample: "Sample_IP_Destination_Group"
-    creator_context:
-      description: The context or origin within ZIA where this group was created.
+      sample: "VMware Virtual Platform"
+    owner:
+      description: The device owners
       returned: always
       type: str
-      sample: "ZIA"
-    addresses:
-      description: List of IP addresses included in the destination group.
-      returned: always
-      type: list
-      sample: ["192.168.1.1", "192.168.1.2", "192.168.1.3"]
-    ip_categories:
-      description: List of IP categories associated with the destination group.
-      returned: always
-      type: list
-      sample: []
-    type:
-      description: Type of the destination group.
+      sample: "John Doe"
+    os_type:
+      description: The operating system (OS)
       returned: always
       type: str
-      sample: "DSTN_IP"
-    url_categories:
-      description: List of URL categories associated with the destination group.
+      sample: "WINDOWS_OS"
+    os_version:
+      description: The device's operating system version
+      returned: always
+      type: str
+      sample: "Microsoft Windows 10 Pro;64 bit;amd64"
+    user_ids:
+      description: Used to list devices for specific users
       returned: always
       type: list
       sample: []
+    search_all:
+      description: Used to match against all device attribute information
+      returned: always
+      type: str
+      sample: []
+    include_all:
+      description: Used to include or exclude Cloud Browser Isolation devices
+      returned: always
+      type: bool
+      sample: false
 """
 
 from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import collect_all_items
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
+    collect_all_items,
+)
 
 
 def core(module):
@@ -163,17 +209,25 @@ def core(module):
     if device_name:
         query_params["deviceName"] = device_name
 
-    results, err = collect_all_items(client.device_management.list_devices, query_params=query_params)
+    results, err = collect_all_items(
+        client.device_management.list_devices, query_params=query_params
+    )
     if err:
         module.fail_json(msg=f"Error retrieving devices: {to_native(err)}")
 
-    device_list = [d.as_dict() if hasattr(d, "as_dict") else d for d in results] if results else []
+    device_list = (
+        [d.as_dict() if hasattr(d, "as_dict") else d for d in results]
+        if results
+        else []
+    )
 
     if device_name:
         matched = next((d for d in device_list if d.get("name") == device_name), None)
         if not matched:
             available = [d.get("name") for d in device_list]
-            module.fail_json(msg=f"Device with name '{device_name}' not found. Available devices: {available}")
+            module.fail_json(
+                msg=f"Device with name '{device_name}' not found. Available devices: {available}"
+            )
         device_list = [matched]
 
     module.exit_json(changed=False, devices=device_list)
@@ -182,10 +236,23 @@ def core(module):
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
+        id=dict(type="int", required=False),
         name=dict(type="str", required=False),
         model=dict(type="str", required=False),
         owner=dict(type="str", required=False),
-        os_type=dict(type="str", required=False),
+        os_type=dict(
+            type="str",
+            required=False,
+            choices=[
+                "ANY",
+                "OTHER_OS",
+                "IOS",
+                "ANDROID_OS",
+                "WINDOWS_OS",
+                "MAC_OS",
+                "LINUX",
+            ],
+        ),
         os_version=dict(type="str", required=False),
         device_group_id=dict(type="int", required=False),
         user_ids=dict(type="list", elements="int", required=False),
@@ -193,10 +260,7 @@ def main():
         include_all=dict(type="bool", required=False),
     )
 
-    module = AnsibleModule(
-        argument_spec=argument_spec,
-        supports_check_mode=True
-    )
+    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
 
     try:
         core(module)

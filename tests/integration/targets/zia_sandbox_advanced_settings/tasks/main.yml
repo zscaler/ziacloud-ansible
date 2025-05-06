@@ -8,20 +8,20 @@
     msg: "{{ env_var }} is not defined as environment variable"
   when: lookup('env', env_var) is none
   loop:
-    - ZIA_USERNAME
-    - ZIA_PASSWORD
-    - ZIA_API_KEY
-    - ZIA_CLOUD
+    - ZSCALER_CLIENT_ID
+    - ZSCALER_CLIENT_SECRET
+    - ZSCALER_VANITY_DOMAIN
+    - ZSCALER_CLOUD
   loop_control:
     loop_var: env_var
 
 - name: Ensure ZIA Credential environment variables are set
   ansible.builtin.set_fact:
     zia_cloud:
-      username: "{{ lookup('env', 'ZIA_USERNAME') }}"
-      password: "{{ lookup('env', 'ZIA_PASSWORD') }}"
-      api_key: "{{ lookup('env', 'ZIA_API_KEY') }}"
-      cloud: "{{ lookup('env', 'ZIA_CLOUD') | default(omit) }}"
+      client_id: "{{ lookup('env', 'ZSCALER_CLIENT_ID') }}"
+      client_secret: "{{ lookup('env', 'ZSCALER_CLIENT_SECRET') }}"
+      vanity_domain: "{{ lookup('env', 'ZSCALER_VANITY_DOMAIN') }}"
+      cloud: "{{ lookup('env', 'ZSCALER_CLOUD') | default(omit) }}"
   no_log: true
 
 - name: Main block to Test Sandbox Advanced Settings Configuration
@@ -45,8 +45,8 @@
 
     - name: Set Facts for Initial and Remaining File Hash Counts
       ansible.builtin.set_fact:
-        initial_blocked_count: "{{ initial_fetch_result.ansible_module_results.file_hash_count.blocked_file_hashes_count | int }}"
-        initial_remaining_count: "{{ initial_fetch_result.ansible_module_results.file_hash_count.remaining_file_hashes | int }}"
+        initial_blocked_count: "{{ initial_fetch_result.file_hash_count.blockedFileHashesCount | default(0) | int }}"
+        initial_remaining_count: "{{ initial_fetch_result.file_hash_count.remainingFileHashes | default(0) | int }}"
 
     - name: Add MD5 Hashes to Custom List
       zscaler.ziacloud.zia_sandbox_advanced_settings:
@@ -59,14 +59,14 @@
       ansible.builtin.assert:
         that:
           - add_result.changed # Should reflect a change
-          - add_result.file_hash_count.blocked_file_hashes_count | int == initial_blocked_count | int + (md5_hashes | length)
-          - add_result.file_hash_count.remaining_file_hashes | int == initial_remaining_count | int - (md5_hashes | length)
+          - add_result.file_hash_count.blockedFileHashesCount | int == initial_blocked_count | int + (md5_hashes | length)
+          - add_result.file_hash_count.remainingFileHashes | int == initial_remaining_count | int - (md5_hashes | length)
         msg: |
           Failed to verify the addition of MD5 hashes.
           Expected blocked hashes: {{ initial_blocked_count | int + (md5_hashes | length) }}
-          Actual blocked hashes: {{ add_result.file_hash_count.blocked_file_hashes_count | int }}
+          Actual blocked hashes: {{ add_result.file_hash_count.blockedFileHashesCount | int }}
           Expected remaining hashes: {{ initial_remaining_count | int - (md5_hashes | length) }}
-          Actual remaining hashes: {{ add_result.file_hash_count.remaining_file_hashes | int }}
+          Actual remaining hashes: {{ add_result.file_hash_count.remainingFileHashes | int }}
 
     - name: Add MD5 Hashes again (Idempotency check)
       zscaler.ziacloud.zia_sandbox_advanced_settings:
@@ -90,8 +90,8 @@
     - name: Verify clearing of hashes
       ansible.builtin.assert:
         that:
-          - clear_again_result.changed # Should reflect a change
-          - clear_again_result.file_hash_count.blocked_file_hashes_count == 0 # Assuming you want to check if the count is 0 after clearing
+          - clear_again_result.changed
+          - clear_again_result.file_hash_count.blockedFileHashesCount == 0
 
     - name: Clear Sandbox Advanced Setting again (Idempotency check)
       zscaler.ziacloud.zia_sandbox_advanced_settings:
@@ -115,11 +115,11 @@
         msg:
           initial_blocked_count: "{{ initial_blocked_count }}"
           initial_remaining_count: "{{ initial_remaining_count }}"
-          final_blocked_count: "{{ final_fetch_result.ansible_module_results.file_hash_count.blocked_file_hashes_count }}"
-          final_remaining_count: "{{ final_fetch_result.ansible_module_results.file_hash_count.remaining_file_hashes }}"
+          final_blocked_count: "{{ final_fetch_result.file_hash_count.blockedFileHashesCount }}"
+          final_remaining_count: "{{ final_fetch_result.file_hash_count.remainingFileHashes }}"
 
     - name: Debug initial and final blocked file hashes count
       ansible.builtin.debug:
         msg: |
           Initial blocked file hashes count: "{{ initial_blocked_count }}"
-          Final blocked file hashes count: "{{ final_fetch_result.ansible_module_results.file_hash_count.blocked_file_hashes_count }}"
+          Final blocked file hashes count: "{{ final_fetch_result.file_hash_count.blockedFileHashesCount }}"

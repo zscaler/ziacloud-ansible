@@ -28,10 +28,10 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 ---
-module: zia_atp_malware_protocols_info
-short_description: "Retrieves the malicious URLs added to the denylist"
+module: zia_auth_settings_urls_info
+short_description: "Gets a list of URLs that were exempted from cookie authentication"
 description:
-  - "Retrieves the malicious URLs added to the denylist in the (ATP) policy"
+  - "Gets a list of URLs that were exempted from cookie authentication"
 author:
   - William Guilherme (@willguibr)
 version_added: "2.0.0"
@@ -43,103 +43,42 @@ extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
   - zscaler.ziacloud.fragments.documentation
 
-options:
-  id:
-    description: "The unique identifier for the rule label."
-    type: int
-    required: false
-  name:
-    description: "The rule label name."
-    required: false
-    type: str
+options: {}
 """
 
 EXAMPLES = r"""
-- name: Gets all list of rule label
-  zscaler.ziacloud.zia_rule_labels_info:
+- name: Gets a list of URLs that were exempted from cookie authentication.
+  zscaler.ziacloud.zia_auth_settings_urls_info:
     provider: '{{ provider }}'
-
-- name: Gets a list of rule label by name
-  zscaler.ziacloud.zia_rule_labels_info:
-    provider: '{{ provider }}'
-    name: "example"
 """
 
 RETURN = r"""
-labels:
-  description: A list of rule labels fetched based on the given criteria.
+auth:
+  description: A list of URLs that were exempted from cookie authentication
   returned: always
   type: list
-  elements: dict
-  contains:
-    id:
-      description: The unique identifier for the rule label.
-      returned: always
-      type: int
-      sample: 3687131
-    name:
-      description: The name of the rule label.
-      returned: always
-      type: str
-      sample: "Example"
-    description:
-      description: A description of the rule label.
-      returned: always
-      type: str
-      sample: "Example description"
-    created_by:
-      description: Information about the user who created the rule label.
-      returned: always
-      type: complex
-      contains:
-        id:
-          description: The identifier of the user who created the rule label.
-          returned: always
-          type: int
-          sample: 44772836
-        name:
-          description: The name of the user who created the rule label.
-          returned: always
-          type: str
-          sample: "admin@44772833.zscalertwo.net"
-    last_modified_by:
-      description: Information about the user who last modified the rule label.
-      returned: always
-      type: complex
-      contains:
-        id:
-          description: The identifier of the user who last modified the rule label.
-          returned: always
-          type: int
-          sample: 44772836
-        name:
-          description: The name of the user who last modified the rule label.
-          returned: always
-          type: str
-          sample: "admin@44772833.zscalertwo.net"
-    last_modified_time:
-      description: The Unix timestamp when the rule label was last modified.
-      returned: always
-      type: int
-      sample: 1721347034
-    referenced_rule_count:
-      description: The number of rules that reference this label.
-      returned: always
-      type: int
-      sample: 0
+  elements: str
+  sample:
+    - ".newexample.com"
+    - ".blocknew.com"
 """
 
 from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
+
 
 def core(module):
     client = ZIAClientHelper(module)
 
-    auth, _, error = client.authentication_settings.get_exempted_urls()
+    auth, _unused, error = client.authentication_settings.get_exempted_urls()
     if error:
-        module.fail_json(msg=f"Error fetching authentication exempted urls: {to_native(error)}")
+        module.fail_json(
+            msg=f"Error fetching authentication exempted urls: {to_native(error)}"
+        )
 
     module.exit_json(changed=False, auth=auth)
 
@@ -147,15 +86,13 @@ def core(module):
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
 
-    module = AnsibleModule(
-        argument_spec=argument_spec,
-        supports_check_mode=True
-    )
+    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
 
     try:
         core(module)
     except Exception as e:
         module.fail_json(msg=to_native(e), exception=format_exc())
+
 
 if __name__ == "__main__":
     main()

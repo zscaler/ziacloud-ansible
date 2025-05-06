@@ -47,11 +47,20 @@ options:
     description: URL category ID. See U(https://help.zscaler.com/zia/url-categories#/urlCategories-get)
     required: false
     type: str
-  configured_name:
+  name:
     description: "Name of the URL category. This is only required for custom URL categories."
     required: false
     type: str
-
+  custom_only:
+    description: If set to true, gets information on custom URL categories only.
+    required: false
+    type: bool
+  include_only_url_keyword_counts:
+    description:
+      - By default this parameter is set to false, so the response includes URLs and keywords for custom URL categories only
+      - If set to true, the response only includes URL and keyword counts.
+    required: false
+    type: bool
 """
 
 EXAMPLES = r"""
@@ -77,7 +86,7 @@ categories:
       returned: always
       type: str
       sample: "CUSTOM_02"
-    configured_name:
+    name:
       description: The name configured for the URL category.
       returned: when custom categories are queried
       type: str
@@ -162,7 +171,9 @@ categories:
 from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
 
 
 def core(module):
@@ -175,9 +186,11 @@ def core(module):
     categories = []
 
     if category_id is not None:
-        category_obj, _, error = client.url_categories.get_category(category_id)
+        category_obj, _unused, error = client.url_categories.get_category(category_id)
         if error or category_obj is None:
-            module.fail_json(msg=f"Failed to retrieve URL category with ID '{category_id}': {to_native(error)}")
+            module.fail_json(
+                msg=f"Failed to retrieve URL category with ID '{category_id}': {to_native(error)}"
+            )
         categories = [category_obj.as_dict()]
     else:
         query_params = {}
@@ -190,7 +203,9 @@ def core(module):
         if include_keyword_counts is not None:
             query_params["include_only_url_keyword_counts"] = include_keyword_counts
 
-        result, _, error = client.url_categories.list_categories(query_params=query_params)
+        result, _unused, error = client.url_categories.list_categories(
+            query_params=query_params
+        )
         if error:
             module.fail_json(msg=f"Error retrieving URL categories: {to_native(error)}")
 
@@ -203,7 +218,7 @@ def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         id=dict(type="str", required=False),
-        name=dict(type="str", required=False),  # mapped to search
+        name=dict(type="str", required=False),
         custom_only=dict(type="bool", required=False),
         include_only_url_keyword_counts=dict(type="bool", required=False),
     )

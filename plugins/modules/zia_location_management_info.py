@@ -52,6 +52,28 @@ options:
     description: "The location name"
     required: false
     type: str
+  ssl_scan_enabled:
+    description: This parameter was deprecated and no longer has an effect on SSL policy.
+    required: false
+    type: bool
+  xff_enabled:
+    description: Filter based on whether the Enforce XFF Forwarding setting is enabled or disabled for a location.
+    required: false
+    type: bool
+  auth_required:
+    description: Filter based on whether the Enforce Authentication setting is enabled or disabled for a location.
+    required: false
+    type: bool
+  bw_enforced:
+    description: Filter based on whether Bandwith Control is being enforced for a location.
+    required: false
+    type: bool
+  enable_iot:
+    description:
+      - If set to true, the city field (containing IoT-enabled location IDs, names,
+      - latitudes, and longitudes) and the iotDiscoveryEnabled filter are included in the response. Otherwise, they are not included.
+    required: false
+    type: bool
 """
 
 EXAMPLES = r"""
@@ -63,6 +85,11 @@ EXAMPLES = r"""
   zscaler.ziacloud.zia_location_management_info:
     provider: '{{ provider }}'
     name: "USA-SJC37"
+
+- name: Gather Information Details of ZIA Location with Authentication Enabled
+  zscaler.ziacloud.zia_location_management_info:
+    provider: '{{ provider }}'
+    auth_required: true
 """
 
 RETURN = r"""
@@ -238,7 +265,9 @@ locations:
 from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
 
 
 def core(module):
@@ -249,25 +278,31 @@ def core(module):
     locations = []
 
     if location_id is not None:
-        location_obj, _, error = client.locations.get_location(location_id)
+        location_obj, _unused, error = client.locations.get_location(location_id)
         if error or location_obj is None:
-            module.fail_json(msg=f"Failed to retrieve location with ID '{location_id}': {to_native(error)}")
+            module.fail_json(
+                msg=f"Failed to retrieve location with ID '{location_id}': {to_native(error)}"
+            )
         locations = [location_obj.as_dict()]
     else:
-        # ✅ Collect all parameters into query_params
         query_params = {}
         if location_name:
             query_params["search"] = location_name
 
         for param in [
-            "ssl_scan_enabled", "xff_enabled",
-            "auth_required", "bw_enforced", "enable_iot"
+            "ssl_scan_enabled",
+            "xff_enabled",
+            "auth_required",
+            "bw_enforced",
+            "enable_iot",
         ]:
             val = module.params.get(param)
             if val is not None:
                 query_params[param] = val
 
-        result, _, error = client.locations.list_locations(query_params=query_params)
+        result, _unused, error = client.locations.list_locations(
+            query_params=query_params
+        )
         if error:
             module.fail_json(msg=f"Error retrieving locations: {to_native(error)}")
 
@@ -290,7 +325,7 @@ def main():
 
     module = AnsibleModule(
         argument_spec=argument_spec,
-        supports_check_mode=False,
+        supports_check_mode=True,
         mutually_exclusive=[["id", "name"]],
     )
 

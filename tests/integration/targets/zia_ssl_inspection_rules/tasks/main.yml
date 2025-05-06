@@ -1,0 +1,234 @@
+---
+- name: Include default variables
+  ansible.builtin.include_vars:
+    file: ../defaults/main.yml
+
+- name: Import Random String Generator Tasks
+  ansible.builtin.import_tasks: ../../../generate_random_string.yml
+
+- name: Set dynamic name values with random string
+  ansible.builtin.set_fact:
+    rule_name: "{{ rule_name }}_{{ random_string }}"
+    description: "{{ description }}_{{ random_string }}"
+
+- name: Ensure required environment variables are set
+  ansible.builtin.fail:
+    msg: "{{ env_var }} is not defined as environment variable"
+  when: lookup('env', env_var) is none
+  loop:
+    - ZSCALER_CLIENT_ID
+    - ZSCALER_CLIENT_SECRET
+    - ZSCALER_VANITY_DOMAIN
+    - ZSCALER_CLOUD
+  loop_control:
+    loop_var: env_var
+
+- name: Ensure ZIA Credential environment variables are set
+  ansible.builtin.set_fact:
+    zia_cloud:
+      client_id: "{{ lookup('env', 'ZSCALER_CLIENT_ID') }}"
+      client_secret: "{{ lookup('env', 'ZSCALER_CLIENT_SECRET') }}"
+      vanity_domain: "{{ lookup('env', 'ZSCALER_VANITY_DOMAIN') }}"
+      cloud: "{{ lookup('env', 'ZSCALER_CLOUD') | default(omit) }}"
+  no_log: true
+
+- name: Main block for DLP Web Rule Configuration
+  block:
+    - name: Ensure SSL Inspection Rule (leftover)
+      zscaler.ziacloud.zia_ssl_inspection_rules:
+        provider: "{{ zia_cloud }}"
+        state: absent
+        name: "{{ rule_name }}"
+        action: "{{ rule_action }}"
+      register: result
+
+  rescue:
+    - name: Handle errors
+      ansible.builtin.debug:
+        msg: An error occurred.
+
+  always:
+    - name: Cleanup operations
+      ansible.builtin.debug:
+        msg: Cleanup complete.
+
+    - name: Ensure SSL Inspection Rule is absent
+      zscaler.ziacloud.zia_ssl_inspection_rules:
+        provider: "{{ zia_cloud }}"
+        state: absent
+        name: "{{ rule_name }}"
+        action: "{{ rule_action }}"
+      register: result
+
+    - name: Verify SSL Inspection Rule is absent
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+          - result.data is defined
+
+    - name: Ensure SSL Inspection Rule is (Present)
+      zscaler.ziacloud.zia_ssl_inspection_rules:
+        provider: "{{ zia_cloud }}"
+        state: present
+        name: "{{ rule_name }}"
+        description: "{{ description }}"
+        order: "{{ rule_order }}"
+        rank: "{{ rank }}"
+        enabled: "{{ enabled }}"
+        road_warrior_for_kerberos: "{{ road_warrior_for_kerberos }}"
+        cloud_applications: "{{ cloud_applications }}"
+        url_categories: "{{ url_categories }}"
+        platforms: "{{ platforms }}"
+        user_agent_types: "{{ user_agent_types }}"
+        action: "{{ rule_action }}"
+      register: result
+
+    - name: Verify SSL Inspection Rule is present
+      ansible.builtin.assert:
+        that:
+          - result.changed
+          - result.data is defined
+          - result.data.name is defined
+
+    - name: Ensure SSL Inspection Rule (again; idempotency check)
+      zscaler.ziacloud.zia_ssl_inspection_rules:
+        provider: "{{ zia_cloud }}"
+        state: present
+        name: "{{ rule_name }}"
+        description: "{{ description }}"
+        action: "{{ rule_action }}"
+        order: "{{ rule_order }}"
+        rank: "{{ rank }}"
+        enabled: "{{ enabled }}"
+        road_warrior_for_kerberos: "{{ road_warrior_for_kerberos }}"
+        cloud_applications: "{{ cloud_applications }}"
+        url_categories: "{{ url_categories }}"
+        platforms: "{{ platforms }}"
+        user_agent_types: "{{ user_agent_types }}"
+      register: result
+
+    - name: Ensure SSL Inspection Rule is absent (idempotency check)
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+
+    - name: Fetch all SSL Inspection Rule
+      zscaler.ziacloud.zia_ssl_inspection_rules_info:
+        provider: "{{ zia_cloud }}"
+      register: result
+
+    - name: Ensure all SSL Inspection Rule found
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+          - result.rules[0] is defined
+
+    - name: Update SSL Inspection Rule is (Present)
+      zscaler.ziacloud.zia_ssl_inspection_rules:
+        provider: "{{ zia_cloud }}"
+        state: present
+        name: "{{ rule_name }}"
+        description: "{{ description }}"
+        action: "{{ rule_action_update }}"
+        order: "{{ order_update }}"
+        rank: "{{ rank_update }}"
+        enabled: "{{ enabled_update }}"
+        road_warrior_for_kerberos: "{{ road_warrior_for_kerberos_update }}"
+        cloud_applications: "{{ cloud_applications_update }}"
+        url_categories: "{{ url_categories_update }}"
+        platforms: "{{ platforms_update }}"
+        user_agent_types: "{{ user_agent_types_update }}"
+      register: result
+
+    - name: Verify SSL Inspection Rule is present
+      ansible.builtin.assert:
+        that:
+          - result.changed
+          - result.data is defined
+          - result.data.name == rule_name
+          - result.data.description == description
+          - result.data.action.type == rule_action_update.type
+          - result.data.action.override_default_certificate == rule_action_update.override_default_certificate
+          - result.data.action.decrypt_sub_actions.server_certificates == rule_action_update.decrypt_sub_actions.server_certificates
+          - result.data.action.decrypt_sub_actions.min_client_tls_version == rule_action_update.decrypt_sub_actions.min_client_tls_version
+          - result.data.action.decrypt_sub_actions.min_server_tls_version == rule_action_update.decrypt_sub_actions.min_server_tls_version
+
+    - name: Ensure SSL Inspection Rule is Updated (again; idempotency check)
+      zscaler.ziacloud.zia_ssl_inspection_rules:
+        provider: "{{ zia_cloud }}"
+        state: present
+        name: "{{ rule_name }}"
+        description: "{{ description }}"
+        action: "{{ rule_action_update }}"
+        order: "{{ order_update }}"
+        rank: "{{ rank_update }}"
+        enabled: "{{ enabled_update }}"
+        road_warrior_for_kerberos: "{{ road_warrior_for_kerberos_update }}"
+        cloud_applications: "{{ cloud_applications_update }}"
+        url_categories: "{{ url_categories_update }}"
+        platforms: "{{ platforms_update }}"
+        user_agent_types: "{{ user_agent_types_update }}"
+      register: result
+
+    - name: Ensure SSL Inspection Rule is absent (idempotency check)
+      ansible.builtin.assert:
+        that:
+          - result.changed
+
+    - name: Fetch all SSL Inspection Rule
+      zscaler.ziacloud.zia_ssl_inspection_rules_info:
+        provider: "{{ zia_cloud }}"
+      register: result
+
+    - name: Ensure all SSL Inspection Rule found
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+          - result.rules[0] is defined
+
+    - name: Fetch this SSL Inspection Rule
+      zscaler.ziacloud.zia_ssl_inspection_rules_info:
+        provider: "{{ zia_cloud }}"
+        name: "{{ rule_name }}"
+      register: result
+
+    - name: Ensure this SSL Inspection Rule is found
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+          - result.rules is defined
+          - result.rules[0].name is defined
+          - result.rules[0].name == rule_name
+
+    - name: Give the ZIA Cloud a 5 seconds to settle
+      ansible.builtin.pause:
+        seconds: 5
+
+    - name: Delete SSL Inspection Rule
+      zscaler.ziacloud.zia_ssl_inspection_rules:
+        provider: "{{ zia_cloud }}"
+        state: absent
+        name: "{{ rule_name }}"
+        order: "{{ rule_order }}"
+        action: "{{ rule_action }}"
+      register: result
+
+    - name: Verify SSL Inspection Rule is Deleted
+      ansible.builtin.assert:
+        that:
+          - result.changed
+
+    - name: Delete SSL Inspection Rule (again; idempotency check)
+      zscaler.ziacloud.zia_ssl_inspection_rules:
+        provider: "{{ zia_cloud }}"
+        state: absent
+        name: "{{ rule_name }}"
+        order: "{{ rule_order }}"
+        action: "{{ rule_action }}"
+      register: result
+
+    - name: Verify SSL Inspection Rule is absent
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+          - result.data is defined

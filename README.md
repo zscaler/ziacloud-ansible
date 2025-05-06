@@ -67,10 +67,10 @@ It's preferable to use content in this collection using their [Fully Qualified C
 
   vars:
     zia_cloud:
-      username: "{{ lookup('env', 'ZIA_USERNAME') }}"
-      password: "{{ lookup('env', 'ZIA_PASSWORD') }}"
-      api_key: "{{ lookup('env', 'ZIA_API_KEY') }}"
-      cloud: "{{ lookup('env', 'ZIA_CLOUD') | default(omit) }}"
+      client_id: "{{ lookup('env', 'ZSCALER_CLIENT_ID') }}"
+      client_secret: "{{ lookup('env', 'ZSCALER_CLIENT_SECRET') }}"
+      vanity_domain: "{{ lookup('env', 'ZSCALER_VANITY_DOMAIN') }}"
+      cloud: "{{ lookup('env', 'ZSCALER_CLOUD') | default(omit) }}"
 
   tasks:
     - name: Create/update firewall filtering rule

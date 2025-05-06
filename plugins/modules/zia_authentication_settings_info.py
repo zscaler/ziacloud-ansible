@@ -28,10 +28,10 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 ---
-module: zia_atp_malware_settings_info
-short_description: "Retrieves the malicious URLs added to the denylist"
+module: zia_authentication_settings_info
+short_description: "Retrieves the organization's default authentication settings information"
 description:
-  - "Retrieves the malicious URLs added to the denylist in the (ATP) policy"
+  - "Retrieves the organization's default authentication settings information"
 author:
   - William Guilherme (@willguibr)
 version_added: "2.0.0"
@@ -43,119 +43,124 @@ extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
   - zscaler.ziacloud.fragments.documentation
 
-options:
-  id:
-    description: "The unique identifier for the rule label."
-    type: int
-    required: false
-  name:
-    description: "The rule label name."
-    required: false
-    type: str
+options: {}
 """
 
 EXAMPLES = r"""
-- name: Gets all list of rule label
-  zscaler.ziacloud.zia_rule_labels_info:
+- name: Retrieves the organization's default authentication settings information
+  zscaler.ziacloud.zia_authentication_settings_info:
     provider: '{{ provider }}'
-
-- name: Gets a list of rule label by name
-  zscaler.ziacloud.zia_rule_labels_info:
-    provider: '{{ provider }}'
-    name: "example"
 """
 
 RETURN = r"""
-labels:
+auth:
   description: A list of rule labels fetched based on the given criteria.
   returned: always
   type: list
   elements: dict
   contains:
-    id:
+    org_auth_type:
       description: The unique identifier for the rule label.
       returned: always
-      type: int
-      sample: 3687131
-    name:
+      type: str
+      sample: ANY
+    one_time_auth:
       description: The name of the rule label.
       returned: always
       type: str
-      sample: "Example"
-    description:
-      description: A description of the rule label.
+      sample: OTP_DISABLED
+    saml_enabled:
+      description: Whether or not to authenticate users using SAML Single Sign-On.
+      returned: always
+      type: bool
+      sample: false
+    kerberos_enabled:
+      description: Whether or not to authenticate users using Kerberos.
+      returned: always
+      type: bool
+      sample: false
+    kerberos_pwd:
+      description: Can only be set through the generate KerberosPassword
       returned: always
       type: str
-      sample: "Example description"
-    created_by:
-      description: Information about the user who created the rule label.
+      sample: None
+    auth_frequency:
+      description: How frequently users are required to authenticate e.g., cookie expiration duration.
       returned: always
-      type: complex
-      contains:
-        id:
-          description: The identifier of the user who created the rule label.
-          returned: always
-          type: int
-          sample: 44772836
-        name:
-          description: The name of the user who created the rule label.
-          returned: always
-          type: str
-          sample: "admin@44772833.zscalertwo.net"
-    last_modified_by:
-      description: Information about the user who last modified the rule label.
-      returned: always
-      type: complex
-      contains:
-        id:
-          description: The identifier of the user who last modified the rule label.
-          returned: always
-          type: int
-          sample: 44772836
-        name:
-          description: The name of the user who last modified the rule label.
-          returned: always
-          type: str
-          sample: "admin@44772833.zscalertwo.net"
-    last_modified_time:
-      description: The Unix timestamp when the rule label was last modified.
+      type: str
+      sample: DAILY_COOKIE
+    auth_custom_frequency:
+      description: How frequently users are required to authenticate e.g., cookie expiration duration.
       returned: always
       type: int
-      sample: 1721347034
-    referenced_rule_count:
-      description: The number of rules that reference this label.
+      sample: 80
+    password_strength:
+      description: Password strength for form-based authentication.
+      returned: always
+      type: str
+      sample: STRONG
+    password_expiry:
+      description: Password expiration required for form-based authentication of hosted DB users.
+      returned: always
+      type: str
+      sample: SIX_MONTHS
+    last_sync_start_time:
+      description: Epoch timestamp representing start of last LDAP sync.
       returned: always
       type: int
-      sample: 0
+      sample: 587556687
+    last_sync_end_time:
+      description: Epoch timestamp representing end of last LDAP sync.
+      returned: always
+      type: int
+      sample: 587556687
+    mobile_admin_saml_idp_enabled:
+      description: Indicates use of Mobile Admin as an IdP.
+      returned: always
+      type: bool
+      sample: false
+    auto_provision:
+      description: Enables SAML Auto-Provisioning.
+      returned: always
+      type: bool
+      sample: false
+    directory_sync_migrate_to_scim_enabled:
+      description: Enables migration to SCIM by disabling legacy sync.
+      returned: always
+      type: bool
+      sample: false
 """
 
 from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
+
 
 def core(module):
     client = ZIAClientHelper(module)
 
-    atp, _, error = client.authentication_settings.get_authentication_settings()
+    auth, _unused, error = client.authentication_settings.get_authentication_settings()
     if error:
-        module.fail_json(msg=f"Error fetching authentication settings: {to_native(error)}")
+        module.fail_json(
+            msg=f"Error fetching authentication settings: {to_native(error)}"
+        )
 
-    module.exit_json(changed=False, atp=atp.as_dict())
+    module.exit_json(changed=False, auth=auth.as_dict())
 
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
 
-    module = AnsibleModule(
-        argument_spec=argument_spec,
-        supports_check_mode=True
-    )
+    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
 
     try:
         core(module)
     except Exception as e:
         module.fail_json(msg=to_native(e), exception=format_exc())
+
 
 if __name__ == "__main__":
     main()

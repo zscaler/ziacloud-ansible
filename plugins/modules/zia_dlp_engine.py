@@ -94,7 +94,10 @@ from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import deleteNone
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
+
 
 def normalize_dlp_engine(engine):
     """Normalize dlp engine data by removing computed values"""
@@ -104,17 +107,12 @@ def normalize_dlp_engine(engine):
         normalized.pop(attr, None)
     return normalized
 
+
 def core(module):
     state = module.params.get("state")
     client = ZIAClientHelper(module)
 
-    params = [
-        "id",
-        "name",
-        "description",
-        "engine_expression",
-        "custom_dlp_engine"
-    ]
+    params = ["id", "name", "description", "engine_expression", "custom_dlp_engine"]
 
     dlp_engine = {param: module.params.get(param) for param in params}
     engine_id = dlp_engine.get("id")
@@ -124,8 +122,12 @@ def core(module):
     if engine_id:
         result = client.dlp_engine.get_dlp_engines(engine_id)
         if result[2]:  # Error check
-            module.fail_json(msg=f"Error fetching DLP engine ID {engine_id}: {to_native(result[2])}")
-        existing_engine = result[0].as_dict() if result[0] else None  # Changed to_dict() to as_dict()
+            module.fail_json(
+                msg=f"Error fetching DLP engine ID {engine_id}: {to_native(result[2])}"
+            )
+        existing_engine = (
+            result[0].as_dict() if result[0] else None
+        )  # Changed to_dict() to as_dict()
     else:
         result = client.dlp_engine.list_dlp_engines()
         if result[2]:  # Error check
@@ -159,39 +161,56 @@ def core(module):
     if state == "present":
         if existing_engine:
             if differences_detected:
-                update_data = deleteNone({
-                    "engine_id": existing_engine["id"],
-                    "name": dlp_engine.get("name"),
-                    "description": dlp_engine.get("description"),
-                    "engine_expression": dlp_engine.get("engine_expression"),
-                    "custom_dlp_engine": dlp_engine.get("custom_dlp_engine")
-                })
+                update_data = deleteNone(
+                    {
+                        "engine_id": existing_engine["id"],
+                        "name": dlp_engine.get("name"),
+                        "description": dlp_engine.get("description"),
+                        "engine_expression": dlp_engine.get("engine_expression"),
+                        "custom_dlp_engine": dlp_engine.get("custom_dlp_engine"),
+                    }
+                )
                 module.warn("Payload Update for SDK: {}".format(update_data))
                 updated = client.dlp_engine.update_dlp_engine(**update_data)
                 if updated[2]:
-                    module.fail_json(msg=f"Error updating DLP engine: {to_native(updated[2])}")
-                module.exit_json(changed=True, data=updated[0].as_dict())  # Changed to_dict() to as_dict()
+                    module.fail_json(
+                        msg=f"Error updating DLP engine: {to_native(updated[2])}"
+                    )
+                module.exit_json(
+                    changed=True, data=updated[0].as_dict()
+                )  # Changed to_dict() to as_dict()
             else:
                 module.exit_json(changed=False, data=existing_engine)
         else:
-            create_data = deleteNone({
-                "name": dlp_engine.get("name"),
-                "description": dlp_engine.get("description"),
-                "engine_expression": dlp_engine.get("engine_expression"),
-                "custom_dlp_engine": dlp_engine.get("custom_dlp_engine")
-            })
+            create_data = deleteNone(
+                {
+                    "name": dlp_engine.get("name"),
+                    "description": dlp_engine.get("description"),
+                    "engine_expression": dlp_engine.get("engine_expression"),
+                    "custom_dlp_engine": dlp_engine.get("custom_dlp_engine"),
+                }
+            )
             module.warn("Payload Update for SDK: {}".format(create_data))
             created = client.dlp_engine.add_dlp_engine(**create_data)
             if created[2]:
-                module.fail_json(msg=f"Error creating DLP engine: {to_native(created[2])}")
-            module.exit_json(changed=True, data=created[0].as_dict())  # Changed to_dict() to as_dict()
+                module.fail_json(
+                    msg=f"Error creating DLP engine: {to_native(created[2])}"
+                )
+            module.exit_json(
+                changed=True, data=created[0].as_dict()
+            )  # Changed to_dict() to as_dict()
     elif state == "absent":
         if existing_engine:
-            deleted = client.dlp_engine.delete_dlp_engine(engine_id=existing_engine["id"])
+            deleted = client.dlp_engine.delete_dlp_engine(
+                engine_id=existing_engine["id"]
+            )
             if deleted[2]:
-                module.fail_json(msg=f"Error deleting DLP engine: {to_native(deleted[2])}")
+                module.fail_json(
+                    msg=f"Error deleting DLP engine: {to_native(deleted[2])}"
+                )
             module.exit_json(changed=True, data=existing_engine)
         module.exit_json(changed=False, data={})
+
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
@@ -208,6 +227,7 @@ def main():
         core(module)
     except Exception as e:
         module.fail_json(msg=to_native(e), exception=format_exc())
+
 
 if __name__ == "__main__":
     main()

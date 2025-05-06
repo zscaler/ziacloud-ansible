@@ -7,6 +7,7 @@ rank: 7
 enabled: true
 without_content_inspection: false
 zscaler_incident_receiver: true
+severity: "RULE_SEVERITY_HIGH"
 user_risk_score_levels:
   - CRITICAL
   - HIGH
@@ -17,10 +18,10 @@ protocols:
   - HTTPS_RULE
   - HTTP_RULE
 file_types:
-  - ASM
-  - MATLAB_FILES
-  - SAS
-  - SCALA
+  - FTCATEGORY_MS_WORD
+  - FTCATEGORY_MS_POWERPOINT
+  - FTCATEGORY_PDF_DOCUMENT
+  - FTCATEGORY_MS_EXCEL
 
 # Web DLP Rule Update
 name_update: test_zia_ansible
@@ -36,9 +37,11 @@ user_risk_score_levels_update:
   - HIGH
   - MEDIUM
 protocols_update:
+  - FTP_RULE
   - HTTPS_RULE
   - HTTP_RULE
 file_types_update:
-  - ASM
-  - MATLAB_FILES
-  - SAS
+  - FTCATEGORY_MS_WORD
+  - FTCATEGORY_MS_POWERPOINT
+  - FTCATEGORY_PDF_DOCUMENT
+  - FTCATEGORY_MS_EXCEL

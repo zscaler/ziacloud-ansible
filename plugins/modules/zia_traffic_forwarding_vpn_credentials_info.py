@@ -58,6 +58,33 @@ options:
         - This is a required field for IP auth type and is not applicable to other auth types.
     required: false
     type: str
+  type:
+    description:
+        - Only gets VPN credentials for the specified type.
+        - This parameter is not supported for partner API keys.
+    required: false
+    type: str
+    choices:
+      - CN
+      - IP
+      - UFQDN
+      - XAUTH
+  include_only_without_location:
+    description:
+        - Include VPN credential only if not associated to any location.
+    required: false
+    type: bool
+  location_id:
+    description:
+        - Gets the VPN credentials for the specified location ID.
+    required: false
+    type: int
+  managed_by:
+    description:
+        - Gets the VPN credentials that are managed by the given partner.
+        - This filter is automatically applied when called with a partner API key, and it cannot be overridden.
+    required: false
+    type: int
 """
 
 EXAMPLES = r"""
@@ -120,9 +147,11 @@ from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
-    collect_all_items
+    collect_all_items,
 )
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
 
 
 def core(module):
@@ -134,9 +163,13 @@ def core(module):
     credentials = []
 
     if vpn_id is not None:
-        vpn_obj, _, error = client.traffic_vpn_credentials.get_vpn_credential(credential_id=vpn_id)
+        vpn_obj, _unused, error = client.traffic_vpn_credentials.get_vpn_credential(
+            credential_id=vpn_id
+        )
         if error or vpn_obj is None:
-            module.fail_json(msg=f"Failed to retrieve VPN credential with ID '{vpn_id}': {to_native(error)}")
+            module.fail_json(
+                msg=f"Failed to retrieve VPN credential with ID '{vpn_id}': {to_native(error)}"
+            )
         credentials = [vpn_obj.as_dict()]
     else:
         query_params = {}
@@ -148,16 +181,27 @@ def core(module):
             query_params["search"] = ip_address
 
         # Add additional filters
-        for param in ["type", "include_only_without_location", "location_id", "managed_by"]:
+        for param in [
+            "type",
+            "include_only_without_location",
+            "location_id",
+            "managed_by",
+        ]:
             val = module.params.get(param)
             if val is not None:
                 query_params[param] = val
 
-        result, err = collect_all_items(client.traffic_vpn_credentials.list_vpn_credentials, query_params or None)
+        result, err = collect_all_items(
+            client.traffic_vpn_credentials.list_vpn_credentials, query_params or None
+        )
         if err:
             module.fail_json(msg=f"Error retrieving VPN credentials: {to_native(err)}")
 
-        credentials = [c.as_dict() if hasattr(c, "as_dict") else c for c in result] if result else []
+        credentials = (
+            [c.as_dict() if hasattr(c, "as_dict") else c for c in result]
+            if result
+            else []
+        )
 
     module.exit_json(changed=False, credentials=credentials)
 
@@ -176,8 +220,7 @@ def main():
 
     module = AnsibleModule(
         argument_spec=argument_spec,
-        supports_check_mode=False,
-        mutually_exclusive=[["id", "fqdn", "ip"]],
+        supports_check_mode=True,
     )
 
     try:

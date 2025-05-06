@@ -43,16 +43,8 @@ extends_documentation_fragment:
   - zscaler.ziacloud.fragments.documentation
 
 options:
-  start_ip_address:
-    description: Starting IP address in the range
-    required: false
-    type: str
-  end_ip_address:
-    description: Ending IP address in the range
-    required: false
-    type: str
   internal_ip_range:
-    description: Internal IP range information
+    description: Internal IP range information.
     required: false
     type: str
   static_ip:
@@ -99,7 +91,9 @@ gre_ranges:
 from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
 
 
 def core(module):
@@ -118,7 +112,9 @@ def core(module):
     if limit is not None:
         query_params["limit"] = limit
 
-    result, _, error = client.gre_tunnel.list_gre_ranges(query_params=query_params if query_params else None)
+    result, _unused, error = client.gre_tunnel.list_gre_ranges(
+        query_params=query_params if query_params else None
+    )
     if error:
         module.fail_json(msg=f"Error retrieving GRE ranges: {to_native(error)}")
 

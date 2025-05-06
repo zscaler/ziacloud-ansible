@@ -28,12 +28,12 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 ---
-module: zia_cloud_app_control_rules_info
-short_description: Gets the list of cloud application rules by the type of rule..
-description: Gets the list of cloud application rules by the type of rule..
+module: zia_end_user_notification_info
+short_description: Retrieves browser-based end user notification (EUN)
+description: Retrieves browser-based end user notification (EUN) configuration details
 author:
   - William Guilherme (@willguibr)
-version_added: "1.3.0"
+version_added: "2.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 notes:
@@ -42,112 +42,151 @@ extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
   - zscaler.ziacloud.fragments.documentation
 
-options:
-  id:
-    description:
-        - The universally unique identifier (UUID) for the browser isolation profile.
-    type: str
-    required: false
-  name:
-    description:
-        - Name of the cloud application control rule.
-    required: false
-    type: str
-  rule_type:
-    description:
-        - The rule type selected from the available options.
-    required: true
-    type: str
-    choices:
-      - SOCIAL_NETWORKING
-      - STREAMING_MEDIA
-      - WEBMAIL
-      - INSTANT_MESSAGING
-      - BUSINESS_PRODUCTIVITY
-      - ENTERPRISE_COLLABORATION
-      - SALES_AND_MARKETING
-      - SYSTEM_AND_DEVELOPMENT
-      - CONSUMER
-      - HOSTING_PROVIDER
-      - IT_SERVICES
-      - FILE_SHARE
-      - DNS_OVER_HTTPS
-      - HUMAN_RESOURCES
-      - LEGAL
-      - HEALTH_CARE
-      - FINANCE
-      - CUSTOM_CAPP
-      - AI_ML
+options: {}
 """
 
 EXAMPLES = r"""
-- name: Gather Information Details of a cloud application control rule by Name
-  zscaler.ziacloud.zia_cloud_app_control_rules_info:
+- name: Retrieves browser-based end user notification
+  zscaler.ziacloud.zia_end_user_notification_info:
     provider: '{{ provider }}'
-    name: "Webmail Rule-1"
-    rule_type: "WEBMAIL"
 """
 
 RETURN = r"""
-rules:
-    description: A list of cloud application control rules that match the specified criteria.
-    returned: always
-    type: list
-    elements: dict
-    sample: [
-        {
-            "access_control": "READ_WRITE",
-            "actions": [
-                "ALLOW_WEBMAIL_VIEW",
-                "ALLOW_WEBMAIL_ATTACHMENT_SEND"
-            ],
-            "applications": [
-                "GOOGLE_WEBMAIL",
-                "YAHOO_WEBMAIL",
-                "WINDOWS_LIVE_HOTMAIL"
-            ],
-            "browser_eun_template_id": 0,
-            "cascading_enabled": false,
-            "enforce_time_validity": false,
-            "eun_enabled": false,
-            "eun_template_id": 0,
-            "id": 552617,
-            "name": "Webmail Rule-1",
-            "order": 2,
-            "predefined": false,
-            "rank": 7,
-            "state": "DISABLED",
-            "type": "WEBMAIL"
-        }
-    ]
+notification:
+  description: Browser-based End User Notification (EUN) configuration settings.
+  returned: always
+  type: dict
+  contains:
+    aup_day_offset:
+      description: Specifies which day of the week or month the AUP is shown when aupFrequency is set. Valid range is 1 to 31.
+      type: int
+      sample: 0
+    aup_frequency:
+      description: The frequency at which the Acceptable Use Policy (AUP) is shown to end users.
+      type: str
+      sample: NEVER
+    aup_message:
+      description: The acceptable use statement that is shown in the AUP.
+      type: str
+      sample: ""
+    caution_again_after:
+      description: Time interval at which caution notification is shown for restricted sites.
+      type: int
+      sample: 300
+    caution_custom_text:
+      description: Custom message that appears in the caution notification.
+      type: str
+      sample: Proceeding to visit the site may violate your company policy.
+    caution_per_domain:
+      description: Whether the caution notification is shown per domain.
+      type: bool
+      sample: false
+    custom_text:
+      description: Custom text shown in the End User Notification.
+      type: str
+      sample: Website blocked
+    display_comp_logo:
+      description: Whether the organization's logo appears in the notification.
+      type: bool
+      sample: true
+    display_comp_name:
+      description: Whether the organization's name appears in the notification.
+      type: bool
+      sample: true
+    display_reason:
+      description: Whether the reason for blocking or cautioning is displayed in the notification.
+      type: bool
+      sample: true
+    idp_proxy_notification_text:
+      description: Message that appears in the IdP Proxy notification.
+      type: str
+      sample: ""
+    notification_type:
+      description: Type of End User Notification, either DEFAULT or CUSTOM.
+      type: str
+      sample: DEFAULT
+    org_policy_link:
+      description: Link to the organization's policy page.
+      type: str
+      sample: http://44772833.zscalertwo.net/policy.html
+    quarantine_custom_notification_text:
+      description: Message shown during file quarantine analysis.
+      type: str
+      sample: We are checking this file for a potential security risk. ...
+    security_review_enabled:
+      description: Whether the Security Violation notification is enabled.
+      type: bool
+      sample: false
+    security_review_submit_to_security_cloud:
+      description: Whether Security Violation review requests are submitted to Security Cloud.
+      type: bool
+      sample: false
+    security_review_text:
+      description: Message that appears for Security Violation notifications.
+      type: str
+      sample: Click to request security review.
+    support_email:
+      description: IT support email address displayed in the notification.
+      type: str
+      sample: support@44772833.zscalertwo.net
+    support_phone:
+      description: IT support phone number displayed in the notification.
+      type: str
+      sample: +91-9000000000
+    url_cat_review_enabled:
+      description: Whether the URL Categorization Review notification is enabled.
+      type: bool
+      sample: false
+    url_cat_review_submit_to_security_cloud:
+      description: Whether URL Categorization Review requests are submitted to Security Cloud.
+      type: bool
+      sample: false
+    url_cat_review_text:
+      description: Message that appears in the URL Categorization Review notification.
+      type: str
+      sample: If you believe you received this message in error, please click here to request a review of this site.
+    web_dlp_review_enabled:
+      description: Whether the Web DLP Violation notification is enabled.
+      type: bool
+      sample: false
+    web_dlp_review_submit_to_security_cloud:
+      description: Whether Web DLP Review requests are submitted to Security Cloud.
+      type: bool
+      sample: false
+    web_dlp_review_text:
+      description: Message that appears in the Web DLP Violation notification.
+      type: str
+      sample: Click to request policy review.
 """
 
 from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
+
 
 def core(module):
     client = ZIAClientHelper(module)
 
-    eun, _, error = client.end_user_notification.get_eun_settings()
+    eun, _unused, error = client.end_user_notification.get_eun_settings()
     if error:
         module.fail_json(msg=f"Error fetching advanced settings: {to_native(error)}")
 
     module.exit_json(changed=False, notification=eun.as_dict())
 
+
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
 
-    module = AnsibleModule(
-        argument_spec=argument_spec,
-        supports_check_mode=True
-    )
+    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
 
     try:
         core(module)
     except Exception as e:
         module.fail_json(msg=to_native(e), exception=format_exc())
+
 
 if __name__ == "__main__":
     main()

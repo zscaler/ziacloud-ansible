@@ -83,7 +83,9 @@ RETURN = r"""
 from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
 
 
 def normalize_group(group):
@@ -91,9 +93,7 @@ def normalize_group(group):
     Remove computed attributes from a group dict to make comparison easier.
     """
     normalized = group.copy() if group else {}
-    computed_values = [
-        "id"
-    ]
+    computed_values = ["id"]
     for attr in computed_values:
         normalized.pop(attr, None)
     return normalized
@@ -103,19 +103,23 @@ def core(module):
     state = module.params.get("state")
     client = ZIAClientHelper(module)
 
-    group_params = {p: module.params.get(p) for p in ["id", "name", "description", "ip_addresses"]}
+    group_params = {
+        p: module.params.get(p) for p in ["id", "name", "description", "ip_addresses"]
+    }
     group_id = group_params.get("id")
     group_name = group_params.get("name")
 
     existing_group = None
 
     if group_id:
-        result, _, error = client.cloud_firewall.get_ip_source_group(group_id)
+        result, _unused, error = client.cloud_firewall.get_ip_source_group(group_id)
         if error:
-            module.fail_json(msg=f"Error fetching ip source group with id {group_id}: {to_native(error)}")
+            module.fail_json(
+                msg=f"Error fetching ip source group with id {group_id}: {to_native(error)}"
+            )
         existing_group = result.as_dict()
     else:
-        result, _, error = client.cloud_firewall.list_ip_source_groups()
+        result, _unused, error = client.cloud_firewall.list_ip_source_groups()
         if error:
             module.fail_json(msg=f"Error listing groups: {to_native(error)}")
         group_list = [group.as_dict() for group in result]
@@ -132,7 +136,9 @@ def core(module):
     for key, value in normalized_desired.items():
         if normalized_existing.get(key) != value:
             differences_detected = True
-            module.warn(f"Difference detected in {key}. Current: {normalized_existing.get(key)}, Desired: {value}")
+            module.warn(
+                f"Difference detected in {key}. Current: {normalized_existing.get(key)}, Desired: {value}"
+            )
 
     if module.check_mode:
         if state == "present" and (existing_group is None or differences_detected):
@@ -147,13 +153,17 @@ def core(module):
             if differences_detected:
                 group_id_to_update = existing_group.get("id")
                 if not group_id_to_update:
-                    module.fail_json(msg="Cannot update group: ID is missing from the existing resource.")
+                    module.fail_json(
+                        msg="Cannot update group: ID is missing from the existing resource."
+                    )
 
-                update_group, _, error = client.cloud_firewall.update_ip_source_group(
-                    group_id=group_id_to_update,
-                    name=group_params.get("name"),
-                    description=group_params.get("description"),
-                    ip_addresses=group_params.get("ip_addresses"),
+                update_group, _unused, error = (
+                    client.cloud_firewall.update_ip_source_group(
+                        group_id=group_id_to_update,
+                        name=group_params.get("name"),
+                        description=group_params.get("description"),
+                        ip_addresses=group_params.get("ip_addresses"),
+                    )
                 )
                 if error:
                     module.fail_json(msg=f"Error updating group: {to_native(error)}")
@@ -161,10 +171,10 @@ def core(module):
             else:
                 module.exit_json(changed=False, data=existing_group)
         else:
-            new_group, _, error = client.cloud_firewall.add_ip_source_group(
-                    name=group_params.get("name"),
-                    description=group_params.get("description"),
-                    ip_addresses=group_params.get("ip_addresses"),
+            new_group, _unused, error = client.cloud_firewall.add_ip_source_group(
+                name=group_params.get("name"),
+                description=group_params.get("description"),
+                ip_addresses=group_params.get("ip_addresses"),
             )
             if error:
                 module.fail_json(msg=f"Error adding group: {to_native(error)}")
@@ -174,9 +184,13 @@ def core(module):
         if existing_group:
             group_id_to_delete = existing_group.get("id")
             if not group_id_to_delete:
-                module.fail_json(msg="Cannot delete group: ID is missing from the existing resource.")
+                module.fail_json(
+                    msg="Cannot delete group: ID is missing from the existing resource."
+                )
 
-            _, _, error = client.cloud_firewall.delete_ip_source_group(group_id_to_delete)
+            _unused, _unused, error = client.cloud_firewall.delete_ip_source_group(
+                group_id_to_delete
+            )
             if error:
                 module.fail_json(msg=f"Error deleting group: {to_native(error)}")
             module.exit_json(changed=True, data=existing_group)

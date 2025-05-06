@@ -109,7 +109,9 @@ profiles:
 from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
 
 
 def core(module):
@@ -118,7 +120,7 @@ def core(module):
 
     client = ZIAClientHelper(module)
 
-    result, _, error = client.cloud_browser_isolation.list_isolation_profiles()
+    result, _unused, error = client.cloud_browser_isolation.list_isolation_profiles()
     if error:
         module.fail_json(msg=f"Error retrieving isolation profiles: {to_native(error)}")
 
@@ -133,7 +135,9 @@ def core(module):
     elif profile_name:
         profiles = [p for p in all_profiles if p.get("name") == profile_name]
         if not profiles:
-            module.fail_json(msg=f"Isolation profile with name '{profile_name}' not found.")
+            module.fail_json(
+                msg=f"Isolation profile with name '{profile_name}' not found."
+            )
     else:
         profiles = all_profiles
 
@@ -147,7 +151,7 @@ def main():
         id=dict(type="str", required=False),
     )
 
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=False)
+    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
     try:
         core(module)
     except Exception as e:

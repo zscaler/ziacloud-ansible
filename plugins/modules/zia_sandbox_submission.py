@@ -97,9 +97,9 @@ def core(module):
     client = ZIAClientHelper(module)
 
     if inspection_mode == "sandbox":
-        result, _, error = client.sandbox.submit_file(file_path, force=force)
+        result, _unused, error = client.sandbox.submit_file(file_path, force=force)
     elif inspection_mode == "out_of_band":
-        result, _, error = client.sandbox.submit_file_for_inspection(file_path)
+        result, _unused, error = client.sandbox.submit_file_for_inspection(file_path)
     else:
         module.fail_json(msg="Invalid inspection mode provided.")
 

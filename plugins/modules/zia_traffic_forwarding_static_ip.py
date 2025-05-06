@@ -43,6 +43,7 @@ extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
   - zscaler.ziacloud.fragments.documentation
   - zscaler.ziacloud.fragments.state
+
 options:
   id:
     description: "The unique identifier for the static IP address"
@@ -82,6 +83,18 @@ options:
       - Longitude with 7 digit precision after decimal point, ranges between -180 and 180 degrees.
     required: false
     type: float
+  city:
+    description:
+      - Specifies the city object associated with the static IP address.
+      - Required if geo_override is enabled and city-level granularity is needed.
+    type: dict
+    required: false
+    suboptions:
+      id:
+        description:
+          - The unique identifier for the city object.
+        type: int
+        required: true
 """
 
 EXAMPLES = r"""
@@ -114,6 +127,7 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
     ZIAClientHelper,
 )
 
+
 def normalize_static_ip(static_ip):
     """Normalize static ip data by removing computed values"""
     normalized = static_ip.copy() if static_ip else {}
@@ -121,6 +135,7 @@ def normalize_static_ip(static_ip):
     for attr in computed_values:
         normalized.pop(attr, None)
     return normalized
+
 
 def core(module):
     state = module.params.get("state")
@@ -134,7 +149,7 @@ def core(module):
         "longitude",
         "routable_ip",
         "comment",
-        "city"
+        "city",
     ]
 
     static_ip = {param: module.params.get(param) for param in params}
@@ -171,7 +186,9 @@ def core(module):
     if static_ip_id:
         result = client.traffic_static_ip.get_static_ip(static_ip_id)
         if result[2]:  # Error check
-            module.fail_json(msg=f"Error fetching static IP ID {static_ip_id}: {to_native(result[2])}")
+            module.fail_json(
+                msg=f"Error fetching static IP ID {static_ip_id}: {to_native(result[2])}"
+            )
         existing_static_ip = result[0].as_dict() if result[0] else None
     else:
         result = client.traffic_static_ip.list_static_ips()
@@ -212,48 +229,69 @@ def core(module):
     if state == "present":
         if existing_static_ip:
             if differences_detected:
-                update_data = deleteNone({
-                    "static_ip_id": existing_static_ip["id"],
-                    "ip_address": existing_static_ip.get("ip_address"),
-                    "comment": static_ip.get("comment"),
-                    "geo_override": static_ip.get("geo_override"),
-                    "routable_ip": static_ip.get("routable_ip"),
-                    "latitude": static_ip.get("latitude"),
-                    "longitude": static_ip.get("longitude"),
-                    "city": static_ip.get("city"),
-                })
+                update_data = deleteNone(
+                    {
+                        "static_ip_id": existing_static_ip["id"],
+                        "ip_address": desired.get("ip_address"),
+                        "comment": desired.get("comment"),
+                        "geo_override": desired.get("geo_override"),
+                        "routable_ip": desired.get("routable_ip"),
+                        "latitude": desired.get("latitude"),
+                        "longitude": desired.get("longitude"),
+                        "city": desired.get("city"),
+                    }
+                )
                 module.warn("Payload Update for SDK: {}".format(update_data))
-                module.warn("Static IP address attributes cannot be modified at this time. Update skipped.")
+                module.warn(
+                    "Static IP address attributes cannot be modified at this time. Update skipped."
+                )
                 # Skip the actual API call but return the desired state
                 module.exit_json(
                     changed=False,
                     data=existing_static_ip,
-                    msg="Static IP updates are currently not supported by the API. Update skipped."
+                    msg="Static IP updates are currently not supported by the API. Update skipped.",
                 )
             else:
                 module.exit_json(changed=False, data=existing_static_ip)
         else:
-            create_data = deleteNone({
-                "ip_address": static_ip.get("ip_address"),
-                "comment": static_ip.get("comment"),
-                "geo_override": static_ip.get("geo_override"),
-                "routable_ip": static_ip.get("routable_ip"),
-                "latitude": static_ip.get("latitude"),
-                "longitude": static_ip.get("longitude"),
-                "city": static_ip.get("city"),
-            })
+            create_data = deleteNone(
+                {
+                    "ip_address": desired.get("ip_address"),
+                    "comment": desired.get("comment"),
+                    "geo_override": desired.get("geo_override"),
+                    "routable_ip": desired.get("routable_ip"),
+                    "latitude": desired.get("latitude"),
+                    "longitude": desired.get("longitude"),
+                    "city": desired.get("city"),
+                }
+            )
             module.warn("Payload Update for SDK: {}".format(create_data))
             created = client.traffic_static_ip.add_static_ip(**create_data)
             if created[2]:
-                module.fail_json(msg=f"Error creating static IP: {to_native(created[2])}")
+                module.fail_json(
+                    msg=f"Error creating static IP: {to_native(created[2])}"
+                )
             module.exit_json(changed=True, data=created[0].as_dict())
     elif state == "absent":
         if existing_static_ip:
-            deleted = client.traffic_static_ip.delete_static_ip(static_ip_id=existing_static_ip["id"])
-            if deleted[2]:
-                module.fail_json(msg=f"Error deleting static IP: {to_native(deleted[2])}")
+            static_ip_to_delete = existing_static_ip.get("id")
+            if not static_ip_to_delete:
+                module.fail_json(
+                    msg="Cannot delete static IP: ID is missing from the existing resource."
+                )
+
+            _unused, _unused, error = client.traffic_static_ip.delete_static_ip(
+                static_ip_to_delete
+            )
+            if error:
+                module.fail_json(msg=f"Error deleting static IP: {to_native(error)}")
             module.exit_json(changed=True, data=existing_static_ip)
+        else:
+            module.exit_json(changed=False, data={})
+
+    else:
         module.exit_json(changed=False, data={})
+
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
@@ -263,10 +301,8 @@ def main():
         comment=dict(type="str", required=False),
         city=dict(
             type="dict",
-            options=dict(
-                id=dict(type="int", required=True)
-            ),
-            required=False
+            options=dict(id=dict(type="int", required=True)),
+            required=False,
         ),
         geo_override=dict(type="bool", required=False),
         latitude=dict(type="float", required=False),
@@ -279,6 +315,7 @@ def main():
         core(module)
     except Exception as e:
         module.fail_json(msg=to_native(e), exception=format_exc())
+
 
 if __name__ == "__main__":
     main()

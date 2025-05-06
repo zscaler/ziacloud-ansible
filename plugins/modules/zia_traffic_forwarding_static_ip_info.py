@@ -148,7 +148,9 @@ static_ips:
 from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
 
 
 def core(module):
@@ -159,9 +161,11 @@ def core(module):
     static_ips = []
 
     if static_ip_id is not None:
-        ip_obj, _, error = client.traffic_static_ip.get_static_ip(static_ip_id)
+        ip_obj, _unused, error = client.traffic_static_ip.get_static_ip(static_ip_id)
         if error or ip_obj is None:
-            module.fail_json(msg=f"Failed to retrieve static IP with ID '{static_ip_id}': {to_native(error)}")
+            module.fail_json(
+                msg=f"Failed to retrieve static IP with ID '{static_ip_id}': {to_native(error)}"
+            )
         static_ips = [ip_obj.as_dict()]
     else:
         query_params = {}
@@ -169,17 +173,23 @@ def core(module):
         if ip_address:
             query_params["ip_address"] = ip_address
 
-        result, _, error = client.traffic_static_ip.list_static_ips(query_params=query_params if query_params else None)
+        result, _unused, error = client.traffic_static_ip.list_static_ips(
+            query_params=query_params if query_params else None
+        )
         if error:
             module.fail_json(msg=f"Error retrieving static IPs: {to_native(error)}")
 
         ip_list = [ip.as_dict() for ip in result] if result else []
 
         if ip_address:
-            matched = next((ip for ip in ip_list if ip.get("ip_address") == ip_address), None)
+            matched = next(
+                (ip for ip in ip_list if ip.get("ip_address") == ip_address), None
+            )
             if not matched:
                 available = [ip.get("ip_address") for ip in ip_list]
-                module.fail_json(msg=f"Static IP '{ip_address}' not found. Available: {available}")
+                module.fail_json(
+                    msg=f"Static IP '{ip_address}' not found. Available: {available}"
+                )
             static_ips = [matched]
         else:
             static_ips = ip_list
@@ -196,7 +206,7 @@ def main():
 
     module = AnsibleModule(
         argument_spec=argument_spec,
-        supports_check_mode=False,
+        supports_check_mode=True,
         mutually_exclusive=[["id", "ip_address"]],
     )
 

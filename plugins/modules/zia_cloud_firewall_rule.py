@@ -28,7 +28,7 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 ---
-module: zia_cloud_firewall_filtering_rule
+module: zia_cloud_firewall_rule
 short_description: "Firewall Filtering policy rule."
 description: "Adds a new Firewall Filtering policy rule."
 author:
@@ -274,7 +274,7 @@ options:
 
 EXAMPLES = r"""
 - name: Create/update  firewall filtering rule
-  zscaler.ziacloud.zia_cloud_firewall_filtering_rule:
+  zscaler.ziacloud.zia_cloud_firewall_rule:
     provider: '{{ provider }}'
     state: present
     name: "Ansible_Example_Rule"
@@ -336,15 +336,41 @@ def core(module):
     client = ZIAClientHelper(module)
 
     params = [
-        "id", "name", "order", "rank", "locations", "location_groups",
-        "departments", "groups", "users", "time_windows", "action", "enabled",
-        "description", "device_groups", "devices", "enable_full_logging",
-        "src_ips", "src_ip_groups", "src_ipv6_groups", "dest_addresses",
-        "dest_ip_categories", "dest_countries", "source_countries",
-        "exclude_src_countries", "dest_ip_groups", "dest_ipv6_groups",
-        "nw_services", "nw_service_groups", "nw_applications",
-        "nw_application_groups", "app_services", "app_service_groups",
-        "labels", "device_trust_levels", "workload_groups"
+        "id",
+        "name",
+        "order",
+        "rank",
+        "locations",
+        "location_groups",
+        "departments",
+        "groups",
+        "users",
+        "time_windows",
+        "action",
+        "enabled",
+        "description",
+        "device_groups",
+        "devices",
+        "enable_full_logging",
+        "src_ips",
+        "src_ip_groups",
+        "src_ipv6_groups",
+        "dest_addresses",
+        "dest_ip_categories",
+        "dest_countries",
+        "source_countries",
+        "exclude_src_countries",
+        "dest_ip_groups",
+        "dest_ipv6_groups",
+        "nw_services",
+        "nw_service_groups",
+        "nw_applications",
+        "nw_application_groups",
+        "app_services",
+        "app_service_groups",
+        "labels",
+        "device_trust_levels",
+        "workload_groups",
     ]
 
     rule = {param: module.params.get(param) for param in params}
@@ -385,13 +411,15 @@ def core(module):
 
     existing_rule = None
     if rule_id is not None:
-        result, _, error = client.cloud_firewall_rules.get_rule(rule_id=rule_id)
+        result, _unused, error = client.cloud_firewall_rules.get_rule(rule_id=rule_id)
         if error:
-            module.fail_json(msg=f"Error fetching rule with id {rule_id}: {to_native(error)}")
+            module.fail_json(
+                msg=f"Error fetching rule with id {rule_id}: {to_native(error)}"
+            )
         if result:
             existing_rule = result.as_dict()
     else:
-        result, _, error = client.cloud_firewall_rules.list_rules()
+        result, _unused, error = client.cloud_firewall_rules.list_rules()
         if error:
             module.fail_json(msg=f"Error listing rules: {to_native(error)}")
         if result:
@@ -401,12 +429,16 @@ def core(module):
                     break
 
     # Handle predefined/default rules
-    if state == "absent" and existing_rule and (
-        existing_rule.get("default_rule", False) or existing_rule.get("predefined", False)
+    if (
+        state == "absent"
+        and existing_rule
+        and (
+            existing_rule.get("default_rule", False)
+            or existing_rule.get("predefined", False)
+        )
     ):
         module.exit_json(
-            changed=False,
-            msg="Deletion of default or predefined rule is not allowed."
+            changed=False, msg="Deletion of default or predefined rule is not allowed."
         )
 
     # Normalize and compare rules
@@ -419,7 +451,10 @@ def core(module):
         for attr in params:
             if attr in processed and processed[attr] is not None:
                 if isinstance(processed[attr], list):
-                    if all(isinstance(item, dict) and "id" in item for item in processed[attr]):
+                    if all(
+                        isinstance(item, dict) and "id" in item
+                        for item in processed[attr]
+                    ):
                         processed[attr] = [item["id"] for item in processed[attr]]
                     else:
                         processed[attr] = sorted(processed[attr])
@@ -430,13 +465,32 @@ def core(module):
 
     # List of attributes where empty list and None should be treated as equivalent
     list_attributes = [
-        "locations", "location_groups", "departments", "groups", "users",
-        "time_windows", "device_groups", "devices", "src_ips", "src_ip_groups",
-        "src_ipv6_groups", "dest_addresses", "dest_ip_categories", "dest_countries",
-        "source_countries", "dest_ip_groups", "dest_ipv6_groups", "nw_services",
-        "nw_service_groups", "nw_applications", "nw_application_groups",
-        "app_services", "app_service_groups", "labels", "device_trust_levels",
-        "workload_groups"
+        "locations",
+        "location_groups",
+        "departments",
+        "groups",
+        "users",
+        "time_windows",
+        "device_groups",
+        "devices",
+        "src_ips",
+        "src_ip_groups",
+        "src_ipv6_groups",
+        "dest_addresses",
+        "dest_ip_categories",
+        "dest_countries",
+        "source_countries",
+        "dest_ip_groups",
+        "dest_ipv6_groups",
+        "nw_services",
+        "nw_service_groups",
+        "nw_applications",
+        "nw_application_groups",
+        "app_services",
+        "app_service_groups",
+        "labels",
+        "device_trust_levels",
+        "workload_groups",
     ]
 
     differences_detected = False
@@ -462,12 +516,17 @@ def core(module):
                 current_value = []
 
         # Skip exclude_src_countries if not specified
-        if key == "exclude_src_countries" and module.params.get("exclude_src_countries") is None:
+        if (
+            key == "exclude_src_countries"
+            and module.params.get("exclude_src_countries") is None
+        ):
             continue
 
         # Sort lists of IDs for comparison
         if isinstance(desired_value, list) and isinstance(current_value, list):
-            if all(isinstance(x, int) for x in desired_value) and all(isinstance(x, int) for x in current_value):
+            if all(isinstance(x, int) for x in desired_value) and all(
+                isinstance(x, int) for x in current_value
+            ):
                 desired_value = sorted(desired_value)
                 current_value = sorted(current_value)
 
@@ -480,16 +539,67 @@ def core(module):
     if module.check_mode:
         module.exit_json(
             changed=bool(
-                (state == "present" and (not existing_rule or differences_detected)) or
-                (state == "absent" and existing_rule)
+                (state == "present" and (not existing_rule or differences_detected))
+                or (state == "absent" and existing_rule)
             )
         )
 
     if state == "present":
         if existing_rule:
             if differences_detected:
-                update_data = deleteNone({
-                    "rule_id": existing_rule.get("id"),
+                update_data = deleteNone(
+                    {
+                        "rule_id": existing_rule.get("id"),
+                        "name": desired_rule.get("name"),
+                        "order": desired_rule.get("order"),
+                        "rank": desired_rule.get("rank"),
+                        "action": desired_rule.get("action"),
+                        "enabled": desired_rule.get("enabled"),
+                        "description": desired_rule.get("description"),
+                        "enable_full_logging": desired_rule.get("enable_full_logging"),
+                        "src_ips": desired_rule.get("src_ips"),
+                        "dest_addresses": desired_rule.get("dest_addresses"),
+                        "dest_ip_categories": desired_rule.get("dest_ip_categories"),
+                        "dest_countries": desired_rule.get("dest_countries"),
+                        "source_countries": desired_rule.get("source_countries"),
+                        "exclude_src_countries": desired_rule.get(
+                            "exclude_src_countries"
+                        ),
+                        "device_trust_levels": desired_rule.get("device_trust_levels"),
+                        "device_groups": desired_rule.get("device_groups"),
+                        "devices": desired_rule.get("devices"),
+                        "nw_applications": desired_rule.get("nw_applications"),
+                        "dest_ip_groups": desired_rule.get("dest_ip_groups"),
+                        "nw_services": desired_rule.get("nw_services"),
+                        "nw_service_groups": desired_rule.get("nw_service_groups"),
+                        "nw_application_groups": desired_rule.get(
+                            "nw_application_groups"
+                        ),
+                        "app_services": desired_rule.get("app_services"),
+                        "app_service_groups": desired_rule.get("app_service_groups"),
+                        "labels": desired_rule.get("labels"),
+                        "locations": desired_rule.get("locations"),
+                        "location_groups": desired_rule.get("location_groups"),
+                        "departments": desired_rule.get("departments"),
+                        "groups": desired_rule.get("groups"),
+                        "users": desired_rule.get("users"),
+                        "time_windows": desired_rule.get("time_windows"),
+                        "src_ip_groups": desired_rule.get("src_ip_groups"),
+                        "workload_groups": desired_rule.get("workload_groups"),
+                    }
+                )
+
+                updated_rule, _unused, error = client.cloud_firewall_rules.update_rule(
+                    **update_data
+                )
+                if error:
+                    module.fail_json(msg=f"Error updating rule: {to_native(error)}")
+                module.exit_json(changed=True, data=updated_rule.as_dict())
+            else:
+                module.exit_json(changed=False, data=existing_rule)
+        else:
+            create_data = deleteNone(
+                {
                     "name": desired_rule.get("name"),
                     "order": desired_rule.get("order"),
                     "rank": desired_rule.get("rank"),
@@ -508,6 +618,7 @@ def core(module):
                     "devices": desired_rule.get("devices"),
                     "nw_applications": desired_rule.get("nw_applications"),
                     "dest_ip_groups": desired_rule.get("dest_ip_groups"),
+                    "dest_ipv6_groups": desired_rule.get("dest_ipv6_groups"),
                     "nw_services": desired_rule.get("nw_services"),
                     "nw_service_groups": desired_rule.get("nw_service_groups"),
                     "nw_application_groups": desired_rule.get("nw_application_groups"),
@@ -521,61 +632,23 @@ def core(module):
                     "users": desired_rule.get("users"),
                     "time_windows": desired_rule.get("time_windows"),
                     "src_ip_groups": desired_rule.get("src_ip_groups"),
+                    "src_ipv6_groups": desired_rule.get("src_ipv6_groups"),
                     "workload_groups": desired_rule.get("workload_groups"),
-                })
+                }
+            )
 
-                updated_rule, _, error = client.cloud_firewall_rules.update_rule(**update_data)
-                if error:
-                    module.fail_json(msg=f"Error updating rule: {to_native(error)}")
-                module.exit_json(changed=True, data=updated_rule.as_dict())
-            else:
-                module.exit_json(changed=False, data=existing_rule)
-        else:
-            create_data = deleteNone({
-                "name": desired_rule.get("name"),
-                "order": desired_rule.get("order"),
-                "rank": desired_rule.get("rank"),
-                "action": desired_rule.get("action"),
-                "enabled": desired_rule.get("enabled"),
-                "description": desired_rule.get("description"),
-                "enable_full_logging": desired_rule.get("enable_full_logging"),
-                "src_ips": desired_rule.get("src_ips"),
-                "dest_addresses": desired_rule.get("dest_addresses"),
-                "dest_ip_categories": desired_rule.get("dest_ip_categories"),
-                "dest_countries": desired_rule.get("dest_countries"),
-                "source_countries": desired_rule.get("source_countries"),
-                "exclude_src_countries": desired_rule.get("exclude_src_countries"),
-                "device_trust_levels": desired_rule.get("device_trust_levels"),
-                "device_groups": desired_rule.get("device_groups"),
-                "devices": desired_rule.get("devices"),
-                "nw_applications": desired_rule.get("nw_applications"),
-                "dest_ip_groups": desired_rule.get("dest_ip_groups"),
-                "dest_ipv6_groups": desired_rule.get("dest_ipv6_groups"),
-                "nw_services": desired_rule.get("nw_services"),
-                "nw_service_groups": desired_rule.get("nw_service_groups"),
-                "nw_application_groups": desired_rule.get("nw_application_groups"),
-                "app_services": desired_rule.get("app_services"),
-                "app_service_groups": desired_rule.get("app_service_groups"),
-                "labels": desired_rule.get("labels"),
-                "locations": desired_rule.get("locations"),
-                "location_groups": desired_rule.get("location_groups"),
-                "departments": desired_rule.get("departments"),
-                "groups": desired_rule.get("groups"),
-                "users": desired_rule.get("users"),
-                "time_windows": desired_rule.get("time_windows"),
-                "src_ip_groups": desired_rule.get("src_ip_groups"),
-                "src_ipv6_groups": desired_rule.get("src_ipv6_groups"),
-                "workload_groups": desired_rule.get("workload_groups"),
-            })
-
-            new_rule, _, error = client.cloud_firewall_rules.add_rule(**create_data)
+            new_rule, _unused, error = client.cloud_firewall_rules.add_rule(
+                **create_data
+            )
             if error:
                 module.fail_json(msg=f"Error creating rule: {to_native(error)}")
             module.exit_json(changed=True, data=new_rule.as_dict())
 
     elif state == "absent":
         if existing_rule:
-            _, _, error = client.cloud_firewall_rules.delete_rule(rule_id=existing_rule.get("id"))
+            _unused, _unused, error = client.cloud_firewall_rules.delete_rule(
+                rule_id=existing_rule.get("id")
+            )
             if error:
                 module.fail_json(msg=f"Error deleting rule: {to_native(error)}")
             module.exit_json(changed=True, data=existing_rule)

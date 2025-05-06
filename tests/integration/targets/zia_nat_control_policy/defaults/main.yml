@@ -1,0 +1,37 @@
+---
+rule_name: test_zia_ansible
+description: test_zia_ansible
+rule_order: 1
+enabled: true
+redirect_port: 2000
+redirect_ip: "1.1.1.1"
+dest_countries:
+  - BR
+  - CA
+  - US
+src_ips:
+  - 192.168.100.0/24
+  - "192.168.200.1"
+dest_addresses:
+  - 3.217.228.0-3.217.231.255
+  - 3.235.112.0-3.235.119.255
+  - 35.80.88.0-35.80.95.255
+  - server1.acme.com
+  - "*.acme.com"
+
+# Cloud NAT Control Rule
+name_update: test_zia_ansible
+description_update: test_zia_ansible_update
+order_update: 1
+enabled_update: false
+redirect_port_update: 3000
+redirect_ip_update: "2.2.2.2"
+dest_countries_update:
+  - BR
+  - CA
+src_ips_update:
+  - 192.168.100.0/24
+dest_addresses_update:
+  - 3.217.228.0-3.217.231.255
+  - 3.235.112.0-3.235.119.255
+  - 35.80.88.0-35.80.95.255

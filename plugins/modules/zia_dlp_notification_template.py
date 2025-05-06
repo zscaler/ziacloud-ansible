@@ -117,7 +117,10 @@ RETURN = r"""
 from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
+
 
 def normalize_dlp_template(template):
     """Normalize dlp template data by removing computed values"""
@@ -126,6 +129,7 @@ def normalize_dlp_template(template):
     for attr in computed_values:
         normalized.pop(attr, None)
     return normalized
+
 
 def core(module):
     state = module.params.get("state")
@@ -138,7 +142,7 @@ def core(module):
         "attach_content",
         "plain_text_message",
         "html_message",
-        "tls_enabled"
+        "tls_enabled",
     ]
 
     template = {param: module.params.get(param) for param in params}
@@ -149,7 +153,9 @@ def core(module):
     if template_id:
         result = client.dlp_templates.get_dlp_templates(template_id)
         if result[2]:  # Error check
-            module.fail_json(msg=f"Error fetching DLP template ID {template_id}: {to_native(result[2])}")
+            module.fail_json(
+                msg=f"Error fetching DLP template ID {template_id}: {to_native(result[2])}"
+            )
         existing_template = result[0].as_dict() if result[0] else None
     else:
         result = client.dlp_templates.list_dlp_templates()
@@ -189,7 +195,9 @@ def core(module):
                 module.warn("Payload Update for SDK: {}".format(update_data))
                 updated = client.dlp_templates.update_dlp_template(**update_data)
                 if updated[2]:
-                    module.fail_json(msg=f"Error updating DLP template: {to_native(updated[2])}")
+                    module.fail_json(
+                        msg=f"Error updating DLP template: {to_native(updated[2])}"
+                    )
                 module.exit_json(changed=True, data=updated[0].as_dict())
             else:
                 module.exit_json(changed=False, data=existing_template)
@@ -197,15 +205,22 @@ def core(module):
             module.warn("Payload Update for SDK: {}".format(template))
             created = client.dlp_templates.add_dlp_template(**template)
             if created[2]:
-                module.fail_json(msg=f"Error creating DLP template: {to_native(created[2])}")
+                module.fail_json(
+                    msg=f"Error creating DLP template: {to_native(created[2])}"
+                )
             module.exit_json(changed=True, data=created[0].as_dict())
     elif state == "absent":
         if existing_template:
-            deleted = client.dlp_templates.delete_dlp_template(template_id=existing_template["id"])
+            deleted = client.dlp_templates.delete_dlp_template(
+                template_id=existing_template["id"]
+            )
             if deleted[2]:
-                module.fail_json(msg=f"Error deleting DLP template: {to_native(deleted[2])}")
+                module.fail_json(
+                    msg=f"Error deleting DLP template: {to_native(deleted[2])}"
+                )
             module.exit_json(changed=True, data=existing_template)
         module.exit_json(changed=False, data={})
+
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
@@ -224,6 +239,7 @@ def main():
         core(module)
     except Exception as e:
         module.fail_json(msg=to_native(e), exception=format_exc())
+
 
 if __name__ == "__main__":
     main()

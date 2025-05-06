@@ -91,35 +91,38 @@ def core(module):
     client = ZIAClientHelper(module)
 
     # Get the activation status tuple (result, response, error)
-    status_result, _, error = client.activate.status()
+    status_result, _unused, error = client.activate.status()
 
     if error:
         module.fail_json(
             msg=f"Failed to get activation status: {to_native(error)}",
-            exception=format_exc()
+            exception=format_exc(),
         )
 
     current_activation_status = status_result.as_dict() if status_result else None
 
     # If specific status provided, check if it matches the current activation status
     if activation_status:
-        if current_activation_status and current_activation_status.get('status') == activation_status:
+        if (
+            current_activation_status
+            and current_activation_status.get("status") == activation_status
+        ):
             module.exit_json(
-                changed=False,
-                data=current_activation_status,
-                status_matches=True
+                changed=False, data=current_activation_status, status_matches=True
             )
         else:
             module.exit_json(
                 changed=False,
                 data=current_activation_status,
                 status_matches=False,
-                msg=f"Provided status '{activation_status}' does not match the current activation status '{current_activation_status.get('status') if current_activation_status else 'None'}'",
+                msg=(
+                    f"Provided status '{activation_status}' does not match the current activation "
+                    f"status '{current_activation_status.get('status') if current_activation_status else 'None'}'"
+                ),
             )
     else:
         module.exit_json(
-            changed=False,
-            current_activation_status=current_activation_status
+            changed=False, current_activation_status=current_activation_status
         )
 
 

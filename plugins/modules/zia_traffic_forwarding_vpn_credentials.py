@@ -54,7 +54,7 @@ options:
     description:
       - VPN authentication type (i.e., how the VPN credential is sent to the server).
       - It is not modifiable after VpnCredential is created.
-    required: false
+    required: true
     type: str
     choices:
     - IP
@@ -69,9 +69,9 @@ options:
     required: false
     type: str
   update_psk:
-    description:
-        - This is a required when updating the pre_shared_key value.
+    description: "Must be set to True to update pre-shared key"
     required: false
+    default: false
     type: bool
   comments:
     description:
@@ -84,6 +84,10 @@ options:
         - This is a required field for IP auth type and is not applicable to other auth types.
     required: false
     type: str
+  disabled:
+    description: Enable or disable the VPN credential
+    required: false
+    type: bool
 """
 
 EXAMPLES = r"""
@@ -139,7 +143,7 @@ def validate_vpn_credential_type(vpn_credentials):
 def find_existing_credential(client, vpn_params):
     """Find existing credential by ID or lookup by fqdn/ip_address."""
     if vpn_params["id"]:
-        vpn_box, _, error = client.traffic_vpn_credentials.get_vpn_credential(
+        vpn_box, _unused, error = client.traffic_vpn_credentials.get_vpn_credential(
             credential_id=vpn_params["id"]
         )
         if error:
@@ -147,7 +151,9 @@ def find_existing_credential(client, vpn_params):
         return (vpn_box.as_dict() if vpn_box else None), None
 
     # If no ID, try lookup by listing all credentials and matching fqdn/ip
-    all_vpn_creds, _, error = client.traffic_vpn_credentials.list_vpn_credentials()
+    all_vpn_creds, _unused, error = (
+        client.traffic_vpn_credentials.list_vpn_credentials()
+    )
     if error:
         return None, f"Failed to list VPN credentials: {to_native(error)}"
 
@@ -203,19 +209,25 @@ def core(module):
 
     if state == "present":
         if not existing_vpn:
-            create_payload = deleteNone({
-                "type": vpn_params["type"],
-                "fqdn": vpn_params["fqdn"],
-                "ip_address": vpn_params["ip_address"],
-                "pre_shared_key": vpn_params["pre_shared_key"],
-                "comments": vpn_params["comments"],
-                "disabled": vpn_params["disabled"],
-            })
+            create_payload = deleteNone(
+                {
+                    "type": vpn_params["type"],
+                    "fqdn": vpn_params["fqdn"],
+                    "ip_address": vpn_params["ip_address"],
+                    "pre_shared_key": vpn_params["pre_shared_key"],
+                    "comments": vpn_params["comments"],
+                    "disabled": vpn_params["disabled"],
+                }
+            )
             module.warn(f"[CREATE] Final Payload to API: {create_payload}")
 
-            new_vpn, _, error = client.traffic_vpn_credentials.add_vpn_credential(**create_payload)
+            new_vpn, _unused, error = client.traffic_vpn_credentials.add_vpn_credential(
+                **create_payload
+            )
             if error:
-                module.fail_json(msg=f"Failed to create VPN credential: {to_native(error)}")
+                module.fail_json(
+                    msg=f"Failed to create VPN credential: {to_native(error)}"
+                )
             module.exit_json(changed=True, data=new_vpn.as_dict())
 
         elif update_psk_flag and vpn_params["pre_shared_key"]:
@@ -229,15 +241,26 @@ def core(module):
                 "ip_address": existing_vpn.get("ip_address"),
                 "pre_shared_key": vpn_params.get("pre_shared_key"),
                 "comments": vpn_params.get("comments") or existing_vpn.get("comments"),
-                "disabled": vpn_params.get("disabled") if vpn_params.get("disabled") is not None else existing_vpn.get("disabled"),
+                "disabled": (
+                    vpn_params.get("disabled")
+                    if vpn_params.get("disabled") is not None
+                    else existing_vpn.get("disabled")
+                ),
             }
             final_payload = deleteNone(full_update_payload)
             module.warn(f"[UPDATE] Final Payload to API: {final_payload}")
 
-            updated_vpn, _, error = client.traffic_vpn_credentials.update_vpn_credential(**final_payload)
+            updated_vpn, _unused, error = (
+                client.traffic_vpn_credentials.update_vpn_credential(**final_payload)
+            )
             if error:
-                module.fail_json(msg=f"Failed to update VPN credential: {to_native(error)}")
-            module.exit_json(changed=True, data=updated_vpn.as_dict() if updated_vpn else {"id": vpn_params["id"]})
+                module.fail_json(
+                    msg=f"Failed to update VPN credential: {to_native(error)}"
+                )
+            module.exit_json(
+                changed=True,
+                data=updated_vpn.as_dict() if updated_vpn else {"id": vpn_params["id"]},
+            )
         else:
             # No update required. Remove pre_shared_key from output to avoid drift.
             existing_vpn.pop("pre_shared_key", None)
@@ -245,11 +268,15 @@ def core(module):
 
     elif state == "absent":
         if existing_vpn and existing_vpn.get("id"):
-            _, error = client.traffic_vpn_credentials.delete_vpn_credential(
-                credential_id=existing_vpn["id"]
+            _unused, _unused, error = (
+                client.traffic_vpn_credentials.delete_vpn_credential(
+                    credential_id=existing_vpn["id"]
+                )
             )
             if error:
-                module.fail_json(msg=f"Failed to delete VPN credential: {to_native(error)}")
+                module.fail_json(
+                    msg=f"Failed to delete VPN credential: {to_native(error)}"
+                )
             module.exit_json(changed=True)
         else:
             module.exit_json(changed=False)
@@ -269,7 +296,6 @@ def main():
             type="bool",
             required=False,
             default=False,
-            description="Must be set to True to update pre-shared key"
         ),
         comments=dict(type="str", required=False),
         disabled=dict(type="bool", required=False),
@@ -281,7 +307,7 @@ def main():
         required_if=[
             ("type", "UFQDN", ["fqdn"]),
             ("type", "IP", ["ip_address"]),
-        ]
+        ],
     )
     try:
         core(module)

@@ -6,31 +6,35 @@
 - name: Import Random String Generator Tasks
   ansible.builtin.import_tasks: ../../../generate_random_string.yml
 
-- name: Set dynamic name values with random string
+- name: Set dynamic name values with random string (only if not already suffixed)
   ansible.builtin.set_fact:
-    rule_name: "{{ rule_name }}_{{ random_string }}"
-    description: "{{ description }}_{{ random_string }}"
-    description_update: "{{ description_update }}_{{ random_string }}"
+    rule_name: "{{ (rule_name ~ '_' ~ random_string if random_string not in rule_name else rule_name) | truncate(10, end='') }}"
+    description: "{{ (description ~ '_' ~ random_string if random_string not in description else description) | truncate(10, end='') }}"
+    description_update: "{{ (description_update ~ '_' ~ random_string if random_string not in description_update else description_update) | truncate(10, end='') }}"
+
+- name: Debug final description length
+  ansible.builtin.debug:
+    msg: "description={{ description }} ({{ description | length }} chars)"
 
 - name: Ensure required environment variables are set
   ansible.builtin.fail:
     msg: "{{ env_var }} is not defined as environment variable"
   when: lookup('env', env_var) is none
   loop:
-    - ZIA_USERNAME
-    - ZIA_PASSWORD
-    - ZIA_API_KEY
-    - ZIA_CLOUD
+    - ZSCALER_CLIENT_ID
+    - ZSCALER_CLIENT_SECRET
+    - ZSCALER_VANITY_DOMAIN
+    - ZSCALER_CLOUD
   loop_control:
     loop_var: env_var
 
 - name: Ensure ZIA Credential environment variables are set
   ansible.builtin.set_fact:
     zia_cloud:
-      username: "{{ lookup('env', 'ZIA_USERNAME') }}"
-      password: "{{ lookup('env', 'ZIA_PASSWORD') }}"
-      api_key: "{{ lookup('env', 'ZIA_API_KEY') }}"
-      cloud: "{{ lookup('env', 'ZIA_CLOUD') | default(omit) }}"
+      client_id: "{{ lookup('env', 'ZSCALER_CLIENT_ID') }}"
+      client_secret: "{{ lookup('env', 'ZSCALER_CLIENT_SECRET') }}"
+      vanity_domain: "{{ lookup('env', 'ZSCALER_VANITY_DOMAIN') }}"
+      cloud: "{{ lookup('env', 'ZSCALER_CLOUD') | default(omit) }}"
   no_log: true
 
 - name: Main block to Test URL Filtering Rule Configuration

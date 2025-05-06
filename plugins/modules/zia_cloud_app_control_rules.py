@@ -413,14 +413,40 @@ def core(module):
     client = ZIAClientHelper(module)
 
     params = [
-        "id", "name", "description", "actions", "type", "order", "protocols",
-        "locations", "groups", "departments", "users", "enabled", "time_windows",
-        "rank", "applications", "cloud_app_instances", "tenancy_profile_ids",
-        "cloud_app_risk_profile", "time_quota", "size_quota", "location_groups",
-        "labels", "validity_start_time", "validity_end_time", "validity_time_zone_id",
-        "enforce_time_validity", "actions", "cascading_enabled", "user_agent_types",
-        "device_trust_levels", "device_groups", "devices", "user_risk_score_levels",
-        "cbi_profile"
+        "id",
+        "name",
+        "description",
+        "actions",
+        "type",
+        "order",
+        "protocols",
+        "locations",
+        "groups",
+        "departments",
+        "users",
+        "enabled",
+        "time_windows",
+        "rank",
+        "applications",
+        "cloud_app_instances",
+        "tenancy_profile_ids",
+        "cloud_app_risk_profile",
+        "time_quota",
+        "size_quota",
+        "location_groups",
+        "labels",
+        "validity_start_time",
+        "validity_end_time",
+        "validity_time_zone_id",
+        "enforce_time_validity",
+        "actions",
+        "cascading_enabled",
+        "user_agent_types",
+        "device_trust_levels",
+        "device_groups",
+        "devices",
+        "user_risk_score_levels",
+        "cbi_profile",
     ]
 
     rule = {param: module.params.get(param) for param in params}
@@ -440,13 +466,17 @@ def core(module):
 
     existing_rule = None
     if rule_id is not None:
-        result, _, error = client.cloudappcontrol.get_rule(rule_type=rule_type, rule_id=rule_id)
+        result, _unused, error = client.cloudappcontrol.get_rule(
+            rule_type=rule_type, rule_id=rule_id
+        )
         if error:
-            module.fail_json(msg=f"Error fetching rule with id {rule_id}: {to_native(error)}")
+            module.fail_json(
+                msg=f"Error fetching rule with id {rule_id}: {to_native(error)}"
+            )
         if result:
             existing_rule = result.as_dict()
     else:
-        result, _, error = client.cloudappcontrol.list_rules(rule_type=rule_type)
+        result, _unused, error = client.cloudappcontrol.list_rules(rule_type=rule_type)
         if error:
             module.fail_json(msg=f"Error listing rules: {to_native(error)}")
         if result:
@@ -464,10 +494,20 @@ def core(module):
 
     differences_detected = False
     list_attributes = [
-        "locations", "groups", "departments", "users", "time_windows",
-        "cloud_app_instances", "tenancy_profile_ids", "location_groups",
-        "labels", "user_agent_types", "device_trust_levels", "device_groups",
-        "devices", "user_risk_score_levels"
+        "locations",
+        "groups",
+        "departments",
+        "users",
+        "time_windows",
+        "cloud_app_instances",
+        "tenancy_profile_ids",
+        "location_groups",
+        "labels",
+        "user_agent_types",
+        "device_trust_levels",
+        "device_groups",
+        "devices",
+        "user_risk_score_levels",
     ]
 
     for key in params:
@@ -524,10 +564,66 @@ def core(module):
             if differences_detected:
                 rule_id_to_update = existing_rule.get("id")
                 if not rule_id_to_update:
-                    module.fail_json(msg="Cannot update rule: ID is missing from the existing resource.")
+                    module.fail_json(
+                        msg="Cannot update rule: ID is missing from the existing resource."
+                    )
 
-                update_data = deleteNone({
-                    "rule_id": rule_id_to_update,
+                update_data = deleteNone(
+                    {
+                        "rule_id": rule_id_to_update,
+                        "name": desired_rule.get("name"),
+                        "description": desired_rule.get("description"),
+                        "enabled": desired_rule.get("enabled"),
+                        "actions": desired_rule.get("actions"),
+                        "type": desired_rule.get("type"),
+                        "order": desired_rule.get("order"),
+                        "locations": desired_rule.get("locations"),
+                        "groups": desired_rule.get("groups"),
+                        "departments": desired_rule.get("departments"),
+                        "users": desired_rule.get("users"),
+                        "device_groups": desired_rule.get("device_groups"),
+                        "devices": desired_rule.get("devices"),
+                        "time_windows": desired_rule.get("time_windows"),
+                        "rank": desired_rule.get("rank"),
+                        "applications": desired_rule.get("applications"),
+                        "tenancy_profile_ids": desired_rule.get("tenancy_profile_ids"),
+                        "cloud_app_risk_profile": desired_rule.get(
+                            "cloud_app_risk_profile"
+                        ),
+                        "cloud_app_instances": desired_rule.get("cloud_app_instances"),
+                        "cascading_enabled": desired_rule.get("cascading_enabled"),
+                        "time_quota": desired_rule.get("time_quota"),
+                        "size_quota": desired_rule.get("size_quota"),
+                        "location_groups": desired_rule.get("location_groups"),
+                        "labels": desired_rule.get("labels"),
+                        "validity_start_time": desired_rule.get("validity_start_time"),
+                        "validity_end_time": desired_rule.get("validity_end_time"),
+                        "validity_time_zone_id": desired_rule.get(
+                            "validity_time_zone_id"
+                        ),
+                        "enforce_time_validity": desired_rule.get(
+                            "enforce_time_validity"
+                        ),
+                        "user_agent_types": desired_rule.get("user_agent_types"),
+                        "user_risk_score_levels": desired_rule.get(
+                            "user_risk_score_levels"
+                        ),
+                        "device_trust_levels": desired_rule.get("device_trust_levels"),
+                        "cbi_profile": desired_rule.get("cbi_profile"),
+                    }
+                )
+                module.warn("Payload Update for SDK: {}".format(update_data))
+                updated_rule, _unused, error = client.cloudappcontrol.update_rule(
+                    rule_type, **update_data
+                )
+                if error:
+                    module.fail_json(msg=f"Error updating rule: {to_native(error)}")
+                module.exit_json(changed=True, data=updated_rule.as_dict())
+            else:
+                module.exit_json(changed=False, data=existing_rule)
+        else:
+            create_data = deleteNone(
+                {
                     "name": desired_rule.get("name"),
                     "description": desired_rule.get("description"),
                     "enabled": desired_rule.get("enabled"),
@@ -544,7 +640,9 @@ def core(module):
                     "rank": desired_rule.get("rank"),
                     "applications": desired_rule.get("applications"),
                     "tenancy_profile_ids": desired_rule.get("tenancy_profile_ids"),
-                    "cloud_app_risk_profile": desired_rule.get("cloud_app_risk_profile"),
+                    "cloud_app_risk_profile": desired_rule.get(
+                        "cloud_app_risk_profile"
+                    ),
                     "cloud_app_instances": desired_rule.get("cloud_app_instances"),
                     "cascading_enabled": desired_rule.get("cascading_enabled"),
                     "time_quota": desired_rule.get("time_quota"),
@@ -556,55 +654,15 @@ def core(module):
                     "validity_time_zone_id": desired_rule.get("validity_time_zone_id"),
                     "enforce_time_validity": desired_rule.get("enforce_time_validity"),
                     "user_agent_types": desired_rule.get("user_agent_types"),
-                    "user_risk_score_levels": desired_rule.get("user_risk_score_levels"),
+                    "user_risk_score_levels": desired_rule.get(
+                        "user_risk_score_levels"
+                    ),
                     "device_trust_levels": desired_rule.get("device_trust_levels"),
                     "cbi_profile": desired_rule.get("cbi_profile"),
-                })
-                module.warn("Payload Update for SDK: {}".format(update_data))
-                updated_rule, _, error = client.cloudappcontrol.update_rule(
-                    rule_type, **update_data
-                )
-                if error:
-                    module.fail_json(msg=f"Error updating rule: {to_native(error)}")
-                module.exit_json(changed=True, data=updated_rule.as_dict())
-            else:
-                module.exit_json(changed=False, data=existing_rule)
-        else:
-            create_data = deleteNone({
-                "name": desired_rule.get("name"),
-                "description": desired_rule.get("description"),
-                "enabled": desired_rule.get("enabled"),
-                "actions": desired_rule.get("actions"),
-                "type": desired_rule.get("type"),
-                "order": desired_rule.get("order"),
-                "locations": desired_rule.get("locations"),
-                "groups": desired_rule.get("groups"),
-                "departments": desired_rule.get("departments"),
-                "users": desired_rule.get("users"),
-                "device_groups": desired_rule.get("device_groups"),
-                "devices": desired_rule.get("devices"),
-                "time_windows": desired_rule.get("time_windows"),
-                "rank": desired_rule.get("rank"),
-                "applications": desired_rule.get("applications"),
-                "tenancy_profile_ids": desired_rule.get("tenancy_profile_ids"),
-                "cloud_app_risk_profile": desired_rule.get("cloud_app_risk_profile"),
-                "cloud_app_instances": desired_rule.get("cloud_app_instances"),
-                "cascading_enabled": desired_rule.get("cascading_enabled"),
-                "time_quota": desired_rule.get("time_quota"),
-                "size_quota": desired_rule.get("size_quota"),
-                "location_groups": desired_rule.get("location_groups"),
-                "labels": desired_rule.get("labels"),
-                "validity_start_time": desired_rule.get("validity_start_time"),
-                "validity_end_time": desired_rule.get("validity_end_time"),
-                "validity_time_zone_id": desired_rule.get("validity_time_zone_id"),
-                "enforce_time_validity": desired_rule.get("enforce_time_validity"),
-                "user_agent_types": desired_rule.get("user_agent_types"),
-                "user_risk_score_levels": desired_rule.get("user_risk_score_levels"),
-                "device_trust_levels": desired_rule.get("device_trust_levels"),
-                "cbi_profile": desired_rule.get("cbi_profile"),
-            })
+                }
+            )
             module.warn("Payload Update for SDK: {}".format(create_data))
-            new_rule, _, error = client.cloudappcontrol.add_rule(
+            new_rule, _unused, error = client.cloudappcontrol.add_rule(
                 rule_type, **create_data
             )
             if error:
@@ -615,9 +673,11 @@ def core(module):
         if existing_rule:
             rule_id_to_delete = existing_rule.get("id")
             if not rule_id_to_delete:
-                module.fail_json(msg="Cannot delete rule: ID is missing from the existing resource.")
+                module.fail_json(
+                    msg="Cannot delete rule: ID is missing from the existing resource."
+                )
 
-            _, _, error = client.cloudappcontrol.delete_rule(
+            _unused, _unused, error = client.cloudappcontrol.delete_rule(
                 rule_type, rule_id=rule_id_to_delete
             )
             if error:
@@ -680,8 +740,14 @@ def main():
             elements="str",
             required=False,
             choices=[
-                "OPERA", "FIREFOX", "MSIE", "MSEDGE", "CHROME",
-                "SAFARI", "OTHER", "MSCHREDGE",
+                "OPERA",
+                "FIREFOX",
+                "MSIE",
+                "MSEDGE",
+                "CHROME",
+                "SAFARI",
+                "OTHER",
+                "MSCHREDGE",
             ],
         ),
         device_trust_levels=dict(
@@ -689,8 +755,11 @@ def main():
             elements="str",
             required=False,
             choices=[
-                "ANY", "UNKNOWN_DEVICETRUSTLEVEL", "LOW_TRUST",
-                "MEDIUM_TRUST", "HIGH_TRUST",
+                "ANY",
+                "UNKNOWN_DEVICETRUSTLEVEL",
+                "LOW_TRUST",
+                "MEDIUM_TRUST",
+                "HIGH_TRUST",
             ],
         ),
         user_risk_score_levels=dict(
@@ -703,13 +772,25 @@ def main():
             type="str",
             required=True,
             choices=[
-                "SOCIAL_NETWORKING", "STREAMING_MEDIA", "WEBMAIL",
-                "INSTANT_MESSAGING", "BUSINESS_PRODUCTIVITY",
-                "ENTERPRISE_COLLABORATION", "SALES_AND_MARKETING",
-                "SYSTEM_AND_DEVELOPMENT", "CONSUMER", "HOSTING_PROVIDER",
-                "IT_SERVICES", "FILE_SHARE", "DNS_OVER_HTTPS",
-                "HUMAN_RESOURCES", "LEGAL", "HEALTH_CARE", "FINANCE",
-                "CUSTOM_CAPP", "AI_ML",
+                "SOCIAL_NETWORKING",
+                "STREAMING_MEDIA",
+                "WEBMAIL",
+                "INSTANT_MESSAGING",
+                "BUSINESS_PRODUCTIVITY",
+                "ENTERPRISE_COLLABORATION",
+                "SALES_AND_MARKETING",
+                "SYSTEM_AND_DEVELOPMENT",
+                "CONSUMER",
+                "HOSTING_PROVIDER",
+                "IT_SERVICES",
+                "FILE_SHARE",
+                "DNS_OVER_HTTPS",
+                "HUMAN_RESOURCES",
+                "LEGAL",
+                "HEALTH_CARE",
+                "FINANCE",
+                "CUSTOM_CAPP",
+                "AI_ML",
             ],
         ),
         state=dict(type="str", choices=["present", "absent"], default="present"),

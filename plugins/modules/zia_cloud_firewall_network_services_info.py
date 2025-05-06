@@ -126,26 +126,38 @@ def core(module):
     services = []
 
     if service_id is not None:
-        service_obj, _, error = client.cloud_firewall.get_network_service(service_id)
+        service_obj, _unused, error = client.cloud_firewall.get_network_service(
+            service_id
+        )
         if error or service_obj is None:
-            module.fail_json(msg=f"Failed to retrieve Network Services with ID '{service_id}': {to_native(error)}")
+            module.fail_json(
+                msg=f"Failed to retrieve Network Services with ID '{service_id}': {to_native(error)}"
+            )
         services = [service_obj.as_dict()]
     else:
         query_params = {}
         if service_name:
             query_params["search"] = service_name
 
-        result, _, error = client.cloud_firewall.list_network_services(query_params=query_params)
+        result, _unused, error = client.cloud_firewall.list_network_services(
+            query_params=query_params
+        )
         if error:
-            module.fail_json(msg=f"Error retrieving Network Services: {to_native(error)}")
+            module.fail_json(
+                msg=f"Error retrieving Network Services: {to_native(error)}"
+            )
 
         service_list = [g.as_dict() for g in result] if result else []
 
         if service_name:
-            matched = next((g for g in service_list if g.get("name") == service_name), None)
+            matched = next(
+                (g for g in service_list if g.get("name") == service_name), None
+            )
             if not matched:
                 available = [g.get("name") for g in service_list]
-                module.fail_json(msg=f"Network Services with name '{service_name}' not found. Available services: {available}")
+                module.fail_json(
+                    msg=f"Network Services with name '{service_name}' not found. Available services: {available}"
+                )
             services = [matched]
         else:
             services = service_list
@@ -162,7 +174,7 @@ def main():
 
     module = AnsibleModule(
         argument_spec=argument_spec,
-        supports_check_mode=False,
+        supports_check_mode=True,
         mutually_exclusive=[["name", "id"]],
     )
 

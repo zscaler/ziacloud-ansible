@@ -29,11 +29,11 @@ __metaclass__ = type
 DOCUMENTATION = r"""
 ---
 module: zia_ssl_inspection_rules
-short_description: "SSL Inspection rule"
-description: "Adds a new SSL Inspection rule"
+short_description: "Creates a new SSL inspection rule"
+description: "Creates a new SSL inspection rule"
 author:
   - William Guilherme (@willguibr)
-version_added: "1.0.0"
+version_added: "2.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 notes:
@@ -45,178 +45,64 @@ extends_documentation_fragment:
 
 options:
   id:
-    description: "Unique identifier for the Firewall Filtering policy rule"
+    description: "Unique identifier for the SSL Inspection Rule"
     required: false
     type: int
   name:
-    description: "Name of the Firewall Filtering policy rule"
+    description: "Name of the SSL Inspection Rule"
     required: true
     type: str
-  order:
-    description: "Rule order number of the Firewall Filtering policy rule"
-    required: false
-    type: int
-  rank:
-    description: "Admin rank of the Firewall Filtering policy rule"
-    required: false
-    default: 7
-    type: int
-  enable_full_logging:
-    description:
-      - Aggregate The service groups together individual sessions based on  user, rule, network service, network application and records them periodically.
-      - Full The service logs all sessions of the rule individually, except HTTPS or HTTPS.
-      - Full logging on all other rules requires the Full Logging license. Only Block rules support full logging.
-    required: false
-    default: false
-    type: bool
-  locations:
-    description: "The locations to which the Firewall Filtering policy rule applies"
-    type: list
-    elements: int
-    required: false
-  location_groups:
-    description: "The location groups to which the Firewall Filtering policy rule applies"
-    type: list
-    elements: int
-    required: false
-  departments:
-    description: "The departments to which the Firewall Filtering policy rule applies"
-    type: list
-    elements: int
-    required: false
-  groups:
-    description: "The groups to which the Firewall Filtering policy rule applies"
-    type: list
-    elements: int
-    required: false
-  users:
-    description: "The users to which the Firewall Filtering policy rule applies"
-    type: list
-    elements: int
-    required: false
-  time_windows:
-    description: "The time interval in which the Firewall Filtering policy rule applies"
-    type: list
-    elements: int
-    required: false
-  workload_groups:
-    description: "The list of preconfigured workload groups to which the policy must be applied."
-    type: list
-    elements: int
-    required: false
-  action:
-    description: "The action the Firewall Filtering policy rule takes when packets match the rule"
-    required: false
-    type: str
-    choices:
-        - ALLOW
-        - BLOCK_DROP
-        - BLOCK_RESET
-        - BLOCK_ICMP
-        - EVAL_NWAPP
-  enabled:
-    description:
-        - Determines whether the Firewall Filtering policy rule is enabled or disabled
-    required: false
-    type: bool
   description:
     description: "Additional information about the rule"
     required: false
     type: str
-  src_ips:
-    description:
-      - User-defined source IP addresses for which the rule is applicable.
-      - If not set, the rule is not restricted to a specific source IP address.
-    type: list
-    elements: str
+  order:
+    description: "Rule order number of the SSL Inspection Rule"
     required: false
-  src_ip_groups:
-    description:
-        - User-defined source IP address groups for which the rule is applicable.
-        - If not set, the rule is not restricted to a specific source IP address group.
-    type: list
-    elements: int
+    type: int
+  rank:
+    description: "Admin rank of the SSL Inspection Rule"
     required: false
-  dest_addresses:
+    default: 7
+    type: int
+  enabled:
     description:
-      - List of destination IP addresses to which this rule will be applied.
-      - CIDR notation can be used for destination IP addresses.
-    type: list
-    elements: str
+        - Determines whether the SSL Inspection Rule is enabled or disabled
     required: false
-  dest_ip_categories:
-    description:
-      - IP address categories of destination for which the DNAT rule is applicable.
-      - If not set, the rule is not restricted to specific destination IP categories.
-    type: list
-    elements: str
-    required: false
-  dest_countries:
-    description:
-      - Destination countries for which the rule is applicable.
-      - If not set, the rule is not restricted to specific destination countries.
-      - Provide a ISO3166 Alpha2 code.  visit the following site for reference U(https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes)
-    type: list
-    elements: str
-    required: false
-  dest_ip_groups:
-    description:
-        - User-defined destination IP address groups on which the rule is applied.
-        - If not set, the rule is not restricted to a specific destination IP address group.
-    type: list
-    elements: int
-    required: false
-  source_countries:
-    description:
-      - The list of source countries that must be included or excluded from the rule based on the excludeSrcCountries field value.
-      - If no value is set, this field is ignored during policy evaluation and the rule is applied to all source countries.
-      - Provide a ISO3166 Alpha2 code.  visit the following site for reference U(https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes)
-    type: list
-    elements: str
-    required: false
-  exclude_src_countries:
-    description:
-      - Indicates whether the countries specified in the sourceCountries field are included or excluded from the rule.
-      - A true value denotes that the specified source countries are excluded from the rule.
-      - A false value denotes that the rule is applied to the source countries if there is a match.
-      - Provide a ISO3166 Alpha2 code.  visit the following site for reference U(https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes)
     type: bool
-    required: false
-  nw_services:
+  road_warrior_for_kerberos:
     description:
-        - User-defined network services on which the rule is applied.
-        - If not set, the rule is not restricted to a specific network service.
+        - When set to true, the rule is applied to remote users that use PAC with Kerberos authentication.
+        - Otherwise, it is a don't care.
+    required: false
+    type: bool
+  locations:
+    description: "The locations to which the SSL Inspection Rule applies"
     type: list
     elements: int
     required: false
-  nw_service_groups:
-    description:
-        - User-defined network service group on which the rule is applied.
-        - If not set, the rule is not restricted to a specific network service group.
+  location_groups:
+    description: "The location groups to which the SSL Inspection Rule applies"
     type: list
     elements: int
     required: false
-  nw_applications:
-    description:
-      - User-defined network service applications on which the rule is applied.
-      - If not set, the rule is not restricted to a specific network service application.
+  departments:
+    description: "The departments to which the SSL Inspection Rule applies"
     type: list
     elements: int
     required: false
-  nw_application_groups:
-    description:
-        - User-defined network service application group on which the rule is applied.
-        - If not set, the rule is not restricted to a specific network service application group.
+  groups:
+    description: "The groups to which the SSL Inspection Rule applies"
     type: list
     elements: int
     required: false
-  app_services:
-    description: "Application services on which this rule is applied"
+  users:
+    description: "The users to which the SSL Inspection Rule applies"
     type: list
     elements: int
     required: false
-  app_service_groups:
-    description: "Application service groups on which this rule is applied"
+  time_windows:
+    description: "The time interval in which the SSL Inspection Rule applies"
     type: list
     elements: int
     required: false
@@ -225,17 +111,13 @@ options:
     type: list
     elements: int
     required: false
-  dest_ipv6_groups:
-    description:
-      - Destination IPv6 address groups for which the rule is applicable.
-      - If not set, the rule is not restricted to a specific source IPv6 address group.
+  workload_groups:
+    description: "The list of preconfigured workload groups to which the policy must be applied."
     type: list
     elements: int
     required: false
-  src_ipv6_groups:
-    description:
-      - Source IPv6 address groups for which the rule is applicable.
-      - If not set, the rule is not restricted to a specific source IPv6 address group.
+  proxy_gateways:
+    description: The proxy chaining gateway for which this rule is applicable. Ignore if the forwarding method is not Proxy Chaining.
     type: list
     elements: int
     required: false
@@ -255,6 +137,36 @@ options:
     type: list
     elements: int
     required: false
+  dest_ip_groups:
+    description:
+        - User-defined destination IP address groups on which the rule is applied.
+        - If not set, the rule is not restricted to a specific destination IP address group.
+    type: list
+    elements: int
+    required: false
+  source_ip_groups:
+    description:
+        - User-defined destination IP address groups on which the rule is applied.
+        - If not set, the rule is not restricted to a specific destination IP address group.
+    type: list
+    elements: int
+    required: false
+  zpa_app_segments:
+    description:
+      - The list of ZPA Application Segments for which this rule is applicable.
+      - This field is applicable only for the ZPA forwarding method.
+    type: list
+    elements: dict
+    required: false
+    suboptions:
+      external_id:
+        description: Indicates the external ID. Applicable only when this reference is of an external entity.
+        type: str
+        required: true
+      name:
+        description: The name of the Application Segment
+        type: str
+        required: true
   device_trust_levels:
     description:
         - List of device trust levels for which the rule must be applied.
@@ -270,6 +182,165 @@ options:
         - LOW_TRUST
         - MEDIUM_TRUST
         - HIGH_TRUST
+  user_agent_types:
+    description:
+        - Any number of user agents to which the rule applies.
+    type: list
+    elements: str
+    required: false
+    choices:
+        - OPERA
+        - FIREFOX
+        - MSIE
+        - MSEDGE
+        - CHROME
+        - SAFARI
+        - OTHER
+        - MSCHREDGE
+  platforms:
+    description:
+        - Zscaler Client Connector device platforms for which the rule must be applied.
+        - If not set, rule is applied to all device platforms
+    type: list
+    elements: str
+    required: false
+    choices:
+        - SCAN_IOS
+        - SCAN_ANDROID
+        - SCAN_MACOS
+        - SCAN_WINDOWS
+        - NO_CLIENT_CONNECTOR
+        - SCAN_LINUX
+  cloud_applications:
+    description:
+        - The list of cloud applications to which the File Type Control policy rule must be applied
+        - Use the info resource zia_cloud_applications_info to retrieve the list of supported app_policy and ssl_policy applications
+    type: list
+    elements: str
+    required: false
+  url_categories:
+    description:
+      - The URL categories to which the rule applies
+      - Use the info resource zia_url_categories_info to retrieve the category names.
+    required: false
+    type: list
+    elements: str
+  action:
+    description:
+      - Action block that defines what happens when SSL traffic matches the rule.
+      - This includes whether to decrypt, block, or bypass SSL inspection.
+    type: dict
+    required: true
+    suboptions:
+      type:
+        description:
+          - The primary action taken on matched traffic.
+        type: str
+        required: true
+        choices:
+          - BLOCK
+          - DECRYPT
+          - DO_NOT_DECRYPT
+      show_eun:
+        description:
+          - Whether to show End User Notification (EUN) on blocked traffic.
+        type: bool
+        required: false
+      show_eunatp:
+        description:
+          - Whether to show Advanced Threat Protection (ATP) notification on blocked traffic.
+        type: bool
+        required: false
+      override_default_certificate:
+        description:
+          - Whether to override the default SSL inspection certificate for this rule.
+        type: bool
+        required: false
+      ssl_interception_cert:
+        description:
+          - SSL interception certificate to be used when overriding the default certificate.
+        type: dict
+        required: false
+        suboptions:
+          id:
+            description: ID of the SSL interception certificate.
+            type: int
+            required: true
+      decrypt_sub_actions:
+        description:
+          - Additional sub-actions that can be configured when decrypting SSL traffic.
+        type: dict
+        required: false
+        suboptions:
+          server_certificates:
+            description: Specifies the server certificate behavior during SSL inspection.
+            type: str
+            required: false
+          ocsp_check:
+            description: Whether to perform OCSP checks on server certificates.
+            type: bool
+            required: false
+          block_ssl_traffic_with_no_sni_enabled:
+            description: Whether to block SSL traffic that does not have Server Name Indication (SNI).
+            type: bool
+            required: false
+          min_client_tls_version:
+            description: Minimum TLS version allowed for client-side connections.
+            type: str
+            required: false
+            choices:
+              - CLIENT_TLS_1_0
+              - CLIENT_TLS_1_1
+              - CLIENT_TLS_1_2
+              - CLIENT_TLS_1_3
+          min_server_tls_version:
+            description: Minimum TLS version allowed for server-side connections.
+            type: str
+            required: false
+            choices:
+              - SERVER_TLS_1_0
+              - SERVER_TLS_1_1
+              - SERVER_TLS_1_2
+              - SERVER_TLS_1_3
+          block_undecrypt:
+            description: Whether to block SSL traffic that cannot be decrypted.
+            type: bool
+            required: false
+          http2_enabled:
+            description: Whether HTTP/2 inspection is enabled.
+            type: bool
+            required: false
+      do_not_decrypt_sub_actions:
+        description:
+          - Additional sub-actions that can be configured when bypassing SSL decryption.
+        type: dict
+        required: false
+        suboptions:
+          bypass_other_policies:
+            description: Whether to bypass additional policies for non-decrypted traffic.
+            type: bool
+            required: false
+          server_certificates:
+            description: Specifies the server certificate behavior when not decrypting.
+            type: str
+            required: false
+          ocsp_check:
+            description: Whether to perform OCSP checks on server certificates even if traffic is not decrypted.
+            type: bool
+            required: false
+          block_ssl_traffic_with_no_sni_enabled:
+            description: Whether to block SSL traffic without Server Name Indication (SNI).
+            type: bool
+            required: false
+          min_tls_version:
+            description: Minimum TLS version required for bypassed SSL traffic.
+            type: str
+            required: false
+            choices:
+              - SERVER_TLS_1_0
+              - SERVER_TLS_1_1
+              - SERVER_TLS_1_2
+              - SERVER_TLS_1_3
 """
 
 EXAMPLES = r"""
@@ -342,7 +413,9 @@ def normalize_rule(rule):
         action = normalized["action"]
 
         # Only keep the ID inside ssl_interception_cert if it's a dict
-        if "ssl_interception_cert" in action and isinstance(action["ssl_interception_cert"], dict):
+        if "ssl_interception_cert" in action and isinstance(
+            action["ssl_interception_cert"], dict
+        ):
             cert = action["ssl_interception_cert"]
             action["ssl_interception_cert"] = {"id": cert.get("id")}
 
@@ -350,7 +423,6 @@ def normalize_rule(rule):
         normalized["action"] = deep_clean(action)
 
     return normalized
-
 
 
 def preprocess_rule(rule, params):
@@ -369,13 +441,33 @@ def core(module):
     client = ZIAClientHelper(module)
 
     params = [
-        "id", "name", "description", "enabled", "rank", "order",  "action",
-        "locations", "location_groups", "departments", "groups", "users", "time_windows",
-        "source_ip_groups", "dest_ip_groups", "workload_groups", "labels",
-        "device_groups", "devices",  "proxy_gateways", "zpa_app_segments",
-        "road_warrior_for_kerberos" "cloud_applications", "device_trust_levels",
-        "url_categories", "user_agent_types", "platforms"
-
+        "id",
+        "name",
+        "description",
+        "enabled",
+        "rank",
+        "order",
+        "action",
+        "locations",
+        "location_groups",
+        "departments",
+        "groups",
+        "users",
+        "time_windows",
+        "source_ip_groups",
+        "dest_ip_groups",
+        "workload_groups",
+        "labels",
+        "device_groups",
+        "devices",
+        "proxy_gateways",
+        "zpa_app_segments",
+        "road_warrior_for_kerberos",
+        "cloud_applications",
+        "device_trust_levels",
+        "url_categories",
+        "user_agent_types",
+        "platforms",
     ]
 
     rule = {param: module.params.get(param) for param in params}
@@ -389,16 +481,20 @@ def core(module):
     existing_rule = None
     if rule_id is not None:
         module.debug(f"Fetching existing rule with ID: {rule_id}")
-        result, _, error = client.ssl_inspection_rules.get_rule(rule_id=rule_id)
+        result, _unused, error = client.ssl_inspection_rules.get_rule(rule_id=rule_id)
         if error:
-            module.fail_json(msg=f"Error fetching rule with id {rule_id}: {to_native(error)}")
+            module.fail_json(
+                msg=f"Error fetching rule with id {rule_id}: {to_native(error)}"
+            )
         if result:
             existing_rule = result.as_dict()
             module.warn(f"Raw existing rule keys: {existing_rule.keys()}")
-            module.warn(f"user_agent_types from API: {existing_rule.get('user_agent_types')}")
+            module.warn(
+                f"user_agent_types from API: {existing_rule.get('user_agent_types')}"
+            )
     else:
         module.debug(f"Listing rules to find by name: {rule_name}")
-        result, _, error = client.ssl_inspection_rules.list_rules()
+        result, _unused, error = client.ssl_inspection_rules.list_rules()
         if error:
             module.fail_json(msg=f"Error listing rules: {to_native(error)}")
         if result:
@@ -411,7 +507,12 @@ def core(module):
     # Normalize and compare
     desired_rule = normalize_rule(rule)
 
-    for k in ["user_agent_types", "url_categories", "device_trust_levels", "user_risk_score_levels"]:
+    for k in [
+        "user_agent_types",
+        "url_categories",
+        "device_trust_levels",
+        "user_risk_score_levels",
+    ]:
         if k in desired_rule and isinstance(desired_rule[k], list):
             desired_rule[k] = sorted(desired_rule[k])
 
@@ -431,15 +532,35 @@ def core(module):
 
     differences_detected = False
     list_attributes = [
-        "locations", "location_groups", "departments", "groups", "users", "time_windows",
-        "source_ip_groups", "dest_ip_groups", "workload_groups", "labels",
-        "device_groups", "devices",  "proxy_gateways", "zpa_app_segments",
-        "road_warrior_for_kerberos" "cloud_applications", "device_trust_levels",
-        "url_categories", "user_agent_types", "platforms"
+        "locations",
+        "location_groups",
+        "departments",
+        "groups",
+        "users",
+        "time_windows",
+        "source_ip_groups",
+        "dest_ip_groups",
+        "workload_groups",
+        "labels",
+        "device_groups",
+        "devices",
+        "proxy_gateways",
+        "zpa_app_segments",
+        "road_warrior_for_kerberos",
+        "cloud_applications",
+        "device_trust_levels",
+        "url_categories",
+        "user_agent_types",
+        "platforms",
     ]
 
     # Attributes where order should be ignored
-    order_agnostic_attributes = ["user_agent_types", "url_categories", "device_trust_levels", "user_risk_score_levels"]
+    order_agnostic_attributes = [
+        "user_agent_types",
+        "url_categories",
+        "device_trust_levels",
+        "user_risk_score_levels",
+    ]
 
     for key in params:
         desired_value = desired_rule_preprocessed.get(key)
@@ -459,7 +580,6 @@ def core(module):
                 desired_value = []
             if current_value is None:
                 current_value = []
-
 
         # Sort lists of IDs for comparison
         if isinstance(desired_value, list) and isinstance(current_value, list):
@@ -489,7 +609,17 @@ def core(module):
             )
 
     if module.check_mode:
-        module.debug(f"Check mode - would {'create' if state == 'present' and not existing_rule else 'update' if differences_detected else 'delete' if state == 'absent' and existing_rule else 'do nothing'}")
+        if state == "present" and not existing_rule:
+            action = "create"
+        elif differences_detected:
+            action = "update"
+        elif state == "absent" and existing_rule:
+            action = "delete"
+        else:
+            action = "do nothing"
+
+        module.debug(f"Check mode - would {action}")
+
         if state == "present" and (existing_rule is None or differences_detected):
             module.exit_json(changed=True)
         elif state == "absent" and existing_rule is not None:
@@ -500,44 +630,51 @@ def core(module):
     if state == "present":
         if existing_rule:
             if differences_detected:
-                update_data = deleteNone({
-                    "rule_id": existing_rule.get("id"),
-                    "name": desired_rule.get("name"),
-                    "description": desired_rule.get("description"),
-                    "enabled": desired_rule.get("enabled"),
-                    "rank": desired_rule.get("rank"),
-                    "order": desired_rule.get("order"),
-                    "action": desired_rule.get("action"),
-                    "device_groups": desired_rule.get("device_groups"),
-                    "devices": desired_rule.get("devices"),
-                    "labels": desired_rule.get("labels"),
-                    "locations": desired_rule.get("locations"),
-                    "location_groups": desired_rule.get("location_groups"),
-                    "departments": desired_rule.get("departments"),
-                    "groups": desired_rule.get("groups"),
-                    "users": desired_rule.get("users"),
-                    "time_windows": desired_rule.get("time_windows"),
-                    "source_ip_groups": desired_rule.get("source_ip_groups"),
-                    "dest_ip_groups": desired_rule.get("dest_ip_groups"),
-                    "workload_groups": desired_rule.get("workload_groups"),
-                    "proxy_gateways": desired_rule.get("proxy_gateways"),
-                    "zpa_app_segments": desired_rule.get("zpa_app_segments"),
-                    "device_trust_levels": desired_rule.get("device_trust_levels"),
-                    "road_warrior_for_kerberos": desired_rule.get("road_warrior_for_kerberos"),
-                    "cloud_applications": desired_rule.get("cloud_applications"),
-                    "url_categories": desired_rule.get("url_categories"),
-                    "user_agent_types": desired_rule.get("user_agent_types"),
-                    "platforms": desired_rule.get("platforms"),
-                })
+                update_data = deleteNone(
+                    {
+                        "rule_id": existing_rule.get("id"),
+                        "name": desired_rule.get("name"),
+                        "description": desired_rule.get("description"),
+                        "enabled": desired_rule.get("enabled"),
+                        "rank": desired_rule.get("rank"),
+                        "order": desired_rule.get("order"),
+                        "action": desired_rule.get("action"),
+                        "device_groups": desired_rule.get("device_groups"),
+                        "devices": desired_rule.get("devices"),
+                        "labels": desired_rule.get("labels"),
+                        "locations": desired_rule.get("locations"),
+                        "location_groups": desired_rule.get("location_groups"),
+                        "departments": desired_rule.get("departments"),
+                        "groups": desired_rule.get("groups"),
+                        "users": desired_rule.get("users"),
+                        "time_windows": desired_rule.get("time_windows"),
+                        "source_ip_groups": desired_rule.get("source_ip_groups"),
+                        "dest_ip_groups": desired_rule.get("dest_ip_groups"),
+                        "workload_groups": desired_rule.get("workload_groups"),
+                        "proxy_gateways": desired_rule.get("proxy_gateways"),
+                        "zpa_app_segments": desired_rule.get("zpa_app_segments"),
+                        "device_trust_levels": desired_rule.get("device_trust_levels"),
+                        "road_warrior_for_kerberos": desired_rule.get(
+                            "road_warrior_for_kerberos"
+                        ),
+                        "cloud_applications": desired_rule.get("cloud_applications"),
+                        "url_categories": desired_rule.get("url_categories"),
+                        "user_agent_types": desired_rule.get("user_agent_types"),
+                        "platforms": desired_rule.get("platforms"),
+                    }
+                )
                 module.warn("Payload Update for SDK: {}".format(update_data))
-                updated_rule, _, error = client.ssl_inspection_rules.update_rule(**update_data)
+                updated_rule, _unused, error = client.ssl_inspection_rules.update_rule(
+                    **update_data
+                )
                 if error:
                     module.fail_json(msg=f"Error updating rule: {to_native(error)}")
                 module.exit_json(changed=True, data=updated_rule.as_dict())
             else:
                 module.exit_json(changed=False, data=existing_rule)
         else:
-            create_data = deleteNone({
+            create_data = deleteNone(
+                {
                     "name": desired_rule.get("name"),
                     "description": desired_rule.get("description"),
                     "enabled": desired_rule.get("enabled"),
@@ -559,21 +696,28 @@ def core(module):
                     "proxy_gateways": desired_rule.get("proxy_gateways"),
                     "zpa_app_segments": desired_rule.get("zpa_app_segments"),
                     "device_trust_levels": desired_rule.get("device_trust_levels"),
-                    "road_warrior_for_kerberos": desired_rule.get("road_warrior_for_kerberos"),
+                    "road_warrior_for_kerberos": desired_rule.get(
+                        "road_warrior_for_kerberos"
+                    ),
                     "cloud_applications": desired_rule.get("cloud_applications"),
                     "url_categories": desired_rule.get("url_categories"),
                     "user_agent_types": desired_rule.get("user_agent_types"),
                     "platforms": desired_rule.get("platforms"),
-            })
+                }
+            )
             module.warn("Payload for SDK: {}".format(create_data))
-            new_rule, _, error = client.ssl_inspection_rules.add_rule(**create_data)
+            new_rule, _unused, error = client.ssl_inspection_rules.add_rule(
+                **create_data
+            )
             if error:
                 module.fail_json(msg=f"Error creating rule: {to_native(error)}")
             module.exit_json(changed=True, data=new_rule.as_dict())
 
     elif state == "absent":
         if existing_rule:
-            _, _, error = client.ssl_inspection_rules.delete_rule(rule_id=existing_rule.get("id"))
+            _unused, _unused, error = client.ssl_inspection_rules.delete_rule(
+                rule_id=existing_rule.get("id")
+            )
             if error:
                 module.fail_json(msg=f"Error deleting rule: {to_native(error)}")
             module.exit_json(changed=True, data=existing_rule)
@@ -589,6 +733,17 @@ def main():
         type="list",
         elements="int",
         required=False,
+    )
+    external_id_name_dict_spec = dict(
+        external_id=dict(type="str", required=True),
+        name=dict(type="str", required=True),
+    )
+
+    external_id_name_list_spec = dict(
+        type="list",
+        elements="dict",
+        required=False,
+        options=external_id_name_dict_spec,
     )
     argument_spec.update(
         id=dict(type="int", required=False),
@@ -611,10 +766,10 @@ def main():
         time_windows=id_spec,
         workload_groups=id_spec,
         proxy_gateways=id_spec,
-        zpa_app_segments=id_spec,
+        zpa_app_segments=external_id_name_list_spec,
         action=dict(
             type="dict",
-            required=False,
+            required=True,
             options=dict(
                 type=dict(
                     type="str",
@@ -637,16 +792,28 @@ def main():
                     options=dict(
                         server_certificates=dict(type="str", required=False),
                         ocsp_check=dict(type="bool", required=False),
-                        block_ssl_traffic_with_no_sni_enabled=dict(type="bool", required=False),
+                        block_ssl_traffic_with_no_sni_enabled=dict(
+                            type="bool", required=False
+                        ),
                         min_client_tls_version=dict(
                             type="str",
                             required=False,
-                            choices=["CLIENT_TLS_1_0", "CLIENT_TLS_1_1", "CLIENT_TLS_1_2", "CLIENT_TLS_1_3"],
+                            choices=[
+                                "CLIENT_TLS_1_0",
+                                "CLIENT_TLS_1_1",
+                                "CLIENT_TLS_1_2",
+                                "CLIENT_TLS_1_3",
+                            ],
                         ),
                         min_server_tls_version=dict(
                             type="str",
                             required=False,
-                            choices=["SERVER_TLS_1_0", "SERVER_TLS_1_1", "SERVER_TLS_1_2", "SERVER_TLS_1_3"],
+                            choices=[
+                                "SERVER_TLS_1_0",
+                                "SERVER_TLS_1_1",
+                                "SERVER_TLS_1_2",
+                                "SERVER_TLS_1_3",
+                            ],
                         ),
                         block_undecrypt=dict(type="bool", required=False),
                         http2_enabled=dict(type="bool", required=False),
@@ -659,11 +826,18 @@ def main():
                         bypass_other_policies=dict(type="bool", required=False),
                         server_certificates=dict(type="str", required=False),
                         ocsp_check=dict(type="bool", required=False),
-                        block_ssl_traffic_with_no_sni_enabled=dict(type="bool", required=False),
+                        block_ssl_traffic_with_no_sni_enabled=dict(
+                            type="bool", required=False
+                        ),
                         min_tls_version=dict(
                             type="str",
                             required=False,
-                            choices=["SERVER_TLS_1_0", "SERVER_TLS_1_1", "SERVER_TLS_1_2", "SERVER_TLS_1_3"],
+                            choices=[
+                                "SERVER_TLS_1_0",
+                                "SERVER_TLS_1_1",
+                                "SERVER_TLS_1_2",
+                                "SERVER_TLS_1_3",
+                            ],
                         ),
                     ),
                 ),
@@ -687,8 +861,14 @@ def main():
             elements="str",
             required=False,
             choices=[
-            "OPERA", "FIREFOX", "MSIE", "MSEDGE",
-            "CHROME", "SAFARI", "OTHER", "MSCHREDGE"
+                "OPERA",
+                "FIREFOX",
+                "MSIE",
+                "MSEDGE",
+                "CHROME",
+                "SAFARI",
+                "OTHER",
+                "MSCHREDGE",
             ],
         ),
         platforms=dict(
@@ -696,8 +876,12 @@ def main():
             elements="str",
             required=False,
             choices=[
-            "SCAN_IOS", "SCAN_ANDROID", "SCAN_MACOS", "SCAN_WINDOWS",
-            "NO_CLIENT_CONNECTOR", "SCAN_LINUX",
+                "SCAN_IOS",
+                "SCAN_ANDROID",
+                "SCAN_MACOS",
+                "SCAN_WINDOWS",
+                "NO_CLIENT_CONNECTOR",
+                "SCAN_LINUX",
             ],
         ),
         cloud_applications=dict(

@@ -28,7 +28,7 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 ---
-module: zia_cloud_firewall_filtering_rule_info
+module: zia_cloud_firewall_rule_info
 short_description: Retrieves rules in the Cloud Firewall module.
 description: Retrieves rules in the Cloud Firewall module.
 author:
@@ -57,11 +57,11 @@ options:
 
 EXAMPLES = r"""
 - name: Gather Information Details of a ZIA Cloud Firewall Rule
-  zscaler.ziacloud.zia_cloud_firewall_filtering_rule_info:
+  zscaler.ziacloud.zia_cloud_firewall_rule_info:
     provider: '{{ provider }}'
 
 - name: Gather Information Details of a ZIA Cloud Firewall Rule by Name
-  zscaler.ziacloud.zia_cloud_firewall_filtering_rule_info:
+  zscaler.ziacloud.zia_cloud_firewall_rule_info:
     provider: '{{ provider }}'
     name: "Example"
 """
@@ -165,7 +165,9 @@ rules:
 from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
 
 
 def core(module):
@@ -176,18 +178,22 @@ def core(module):
     rules = []
 
     if rule_id:
-        rule, _, error = client.cloud_firewall_rules.get_rule(rule_id=rule_id)
+        rule, _unused, error = client.cloud_firewall_rules.get_rule(rule_id=rule_id)
         if error or rule is None:
-            module.fail_json(msg=f"Failed to retrieve Firewall Rule with ID '{rule_id}': {to_native(error)}")
+            module.fail_json(
+                msg=f"Failed to retrieve Firewall Rule with ID '{rule_id}': {to_native(error)}"
+            )
         rules = [rule.as_dict()]
     else:
-        result, _, error = client.cloud_firewall_rules.list_rules()
+        result, _unused, error = client.cloud_firewall_rules.list_rules()
 
         if error:
             module.fail_json(msg=f"Error retrieving firewall rules: {to_native(error)}")
 
         if not isinstance(result, list):
-            module.fail_json(msg=f"Expected a list of firewall rules, got: {type(result)}")
+            module.fail_json(
+                msg=f"Expected a list of firewall rules, got: {type(result)}"
+            )
 
         all_rules = [r.as_dict() for r in result]
 
@@ -195,15 +201,16 @@ def core(module):
             # Do case-insensitive match by name or description
             rule_name_lower = rule_name.lower()
             matched = [
-                r for r in all_rules
-                if r.get("name", "").lower() == rule_name_lower or
-                   r.get("description", "").lower() == rule_name_lower
+                r
+                for r in all_rules
+                if r.get("name", "").lower() == rule_name_lower
+                or r.get("description", "").lower() == rule_name_lower
             ]
             if not matched:
                 available_names = [r.get("name") for r in all_rules]
                 module.fail_json(
                     msg=f"Firewall Rule with name '{rule_name}' not found. "
-                        f"Available rules: {available_names}"
+                    f"Available rules: {available_names}"
                 )
             rules = matched
         else:
@@ -216,12 +223,12 @@ def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         name=dict(type="str", required=False),
-        id=dict(type="str", required=False),
+        id=dict(type="int", required=False),
     )
 
     module = AnsibleModule(
         argument_spec=argument_spec,
-        supports_check_mode=False,
+        supports_check_mode=True,
         mutually_exclusive=[["name", "id"]],
     )
 

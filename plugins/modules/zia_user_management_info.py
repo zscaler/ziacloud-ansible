@@ -135,12 +135,11 @@ from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
-    collect_all_items
+    collect_all_items,
 )
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
     ZIAClientHelper,
 )
-
 
 
 def core(module):
@@ -151,9 +150,11 @@ def core(module):
     users = []
 
     if user_id is not None:
-        result, _, error = client.user_management.get_user(user_id)
+        result, _unused, error = client.user_management.get_user(user_id)
         if error or result is None:
-            module.fail_json(msg=f"Failed to retrieve User with ID '{user_id}': {to_native(error)}")
+            module.fail_json(
+                msg=f"Failed to retrieve User with ID '{user_id}': {to_native(error)}"
+            )
         users = [result.as_dict()]
     else:
         query_params = {}
@@ -164,13 +165,19 @@ def core(module):
         if err:
             module.fail_json(msg=f"Error retrieving Users: {to_native(err)}")
 
-        user_list = [u.as_dict() if hasattr(u, "as_dict") else u for u in result] if result else []
+        user_list = (
+            [u.as_dict() if hasattr(u, "as_dict") else u for u in result]
+            if result
+            else []
+        )
 
         if user_name:
             matched = next((u for u in user_list if u.get("name") == user_name), None)
             if not matched:
                 available = [u.get("name") for u in user_list]
-                module.fail_json(msg=f"User with name '{user_name}' not found. Available users: {available}")
+                module.fail_json(
+                    msg=f"User with name '{user_name}' not found. Available users: {available}"
+                )
             users = [matched]
         else:
             users = user_list
@@ -187,7 +194,7 @@ def main():
 
     module = AnsibleModule(
         argument_spec=argument_spec,
-        supports_check_mode=False,
+        supports_check_mode=True,
         mutually_exclusive=[["name", "id"]],
     )
 

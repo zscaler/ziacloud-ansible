@@ -75,7 +75,9 @@ RETURN = r"""
 from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
 
 
 def normalize_labels(label):
@@ -109,12 +111,14 @@ def core(module):
     existing_rule_label = None
 
     if label_id:
-        result, _, error = client.rule_labels.get_label(label_id)
+        result, _unused, error = client.rule_labels.get_label(label_id)
         if error:
-            module.fail_json(msg=f"Error fetching label with id {label_id}: {to_native(error)}")
+            module.fail_json(
+                msg=f"Error fetching label with id {label_id}: {to_native(error)}"
+            )
         existing_rule_label = result.as_dict()
     else:
-        result, _, error = client.rule_labels.list_labels()
+        result, _unused, error = client.rule_labels.list_labels()
         if error:
             module.fail_json(msg=f"Error listing labels: {to_native(error)}")
         labels_list = [label.as_dict() for label in result]
@@ -125,13 +129,17 @@ def core(module):
                     break
 
     normalized_desired = normalize_labels(rule_label_params)
-    normalized_existing = normalize_labels(existing_rule_label) if existing_rule_label else {}
+    normalized_existing = (
+        normalize_labels(existing_rule_label) if existing_rule_label else {}
+    )
 
     differences_detected = False
     for key, value in normalized_desired.items():
         if normalized_existing.get(key) != value:
             differences_detected = True
-            module.warn(f"Difference detected in {key}. Current: {normalized_existing.get(key)}, Desired: {value}")
+            module.warn(
+                f"Difference detected in {key}. Current: {normalized_existing.get(key)}, Desired: {value}"
+            )
 
     if module.check_mode:
         if state == "present" and (existing_rule_label is None or differences_detected):
@@ -146,12 +154,14 @@ def core(module):
             if differences_detected:
                 label_id_to_update = existing_rule_label.get("id")
                 if not label_id_to_update:
-                    module.fail_json(msg="Cannot update label: ID is missing from the existing resource.")
+                    module.fail_json(
+                        msg="Cannot update label: ID is missing from the existing resource."
+                    )
 
-                updated_label, _, error = client.rule_labels.update_label(
+                updated_label, _unused, error = client.rule_labels.update_label(
                     label_id=label_id_to_update,
                     name=rule_label_params.get("name"),
-                    description=rule_label_params.get("description")
+                    description=rule_label_params.get("description"),
                 )
                 if error:
                     module.fail_json(msg=f"Error updating label: {to_native(error)}")
@@ -159,9 +169,9 @@ def core(module):
             else:
                 module.exit_json(changed=False, data=existing_rule_label)
         else:
-            new_label, _, error = client.rule_labels.add_label(
+            new_label, _unused, error = client.rule_labels.add_label(
                 name=rule_label_params.get("name"),
-                description=rule_label_params.get("description")
+                description=rule_label_params.get("description"),
             )
             if error:
                 module.fail_json(msg=f"Error adding label: {to_native(error)}")
@@ -171,9 +181,13 @@ def core(module):
         if existing_rule_label:
             label_id_to_delete = existing_rule_label.get("id")
             if not label_id_to_delete:
-                module.fail_json(msg="Cannot delete label: ID is missing from the existing resource.")
+                module.fail_json(
+                    msg="Cannot delete label: ID is missing from the existing resource."
+                )
 
-            _, _, error = client.rule_labels.delete_label(label_id_to_delete)
+            _unused, _unused, error = client.rule_labels.delete_label(
+                label_id_to_delete
+            )
             if error:
                 module.fail_json(msg=f"Error deleting label: {to_native(error)}")
             module.exit_json(changed=True, data=existing_rule_label)

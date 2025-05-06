@@ -7,7 +7,17 @@ enabled: true
 url_categories:
   - ANY
 protocols:
-  - ANY_RULE
+  - TUNNELSSL_RULE
+  - HTTP_PROXY
+  - FOHTTP_RULE
+  - FTP_RULE
+  - SSL_RULE
+  - TUNNEL_RULE
+  - HTTPS_RULE
+  - WEBSOCKETSSL_RULE
+  - WEBSOCKET_RULE
+  - HTTP_RULE
+  - DOHTTPS_RULE
 device_trust_levels:
   - UNKNOWN_DEVICETRUSTLEVEL
   - LOW_TRUST
@@ -37,6 +47,14 @@ request_methods:
   - POST
   - PUT
   - TRACE
+  - PROPFIND
+  - PROPPATCH
+  - MKCOL
+  - MOVE
+  - LOCK
+  - UNLOCK
+  - PATCH
+  - COPY
 
 # URL Filtering Rule Update
 name_update: test_zia_ansible

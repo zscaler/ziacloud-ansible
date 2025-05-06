@@ -157,7 +157,7 @@ EXAMPLES = r"""
   zscaler.ziacloud.zia_url_categories:
     provider: '{{ provider }}'
     super_category: USER_DEFINED
-    configured_name: Example_Category
+    name: Example_Category
     description: Example_Category
     type: URL_CATEGORY
     keywords:
@@ -251,13 +251,15 @@ def core(module):
     existing_category = None
 
     if category_id:
-        result, _, error = client.url_categories.get_category(category_id=category_id)
+        result, _unused, error = client.url_categories.get_category(
+            category_id=category_id
+        )
         if error:
             module.fail_json(msg=f"Error fetching category: {to_native(error)}")
         if result:
             existing_category = result.as_dict()
     elif category.get("configured_name"):
-        result, _, error = client.url_categories.list_categories()
+        result, _unused, error = client.url_categories.list_categories()
         if error:
             module.fail_json(msg=f"Error listing categories: {to_native(error)}")
         for category_ in result or []:
@@ -266,7 +268,9 @@ def core(module):
                 break
 
     desired_category = normalize_url_category(category)
-    current_category = normalize_url_category(existing_category) if existing_category else {}
+    current_category = (
+        normalize_url_category(existing_category) if existing_category else {}
+    )
 
     existing_pre = preprocess_category(current_category, params)
     desired_pre = preprocess_category(desired_category, params)
@@ -290,7 +294,9 @@ def core(module):
             continue
 
         if isinstance(desired_value, list) and isinstance(current_value, list):
-            if all(isinstance(x, int) for x in desired_value) and all(isinstance(x, int) for x in current_value):
+            if all(isinstance(x, int) for x in desired_value) and all(
+                isinstance(x, int) for x in current_value
+            ):
                 desired_value = sorted(desired_value)
                 current_value = sorted(current_value)
 
@@ -317,26 +323,40 @@ def core(module):
     if state == "present":
         if existing_category:
             if differences_detected:
+                # if category.get("custom_category") and category.get("name"):
+                #     category["configured_name"] = category.pop("name")
+
                 updated_data = deleteNone(category)
                 updated_data["category_id"] = existing_category["id"]
+                module.warn("Payload for SDK (update): {}".format(updated_data))
 
-                result, _, error = client.url_categories.update_url_category(**updated_data)
+                result, _unused, error = client.url_categories.update_url_category(
+                    **updated_data
+                )
                 if error or not result:
-                    module.fail_json(msg=f"Failed to update category: {to_native(error)}")
+                    module.fail_json(
+                        msg=f"Failed to update category: {to_native(error)}"
+                    )
                 module.exit_json(changed=True, data=result.as_dict())
+
             else:
-                module.exit_json(changed=False, data=existing_category, msg="No changes needed.")
+                module.exit_json(
+                    changed=False, data=existing_category, msg="No changes needed."
+                )
         else:
+            # if category.get("custom_category") and category.get("name"):
+            #     category["configured_name"] = category.pop("name")  # 🛠 Fix before deleteNone
+
             payload = deleteNone(category)
             module.warn("Payload for SDK: {}".format(payload))
-            result, _, error = client.url_categories.add_url_category(**payload)
+            result, _unused, error = client.url_categories.add_url_category(**payload)
             if error or not result:
                 module.fail_json(msg=f"Failed to create category: {to_native(error)}")
             module.exit_json(changed=True, data=result.as_dict())
 
     elif state == "absent":
         if existing_category:
-            _, _, error = client.url_categories.delete_category(
+            _unused, _unused, error = client.url_categories.delete_category(
                 category_id=existing_category["id"]
             )
             if error:
@@ -360,9 +380,9 @@ def main():
         configured_name=dict(type="str", required=False),
         description=dict(type="str", required=False),
         custom_category=dict(type="bool", required=False),
-        keywords=dict(type="list", elements="str", required=False),
+        keywords=dict(type="list", elements="str", required=False, no_log=False),
         keywords_retaining_parent_category=dict(
-            type="list", elements="str", required=False,
+            type="list", elements="str", required=False, no_log=False
         ),
         urls=dict(type="list", elements="str", required=False),
         db_categorized_urls=dict(type="list", elements="str", required=False),

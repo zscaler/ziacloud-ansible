@@ -78,7 +78,9 @@ RETURN = r"""
 from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
 
 
 def core(module):
@@ -89,26 +91,34 @@ def core(module):
     gateways = []
 
     if gateway_id is not None:
-        gateway_obj, _, error = client.zpa_gateway.get_gateway(gateway_id)
+        gateway_obj, _unused, error = client.zpa_gateway.get_gateway(gateway_id)
         if error or gateway_obj is None:
-            module.fail_json(msg=f"Failed to retrieve ZPA Gateway with ID '{gateway_id}': {to_native(error)}")
+            module.fail_json(
+                msg=f"Failed to retrieve ZPA Gateway with ID '{gateway_id}': {to_native(error)}"
+            )
         gateways = [gateway_obj.as_dict()]
     else:
         query_params = {}
         if gateway_name:
             query_params["search"] = gateway_name
 
-        result, _, error = client.zpa_gateway.list_gateways(query_params=query_params)
+        result, _unused, error = client.zpa_gateway.list_gateways(
+            query_params=query_params
+        )
         if error:
             module.fail_json(msg=f"Error retrieving ZPA Gateways: {to_native(error)}")
 
         gateway_list = [g.as_dict() for g in result] if result else []
 
         if gateway_name:
-            matched = next((g for g in gateway_list if g.get("name") == gateway_name), None)
+            matched = next(
+                (g for g in gateway_list if g.get("name") == gateway_name), None
+            )
             if not matched:
                 available = [g.get("name") for g in gateway_list]
-                module.fail_json(msg=f"ZPA Gateway named '{gateway_name}' not found. Available: {available}")
+                module.fail_json(
+                    msg=f"ZPA Gateway named '{gateway_name}' not found. Available: {available}"
+                )
             gateways = [matched]
         else:
             gateways = gateway_list
@@ -125,7 +135,7 @@ def main():
 
     module = AnsibleModule(
         argument_spec=argument_spec,
-        supports_check_mode=False,
+        supports_check_mode=True,
         mutually_exclusive=[["name", "id"]],
     )
 

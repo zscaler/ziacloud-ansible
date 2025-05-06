@@ -1,11 +1,12 @@
 ---
 location_name: USA_SJC_37
 description: Created with Ansible
-country: UNITED_STATES
-tz: UNITED_STATES_AMERICA_LOS_ANGELES
+country: "UNITED_STATES"
+tz: "UNITED_STATES_AMERICA_LOS_ANGELES"
+profile: SERVER
 auth_required: true
 idle_time_in_minutes: 720
-display_time_unit: HOUR
+display_time_unit: "MINUTE"
 surrogate_ip: true
 xff_forward_enabled: true
 ofw_enabled: true

@@ -21,20 +21,20 @@
     msg: "{{ env_var }} is not defined as environment variable"
   when: lookup('env', env_var) is none
   loop:
-    - ZIA_USERNAME
-    - ZIA_PASSWORD
-    - ZIA_API_KEY
-    - ZIA_CLOUD
+    - ZSCALER_CLIENT_ID
+    - ZSCALER_CLIENT_SECRET
+    - ZSCALER_VANITY_DOMAIN
+    - ZSCALER_CLOUD
   loop_control:
     loop_var: env_var
 
 - name: Ensure ZIA Credential environment variables are set
   ansible.builtin.set_fact:
     zia_cloud:
-      username: "{{ lookup('env', 'ZIA_USERNAME') }}"
-      password: "{{ lookup('env', 'ZIA_PASSWORD') }}"
-      api_key: "{{ lookup('env', 'ZIA_API_KEY') }}"
-      cloud: "{{ lookup('env', 'ZIA_CLOUD') | default(omit) }}"
+      client_id: "{{ lookup('env', 'ZSCALER_CLIENT_ID') }}"
+      client_secret: "{{ lookup('env', 'ZSCALER_CLIENT_SECRET') }}"
+      vanity_domain: "{{ lookup('env', 'ZSCALER_VANITY_DOMAIN') }}"
+      cloud: "{{ lookup('env', 'ZSCALER_CLOUD') | default(omit) }}"
   no_log: true
 
 - name: Main block for GRE Tunnel Configuration

@@ -139,8 +139,12 @@ RETURN = r"""
 from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import validate_iso3166_alpha2
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
+    validate_iso3166_alpha2,
+)
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
 
 
 def normalize_ip_group(group):
@@ -168,10 +172,19 @@ def core(module):
     state = module.params.get("state")
     client = ZIAClientHelper(module)
 
-    destination_group = {p: module.params.get(p) for p in [
-        "id", "name", "description", "type",
-        "addresses", "ip_categories", "url_categories", "countries"
-    ]}
+    destination_group = {
+        p: module.params.get(p)
+        for p in [
+            "id",
+            "name",
+            "description",
+            "type",
+            "addresses",
+            "ip_categories",
+            "url_categories",
+            "countries",
+        ]
+    }
 
     # Validate countries and convert to COUNTRY_ prefix
     countries = destination_group.get("countries")
@@ -188,19 +201,25 @@ def core(module):
     if destination_group["type"] == "DSTN_OTHER" and not (
         destination_group.get("ip_categories") or destination_group.get("countries")
     ):
-        module.fail_json(msg="'ip_categories' or 'countries' must be set when 'type' is 'DSTN_OTHER'.")
+        module.fail_json(
+            msg="'ip_categories' or 'countries' must be set when 'type' is 'DSTN_OTHER'."
+        )
 
     group_id = destination_group.get("id")
     group_name = destination_group.get("name")
     existing_group = None
 
     if group_id:
-        result, _, error = client.cloud_firewall.get_ip_destination_group(group_id)
+        result, _unused, error = client.cloud_firewall.get_ip_destination_group(
+            group_id
+        )
         if error:
-            module.fail_json(msg=f"Error retrieving group with ID {group_id}: {to_native(error)}")
+            module.fail_json(
+                msg=f"Error retrieving group with ID {group_id}: {to_native(error)}"
+            )
         existing_group = result.as_dict()
     else:
-        result, _, error = client.cloud_firewall.list_ip_destination_groups()
+        result, _unused, error = client.cloud_firewall.list_ip_destination_groups()
         if error:
             module.fail_json(msg=f"Error listing groups: {to_native(error)}")
         all_groups = [g.as_dict() for g in result]
@@ -214,7 +233,8 @@ def core(module):
 
     differences_detected = any(
         normalized_desired[k] != normalized_existing.get(k)
-        for k in normalized_desired if k != "id"
+        for k in normalized_desired
+        if k != "id"
     )
 
     if module.check_mode:
@@ -233,17 +253,21 @@ def core(module):
             if differences_detected:
                 group_id_to_update = existing_group.get("id")
                 if not group_id_to_update:
-                    module.fail_json(msg="Cannot update destination group: ID is missing.")
+                    module.fail_json(
+                        msg="Cannot update destination group: ID is missing."
+                    )
 
-                updated_group, _, error = client.cloud_firewall.update_ip_destination_group(
-                    group_id=group_id_to_update,
-                    name=destination_group.get("name"),
-                    type=destination_group.get("type"),
-                    addresses=destination_group.get("addresses", []),
-                    description=destination_group.get("description", ""),
-                    ip_categories=destination_group.get("ip_categories", []),
-                    url_categories=destination_group.get("url_categories", []),
-                    countries=destination_group.get("countries", []),
+                updated_group, _unused, error = (
+                    client.cloud_firewall.update_ip_destination_group(
+                        group_id=group_id_to_update,
+                        name=destination_group.get("name"),
+                        type=destination_group.get("type"),
+                        addresses=destination_group.get("addresses", []),
+                        description=destination_group.get("description", ""),
+                        ip_categories=destination_group.get("ip_categories", []),
+                        url_categories=destination_group.get("url_categories", []),
+                        countries=destination_group.get("countries", []),
+                    )
                 )
                 if error:
                     module.fail_json(msg=f"Error updating group: {to_native(error)}")
@@ -251,7 +275,7 @@ def core(module):
             else:
                 module.exit_json(changed=False, data=existing_group)
         else:
-            new_group, _, error = client.cloud_firewall.add_ip_destination_group(
+            new_group, _unused, error = client.cloud_firewall.add_ip_destination_group(
                 name=destination_group["name"],
                 type=destination_group["type"],
                 addresses=destination_group.get("addresses", []),
@@ -269,7 +293,9 @@ def core(module):
             group_id_to_delete = existing_group.get("id")
             if not group_id_to_delete:
                 module.fail_json(msg="Cannot delete destination group: ID is missing.")
-            _, _, error = client.cloud_firewall.delete_ip_destination_group(group_id_to_delete)
+            _unused, _unused, error = client.cloud_firewall.delete_ip_destination_group(
+                group_id_to_delete
+            )
             if error:
                 module.fail_json(msg=f"Error deleting group: {to_native(error)}")
             module.exit_json(changed=True, data=existing_group)
@@ -285,7 +311,11 @@ def main():
         id=dict(type="int", required=False),
         name=dict(type="str", required=True),
         description=dict(type="str", required=False),
-        type=dict(type="str", required=False, choices=["DSTN_IP", "DSTN_FQDN", "DSTN_DOMAIN", "DSTN_OTHER"]),
+        type=dict(
+            type="str",
+            required=False,
+            choices=["DSTN_IP", "DSTN_FQDN", "DSTN_DOMAIN", "DSTN_OTHER"],
+        ),
         addresses=dict(type="list", elements="str", required=False),
         ip_categories=dict(type="list", elements="str", required=False),
         url_categories=dict(type="list", elements="str", required=False),

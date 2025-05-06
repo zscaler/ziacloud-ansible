@@ -27,8 +27,6 @@ __metaclass__ = type
 
 
 class ModuleDocFragment(object):
-    # Standard files documentation fragment
-
     DOCUMENTATION = r"""
 options:
     username:
@@ -48,7 +46,7 @@ options:
         type: str
     cloud:
         description:
-            - The Zscaler cloud name was provisioned for your organization.
+            - The Zscaler cloud name provisioned for your organization.
         required: false
         type: str
         choices:
@@ -60,9 +58,42 @@ options:
             - zscalerbeta
             - zscalergov
             - zscalerten
+            - beta
+            - production
+    use_legacy_client:
+        description:
+            - Whether to use the legacy Zscaler API client.
+        required: false
+        type: bool
+        default: false
     sandbox_token:
         description:
             - A string that contains the Sandbox API Key.
+        type: str
+        required: false
+    sandbox_cloud:
+        description:
+            - The Sandbox cloud environment for API access.
+        type: str
+        required: false
+    client_id:
+        description:
+            - The client ID for OAuth2 authentication.
+        type: str
+        required: false
+    client_secret:
+        description:
+            - The client secret for OAuth2 authentication.
+        type: str
+        required: false
+    private_key:
+        description:
+            - The private key for JWT-based OAuth2 authentication.
+        type: str
+        required: false
+    vanity_domain:
+        description:
+            - The vanity domain provisioned by Zscaler for OAuth2 flows.
         type: str
         required: false
 """
@@ -71,28 +102,28 @@ options:
 options:
     provider:
         description:
-            - A dict object containing connection details. This is optional; credentials can also be provided directly at the top level.
+            - A dict containing authentication credentials.
         type: dict
         required: false
         suboptions:
             username:
                 description:
-                    - A string that contains the email ID of the API admin.
+                    - Email ID of the API admin.
                 type: str
                 required: false
             password:
                 description:
-                    - A string that contains the password for the API admin.
+                    - Password for the API admin.
                 type: str
                 required: false
             api_key:
                 description:
-                    - A string that contains the obfuscated API key.
+                    - Obfuscated API key.
                 type: str
                 required: false
             cloud:
                 description:
-                    - The Zscaler cloud name was provisioned for your organization.
+                    - Zscaler cloud name.
                 type: str
                 required: false
                 choices:
@@ -104,9 +135,42 @@ options:
                     - zscalerbeta
                     - zscalergov
                     - zscalerten
+                    - beta
+                    - production
+            use_legacy_client:
+                description:
+                    - Whether to use the legacy Zscaler API client.
+                type: bool
+                required: false
+                default: false
             sandbox_token:
                 description:
-                    - A string that contains the Sandbox API Key.
+                    - Sandbox API Key.
+                type: str
+                required: false
+            sandbox_cloud:
+                description:
+                    - Sandbox Cloud environment.
+                type: str
+                required: false
+            client_id:
+                description:
+                    - OAuth2 client ID.
+                type: str
+                required: false
+            client_secret:
+                description:
+                    - OAuth2 client secret.
+                type: str
+                required: false
+            private_key:
+                description:
+                    - Private key for OAuth2 JWT.
+                type: str
+                required: false
+            vanity_domain:
+                description:
+                    - Vanity domain for OAuth2.
                 type: str
                 required: false
 """
@@ -135,4 +199,15 @@ options:
             - absent
             - enabled
             - disabled
+"""
+
+    MODIFIED_STATE = r"""
+options:
+    state:
+        description:
+            - Specifies the desired state of the resource.
+        type: str
+        default: present
+        choices:
+            - present
 """

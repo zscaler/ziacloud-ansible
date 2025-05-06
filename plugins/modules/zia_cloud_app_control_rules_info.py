@@ -125,7 +125,9 @@ rules:
 from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
 
 
 def core(module):
@@ -138,7 +140,9 @@ def core(module):
 
     if rule_id:
         # Fetch rule by ID
-        rule, _, error = client.cloudappcontrol.get_rule(rule_type=rule_type, rule_id=rule_id)
+        rule, _unused, error = client.cloudappcontrol.get_rule(
+            rule_type=rule_type, rule_id=rule_id
+        )
         if error or rule is None:
             module.fail_json(
                 msg=f"Failed to retrieve Cloud App Control Rule with ID: '{rule_id}' under rule type: '{rule_type}'"
@@ -146,15 +150,21 @@ def core(module):
         rules = [rule.as_dict()]
     else:
         # Always get full list and search in-memory
-        result, _, error = client.cloudappcontrol.list_rules(rule_type=rule_type)
+        result, _unused, error = client.cloudappcontrol.list_rules(rule_type=rule_type)
         if error:
-            module.fail_json(msg=f"Error retrieving rules for type '{rule_type}': {to_native(error)}")
+            module.fail_json(
+                msg=f"Error retrieving rules for type '{rule_type}': {to_native(error)}"
+            )
 
         all_rules = [r.as_dict() for r in result] if result else []
 
         if rule_name:
             # Perform local name match
-            matched = [r for r in all_rules if r.get("description") == rule_name or r.get("name") == rule_name]
+            matched = [
+                r
+                for r in all_rules
+                if r.get("description") == rule_name or r.get("name") == rule_name
+            ]
             if not matched:
                 module.fail_json(
                     msg=f"Rule with name '{rule_name}' not found under rule type '{rule_type}'"
@@ -175,16 +185,30 @@ def main():
             type="str",
             required=True,
             choices=[
-                "SOCIAL_NETWORKING", "STREAMING_MEDIA", "WEBMAIL", "INSTANT_MESSAGING",
-                "BUSINESS_PRODUCTIVITY", "ENTERPRISE_COLLABORATION", "SALES_AND_MARKETING",
-                "SYSTEM_AND_DEVELOPMENT", "CONSUMER", "HOSTING_PROVIDER", "IT_SERVICES",
-                "FILE_SHARE", "DNS_OVER_HTTPS", "HUMAN_RESOURCES", "LEGAL", "HEALTH_CARE",
-                "FINANCE", "CUSTOM_CAPP", "AI_ML"
+                "SOCIAL_NETWORKING",
+                "STREAMING_MEDIA",
+                "WEBMAIL",
+                "INSTANT_MESSAGING",
+                "BUSINESS_PRODUCTIVITY",
+                "ENTERPRISE_COLLABORATION",
+                "SALES_AND_MARKETING",
+                "SYSTEM_AND_DEVELOPMENT",
+                "CONSUMER",
+                "HOSTING_PROVIDER",
+                "IT_SERVICES",
+                "FILE_SHARE",
+                "DNS_OVER_HTTPS",
+                "HUMAN_RESOURCES",
+                "LEGAL",
+                "HEALTH_CARE",
+                "FINANCE",
+                "CUSTOM_CAPP",
+                "AI_ML",
             ],
         ),
     )
 
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=False)
+    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
     try:
         core(module)
     except Exception as e:

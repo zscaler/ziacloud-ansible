@@ -79,6 +79,22 @@ options:
         description: "Name of the server group."
         required: true
         type: str
+  zpa_app_segments:
+    description:
+      - A list of ZPA Application Segments associated with the ZPA gateway.
+      - Each entry must include the application segment's external ID and name.
+    type: list
+    elements: dict
+    required: true
+    suboptions:
+      external_id:
+        description: The external ID of the application segment.
+        type: str
+        required: true
+      name:
+        description: The name of the application segment.
+        type: str
+        required: true
 """
 
 EXAMPLES = r"""
@@ -130,10 +146,12 @@ def normalize_gateway(gateway):
     if "zpa_app_segments" in normalized:
         cleaned_segments = []
         for seg in normalized["zpa_app_segments"]:
-            cleaned_segments.append({
-                "external_id": seg.get("external_id"),
-                "name": seg.get("name"),
-            })
+            cleaned_segments.append(
+                {
+                    "external_id": seg.get("external_id"),
+                    "name": seg.get("name"),
+                }
+            )
         normalized["zpa_app_segments"] = cleaned_segments
 
     return normalized
@@ -184,13 +202,13 @@ def core(module):
 
     existing_gateway = None
     if gateway_id is not None:
-        existing, _, error = client.zpa_gateway.get_gateway(gateway_id)
+        existing, _unused, error = client.zpa_gateway.get_gateway(gateway_id)
         if error:
             module.fail_json(msg=f"Error fetching gateway: {to_native(error)}")
         if existing:
             existing_gateway = existing.as_dict()
     else:
-        gateways, _, error = client.zpa_gateway.list_gateways()
+        gateways, _unused, error = client.zpa_gateway.list_gateways()
         if error:
             module.fail_json(msg=f"Error listing gateways: {to_native(error)}")
         if gateway_name:
@@ -250,9 +268,13 @@ def core(module):
                         zpa_app_segments=existing_gateway.get("zpa_app_segments"),
                     )
                 )
-                updated_gateway, _, error = client.zpa_gateway.update_gateway(**update_gateway)
+                updated_gateway, _unused, error = client.zpa_gateway.update_gateway(
+                    **update_gateway
+                )
                 if error or updated_gateway is None:
-                    module.fail_json(msg=f"Failed to update gateway: {to_native(error)}")
+                    module.fail_json(
+                        msg=f"Failed to update gateway: {to_native(error)}"
+                    )
                 module.exit_json(changed=True, data=updated_gateway.as_dict())
             else:
                 module.exit_json(
@@ -270,7 +292,9 @@ def core(module):
                 )
             )
             module.warn("Payload for SDK: {}".format(create_gateway))
-            new_gateway, _, error = client.zpa_gateway.add_gateway(**create_gateway)
+            new_gateway, _unused, error = client.zpa_gateway.add_gateway(
+                **create_gateway
+            )
             if error or new_gateway is None:
                 module.fail_json(msg=f"Failed to create gateway: {to_native(error)}")
             module.exit_json(changed=True, data=new_gateway.as_dict())
@@ -280,7 +304,9 @@ def core(module):
         and existing_gateway is not None
         and existing_gateway.get("id") is not None
     ):
-        _, _, error = client.zpa_gateway.delete_gateway(existing_gateway.get("id"))
+        _unused, _unused, error = client.zpa_gateway.delete_gateway(
+            existing_gateway.get("id")
+        )
         if error:
             module.fail_json(msg=f"Failed to delete gateway: {to_native(error)}")
         module.exit_json(changed=True, data=existing_gateway)
@@ -330,4 +356,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

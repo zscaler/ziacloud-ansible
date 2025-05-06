@@ -58,6 +58,7 @@ options:
     description:
         - When set to one of the supported locales (i.e., en-US, de-DE, es-ES, fr-FR, ja-JP, zh-CN).
         - The network application's description is localized into the requested language.
+        - Provide a BCP 47 language tag. Visit the following site for reference U(https://www.techonthenet.com/js/language_tags.php)
     required: false
     type: str
 """
@@ -105,27 +106,35 @@ network_apps:
 from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
-
-
-from traceback import format_exc
-from ansible.module_utils._text import to_native
-from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
+    validate_locale_code,
+)
 
 
 def core(module):
     app_id = module.params.get("id")
     app_name = module.params.get("name")
     locale = module.params.get("locale")
+    if locale and not validate_locale_code(locale):
+        module.fail_json(
+            msg=(
+                f"Invalid locale '{locale}'. Must be a valid BCP 47 language tag (e.g., en-US, fr-FR, ja-JP). "
+                "See: https://www.techonthenet.com/js/language_tags.php"
+            )
+        )
 
     client = ZIAClientHelper(module)
     apps = []
 
     if app_id:
-        app_obj, _, error = client.cloud_firewall.get_network_app(app_id)
+        app_obj, _unused, error = client.cloud_firewall.get_network_app(app_id)
         if error or app_obj is None:
-            module.fail_json(msg=f"Failed to retrieve Network Application with ID '{app_id}': {to_native(error)}")
+            module.fail_json(
+                msg=f"Failed to retrieve Network Application with ID '{app_id}': {to_native(error)}"
+            )
         apps = [app_obj.as_dict()]
     else:
         query_params = {}
@@ -134,9 +143,13 @@ def core(module):
         if locale:
             query_params["locale"] = locale
 
-        result, _, error = client.cloud_firewall.list_network_apps(query_params=query_params)
+        result, _unused, error = client.cloud_firewall.list_network_apps(
+            query_params=query_params
+        )
         if error:
-            module.fail_json(msg=f"Error retrieving Network Applications: {to_native(error)}")
+            module.fail_json(
+                msg=f"Error retrieving Network Applications: {to_native(error)}"
+            )
 
         app_list = [a.as_dict() for a in result] if result else []
 
@@ -144,7 +157,9 @@ def core(module):
             matched = next((a for a in app_list if a.get("id") == app_name), None)
             if not matched:
                 available = [a.get("id") for a in app_list]
-                module.fail_json(msg=f"Network Application with ID '{app_name}' not found. Available: {available}")
+                module.fail_json(
+                    msg=f"Network Application with ID '{app_name}' not found. Available: {available}"
+                )
             apps = [matched]
         else:
             apps = app_list
@@ -160,13 +175,12 @@ def main():
         locale=dict(
             type="str",
             required=False,
-            choices=["en-US", "de-DE", "es-ES", "fr-FR", "ja-JP", "zh-CN"],
         ),
     )
 
     module = AnsibleModule(
         argument_spec=argument_spec,
-        supports_check_mode=False,
+        supports_check_mode=True,
         mutually_exclusive=[["name", "id"]],
     )
 

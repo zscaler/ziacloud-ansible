@@ -5,5 +5,5 @@
 
 - name: Generate a random password
   ansible.builtin.set_fact:
-    random_password: "{{ lookup('password', '/dev/null length=16 chars=ascii_letters,digits,special') }}"
+    random_password: "{{ lookup('password', '/dev/null length=10 chars=ascii_letters,digits,special') }}"
   no_log: true

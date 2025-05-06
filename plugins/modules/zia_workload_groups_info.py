@@ -133,7 +133,9 @@ import json
 from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
 
 
 def serialize_complex_data(group):
@@ -151,7 +153,7 @@ def core(module):
     client = ZIAClientHelper(module)
 
     # Fetch all workload groups
-    result, _, error = client.workload_groups.list_groups()
+    result, _unused, error = client.workload_groups.list_groups()
     if error:
         module.fail_json(msg=f"Failed to retrieve workload groups: {to_native(error)}")
 
@@ -159,7 +161,9 @@ def core(module):
 
     matched = None
     if group_id is not None:
-        matched = next((g for g in all_groups if str(g.get("id")) == str(group_id)), None)
+        matched = next(
+            (g for g in all_groups if str(g.get("id")) == str(group_id)), None
+        )
         if not matched:
             module.fail_json(msg=f"No workload group found with ID '{group_id}'")
     elif group_name is not None:

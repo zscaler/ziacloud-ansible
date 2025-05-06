@@ -1,0 +1,4 @@
+---
+nss_server_name: test_zia_nss_server
+status: ENABLED
+type: NSS_FOR_FIREWALL

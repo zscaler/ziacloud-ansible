@@ -230,7 +230,9 @@ from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import deleteNone
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
 
 
 def normalize_service(service):
@@ -264,8 +266,15 @@ def core(module):
     network_service = {
         p: module.params.get(p)
         for p in [
-            "id", "name", "description", "tag", "type",
-            "src_tcp_ports", "dest_tcp_ports", "src_udp_ports", "dest_udp_ports"
+            "id",
+            "name",
+            "description",
+            "tag",
+            "type",
+            "src_tcp_ports",
+            "dest_tcp_ports",
+            "src_udp_ports",
+            "dest_udp_ports",
         ]
     }
 
@@ -274,12 +283,14 @@ def core(module):
     existing = None
 
     if service_id:
-        result, _, error = client.cloud_firewall.get_network_service(service_id)
+        result, _unused, error = client.cloud_firewall.get_network_service(service_id)
         if error:
-            module.fail_json(msg=f"Error fetching service ID {service_id}: {to_native(error)}")
+            module.fail_json(
+                msg=f"Error fetching service ID {service_id}: {to_native(error)}"
+            )
         existing = result.as_dict()
     elif service_name:
-        result, _, error = client.cloud_firewall.list_network_services()
+        result, _unused, error = client.cloud_firewall.list_network_services()
         if error:
             module.fail_json(msg=f"Error listing services: {to_native(error)}")
         for svc in result:
@@ -314,8 +325,31 @@ def core(module):
                 if not existing.get("id"):
                     module.fail_json(msg="Missing ID for update.")
 
-                payload = deleteNone(dict(
-                    service_id=existing.get("id"),
+                payload = deleteNone(
+                    dict(
+                        service_id=existing.get("id"),
+                        name=network_service.get("name"),
+                        description=network_service.get("description"),
+                        tag=network_service.get("tag"),
+                        type=network_service.get("type"),
+                        src_tcp_ports=network_service.get("src_tcp_ports"),
+                        dest_tcp_ports=network_service.get("dest_tcp_ports"),
+                        src_udp_ports=network_service.get("src_udp_ports"),
+                        dest_udp_ports=network_service.get("dest_udp_ports"),
+                    )
+                )
+
+                updated, _unused, error = client.cloud_firewall.update_network_service(
+                    **payload
+                )
+                if error:
+                    module.fail_json(msg=f"Error updating service: {to_native(error)}")
+                module.exit_json(changed=True, data=updated.as_dict())
+            else:
+                module.exit_json(changed=False, data=existing)
+        else:
+            payload = deleteNone(
+                dict(
                     name=network_service.get("name"),
                     description=network_service.get("description"),
                     tag=network_service.get("tag"),
@@ -324,27 +358,12 @@ def core(module):
                     dest_tcp_ports=network_service.get("dest_tcp_ports"),
                     src_udp_ports=network_service.get("src_udp_ports"),
                     dest_udp_ports=network_service.get("dest_udp_ports"),
-                ))
+                )
+            )
 
-                updated, _, error = client.cloud_firewall.update_network_service(**payload)
-                if error:
-                    module.fail_json(msg=f"Error updating service: {to_native(error)}")
-                module.exit_json(changed=True, data=updated.as_dict())
-            else:
-                module.exit_json(changed=False, data=existing)
-        else:
-            payload = deleteNone(dict(
-                name=network_service.get("name"),
-                description=network_service.get("description"),
-                tag=network_service.get("tag"),
-                type=network_service.get("type"),
-                src_tcp_ports=network_service.get("src_tcp_ports"),
-                dest_tcp_ports=network_service.get("dest_tcp_ports"),
-                src_udp_ports=network_service.get("src_udp_ports"),
-                dest_udp_ports=network_service.get("dest_udp_ports"),
-            ))
-
-            created, _, error = client.cloud_firewall.add_network_service(**payload)
+            created, _unused, error = client.cloud_firewall.add_network_service(
+                **payload
+            )
             if error:
                 module.fail_json(msg=f"Error creating service: {to_native(error)}")
             module.exit_json(changed=True, data=created.as_dict())
@@ -353,8 +372,13 @@ def core(module):
         if existing:
             service_type = existing.get("type")
             if service_type in ["PREDEFINED", "STANDARD"]:
-                module.exit_json(changed=False, msg=f"Skipping delete of protected type: {service_type}")
-            _, _, error = client.cloud_firewall.delete_network_service(existing.get("id"))
+                module.exit_json(
+                    changed=False,
+                    msg=f"Skipping delete of protected type: {service_type}",
+                )
+            _unused, _unused, error = client.cloud_firewall.delete_network_service(
+                existing.get("id")
+            )
             if error:
                 module.fail_json(msg=f"Error deleting service: {to_native(error)}")
             module.exit_json(changed=True, data=existing, msg="Service deleted")
@@ -370,39 +394,97 @@ def main():
         id=dict(type="int", required=False),
         name=dict(type="str", required=True),
         description=dict(type="str", required=False),
-        type=dict(
-            type="str", default="CUSTOM",
-            choices=["CUSTOM"]
-        ),
+        type=dict(type="str", default="CUSTOM", choices=["CUSTOM"]),
         src_tcp_ports=dict(
-            type="list", elements="dict", required=False,
+            type="list",
+            elements="dict",
+            required=False,
             options=dict(start=dict(type="int"), end=dict(type="int")),
         ),
         dest_tcp_ports=dict(
-            type="list", elements="dict", required=False,
+            type="list",
+            elements="dict",
+            required=False,
             options=dict(start=dict(type="int"), end=dict(type="int")),
         ),
         src_udp_ports=dict(
-            type="list", elements="dict", required=False,
+            type="list",
+            elements="dict",
+            required=False,
             options=dict(start=dict(type="int"), end=dict(type="int")),
         ),
         dest_udp_ports=dict(
-            type="list", elements="dict", required=False,
+            type="list",
+            elements="dict",
+            required=False,
             options=dict(start=dict(type="int"), end=dict(type="int")),
         ),
         tag=dict(
-            type="list", elements="str", required=False,
+            type="list",
+            elements="str",
+            required=False,
             choices=[
-                "ICMP_ANY", "UDP_ANY", "TCP_ANY", "OTHER_NETWORK_SERVICE", "DNS",
-                "NETBIOS", "FTP", "GNUTELLA", "H_323", "HTTP", "HTTPS", "IKE", "IMAP",
-                "ILS", "IKE_NAT", "IRC", "LDAP", "QUIC", "TDS", "NETMEETING", "NFS",
-                "NTP", "SIP", "SNMP", "SMB", "SMTP", "SSH", "SYSLOG", "TELNET",
-                "TRACEROUTE", "POP3", "PPTP", "RADIUS", "REAL_MEDIA", "RTSP", "VNC",
-                "WHOIS", "KERBEROS_SEC", "TACACS", "SNMPTRAP", "NMAP", "RSYNC", "L2TP",
-                "HTTP_PROXY", "PC_ANYWHERE", "MSN", "ECHO", "AIM", "IDENT", "YMSG",
-                "SCCP", "MGCP_UA", "MGCP_CA", "VDO_LIVE", "OPENVPN", "TFTP",
-                "FTPS_IMPLICIT", "ZSCALER_PROXY_NW_SERVICES", "GRE_PROTOCOL",
-                "ESP_PROTOCOL", "DHCP",
+                "ICMP_ANY",
+                "UDP_ANY",
+                "TCP_ANY",
+                "OTHER_NETWORK_SERVICE",
+                "DNS",
+                "NETBIOS",
+                "FTP",
+                "GNUTELLA",
+                "H_323",
+                "HTTP",
+                "HTTPS",
+                "IKE",
+                "IMAP",
+                "ILS",
+                "IKE_NAT",
+                "IRC",
+                "LDAP",
+                "QUIC",
+                "TDS",
+                "NETMEETING",
+                "NFS",
+                "NTP",
+                "SIP",
+                "SNMP",
+                "SMB",
+                "SMTP",
+                "SSH",
+                "SYSLOG",
+                "TELNET",
+                "TRACEROUTE",
+                "POP3",
+                "PPTP",
+                "RADIUS",
+                "REAL_MEDIA",
+                "RTSP",
+                "VNC",
+                "WHOIS",
+                "KERBEROS_SEC",
+                "TACACS",
+                "SNMPTRAP",
+                "NMAP",
+                "RSYNC",
+                "L2TP",
+                "HTTP_PROXY",
+                "PC_ANYWHERE",
+                "MSN",
+                "ECHO",
+                "AIM",
+                "IDENT",
+                "YMSG",
+                "SCCP",
+                "MGCP_UA",
+                "MGCP_CA",
+                "VDO_LIVE",
+                "OPENVPN",
+                "TFTP",
+                "FTPS_IMPLICIT",
+                "ZSCALER_PROXY_NW_SERVICES",
+                "GRE_PROTOCOL",
+                "ESP_PROTOCOL",
+                "DHCP",
             ],
         ),
         state=dict(type="str", choices=["present", "absent"], default="present"),

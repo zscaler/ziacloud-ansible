@@ -29,8 +29,8 @@ __metaclass__ = type
 DOCUMENTATION = r"""
 ---
 module: zia_dlp_web_rules
-short_description: "Adds a new DLP policy rule."
-description: "Adds a new DLP policy rule."
+short_description: "Adds a new DLP policy rule"
+description: "Adds a new DLP policy rule"
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
@@ -215,10 +215,12 @@ options:
     description: "Indicates whether a Zscaler Incident Receiver is associated to the DLP policy rule."
     required: false
     type: bool
+    default: true
   severity:
     description: Indicates the severity selected for the DLP rule violation.
     required: false
     type: str
+    default: RULE_SEVERITY_INFO
     choices:
         - RULE_SEVERITY_HIGH
         - RULE_SEVERITY_MEDIUM
@@ -234,14 +236,6 @@ options:
         - MEDIUM
         - HIGH
         - CRITICAL
-  sub_rules:
-    description:
-      - The list of exception rules added to a parent rule
-      - All attributes within the WebDlpRule model are applicable to the sub-rules. Values for each rule are specified by using the WebDlpRule object.
-      - Exception rules can be configured only when the inline DLP rule evaluation type is set to evaluate all DLP rules in the DLP Advanced Settings.
-    type: list
-    elements: str
-    required: false
   parent_rule:
     description:
       - The unique identifier of the parent rule under which an exception rule is added.
@@ -336,7 +330,7 @@ def normalize_dlp_rule(rule):
 def get_external_dlp_engine_id(client):
     """Get the ID of the EXTERNAL DLP engine using list_dlp_engines_lite."""
     # Search specifically for EXTERNAL engine
-    engines, _, error = client.dlp_engine.list_dlp_engines_lite(
+    engines, _unused, error = client.dlp_engine.list_dlp_engines_lite(
         query_params={"search": "EXTERNAL"}
     )
     if error:
@@ -344,14 +338,16 @@ def get_external_dlp_engine_id(client):
 
     if not engines:
         # Fallback to full list if search didn't work
-        engines, _, error = client.dlp_engine.list_dlp_engines_lite()
+        engines, _unused, error = client.dlp_engine.list_dlp_engines_lite()
         if error:
             raise Exception(f"Failed to list DLP engines: {to_native(error)}")
 
     # Find EXTERNAL engine by predefined_engine_name
     for engine in engines:
-        if hasattr(engine, 'predefined_engine_name') and \
-           str(engine.predefined_engine_name).upper() == "EXTERNAL":
+        if (
+            hasattr(engine, "predefined_engine_name")
+            and str(engine.predefined_engine_name).upper() == "EXTERNAL"
+        ):
             return engine.id
 
     raise Exception(
@@ -364,17 +360,44 @@ def core(module):
     client = ZIAClientHelper(module)
 
     params = [
-        "id", "name", "description", "order", "protocols", "rank", "locations",
-        "location_groups", "groups", "departments", "users", "url_categories",
-        "dlp_engines", "file_types", "cloud_applications", "min_size", "action",
-        "enabled", "time_windows", "auditor", "external_auditor_email",
-        "notification_template", "match_only", "icap_server",
-        "without_content_inspection", "labels", "excluded_groups",
-        "excluded_departments", "excluded_users", "zscaler_incident_receiver",
-        "dlp_download_scan_enabled", "zcc_notifications_enabled",
-        "user_risk_score_levels", "severity", "parent_rule",
-        "workload_groups", "include_domain_profiles", "exclude_domain_profiles"
-        # "sub_rules"
+        "id",
+        "name",
+        "description",
+        "order",
+        "protocols",
+        "rank",
+        "locations",
+        "location_groups",
+        "groups",
+        "departments",
+        "users",
+        "url_categories",
+        "dlp_engines",
+        "file_types",
+        "cloud_applications",
+        "min_size",
+        "action",
+        "enabled",
+        "time_windows",
+        "auditor",
+        "external_auditor_email",
+        "notification_template",
+        "match_only",
+        "icap_server",
+        "without_content_inspection",
+        "labels",
+        "excluded_groups",
+        "excluded_departments",
+        "excluded_users",
+        "zscaler_incident_receiver",
+        "dlp_download_scan_enabled",
+        "zcc_notifications_enabled",
+        "user_risk_score_levels",
+        "severity",
+        "parent_rule",
+        "workload_groups",
+        "include_domain_profiles",
+        "exclude_domain_profiles",
     ]
 
     rule = {param: module.params.get(param) for param in params}
@@ -395,7 +418,7 @@ def core(module):
         except Exception as e:
             module.fail_json(
                 msg=f"Error configuring for without_content_inspection: {to_native(e)}",
-                exception=format_exc()
+                exception=format_exc(),
             )
     # When without_content_inspection is false, both fields are optional (requirement 3)
     # No validation needed here as per requirements
@@ -405,13 +428,15 @@ def core(module):
 
     existing_rule = None
     if rule_id is not None:
-        result, _, error = client.dlp_web_rules.get_rule(rule_id=rule_id)
+        result, _unused, error = client.dlp_web_rules.get_rule(rule_id=rule_id)
         if error:
-            module.fail_json(msg=f"Error fetching rule with id {rule_id}: {to_native(error)}")
+            module.fail_json(
+                msg=f"Error fetching rule with id {rule_id}: {to_native(error)}"
+            )
         if result:
             existing_rule = result.as_dict()
     else:
-        result, _, error = client.dlp_web_rules.list_rules()
+        result, _unused, error = client.dlp_web_rules.list_rules()
         if error:
             module.fail_json(msg=f"Error listing rules: {to_native(error)}")
         if result:
@@ -445,8 +470,12 @@ def core(module):
                 # Set defaults for certain attributes
                 elif attr == "min_size" and value is None:
                     processed[attr] = 0
-                elif attr in ["match_only", "dlp_download_scan_enabled",
-                            "zcc_notifications_enabled", "zscaler_incident_receiver"]:
+                elif attr in [
+                    "match_only",
+                    "dlp_download_scan_enabled",
+                    "zcc_notifications_enabled",
+                    "zscaler_incident_receiver",
+                ]:
                     if value is None:
                         processed[attr] = False
 
@@ -457,12 +486,23 @@ def core(module):
 
     # List of attributes where empty list and None should be treated as equivalent
     list_attributes = [
-        "locations", "location_groups", "groups", "departments", "users",
-        "url_categories", "dlp_engines", "file_types", "cloud_applications",
-        "time_windows", "labels", "excluded_groups", "excluded_departments",
-        "excluded_users", "workload_groups", "include_domain_profiles",
+        "locations",
+        "location_groups",
+        "groups",
+        "departments",
+        "users",
+        "url_categories",
+        "dlp_engines",
+        "file_types",
+        "cloud_applications",
+        "time_windows",
+        "labels",
+        "excluded_groups",
+        "excluded_departments",
+        "excluded_users",
+        "workload_groups",
+        "include_domain_profiles",
         "exclude_domain_profiles",
-        # "sub_rules"
     ]
 
     differences_detected = False
@@ -489,7 +529,9 @@ def core(module):
 
         # Sort lists of IDs for comparison
         if isinstance(desired_value, list) and isinstance(current_value, list):
-            if all(isinstance(x, int) for x in desired_value) and all(isinstance(x, int) for x in current_value):
+            if all(isinstance(x, int) for x in desired_value) and all(
+                isinstance(x, int) for x in current_value
+            ):
                 desired_value = sorted(desired_value)
                 current_value = sorted(current_value)
 
@@ -512,10 +554,85 @@ def core(module):
             if differences_detected:
                 rule_id_to_update = existing_rule.get("id")
                 if not rule_id_to_update:
-                    module.fail_json(msg="Cannot update rule: ID is missing from the existing resource.")
+                    module.fail_json(
+                        msg="Cannot update rule: ID is missing from the existing resource."
+                    )
 
-                update_data = deleteNone({
-                    "rule_id": existing_rule.get("id"),
+                update_data = deleteNone(
+                    {
+                        "rule_id": existing_rule.get("id"),
+                        "name": desired_rule.get("name"),
+                        "description": desired_rule.get("description"),
+                        "order": desired_rule.get("order"),
+                        "rank": desired_rule.get("rank"),
+                        "action": desired_rule.get("action"),
+                        "enabled": desired_rule.get("enabled"),
+                        "protocols": desired_rule.get("protocols"),
+                        "locations": desired_rule.get("locations"),
+                        "location_groups": desired_rule.get("location_groups"),
+                        "groups": desired_rule.get("groups"),
+                        "departments": desired_rule.get("departments"),
+                        "users": desired_rule.get("users"),
+                        "url_categories": desired_rule.get("url_categories"),
+                        "dlp_engines": desired_rule.get("dlp_engines"),
+                        "file_types": desired_rule.get("file_types"),
+                        "cloud_applications": desired_rule.get("cloud_applications"),
+                        "min_size": desired_rule.get("min_size"),
+                        "time_windows": desired_rule.get("time_windows"),
+                        "auditor": desired_rule.get("auditor"),
+                        "external_auditor_email": desired_rule.get(
+                            "external_auditor_email"
+                        ),
+                        "notification_template": desired_rule.get(
+                            "notification_template"
+                        ),
+                        "match_only": desired_rule.get("match_only"),
+                        "icap_server": desired_rule.get("icap_server"),
+                        "without_content_inspection": desired_rule.get(
+                            "without_content_inspection"
+                        ),
+                        "labels": desired_rule.get("labels"),
+                        "excluded_groups": desired_rule.get("excluded_groups"),
+                        "excluded_departments": desired_rule.get(
+                            "excluded_departments"
+                        ),
+                        "excluded_users": desired_rule.get("excluded_users"),
+                        "zscaler_incident_receiver": desired_rule.get(
+                            "zscaler_incident_receiver"
+                        ),
+                        "dlp_download_scan_enabled": desired_rule.get(
+                            "dlp_download_scan_enabled"
+                        ),
+                        "zcc_notifications_enabled": desired_rule.get(
+                            "zcc_notifications_enabled"
+                        ),
+                        "user_risk_score_levels": desired_rule.get(
+                            "user_risk_score_levels"
+                        ),
+                        "severity": desired_rule.get("severity"),
+                        "parent_rule": desired_rule.get("parent_rule"),
+                        "workload_groups": desired_rule.get("workload_groups"),
+                        "include_domain_profiles": desired_rule.get(
+                            "include_domain_profiles"
+                        ),
+                        "exclude_domain_profiles": desired_rule.get(
+                            "exclude_domain_profiles"
+                        ),
+                    }
+                )
+
+                module.warn("Payload Update for SDK: {}".format(update_data))
+                updated_rule, _unused, error = client.dlp_web_rules.update_rule(
+                    **update_data
+                )
+                if error:
+                    module.fail_json(msg=f"Error updating rule: {to_native(error)}")
+                module.exit_json(changed=True, data=updated_rule.as_dict())
+            else:
+                module.exit_json(changed=False, data=existing_rule)
+        else:
+            create_data = deleteNone(
+                {
                     "name": desired_rule.get("name"),
                     "description": desired_rule.get("description"),
                     "order": desired_rule.get("order"),
@@ -535,77 +652,44 @@ def core(module):
                     "min_size": desired_rule.get("min_size"),
                     "time_windows": desired_rule.get("time_windows"),
                     "auditor": desired_rule.get("auditor"),
-                    "external_auditor_email": desired_rule.get("external_auditor_email"),
+                    "external_auditor_email": desired_rule.get(
+                        "external_auditor_email"
+                    ),
                     "notification_template": desired_rule.get("notification_template"),
                     "match_only": desired_rule.get("match_only"),
                     "icap_server": desired_rule.get("icap_server"),
-                    "without_content_inspection": desired_rule.get("without_content_inspection"),
+                    "without_content_inspection": desired_rule.get(
+                        "without_content_inspection"
+                    ),
                     "labels": desired_rule.get("labels"),
                     "excluded_groups": desired_rule.get("excluded_groups"),
                     "excluded_departments": desired_rule.get("excluded_departments"),
                     "excluded_users": desired_rule.get("excluded_users"),
-                    "zscaler_incident_receiver": desired_rule.get("zscaler_incident_receiver"),
-                    "dlp_download_scan_enabled": desired_rule.get("dlp_download_scan_enabled"),
-                    "zcc_notifications_enabled": desired_rule.get("zcc_notifications_enabled"),
-                    "user_risk_score_levels": desired_rule.get("user_risk_score_levels"),
+                    "zscaler_incident_receiver": desired_rule.get(
+                        "zscaler_incident_receiver"
+                    ),
+                    "dlp_download_scan_enabled": desired_rule.get(
+                        "dlp_download_scan_enabled"
+                    ),
+                    "zcc_notifications_enabled": desired_rule.get(
+                        "zcc_notifications_enabled"
+                    ),
+                    "user_risk_score_levels": desired_rule.get(
+                        "user_risk_score_levels"
+                    ),
                     "severity": desired_rule.get("severity"),
                     "parent_rule": desired_rule.get("parent_rule"),
-                    # "sub_rules": desired_rule.get("sub_rules"),
                     "workload_groups": desired_rule.get("workload_groups"),
-                    "include_domain_profiles": desired_rule.get("include_domain_profiles"),
-                    "exclude_domain_profiles": desired_rule.get("exclude_domain_profiles"),
-                })
-
-                module.warn("Payload Update for SDK: {}".format(update_data))
-                updated_rule, _, error = client.dlp_web_rules.update_rule(**update_data)
-                if error:
-                    module.fail_json(msg=f"Error updating rule: {to_native(error)}")
-                module.exit_json(changed=True, data=updated_rule.as_dict())
-            else:
-                module.exit_json(changed=False, data=existing_rule)
-        else:
-            create_data = deleteNone({
-                "name": desired_rule.get("name"),
-                "description": desired_rule.get("description"),
-                "order": desired_rule.get("order"),
-                "rank": desired_rule.get("rank"),
-                "action": desired_rule.get("action"),
-                "enabled": desired_rule.get("enabled"),
-                "protocols": desired_rule.get("protocols"),
-                "locations": desired_rule.get("locations"),
-                "location_groups": desired_rule.get("location_groups"),
-                "groups": desired_rule.get("groups"),
-                "departments": desired_rule.get("departments"),
-                "users": desired_rule.get("users"),
-                "url_categories": desired_rule.get("url_categories"),
-                "dlp_engines": desired_rule.get("dlp_engines"),
-                "file_types": desired_rule.get("file_types"),
-                "cloud_applications": desired_rule.get("cloud_applications"),
-                "min_size": desired_rule.get("min_size"),
-                "time_windows": desired_rule.get("time_windows"),
-                "auditor": desired_rule.get("auditor"),
-                "external_auditor_email": desired_rule.get("external_auditor_email"),
-                "notification_template": desired_rule.get("notification_template"),
-                "match_only": desired_rule.get("match_only"),
-                "icap_server": desired_rule.get("icap_server"),
-                "without_content_inspection": desired_rule.get("without_content_inspection"),
-                "labels": desired_rule.get("labels"),
-                "excluded_groups": desired_rule.get("excluded_groups"),
-                "excluded_departments": desired_rule.get("excluded_departments"),
-                "excluded_users": desired_rule.get("excluded_users"),
-                "zscaler_incident_receiver": desired_rule.get("zscaler_incident_receiver"),
-                "dlp_download_scan_enabled": desired_rule.get("dlp_download_scan_enabled"),
-                "zcc_notifications_enabled": desired_rule.get("zcc_notifications_enabled"),
-                "user_risk_score_levels": desired_rule.get("user_risk_score_levels"),
-                "severity": desired_rule.get("severity"),
-                "parent_rule": desired_rule.get("parent_rule"),
-                # "sub_rules": desired_rule.get("sub_rules"),
-                "workload_groups": desired_rule.get("workload_groups"),
-                "include_domain_profiles": desired_rule.get("include_domain_profiles"),
-                "exclude_domain_profiles": desired_rule.get("exclude_domain_profiles"),
-            })
+                    "include_domain_profiles": desired_rule.get(
+                        "include_domain_profiles"
+                    ),
+                    "exclude_domain_profiles": desired_rule.get(
+                        "exclude_domain_profiles"
+                    ),
+                }
+            )
             module.warn("Payload Update for SDK: {}".format(create_data))
-            new_rule, _, error = client.dlp_web_rules.add_rule(**create_data)
+            new_rule, _unused, error = client.dlp_web_rules.add_rule(**create_data)
             if error:
                 module.fail_json(msg=f"Error creating rule: {to_native(error)}")
             module.exit_json(changed=True, data=new_rule.as_dict())
@@ -614,9 +698,11 @@ def core(module):
         if existing_rule:
             rule_id_to_delete = existing_rule.get("id")
             if not rule_id_to_delete:
-                module.fail_json(msg="Cannot delete rule: ID is missing from the existing resource.")
+                module.fail_json(
+                    msg="Cannot delete rule: ID is missing from the existing resource."
+                )
 
-            _, _, error = client.dlp_web_rules.delete_rule(
+            _unused, _unused, error = client.dlp_web_rules.delete_rule(
                 rule_id=rule_id_to_delete
             )
             if error:
@@ -667,7 +753,6 @@ def main():
         ),
         url_categories=dict(type="list", elements="int", required=False),
         cloud_applications=dict(type="list", elements="str", required=False),
-        # sub_rules=dict(type="list", elements="str", required=False),
         external_auditor_email=dict(type="str", required=False),
         min_size=dict(type="int", required=False),
         parent_rule=dict(type="int", required=False),

@@ -88,7 +88,9 @@ RETURN = r"""
 from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
 
 import re
 
@@ -122,9 +124,11 @@ def core(module):
     client = ZIAClientHelper(module)
     sandbox_api = client.sandbox
 
-    current_data, _, error = sandbox_api.get_behavioral_analysis()
+    current_data, _unused, error = sandbox_api.get_behavioral_analysis()
     if error or not current_data:
-        module.fail_json(msg=f"Error retrieving behavioral analysis config: {to_native(error)}")
+        module.fail_json(
+            msg=f"Error retrieving behavioral analysis config: {to_native(error)}"
+        )
 
     current_hashes = current_data.get("fileHashesToBeBlocked", [])
     desired_set = set(file_hashes_to_be_blocked)
@@ -137,22 +141,30 @@ def core(module):
     if module.check_mode:
         module.exit_json(
             changed=change_needed,
-            msg="MD5 hash list will be updated." if change_needed else "No change needed."
+            msg=(
+                "MD5 hash list will be updated."
+                if change_needed
+                else "No change needed."
+            ),
         )
 
     if change_needed:
         if state == "present":
-            _, _, error = sandbox_api.add_hash_to_custom_list(list(desired_set))
+            _unused, _unused, error = sandbox_api.add_hash_to_custom_list(
+                list(desired_set)
+            )
             action_msg = "MD5 hash list has been updated."
         elif state == "absent":
-            _, _, error = sandbox_api.add_hash_to_custom_list([])  # clear list
+            _unused, _unused, error = sandbox_api.add_hash_to_custom_list(
+                []
+            )  # clear list
             action_msg = "MD5 hash list has been cleared."
 
         if error:
             module.fail_json(msg=f"Error updating MD5 hash list: {to_native(error)}")
 
         # ✅ Fetch updated count
-        count_data, _, error = sandbox_api.get_file_hash_count()
+        count_data, _unused, error = sandbox_api.get_file_hash_count()
         if error or not count_data:
             module.fail_json(msg=f"Error retrieving hash count: {to_native(error)}")
 
@@ -164,7 +176,7 @@ def core(module):
 
     else:
         # ✅ Fetch current count again
-        count_data, _, error = sandbox_api.get_file_hash_count()
+        count_data, _unused, error = sandbox_api.get_file_hash_count()
         if error or not count_data:
             module.fail_json(msg=f"Error retrieving hash count: {to_native(error)}")
 

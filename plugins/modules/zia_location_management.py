@@ -368,6 +368,7 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 )
 import json
 
+
 def normalize_location(location):
     """
     Normalize location data by removing computed values.
@@ -396,7 +397,6 @@ def normalize_location(location):
         "match_in_child",
         "non_editable",
         "static_location_groups",
-
     ]
     for attr in computed_values:
         normalized.pop(attr, None)
@@ -413,28 +413,60 @@ def normalize_vpn_credentials(vpn_creds):
 
     return [
         {
-            'id': cred['id'],
-            'type': cred['type'].upper()  # Normalize to uppercase for consistent comparison
+            "id": cred["id"],
+            "type": cred[
+                "type"
+            ].upper(),  # Normalize to uppercase for consistent comparison
         }
         for cred in vpn_creds
-        if cred.get('id') and cred.get('type')
+        if cred.get("id") and cred.get("type")
     ]
+
 
 def core(module):
     state = module.params.get("state", None)
     client = ZIAClientHelper(module)
 
     params = [
-        "id", "name", "parent_id", "up_bandwidth", "dn_bandwidth", "country",
-        "city", "tz", "ip_addresses", "ports", "auth_required", "ssl_scan_enabled",
-        "zapp_ssl_scan_enabled", "xff_forward_enabled", "surrogate_ip",
-        "idle_time_in_minutes", "display_time_unit", "surrogate_ip_enforced_for_known_browsers",
-        "surrogate_refresh_time_in_minutes", "surrogate_refresh_time_unit",
-        "ofw_enabled", "ips_control", "aup_enabled", "caution_enabled",
-        "aup_block_internet_until_accepted", "aup_force_ssl_inspection",
-        "aup_timeout_in_days", "profile", "description", "geo_override",
-        "latitude", "longitude", "other_sub_location", "other6_sub_location", "ipv6_enabled",
-        "ipv6_dns64_prefix", "iot_discovery_enabled", "iot_enforce_policy_set", "vpn_credentials"
+        "id",
+        "name",
+        "parent_id",
+        "up_bandwidth",
+        "dn_bandwidth",
+        "country",
+        "city",
+        "tz",
+        "ip_addresses",
+        "ports",
+        "auth_required",
+        "ssl_scan_enabled",
+        "zapp_ssl_scan_enabled",
+        "xff_forward_enabled",
+        "surrogate_ip",
+        "idle_time_in_minutes",
+        "display_time_unit",
+        "surrogate_ip_enforced_for_known_browsers",
+        "surrogate_refresh_time_in_minutes",
+        "surrogate_refresh_time_unit",
+        "ofw_enabled",
+        "ips_control",
+        "aup_enabled",
+        "caution_enabled",
+        "aup_block_internet_until_accepted",
+        "aup_force_ssl_inspection",
+        "aup_timeout_in_days",
+        "profile",
+        "description",
+        "geo_override",
+        "latitude",
+        "longitude",
+        "other_sub_location",
+        "other6_sub_location",
+        "ipv6_enabled",
+        "ipv6_dns64_prefix",
+        "iot_discovery_enabled",
+        "iot_enforce_policy_set",
+        "vpn_credentials",
     ]
 
     location_mgmt = {param: module.params.get(param) for param in params}
@@ -451,13 +483,15 @@ def core(module):
 
     existing_location = None
     if location_id is not None:
-        result, _, error = client.locations.get_location(location_id=location_id)
+        result, _unused, error = client.locations.get_location(location_id=location_id)
         if error:
-            module.fail_json(msg=f"Error fetching location with id {location_id}: {to_native(error)}")
+            module.fail_json(
+                msg=f"Error fetching location with id {location_id}: {to_native(error)}"
+            )
         if result:
             existing_location = result.as_dict()
     else:
-        result, _, error = client.locations.list_locations()
+        result, _unused, error = client.locations.list_locations()
         if error:
             module.fail_json(msg=f"Error listing locations: {to_native(error)}")
         if result:
@@ -476,7 +510,6 @@ def core(module):
     differences_detected = False
     differences_summary = {}
 
-
     for key in desired_location:
         desired_value = desired_location[key]
         current_value = current_location.get(key)
@@ -484,8 +517,12 @@ def core(module):
         # If it's vpn_credentials, compare the normalized lists only
         if key == "vpn_credentials":
             # Simplify comparison - only check id and type match
-            current_ids_types = {(c['id'], c['type'].upper()) for c in (current_value or [])}
-            desired_ids_types = {(c['id'], c['type'].upper()) for c in (desired_value or [])}
+            current_ids_types = {
+                (c["id"], c["type"].upper()) for c in (current_value or [])
+            }
+            desired_ids_types = {
+                (c["id"], c["type"].upper()) for c in (desired_value or [])
+            }
 
             if current_ids_types != desired_ids_types:
                 differences_detected = True
@@ -521,55 +558,86 @@ def core(module):
     if state == "present":
         if existing_location:
             if differences_detected:
-                update_location = deleteNone({
-                    "location_id": existing_location.get("id"),
-                    "name": desired_location.get("name"),
-                    "description": desired_location.get("description"),
-                    "parent_id": desired_location.get("parent_id"),
-                    "up_bandwidth": desired_location.get("up_bandwidth"),
-                    "dn_bandwidth": desired_location.get("dn_bandwidth"),
-                    "country": desired_location.get("country"),
-                    "city": desired_location.get("city"),
-                    "tz": desired_location.get("tz"),
-                    "ip_addresses": desired_location.get("ip_addresses"),
-                    "auth_required": desired_location.get("auth_required"),
-                    "ssl_scan_enabled": desired_location.get("ssl_scan_enabled"),
-                    "idle_time_in_minutes": desired_location.get("idle_time_in_minutes"),
-                    "display_time_unit": desired_location.get("display_time_unit"),
-                    "surrogate_ip": desired_location.get("surrogate_ip"),
-                    "surrogate_ip_enforced_for_known_browsers": desired_location.get("surrogate_ip_enforced_for_known_browsers"),
-                    "surrogate_refresh_time_in_minutes": desired_location.get("surrogate_refresh_time_in_minutes"),
-                    "surrogate_refresh_time_unit": desired_location.get("surrogate_refresh_time_unit"),
-                    "ofw_enabled": desired_location.get("ofw_enabled"),
-                    "ips_control": desired_location.get("ips_control"),
-                    "aup_enabled": desired_location.get("aup_enabled"),
-                    "xff_forward_enabled": desired_location.get("xff_forward_enabled"),
-                    "caution_enabled": desired_location.get("caution_enabled"),
-                    "aup_block_internet_until_accepted": desired_location.get("aup_block_internet_until_accepted"),
-                    "aup_force_ssl_inspection": desired_location.get("aup_force_ssl_inspection"),
-                    "aup_timeout_in_days": desired_location.get("aup_timeout_in_days"),
-                    "profile": desired_location.get("profile"),
-                    "geo_override": desired_location.get("geo_override"),
-                    "latitude": desired_location.get("latitude"),
-                    "longitude": desired_location.get("longitude"),
-                    "other_sub_location": desired_location.get("other_sub_location"),
-                    "other6_sub_location": desired_location.get("other6_sub_location"),
-                    "ipv6_enabled": desired_location.get("ipv6_enabled"),
-                    "ipv6_dns64_prefix": desired_location.get("ipv6_dns64_prefix"),
-                    "iot_discovery_enabled": desired_location.get("iot_discovery_enabled"),
-                    "iot_enforce_policy_set": desired_location.get("iot_enforce_policy_set"),
-                    "vpn_credentials": desired_location.get("vpn_credentials"),
-                })
+                update_location = deleteNone(
+                    {
+                        "location_id": existing_location.get("id"),
+                        "name": desired_location.get("name"),
+                        "description": desired_location.get("description"),
+                        "parent_id": desired_location.get("parent_id"),
+                        "up_bandwidth": desired_location.get("up_bandwidth"),
+                        "dn_bandwidth": desired_location.get("dn_bandwidth"),
+                        "country": desired_location.get("country"),
+                        "city": desired_location.get("city"),
+                        "tz": desired_location.get("tz"),
+                        "ip_addresses": desired_location.get("ip_addresses"),
+                        "auth_required": desired_location.get("auth_required"),
+                        "ssl_scan_enabled": desired_location.get("ssl_scan_enabled"),
+                        "idle_time_in_minutes": desired_location.get(
+                            "idle_time_in_minutes"
+                        ),
+                        "display_time_unit": desired_location.get("display_time_unit"),
+                        "surrogate_ip": desired_location.get("surrogate_ip"),
+                        "surrogate_ip_enforced_for_known_browsers": desired_location.get(
+                            "surrogate_ip_enforced_for_known_browsers"
+                        ),
+                        "surrogate_refresh_time_in_minutes": desired_location.get(
+                            "surrogate_refresh_time_in_minutes"
+                        ),
+                        "surrogate_refresh_time_unit": desired_location.get(
+                            "surrogate_refresh_time_unit"
+                        ),
+                        "ofw_enabled": desired_location.get("ofw_enabled"),
+                        "ips_control": desired_location.get("ips_control"),
+                        "aup_enabled": desired_location.get("aup_enabled"),
+                        "xff_forward_enabled": desired_location.get(
+                            "xff_forward_enabled"
+                        ),
+                        "caution_enabled": desired_location.get("caution_enabled"),
+                        "aup_block_internet_until_accepted": desired_location.get(
+                            "aup_block_internet_until_accepted"
+                        ),
+                        "aup_force_ssl_inspection": desired_location.get(
+                            "aup_force_ssl_inspection"
+                        ),
+                        "aup_timeout_in_days": desired_location.get(
+                            "aup_timeout_in_days"
+                        ),
+                        "profile": desired_location.get("profile"),
+                        "geo_override": desired_location.get("geo_override"),
+                        "latitude": desired_location.get("latitude"),
+                        "longitude": desired_location.get("longitude"),
+                        "other_sub_location": desired_location.get(
+                            "other_sub_location"
+                        ),
+                        "other6_sub_location": desired_location.get(
+                            "other6_sub_location"
+                        ),
+                        "ipv6_enabled": desired_location.get("ipv6_enabled"),
+                        "ipv6_dns64_prefix": desired_location.get("ipv6_dns64_prefix"),
+                        "iot_discovery_enabled": desired_location.get(
+                            "iot_discovery_enabled"
+                        ),
+                        "iot_enforce_policy_set": desired_location.get(
+                            "iot_enforce_policy_set"
+                        ),
+                        "vpn_credentials": desired_location.get("vpn_credentials"),
+                    }
+                )
                 module.warn("Payload Update for SDK: {}".format(update_location))
-                module.warn("🚨 FINAL PAYLOAD: " + json.dumps(update_location, indent=2))
-                updated_location, _, error = client.locations.update_location(**update_location)
+                module.warn(
+                    "🚨 FINAL PAYLOAD: " + json.dumps(update_location, indent=2)
+                )
+                updated_location, _unused, error = client.locations.update_location(
+                    **update_location
+                )
                 if error:
                     module.fail_json(msg=f"Error updating location: {to_native(error)}")
                 module.exit_json(changed=True, data=updated_location.as_dict())
             else:
                 module.exit_json(changed=False, data=existing_location)
         else:
-            create_location = deleteNone({
+            create_location = deleteNone(
+                {
                     "name": desired_location.get("name"),
                     "description": desired_location.get("description"),
                     "parent_id": desired_location.get("parent_id"),
@@ -581,19 +649,31 @@ def core(module):
                     "ip_addresses": desired_location.get("ip_addresses"),
                     "auth_required": desired_location.get("auth_required"),
                     "ssl_scan_enabled": desired_location.get("ssl_scan_enabled"),
-                    "idle_time_in_minutes": desired_location.get("idle_time_in_minutes"),
+                    "idle_time_in_minutes": desired_location.get(
+                        "idle_time_in_minutes"
+                    ),
                     "display_time_unit": desired_location.get("display_time_unit"),
                     "surrogate_ip": desired_location.get("surrogate_ip"),
-                    "surrogate_ip_enforced_for_known_browsers": desired_location.get("surrogate_ip_enforced_for_known_browsers"),
-                    "surrogate_refresh_time_in_minutes": desired_location.get("surrogate_refresh_time_in_minutes"),
-                    "surrogate_refresh_time_unit": desired_location.get("surrogate_refresh_time_unit"),
+                    "surrogate_ip_enforced_for_known_browsers": desired_location.get(
+                        "surrogate_ip_enforced_for_known_browsers"
+                    ),
+                    "surrogate_refresh_time_in_minutes": desired_location.get(
+                        "surrogate_refresh_time_in_minutes"
+                    ),
+                    "surrogate_refresh_time_unit": desired_location.get(
+                        "surrogate_refresh_time_unit"
+                    ),
                     "ofw_enabled": desired_location.get("ofw_enabled"),
                     "ips_control": desired_location.get("ips_control"),
                     "aup_enabled": desired_location.get("aup_enabled"),
                     "xff_forward_enabled": desired_location.get("xff_forward_enabled"),
                     "caution_enabled": desired_location.get("caution_enabled"),
-                    "aup_block_internet_until_accepted": desired_location.get("aup_block_internet_until_accepted"),
-                    "aup_force_ssl_inspection": desired_location.get("aup_force_ssl_inspection"),
+                    "aup_block_internet_until_accepted": desired_location.get(
+                        "aup_block_internet_until_accepted"
+                    ),
+                    "aup_force_ssl_inspection": desired_location.get(
+                        "aup_force_ssl_inspection"
+                    ),
                     "aup_timeout_in_days": desired_location.get("aup_timeout_in_days"),
                     "profile": desired_location.get("profile"),
                     "geo_override": desired_location.get("geo_override"),
@@ -603,19 +683,28 @@ def core(module):
                     "other6_sub_location": desired_location.get("other6_sub_location"),
                     "ipv6_enabled": desired_location.get("ipv6_enabled"),
                     "ipv6_dns64_prefix": desired_location.get("ipv6_dns64_prefix"),
-                    "iot_discovery_enabled": desired_location.get("iot_discovery_enabled"),
-                    "iot_enforce_policy_set": desired_location.get("iot_enforce_policy_set"),
+                    "iot_discovery_enabled": desired_location.get(
+                        "iot_discovery_enabled"
+                    ),
+                    "iot_enforce_policy_set": desired_location.get(
+                        "iot_enforce_policy_set"
+                    ),
                     "vpn_credentials": desired_location.get("vpn_credentials"),
-            })
+                }
+            )
             module.warn("Payload Update for SDK: {}".format(create_location))
-            new_location, _, error = client.locations.add_location(**create_location)
+            new_location, _unused, error = client.locations.add_location(
+                **create_location
+            )
             if error:
                 module.fail_json(msg=f"Error creating location: {to_native(error)}")
             module.exit_json(changed=True, data=new_location.as_dict())
 
     elif state == "absent":
         if existing_location:
-            _, _, error = client.locations.delete_location(location_id=existing_location.get("id"))
+            _unused, _unused, error = client.locations.delete_location(
+                location_id=existing_location.get("id")
+            )
             if error:
                 module.fail_json(msg=f"Error deleting location: {to_native(error)}")
             module.exit_json(changed=True, data=existing_location)
@@ -623,6 +712,7 @@ def core(module):
             module.exit_json(changed=False, data={})
 
     module.exit_json(changed=False, data={})
+
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()

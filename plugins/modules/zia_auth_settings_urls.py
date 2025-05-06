@@ -28,7 +28,7 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 ---
-module: zia_authentication_settings
+module: zia_auth_settings_urls
 short_description: Adds or removes URLs authentication exempt list.
 description: Adds or removes URLs from the cookie authentication exempt list.
 author:
@@ -49,12 +49,12 @@ options:
         - Domains or URLs which are exempted from SSL Inspection.
     type: list
     elements: str
-    required: true
+    required: false
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 - name: Create/Update/Delete URLs
-  zscaler.ziacloud.zia_authentication_settings:
+  zscaler.ziacloud.zia_auth_settings_urls:
     urls:
       - .okta.com
       - .oktacdn.com
@@ -69,8 +69,12 @@ RETURN = r"""
 from traceback import format_exc
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import normalize_list
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
+)
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
+    normalize_list,
+)
 
 
 def core(module):
@@ -79,7 +83,7 @@ def core(module):
     state = module.params.get("state")
     bypass_urls = module.params.get("urls") or []
 
-    current_urls, _, error = client.authentication_settings.get_exempted_urls()
+    current_urls, _unused, error = client.authentication_settings.get_exempted_urls()
     if error:
         module.fail_json(msg=f"Failed to get exempted URLs: {to_native(error)}")
 
@@ -96,9 +100,13 @@ def core(module):
         if urls_to_add:
             changed = True
             if not module.check_mode:
-                updated, _, error = client.authentication_settings.add_urls_to_exempt_list(urls_to_add)
+                updated, _unused, error = (
+                    client.authentication_settings.add_urls_to_exempt_list(urls_to_add)
+                )
                 if error:
-                    module.fail_json(msg=f"Failed to add URLs to exempt list: {to_native(error)}")
+                    module.fail_json(
+                        msg=f"Failed to add URLs to exempt list: {to_native(error)}"
+                    )
                 module.exit_json(changed=True, exempted_urls=updated)
         module.exit_json(changed=changed, exempted_urls=current_normalized)
 
@@ -107,9 +115,15 @@ def core(module):
         if urls_to_remove:
             changed = True
             if not module.check_mode:
-                updated, _, error = client.authentication_settings.delete_urls_from_exempt_list(urls_to_remove)
+                updated, _unused, error = (
+                    client.authentication_settings.delete_urls_from_exempt_list(
+                        urls_to_remove
+                    )
+                )
                 if error:
-                    module.fail_json(msg=f"Failed to remove URLs from exempt list: {to_native(error)}")
+                    module.fail_json(
+                        msg=f"Failed to remove URLs from exempt list: {to_native(error)}"
+                    )
                 module.exit_json(changed=True, exempted_urls=updated)
         module.exit_json(changed=changed, exempted_urls=current_normalized)
 
@@ -119,7 +133,7 @@ def core(module):
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
-        urls=dict(type="list", elements="str", required=True),
+        urls=dict(type="list", elements="str", required=False),
         state=dict(type="str", choices=["present", "absent"], default="present"),
     )
 

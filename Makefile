@@ -36,6 +36,8 @@ help:
 	@echo "$(COLOR_OK)  test:integration:zia          Execute the full integration test suite$(COLOR_NONE)"
 	@echo "$(COLOR_OK)  old-sanity          		Sanity tests for Ansible v2.9 and Ansible v2.10$(COLOR_NONE)"
 	@echo "$(COLOR_OK)  new-sanity          	        Sanity tests for Ansible v2.11 and above$(COLOR_NONE)"
+	@echo "$(COLOR_OK)  new-sanity-docker          	Sanity tests for Ansible v2.11 and above via Docker$(COLOR_NONE)"
+
 
 # Make sure we have ansible_collections/zscaler/ziacloud_enhanced
 # as a prefix. This is ugly as heck, but it works. I suggest all future
@@ -96,9 +98,14 @@ old-sanity:		## Sanity tests for Ansible v2.9 and Ansible v2.10
 new-sanity:		## Sanity tests for Ansible v2.11 and above
 	ansible-test sanity -v --skip-test pylint --python $(python_version)
 
+.PHONY: new-sanity-docker
+new-sanity-docker:
+	ansible-test sanity --docker default -v
+
 .PHONY: reqs
 reqs:       ## Recreate the requirements.txt file
-	poetry export -f requirements.txt --output requirements.txt
+	poetry export -f requirements.txt --output requirements.txt --only=main --without-hashes
+	poetry run python ./.github/update-requirements.py
 
 install:
 	rm -f zscaler*
