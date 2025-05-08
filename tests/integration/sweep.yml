@@ -10,7 +10,9 @@
     state: absent
     name: "{{ item.name }}"
   loop: "{{ all_dlp_rules.rules }}"
-  when: all_dlp_rules.rules is defined
+  when:
+    - all_dlp_rules.rules is defined
+    - "'test_' in item.name"
 
 - name: List all DLP Templates
   zscaler.ziacloud.zia_dlp_notification_template_info:
@@ -23,7 +25,9 @@
     state: absent
     name: "{{ item.name }}"
   loop: "{{ all_dlp_templates.templates }}"
-  when: all_dlp_templates.templates is defined
+  when:
+    - all_dlp_templates.templates is defined
+    - "'test_' in item.name"
 
 - name: List all Cloud Firewall Rules
   zscaler.ziacloud.zia_cloud_firewall_rule_info:
@@ -36,7 +40,9 @@
     state: absent
     name: "{{ item.name }}"
   loop: "{{ all_firewall_rules.rules }}"
-  when: all_firewall_rules.rules is defined
+  when:
+    - all_firewall_rules.rules is defined
+    - "'test_' in item.name"
 
 - name: List all URL Filtering Rules
   zscaler.ziacloud.zia_url_filtering_rule_info:
@@ -49,7 +55,9 @@
     state: absent
     name: "{{ item.name }}"
   loop: "{{ all_url_rules.rules }}"
-  when: all_url_rules.rules is defined
+  when:
+    - all_url_rules.rules is defined
+    - "'test_' in item.name"
 
 - name: List all URL Categories
   zscaler.ziacloud.zia_url_categories_info:
@@ -60,12 +68,12 @@
   zscaler.ziacloud.zia_url_categories:
     provider: "{{ zia_cloud }}"
     state: absent
-    name: "{{ item.name }}"
+    name: "{{ item.configured_name }}"
   loop: "{{ all_categories.categories }}"
   when:
     - all_categories.categories is defined
     - item.custom_category is defined and item.custom_category
-  register: delete_result
+    - "'test_' in item.configured_name"
 
 - name: List all Locations
   zscaler.ziacloud.zia_location_management_info:
@@ -78,7 +86,9 @@
     state: absent
     name: "{{ item.name }}"
   loop: "{{ all_locations.locations }}"
-  when: all_locations.locations is defined
+  when:
+    - all_locations.locations is defined
+    - "'test_' in item.name"
 
 - name: List all Rule Labels
   zscaler.ziacloud.zia_rule_labels_info:
@@ -91,7 +101,9 @@
     state: absent
     name: "{{ item.name }}"
   loop: "{{ all_rule_labels.labels }}"
-  when: all_rule_labels.labels is defined
+  when:
+    - all_rule_labels.labels is defined
+    - "'test_' in item.name"
 
 - name: List all IP Destination Groups
   zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups_info:
@@ -104,7 +116,9 @@
     state: absent
     name: "{{ item.name }}"
   loop: "{{ all_ip_dest_groups.groups }}"
-  when: all_ip_dest_groups.groups is defined
+  when:
+    - all_ip_dest_groups.groups is defined
+    - "'test_' in item.name"
 
 - name: List all IP Source Groups
   zscaler.ziacloud.zia_cloud_firewall_ip_source_groups_info:
@@ -118,7 +132,9 @@
     name: "{{ item.name }}"
     ip_addresses: "{{ item.ip_addresses }}"
   loop: "{{ all_ip_source_groups.groups }}"
-  when: all_ip_source_groups.groups is defined
+  when:
+    - all_ip_source_groups.groups is defined
+    - "'test_' in item.name"
 
 - name: List all Network Services
   zscaler.ziacloud.zia_cloud_firewall_network_services_info:
@@ -131,7 +147,9 @@
     state: absent
     name: "{{ item.name }}"
   loop: "{{ all_network_services.services | rejectattr('type', 'in', ['PREDEFINED', 'STANDARD']) | list }}"
-  when: all_network_services.services is defined
+  when:
+    - all_network_services.services is defined
+    - "'test_' in item.name"
 
 - name: List all NAT Control Rules
   zscaler.ziacloud.zia_nat_control_policy_info:
@@ -144,7 +162,9 @@
     state: absent
     name: "{{ item.name }}"
   loop: "{{ all_nat_rules.rules }}"
-  when: all_nat_rules.rules is defined
+  when:
+    - all_nat_rules.rules is defined
+    - "'test_' in item.name"
 
 - name: List all SSL Inspection Rules
   zscaler.ziacloud.zia_ssl_inspection_rules_info:
@@ -157,7 +177,9 @@
     state: absent
     name: "{{ item.name }}"
   loop: "{{ all_ssl_rules.rules }}"
-  when: all_ssl_rules.rules is defined
+  when:
+    - all_ssl_rules.rules is defined
+    - "'test_' in item.name"
 
 - name: List all Sandbox Rules
   zscaler.ziacloud.zia_sandbox_rules_info:
@@ -170,7 +192,9 @@
     state: absent
     name: "{{ item.name }}"
   loop: "{{ all_sandbox_rules.rules }}"
-  when: all_sandbox_rules.rules is defined
+  when:
+    - all_sandbox_rules.rules is defined
+    - "'test_' in item.name"
 
 - name: List all File Type Control Rules
   zscaler.ziacloud.zia_file_type_control_rules_info:
@@ -183,7 +207,9 @@
     state: absent
     name: "{{ item.name }}"
   loop: "{{ all_file_type_control_rules.rules }}"
-  when: all_file_type_control_rules.rules is defined
+  when:
+    - all_file_type_control_rules.rules is defined
+    - "'test_' in item.name"
 
 - name: List all Forwarding Control Rules
   zscaler.ziacloud.zia_forwarding_control_rule_info:
@@ -196,7 +222,9 @@
     state: absent
     name: "{{ item.name }}"
   loop: "{{ all_forwarding_rules.rules }}"
-  when: all_forwarding_rules.rules is defined
+  when:
+    - all_forwarding_rules.rules is defined
+    - "'test_' in item.name"
 
 - name: List all NSS Servers
   zscaler.ziacloud.zia_nss_servers_info:
@@ -209,7 +237,9 @@
     state: absent
     name: "{{ item.name }}"
   loop: "{{ all_nss_servers.rules }}"
-  when: all_nss_servers.rules is defined
+  when:
+    - all_nss_servers.rules is defined
+    - "'test_' in item.name"
 
 - name: Set fact for each task status
   ansible.builtin.set_fact:

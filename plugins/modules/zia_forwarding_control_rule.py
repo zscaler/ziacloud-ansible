@@ -853,7 +853,7 @@ def main():
         name=dict(type="str", required=True),
         description=dict(type="str", required=False),
         enabled=dict(type="bool", required=False),
-        order=dict(type="int", required=True),
+        order=dict(type="int", required=False),
         rank=dict(type="int", required=False, default=7),
         src_ips=dict(type="list", elements="str", required=False),
         dest_addresses=dict(type="list", elements="str", required=False),

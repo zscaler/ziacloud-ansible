@@ -1337,7 +1337,7 @@ def main():
         protocols=dict(
             type="list",
             elements="str",
-            required=True,
+            required=False,
             choices=[
                 "ANY_RULE",
                 "SMRULEF_CASCADING_ALLOWED",

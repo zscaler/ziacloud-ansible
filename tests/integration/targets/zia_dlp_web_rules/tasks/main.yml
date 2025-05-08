@@ -8,8 +8,8 @@
 
 - name: Set dynamic name values with random string
   ansible.builtin.set_fact:
-    rule_name: "{{ rule_name }}_{{ random_string }}"
-    description: "{{ description }}_{{ random_string }}"
+    rule_name: "{{ rule_name }}_"
+    description: "{{ description }}"
 
 - name: Ensure required environment variables are set
   ansible.builtin.fail:
