@@ -147,7 +147,7 @@
   when: all_nat_rules.rules is defined
 
 - name: List all SSL Inspection Rules
-  zscaler.ziacloud.zia_zia_ssl_inspection_rules_info:
+  zscaler.ziacloud.zia_ssl_inspection_rules_info:
     provider: "{{ zia_cloud }}"
   register: all_ssl_rules
 
