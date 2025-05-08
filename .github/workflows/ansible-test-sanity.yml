@@ -23,8 +23,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - ansible: "2.14"
-            python_ver: "3.11"
           - ansible: "2.15"
             python_ver: "3.11"
           - ansible: "2.16"
