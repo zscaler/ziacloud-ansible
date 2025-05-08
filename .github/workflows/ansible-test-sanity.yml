@@ -29,6 +29,8 @@ jobs:
             python_ver: "3.11"
           - ansible: "2.17"
             python_ver: "3.11"
+          - ansible: "2.18"
+            python_ver: "3.11"
     defaults:
       run:
         working-directory: ./ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}
