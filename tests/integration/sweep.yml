@@ -165,7 +165,7 @@
   register: all_sandbox_rules
 
 - name: Delete all Sandbox Rules 💥
-  zscaler.ziacloud.zia_sandbox_rules_rules:
+  zscaler.ziacloud.zia_sandbox_rules:
     provider: "{{ zia_cloud }}"
     state: absent
     name: "{{ item.name }}"
