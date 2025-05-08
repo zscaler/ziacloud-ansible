@@ -124,7 +124,6 @@ groups:
 """
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
@@ -136,28 +135,45 @@ def core(module):
     group_id = module.params.get("id")
     group_name = module.params.get("name")
     exclude_type = module.params.get("exclude_type")
+
     client = ZIAClientHelper(module)
     groups = []
 
     if group_id is not None:
-        group = client.firewall.get_ip_destination_group(group_id).to_dict()
-        groups = [group]
+        # Unpack the tuple returned by the SDK method
+        group_obj, _unused, error = client.cloud_firewall.get_ip_destination_group(
+            group_id
+        )
+        if error or group_obj is None:
+            module.fail_json(
+                msg=f"Failed to retrieve destination IP group with ID '{group_id}': {to_native(error)}"
+            )
+        groups = [group_obj.as_dict()]
     else:
-        # Pass the exclude_type parameter to the SDK method
-        groups = client.firewall.list_ip_destination_groups(
-            exclude_type=exclude_type
-        ).to_list()
-        if group_name is not None:
-            group = None
-            for dest in groups:
-                if dest.get("name") == group_name:
-                    group = dest
-                    break
-            if group is None:
+        # Prepare query parameters
+        query_params = {}
+        if exclude_type:
+            query_params["exclude_type"] = exclude_type
+
+        result, _unused, error = client.cloud_firewall.list_ip_destination_groups(
+            query_params=query_params
+        )
+        if error:
+            module.fail_json(
+                msg=f"Error retrieving IP destination groups: {to_native(error)}"
+            )
+
+        groups = [g.as_dict() for g in result] if result else []
+
+        if group_name:
+            matched = next((g for g in groups if g.get("name") == group_name), None)
+            if not matched:
+                available = [g.get("name") for g in groups]
                 module.fail_json(
-                    msg=f"Failed to retrieve destination ip group: '{group_name}'"
+                    msg=f"Group with name '{group_name}' not found. Available groups: {available}"
                 )
-            groups = [group]
+            groups = [matched]
+
     module.exit_json(changed=False, groups=groups)
 
 
@@ -177,7 +193,12 @@ def main():
             ],
         ),
     )
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=True,
+        mutually_exclusive=[["name", "id"]],
+    )
 
     try:
         core(module)

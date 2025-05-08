@@ -79,6 +79,22 @@ options:
         description: "Name of the server group."
         required: true
         type: str
+  zpa_app_segments:
+    description:
+      - A list of ZPA Application Segments associated with the ZPA gateway.
+      - Each entry must include the application segment's external ID and name.
+    type: list
+    elements: dict
+    required: true
+    suboptions:
+      external_id:
+        description: The external ID of the application segment.
+        type: str
+        required: true
+      name:
+        description: The name of the application segment.
+        type: str
+        required: true
 """
 
 EXAMPLES = r"""
@@ -111,20 +127,32 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 def normalize_gateway(gateway):
     """
-    Normalize zpa gateway data by ensuring consistent data types for external_id.
+    Normalize zpa gateway data by ensuring consistent structure.
     """
     normalized = gateway.copy()
 
-    # Remove 'id' from the top level
+    # Remove top-level 'id'
     normalized.pop("id", None)
 
-    # Ensure external_id is a string for 'zpa_server_group'
+    # Normalize server group
     if "zpa_server_group" in normalized:
         sg = normalized["zpa_server_group"]
         normalized["zpa_server_group"] = {
             "external_id": str(sg.get("external_id")),
             "name": sg.get("name"),
         }
+
+    # Normalize zpa_app_segments by removing 'id'
+    if "zpa_app_segments" in normalized:
+        cleaned_segments = []
+        for seg in normalized["zpa_app_segments"]:
+            cleaned_segments.append(
+                {
+                    "external_id": seg.get("external_id"),
+                    "name": seg.get("name"),
+                }
+            )
+        normalized["zpa_app_segments"] = cleaned_segments
 
     return normalized
 
@@ -164,6 +192,7 @@ def core(module):
         "name",
         "description",
         "zpa_server_group",
+        "zpa_app_segments",
     ]
     for param_name in params:
         gateway[param_name] = module.params.get(param_name, None)
@@ -173,13 +202,19 @@ def core(module):
 
     existing_gateway = None
     if gateway_id is not None:
-        existing_gateway = client.zpa_gateway.get_gateway(gateway_id).to_dict()
+        existing, _unused, error = client.zpa_gateway.get_gateway(gateway_id)
+        if error:
+            module.fail_json(msg=f"Error fetching gateway: {to_native(error)}")
+        if existing:
+            existing_gateway = existing.as_dict()
     else:
-        gateways = client.zpa_gateway.list_gateways().to_list()
-        if gateway_name is not None:
+        gateways, _unused, error = client.zpa_gateway.list_gateways()
+        if error:
+            module.fail_json(msg=f"Error listing gateways: {to_native(error)}")
+        if gateway_name:
             for gw in gateways:
-                if gw.get("name", None) == gateway_name:
-                    existing_gateway = gw
+                if gw.name == gateway_name:
+                    existing_gateway = gw.as_dict()
                     break
 
     # Normalize and compare existing and desired data
@@ -207,7 +242,6 @@ def core(module):
             )
 
     if module.check_mode:
-        # If in check mode, report changes and exit
         if state == "present" and (existing_gateway is None or differences_detected):
             module.exit_json(changed=True)
         elif state == "absent" and existing_gateway is not None:
@@ -224,7 +258,6 @@ def core(module):
     if state == "present":
         if existing_gateway is not None:
             if differences_detected:
-                """Update"""
                 update_gateway = deleteNone(
                     dict(
                         gateway_id=existing_gateway.get("id"),
@@ -232,47 +265,52 @@ def core(module):
                         description=existing_gateway.get("description"),
                         type=existing_gateway.get("type"),
                         zpa_server_group=existing_gateway.get("zpa_server_group"),
+                        zpa_app_segments=existing_gateway.get("zpa_app_segments"),
                     )
                 )
-                updated_gateway_response = client.zpa_gateway.update_gateway(
+                updated_gateway, _unused, error = client.zpa_gateway.update_gateway(
                     **update_gateway
                 )
-                if updated_gateway_response is None:
+                if error or updated_gateway is None:
                     module.fail_json(
-                        msg="Failed to update gateway, received no response from SDK."
+                        msg=f"Failed to update gateway: {to_native(error)}"
                     )
-
-                # Use the updated gateway data directly in the module's response
-                module.exit_json(changed=True, data=updated_gateway_response.to_dict())
-
+                module.exit_json(changed=True, data=updated_gateway.as_dict())
             else:
-                """No changes needed"""
                 module.exit_json(
                     changed=False, data=existing_gateway, msg="No changes detected."
                 )
         else:
             module.warn("Creating new rule as no existing rule found")
-            """Create"""
             create_gateway = deleteNone(
                 dict(
                     name=gateway.get("name"),
                     description=gateway.get("description"),
                     type=gateway.get("type"),
                     zpa_server_group=gateway.get("zpa_server_group"),
+                    zpa_app_segments=gateway.get("zpa_app_segments"),
                 )
             )
             module.warn("Payload for SDK: {}".format(create_gateway))
-            new_gateway = client.zpa_gateway.add_gateway(**create_gateway).to_dict()
-            module.exit_json(changed=True, data=new_gateway)
+            new_gateway, _unused, error = client.zpa_gateway.add_gateway(
+                **create_gateway
+            )
+            if error or new_gateway is None:
+                module.fail_json(msg=f"Failed to create gateway: {to_native(error)}")
+            module.exit_json(changed=True, data=new_gateway.as_dict())
+
     elif (
         state == "absent"
         and existing_gateway is not None
         and existing_gateway.get("id") is not None
     ):
-        code = client.zpa_gateway.delete_gateway(existing_gateway.get("id"))
-        if code > 299:
-            module.exit_json(changed=False, data=None)
+        _unused, _unused, error = client.zpa_gateway.delete_gateway(
+            existing_gateway.get("id")
+        )
+        if error:
+            module.fail_json(msg=f"Failed to delete gateway: {to_native(error)}")
         module.exit_json(changed=True, data=existing_gateway)
+
     module.exit_json(changed=False, data={})
 
 
@@ -290,6 +328,15 @@ def main():
         ),
         zpa_server_group=dict(
             type="dict",
+            required=True,
+            options=dict(
+                external_id=dict(type="str", required=True),
+                name=dict(type="str", required=True),
+            ),
+        ),
+        zpa_app_segments=dict(
+            type="list",
+            elements="dict",
             required=True,
             options=dict(
                 external_id=dict(type="str", required=True),

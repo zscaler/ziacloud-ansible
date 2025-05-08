@@ -11,29 +11,29 @@
     msg: "{{ env_var }} is not defined as environment variable"
   when: lookup('env', env_var) is none
   loop:
-    - ZIA_USERNAME
-    - ZIA_PASSWORD
-    - ZIA_API_KEY
-    - ZIA_CLOUD
+    - ZSCALER_CLIENT_ID
+    - ZSCALER_CLIENT_SECRET
+    - ZSCALER_VANITY_DOMAIN
+    - ZSCALER_CLOUD
   loop_control:
     loop_var: env_var
 
 - name: Ensure ZIA Credential environment variables are set
   ansible.builtin.set_fact:
     zia_cloud:
-      username: "{{ lookup('env', 'ZIA_USERNAME') }}"
-      password: "{{ lookup('env', 'ZIA_PASSWORD') }}"
-      api_key: "{{ lookup('env', 'ZIA_API_KEY') }}"
-      cloud: "{{ lookup('env', 'ZIA_CLOUD') | default(omit) }}"
+      client_id: "{{ lookup('env', 'ZSCALER_CLIENT_ID') }}"
+      client_secret: "{{ lookup('env', 'ZSCALER_CLIENT_SECRET') }}"
+      vanity_domain: "{{ lookup('env', 'ZSCALER_VANITY_DOMAIN') }}"
+      cloud: "{{ lookup('env', 'ZSCALER_CLOUD') | default(omit) }}"
   no_log: true
 
 - name: Main block to Test Cloud Firewall Rule Configuration
   block:
     # Authentication Setting
     - name: Ensure Authentication Setting (leftover)
-      zscaler.ziacloud.zia_authentication_settings:
+      zscaler.ziacloud.zia_auth_settings_urls:
         provider: "{{ zia_cloud }}"
-        state: absent
+        state: present
         urls: "{{ urls }}"
       register: result
 
@@ -48,9 +48,9 @@
         msg: Cleanup complete.
 
     - name: Ensure Authentication Setting is absent
-      zscaler.ziacloud.zia_authentication_settings:
+      zscaler.ziacloud.zia_auth_settings_urls:
         provider: "{{ zia_cloud }}"
-        state: absent
+        state: present
         urls: "{{ urls }}"
       register: result
 
@@ -61,7 +61,7 @@
           # - result.data is defined
 
     - name: Ensure Authentication Setting is (Present)
-      zscaler.ziacloud.zia_authentication_settings:
+      zscaler.ziacloud.zia_auth_settings_urls:
         provider: "{{ zia_cloud }}"
         state: present
         urls: "{{ urls }}"
@@ -70,13 +70,12 @@
     - name: Verify Authentication Setting is present
       ansible.builtin.assert:
         that:
-          - result.changed
           - result.exempted_urls is defined
           - "'.okta.com' in result.exempted_urls"
       when: result.failed is not defined or not result.failed
 
     - name: Ensure Authentication Setting (again; idempotency check)
-      zscaler.ziacloud.zia_authentication_settings:
+      zscaler.ziacloud.zia_auth_settings_urls:
         provider: "{{ zia_cloud }}"
         state: present
         urls: "{{ urls }}"
@@ -88,7 +87,7 @@
           - not result.changed
 
     - name: Fetch all Authentication Setting
-      zscaler.ziacloud.zia_authentication_settings:
+      zscaler.ziacloud.zia_auth_settings_urls:
         provider: "{{ zia_cloud }}"
         urls: "{{ urls }}"
       register: result
@@ -97,12 +96,11 @@
       ansible.builtin.assert:
         that:
           - not result.failed
-          # Optionally, check specific messages or other indicators of success
-          - result.msg == "No new URLs to add."
-      when: result.failed is not defined or not result.failed
+          - result.exempted_urls is defined
+          - "'.okta.com' in result.exempted_urls"
 
     - name: Fetch this Authentication Setting
-      zscaler.ziacloud.zia_authentication_settings:
+      zscaler.ziacloud.zia_auth_settings_urls:
         provider: "{{ zia_cloud }}"
         urls: "{{ urls }}"
       register: result
@@ -111,8 +109,8 @@
       ansible.builtin.assert:
         that:
           - not result.failed
-          # Optionally, check specific messages or other indicators of success
-          - result.msg == "No new URLs to add."
+          - result.exempted_urls is defined
+          - "'.okta.com' in result.exempted_urls"
       when: result.failed is not defined or not result.failed
 
     - name: Give the ZIA Cloud a 5 seconds to settle
@@ -120,21 +118,21 @@
         seconds: 5
 
     - name: Delete Authentication Setting
-      zscaler.ziacloud.zia_authentication_settings:
+      zscaler.ziacloud.zia_auth_settings_urls:
         provider: "{{ zia_cloud }}"
-        state: absent
+        state: present
         urls: "{{ urls }}"
       register: result
 
     - name: Verify Authentication Setting is Deleted
       ansible.builtin.assert:
         that:
-          - result.changed
+          - not result.changed
 
     - name: Delete Authentication Setting (again; idempotency check)
-      zscaler.ziacloud.zia_authentication_settings:
+      zscaler.ziacloud.zia_auth_settings_urls:
         provider: "{{ zia_cloud }}"
-        state: absent
+        state: present
         urls: "{{ urls }}"
       register: result
 

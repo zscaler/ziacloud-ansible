@@ -58,6 +58,7 @@ options:
     description:
         - When set to one of the supported locales (i.e., en-US, de-DE, es-ES, fr-FR, ja-JP, zh-CN).
         - The network application's description is localized into the requested language.
+        - Provide a BCP 47 language tag. Visit the following site for reference U(https://www.techonthenet.com/js/language_tags.php)
     required: false
     type: str
 """
@@ -108,54 +109,80 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
     ZIAClientHelper,
 )
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
+    validate_locale_code,
+)
 
 
 def core(module):
-    network_app_id = module.params.get("id")
-    network_app_name = module.params.get("name")
+    app_id = module.params.get("id")
+    app_name = module.params.get("name")
+    locale = module.params.get("locale")
+    if locale and not validate_locale_code(locale):
+        module.fail_json(
+            msg=(
+                f"Invalid locale '{locale}'. Must be a valid BCP 47 language tag (e.g., en-US, fr-FR, ja-JP). "
+                "See: https://www.techonthenet.com/js/language_tags.php"
+            )
+        )
+
     client = ZIAClientHelper(module)
-    network_apps = []
+    apps = []
 
-    # Attempt to retrieve by ID
-    if network_app_id is not None:
-        try:
-            # Make sure ID is passed as a string to the API call
-            network_app = client.firewall.get_network_app(str(network_app_id)).to_dict()
-            network_apps = [network_app]
-        except Exception as e:
+    if app_id:
+        app_obj, _unused, error = client.cloud_firewall.get_network_app(app_id)
+        if error or app_obj is None:
             module.fail_json(
-                msg=f"Failed to retrieve network application by ID '{network_app_id}': {str(e)}"
+                msg=f"Failed to retrieve Network Application with ID '{app_id}': {to_native(error)}"
             )
-
-    # If no ID provided, handle by name or list all
+        apps = [app_obj.as_dict()]
     else:
-        all_apps = client.firewall.list_network_apps().to_list()
-        if network_app_name:
-            # Filter apps by name
-            network_app = next(
-                (app for app in all_apps if app.get("name") == network_app_name), None
-            )
-            if not network_app:
-                module.fail_json(
-                    msg=f"No network application found with name: '{network_app_name}'"
-                )
-            network_apps = [network_app]
-        else:
-            network_apps = all_apps
+        query_params = {}
+        if app_name:
+            query_params["search"] = app_name
+        if locale:
+            query_params["locale"] = locale
 
-    module.exit_json(changed=False, network_apps=network_apps)
+        result, _unused, error = client.cloud_firewall.list_network_apps(
+            query_params=query_params
+        )
+        if error:
+            module.fail_json(
+                msg=f"Error retrieving Network Applications: {to_native(error)}"
+            )
+
+        app_list = [a.as_dict() for a in result] if result else []
+
+        if app_name:
+            matched = next((a for a in app_list if a.get("id") == app_name), None)
+            if not matched:
+                available = [a.get("id") for a in app_list]
+                module.fail_json(
+                    msg=f"Network Application with ID '{app_name}' not found. Available: {available}"
+                )
+            apps = [matched]
+        else:
+            apps = app_list
+
+    module.exit_json(changed=False, apps=apps)
 
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
-        id=dict(
-            type="str", required=False
-        ),  # Changed type to 'str' to accept string input
         name=dict(type="str", required=False),
-        locale=dict(type="str", required=False),
+        id=dict(type="str", required=False),
+        locale=dict(
+            type="str",
+            required=False,
+        ),
     )
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=True,
+        mutually_exclusive=[["name", "id"]],
+    )
 
     try:
         core(module)

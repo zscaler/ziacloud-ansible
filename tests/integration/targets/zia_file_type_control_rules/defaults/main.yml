@@ -1,0 +1,47 @@
+---
+rule_name: test_zia_ansible
+description: test_zia_ansible
+rule_order: 1
+rank: 7
+enabled: true
+filtering_action: ALLOW
+operation: DOWNLOAD
+device_trust_levels:
+  - UNKNOWN_DEVICETRUSTLEVEL
+  - LOW_TRUST
+  - MEDIUM_TRUST
+  - HIGH_TRUST
+protocols:
+  - FOHTTP_RULE
+  - FTP_RULE
+  - HTTPS_RULE
+  - HTTP_RULE
+url_categories:
+  - GENERAL_AI_ML
+  - AI_ML_APPS
+file_types:
+  - FTCATEGORY_ALZ
+  - FTCATEGORY_P7Z
+  - FTCATEGORY_B64
+
+# File Type Control
+name_update: test_zia_ansible
+description_update: test_zia_ansible
+order_update: 1
+rank_update: 7
+enabled_update: false
+filtering_action_update: BLOCK
+operation_update: DOWNLOAD
+device_trust_levels_update:
+  - LOW_TRUST
+  - MEDIUM_TRUST
+  - HIGH_TRUST
+protocols_update:
+  - FOHTTP_RULE
+  - FTP_RULE
+  - HTTPS_RULE
+url_categories_update:
+  - GENERAL_AI_ML
+file_types_update:
+  - FTCATEGORY_ALZ
+  - FTCATEGORY_P7Z

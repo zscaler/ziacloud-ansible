@@ -1,0 +1,230 @@
+---
+- name: Include default variables
+  ansible.builtin.include_vars:
+    file: ../defaults/main.yml
+
+- name: Import Random String Generator Tasks
+  ansible.builtin.import_tasks: ../../../generate_random_string.yml
+
+- name: Set dynamic name values with random string
+  ansible.builtin.set_fact:
+    rule_name: "{{ rule_name }}_{{ random_string }}"
+    description: "{{ description }}_{{ random_string }}"
+
+- name: Ensure required environment variables are set
+  ansible.builtin.fail:
+    msg: "{{ env_var }} is not defined as environment variable"
+  when: lookup('env', env_var) is none
+  loop:
+    - ZSCALER_CLIENT_ID
+    - ZSCALER_CLIENT_SECRET
+    - ZSCALER_VANITY_DOMAIN
+    - ZSCALER_CLOUD
+  loop_control:
+    loop_var: env_var
+
+- name: Ensure ZIA Credential environment variables are set
+  ansible.builtin.set_fact:
+    zia_cloud:
+      client_id: "{{ lookup('env', 'ZSCALER_CLIENT_ID') }}"
+      client_secret: "{{ lookup('env', 'ZSCALER_CLIENT_SECRET') }}"
+      vanity_domain: "{{ lookup('env', 'ZSCALER_VANITY_DOMAIN') }}"
+      cloud: "{{ lookup('env', 'ZSCALER_CLOUD') | default(omit) }}"
+  no_log: true
+
+- name: Main block for File Type Control Configuration
+  block:
+    - name: Ensure File Type Control (leftover)
+      zscaler.ziacloud.zia_file_type_control_rules:
+        provider: "{{ zia_cloud }}"
+        state: absent
+        name: "{{ rule_name }}"
+        protocols: "{{ protocols }}"
+      register: result
+
+  rescue:
+    - name: Handle errors
+      ansible.builtin.debug:
+        msg: An error occurred.
+
+  always:
+    - name: Cleanup operations
+      ansible.builtin.debug:
+        msg: Cleanup complete.
+
+    - name: Ensure File Type Control is absent
+      zscaler.ziacloud.zia_file_type_control_rules:
+        provider: "{{ zia_cloud }}"
+        state: absent
+        name: "{{ rule_name }}"
+        protocols: "{{ protocols }}"
+      register: result
+
+    - name: Verify File Type Control is absent
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+          - result.data is defined
+
+    - name: Ensure File Type Control is (Present)
+      zscaler.ziacloud.zia_file_type_control_rules:
+        provider: "{{ zia_cloud }}"
+        state: present
+        name: "{{ rule_name }}"
+        description: "{{ description }}"
+        order: "{{ rule_order }}"
+        rank: "{{ rank }}"
+        enabled: "{{ enabled }}"
+        filtering_action: "{{ filtering_action }}"
+        operation: "{{ operation }}"
+        device_trust_levels: "{{ device_trust_levels }}"
+        protocols: "{{ protocols }}"
+        file_types: "{{ file_types }}"
+        url_categories: "{{ url_categories }}"
+      register: result
+
+    - name: Verify File Type Control is present
+      ansible.builtin.assert:
+        that:
+          - result.changed
+          - result.data is defined
+          - result.data.name == rule_name
+
+    - name: Ensure File Type Control (again; idempotency check)
+      zscaler.ziacloud.zia_file_type_control_rules:
+        provider: "{{ zia_cloud }}"
+        state: present
+        name: "{{ rule_name }}"
+        description: "{{ description }}"
+        order: "{{ rule_order }}"
+        rank: "{{ rank }}"
+        enabled: "{{ enabled }}"
+        filtering_action: "{{ filtering_action }}"
+        operation: "{{ operation }}"
+        device_trust_levels: "{{ device_trust_levels }}"
+        protocols: "{{ protocols }}"
+        file_types: "{{ file_types }}"
+        url_categories: "{{ url_categories }}"
+      register: result
+
+    - name: Ensure File Type Control is absent (idempotency check)
+      ansible.builtin.assert:
+        that:
+          - result.changed
+
+    - name: Fetch all File Type Control
+      zscaler.ziacloud.zia_file_type_control_rules_info:
+        provider: "{{ zia_cloud }}"
+      register: result
+
+    - name: Ensure all File Type Control found
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+          - result.rules[0] is defined
+
+    - name: Update File Type Control is (Present)
+      zscaler.ziacloud.zia_file_type_control_rules:
+        provider: "{{ zia_cloud }}"
+        state: present
+        name: "{{ name_update }}"
+        description: "{{ description_update }}"
+        order: "{{ order_update }}"
+        rank: "{{ rank_update }}"
+        enabled: "{{ enabled_update }}"
+        filtering_action: "{{ filtering_action_update }}"
+        operation: "{{ operation_update }}"
+        device_trust_levels: "{{ device_trust_levels_update }}"
+        protocols: "{{ protocols_update }}"
+        file_types: "{{ file_types_update }}"
+        url_categories: "{{ url_categories_update }}"
+      register: result
+
+    - name: Verify File Type Control is present
+      ansible.builtin.assert:
+        that:
+          - result.changed
+          - result.data is defined
+          - result.data.name == name_update
+          - result.data.description == description_update
+          - result.data.filtering_action == filtering_action_update
+
+    - name: Ensure File Type Control is Updated (again; idempotency check)
+      zscaler.ziacloud.zia_file_type_control_rules:
+        provider: "{{ zia_cloud }}"
+        state: present
+        name: "{{ name_update }}"
+        description: "{{ description_update }}"
+        order: "{{ order_update }}"
+        rank: "{{ rank_update }}"
+        enabled: "{{ enabled_update }}"
+        filtering_action: "{{ filtering_action_update }}"
+        operation: "{{ operation_update }}"
+        device_trust_levels: "{{ device_trust_levels_update }}"
+        protocols: "{{ protocols_update }}"
+        file_types: "{{ file_types_update }}"
+        url_categories: "{{ url_categories_update }}"
+      register: result
+
+    - name: Ensure File Type Control is absent (idempotency check)
+      ansible.builtin.assert:
+        that:
+          - result.changed
+
+    - name: Fetch all File Type Control
+      zscaler.ziacloud.zia_file_type_control_rules_info:
+        provider: "{{ zia_cloud }}"
+      register: result
+
+    - name: Ensure all File Type Control found
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+          - result.rules[0] is defined
+
+    - name: Fetch this File Type Control
+      zscaler.ziacloud.zia_file_type_control_rules_info:
+        provider: "{{ zia_cloud }}"
+        name: "{{ rule_name }}"
+      register: result
+
+    - name: Ensure this File Type Control is found
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+          - result.rules is defined
+          - result.rules[0].name is defined
+          - result.rules[0].name == rule_name
+
+    - name: Give the ZIA Cloud a 5 seconds to settle
+      ansible.builtin.pause:
+        seconds: 5
+
+    - name: Delete File Type Control
+      zscaler.ziacloud.zia_file_type_control_rules:
+        provider: "{{ zia_cloud }}"
+        state: absent
+        name: "{{ rule_name }}"
+        order: "{{ rule_order }}"
+        protocols: "{{ protocols }}"
+      register: result
+
+    - name: Verify File Type Control is Deleted
+      ansible.builtin.assert:
+        that:
+          - result.changed
+
+    - name: Delete File Type Control (again; idempotency check)
+      zscaler.ziacloud.zia_file_type_control_rules:
+        provider: "{{ zia_cloud }}"
+        state: absent
+        name: "{{ rule_name }}"
+        order: "{{ rule_order }}"
+        protocols: "{{ protocols }}"
+      register: result
+
+    - name: Verify File Type Control is absent
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+          - result.data is defined

@@ -1,0 +1,209 @@
+---
+- name: Include default variables
+  ansible.builtin.include_vars:
+    file: ../defaults/main.yml
+
+- name: Import Random String Generator Tasks
+  ansible.builtin.import_tasks: ../../../generate_random_string.yml
+
+- name: Set dynamic name values with random string
+  ansible.builtin.set_fact:
+    rule_name: "{{ rule_name }}_{{ random_string }}"
+    description: "{{ description }}_{{ random_string }}"
+    description_update: "{{ description_update }}_{{ random_string }}"
+
+- name: Ensure required environment variables are set
+  ansible.builtin.fail:
+    msg: "{{ env_var }} is not defined as environment variable"
+  when: lookup('env', env_var) is none
+  loop:
+    - ZSCALER_CLIENT_ID
+    - ZSCALER_CLIENT_SECRET
+    - ZSCALER_VANITY_DOMAIN
+    - ZSCALER_CLOUD
+  loop_control:
+    loop_var: env_var
+
+- name: Ensure ZIA Credential environment variables are set
+  ansible.builtin.set_fact:
+    zia_cloud:
+      client_id: "{{ lookup('env', 'ZSCALER_CLIENT_ID') }}"
+      client_secret: "{{ lookup('env', 'ZSCALER_CLIENT_SECRET') }}"
+      vanity_domain: "{{ lookup('env', 'ZSCALER_VANITY_DOMAIN') }}"
+      cloud: "{{ lookup('env', 'ZSCALER_CLOUD') | default(omit) }}"
+  no_log: true
+
+- name: Main block to Test NAT Control Rule Configuration
+  block:
+    - name: Ensure NAT Control Rule (leftover)
+      zscaler.ziacloud.zia_nat_control_policy:
+        provider: "{{ zia_cloud }}"
+        state: absent
+        name: "{{ rule_name }}"
+        order: "{{ rule_order }}"
+      register: result
+
+  rescue:
+    - name: Handle errors
+      ansible.builtin.debug:
+        msg: An error occurred.
+
+  always:
+    - name: Cleanup operations
+      ansible.builtin.debug:
+        msg: Cleanup complete.
+
+    - name: Ensure NAT Control Rule is absent
+      zscaler.ziacloud.zia_nat_control_policy:
+        provider: "{{ zia_cloud }}"
+        state: absent
+        name: "{{ rule_name }}"
+        order: "{{ rule_order }}"
+      register: result
+
+    - name: Verify NAT Control Rule is absent
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+          - result.data is defined
+
+    - name: Ensure NAT Control Rule is (Present)
+      zscaler.ziacloud.zia_nat_control_policy:
+        provider: "{{ zia_cloud }}"
+        state: present
+        name: "{{ rule_name }}"
+        description: "{{ description }}"
+        order: "{{ rule_order }}"
+        enabled: "{{ enabled }}"
+        redirect_port: "{{ redirect_port }}"
+        redirect_ip: "{{ redirect_ip }}"
+        src_ips: "{{ src_ips }}"
+        dest_countries: "{{ dest_countries }}"
+        dest_addresses: "{{ dest_addresses }}"
+      register: result
+
+    - name: Verify NAT Control Rule is present
+      ansible.builtin.assert:
+        that:
+          - result.changed
+          - result.data is defined
+          - result.data.name is defined
+
+    - name: Ensure NAT Control Rule (again; idempotency check)
+      zscaler.ziacloud.zia_nat_control_policy:
+        provider: "{{ zia_cloud }}"
+        state: present
+        name: "{{ rule_name }}"
+        description: "{{ description }}"
+        order: "{{ rule_order }}"
+        enabled: "{{ enabled }}"
+        redirect_port: "{{ redirect_port }}"
+        redirect_ip: "{{ redirect_ip }}"
+        src_ips: "{{ src_ips }}"
+        dest_countries: "{{ dest_countries }}"
+        dest_addresses: "{{ dest_addresses }}"
+      register: result
+
+    - name: Ensure NAT Control Rule is present (idempotency check)
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+
+    - name: Update NAT Control Rule (Present)
+      zscaler.ziacloud.zia_nat_control_policy:
+        provider: "{{ zia_cloud }}"
+        state: present
+        name: "{{ rule_name }}"
+        description: "{{ description_update }}"
+        order: "{{ rule_order }}"
+        enabled: "{{ enabled_update }}"
+        redirect_port: "{{ redirect_port }}"
+        redirect_ip: "{{ redirect_ip }}"
+        src_ips: "{{ src_ips_update }}"
+        dest_countries: "{{ dest_countries_update }}"
+        dest_addresses: "{{ dest_addresses_update }}"
+      register: result
+
+    - name: Verify NAT Control Rule is Updated
+      ansible.builtin.assert:
+        that:
+          - result.changed
+          - result.data is defined
+          - result.data.name == rule_name
+          - result.data.description == description_update
+
+    - name: Ensure NAT Control Rule is Updated (again; idempotency check)
+      zscaler.ziacloud.zia_nat_control_policy:
+        provider: "{{ zia_cloud }}"
+        state: present
+        name: "{{ rule_name }}"
+        description: "{{ description_update }}"
+        order: "{{ rule_order }}"
+        enabled: "{{ enabled_update }}"
+        redirect_port: "{{ redirect_port_update }}"
+        redirect_ip: "{{ redirect_ip_update }}"
+        src_ips: "{{ src_ips_update }}"
+        dest_countries: "{{ dest_countries_update }}"
+        dest_addresses: "{{ dest_addresses_update }}"
+      register: result
+
+    - name: Ensure NAT Control Rule update is idempotent
+      ansible.builtin.assert:
+        that:
+          - result.changed
+
+    - name: Fetch all NAT Control Rule
+      zscaler.ziacloud.zia_nat_control_policy_info:
+        provider: "{{ zia_cloud }}"
+      register: result
+
+    - name: Ensure all NAT Control Rule found
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+          - result.rules[0] is defined
+
+    - name: Fetch this NAT Control Rule
+      zscaler.ziacloud.zia_nat_control_policy_info:
+        provider: "{{ zia_cloud }}"
+        name: "{{ rule_name }}"
+      register: result
+
+    - name: Ensure this NAT Control Rule is found
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+          - result.rules is defined
+          - result.rules[0].name is defined
+          - result.rules[0].name == rule_name
+
+    - name: Give the ZIA Cloud a 5 seconds to settle
+      ansible.builtin.pause:
+        seconds: 5
+
+    - name: Delete NAT Control Rule
+      zscaler.ziacloud.zia_nat_control_policy:
+        provider: "{{ zia_cloud }}"
+        state: absent
+        name: "{{ rule_name }}"
+        order: "{{ rule_order }}"
+      register: result
+
+    - name: Verify NAT Control Rule is Deleted
+      ansible.builtin.assert:
+        that:
+          - result.changed
+
+    - name: Delete NAT Control Rule (again; idempotency check)
+      zscaler.ziacloud.zia_nat_control_policy:
+        provider: "{{ zia_cloud }}"
+        state: absent
+        name: "{{ rule_name }}"
+        order: "{{ rule_order }}"
+      register: result
+
+    - name: Verify NAT Control Rule is absent
+      ansible.builtin.assert:
+        that:
+          - not result.changed
+          - result.data is defined

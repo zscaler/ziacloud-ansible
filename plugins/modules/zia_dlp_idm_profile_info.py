@@ -44,11 +44,11 @@ extends_documentation_fragment:
   - zscaler.ziacloud.fragments.documentation
 
 options:
-  profile_id:
+  id:
     description: "The identifier (1-64) for the IDM template (i.e., IDM profile) that is unique within the organization"
     type: int
     required: false
-  profile_name:
+  name:
     type: str
     required: false
     description:
@@ -180,34 +180,42 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 
 def core(module):
-    profile_id = module.params.get("profile_id", None)
-    profile_name = module.params.get("template_name", None)
+    profile_id = module.params.get("profile_id")
+    name = module.params.get("profile_name")
     client = ZIAClientHelper(module)
     idm_profiles = []
-    if profile_id is not None:
-        profile = client.dlp.get_dlp_idm_profiles(profile_id).to_dict()
-        idm_profiles = [profile]
+
+    if profile_id:
+        result, _unused, error = client.dlp_resources.get_dlp_idm_profiles(profile_id)
+        if error:
+            module.fail_json(
+                msg=f"Error retrieving IDM profile ID {profile_id}: {to_native(error)}"
+            )
+        idm_profiles = [result.as_dict()]
+    elif name:
+        result, _unused, error = client.dlp_resources.list_dlp_idm_profiles(
+            query_params={"search": name}
+        )
+        if error:
+            module.fail_json(msg=f"Error searching IDM profiles: {to_native(error)}")
+        matching = [p.as_dict() for p in result if p.name == name]
+        if not matching:
+            module.fail_json(msg=f"No IDM profile found with name '{name}'")
+        idm_profiles = matching
     else:
-        idm_profiles = client.dlp.list_dlp_idm_profiles().to_list()
-        if profile_name is not None:
-            profile = None
-            for idm in idm_profiles:
-                if idm.get("profile_name", None) == profile_name:
-                    profile = idm
-                    break
-            if profile is None:
-                module.fail_json(
-                    msg="Failed to retrieve dlp idm profile: '%s'" % (profile_name)
-                )
-            idm_profiles = [profile]
+        result, _unused, error = client.dlp_resources.list_dlp_idm_profiles()
+        if error:
+            module.fail_json(msg=f"Error listing IDM profiles: {to_native(error)}")
+        idm_profiles = [p.as_dict() for p in result]
+
     module.exit_json(changed=False, idm_profiles=idm_profiles)
 
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
-        profile_name=dict(type="str", required=False),
-        profile_id=dict(type="int", required=False),
+        name=dict(type="str", required=False),
+        id=dict(type="int", required=False),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
     try:

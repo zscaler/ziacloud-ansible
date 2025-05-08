@@ -75,16 +75,36 @@ options:
     description: Restrict the data center virtual IP addresses (VIPs) only to those part of the subcloud
     required: false
     type: str
-  primary_dest_vip_id:
-    description: "The primary destination data center and virtual IP address (VIP) of the GRE tunnel"
-    type: list
-    elements: str
+  primary_dest_vip:
+    description:
+      - The primary destination data center virtual IP address (VIP) for the GRE tunnel.
+      - Defines where the primary GRE tunnel should terminate.
+    type: dict
     required: false
-  secondary_dest_vip_id:
-    description: "The secondary destination data center and virtual IP address (VIP) of the GRE tunnel"
-    type: list
-    elements: str
+    suboptions:
+      id:
+        description: The unique identifier for the primary VIP.
+        type: str
+        required: false
+      virtual_ip:
+        description: The virtual IP address assigned to the primary destination.
+        type: str
+        required: false
+  secondary_dest_vip:
+    description:
+      - The secondary destination data center virtual IP address (VIP) for the GRE tunnel.
+      - Acts as a backup GRE tunnel destination in case the primary VIP is unavailable.
+    type: dict
     required: false
+    suboptions:
+      id:
+        description: The unique identifier for the secondary VIP.
+        type: str
+        required: false
+      virtual_ip:
+        description: The virtual IP address assigned to the secondary destination.
+        type: str
+        required: false
 """
 
 EXAMPLES = r"""
@@ -117,12 +137,9 @@ RETURN = r"""
 
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
-    deleteNone,
-)
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import deleteNone
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
     ZIAClientHelper,
 )
@@ -130,23 +147,21 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 def normalize_gre_tunnel(gre):
     """
-    Normalize static ip data by setting computed values.
+    Normalize GRE tunnel data by removing computed-only attributes.
     """
     normalized = gre.copy()
-
     computed_values = [
-        "id",
+        # "id",
         "source_ip",
         "internal_ip_range",
         "within_country",
         "ip_unnumbered",
         "sub_cloud",
-        "primary_dest_vip_id",
-        "secondary_dest_vip_id",
+        "primary_dest_vip",
+        "secondary_dest_vip",
     ]
     for attr in computed_values:
         normalized.pop(attr, None)
-
     return normalized
 
 
@@ -162,115 +177,121 @@ def core(module):
         "within_country",
         "ip_unnumbered",
         "sub_cloud",
-        # "primary_dest_vip_id",
-        # "secondary_dest_vip_id",
+        "primary_dest_vip",
+        "secondary_dest_vip",
     ]
     for param_name in params:
         gre_tunnel[param_name] = module.params.get(param_name, None)
 
-    # Automatically set primary and secondary VIP IDs if not provided
-    if not gre_tunnel.get("primary_dest_vip_id") or not gre_tunnel.get(
-        "secondary_dest_vip_id"
-    ):
-        if gre_tunnel.get("source_ip"):
-            closest_vips = client.traffic.get_closest_diverse_vip_ids(
-                gre_tunnel["source_ip"]
-            )
-            gre_tunnel["primary_dest_vip_id"] = [closest_vips[0]]
-            gre_tunnel["secondary_dest_vip_id"] = [closest_vips[1]]
-        else:
-            module.fail_json(msg="source_ip is required to determine closest VIPs.")
+    if "sourceIp" in gre_tunnel and "source_ip" not in gre_tunnel:
+        gre_tunnel["source_ip"] = gre_tunnel.pop("sourceIp")
 
-    # Check if ip_unnumbered is False and internal_ip_range is not set
+    # Handle fallback IP range logic
     if gre_tunnel.get("ip_unnumbered") is False and not gre_tunnel.get(
         "internal_ip_range"
     ):
-        # Fetch the first available IP range
-        available_ranges = client.traffic.list_gre_ranges(limit=1).to_list()
+        available_ranges, _unused, error = client.gre_tunnel.list_gre_ranges(
+            query_params={"limit": 1}
+        )
+        if error:
+            module.fail_json(msg=f"Error fetching GRE ranges: {to_native(error)}")
         if available_ranges:
             first_range = available_ranges[0]
-            gre_tunnel["internal_ip_range"] = (
-                f"{first_range['start_ip_address']}-{first_range['end_ip_address']}"
+            start_ip = (
+                first_range.get("start_ip_address")
+                or first_range.get("startIpAddress")
+                or first_range.get("startIPAddress")
             )
-        else:
-            module.fail_json(msg="No available IP ranges found.")
+            end_ip = (
+                first_range.get("end_ip_address")
+                or first_range.get("endIpAddress")
+                or first_range.get("endIPAddress")
+            )
+            if not start_ip or not end_ip:
+                module.fail_json(
+                    msg="Missing expected IP fields (start/end IP) in GRE range response."
+                )
 
-    tunnel_id = gre_tunnel.get("id", None)
-    source_ip = gre_tunnel.get("source_ip", None)
+            gre_tunnel["internal_ip_range"] = f"{start_ip}-{end_ip}"
+
+    tunnel_id = gre_tunnel.get("id")
+    source_ip = gre_tunnel.get("source_ip")
     existing_gre_tunnel = None
-    if tunnel_id is not None:
-        existing_gre_tunnel = client.traffic.get_gre_tunnel(tunnel_id).to_dict()
-    else:
-        source_ips = client.traffic.list_gre_tunnels().to_list()
-        if source_ip is not None:
-            for ip in source_ips:
-                if ip.get("source_ip", None) == source_ip:
-                    existing_gre_tunnel = ip
-                    break
 
-    # Normalize and compare existing and desired data
+    if tunnel_id:
+        result, _unused, error = client.gre_tunnel.get_gre_tunnel(tunnel_id)
+        if error:
+            module.fail_json(msg=f"Failed to fetch GRE tunnel: {to_native(error)}")
+        if result:
+            existing_gre_tunnel = result.as_dict()
+    else:
+        tunnels, _unused, error = client.gre_tunnel.list_gre_tunnels()
+        if error:
+            module.fail_json(msg=f"Error listing GRE tunnels: {to_native(error)}")
+        for tunnel in tunnels or []:
+            tunnel_dict = tunnel.as_dict() if hasattr(tunnel, "as_dict") else tunnel
+            if tunnel_dict.get("source_ip") == source_ip:
+                existing_gre_tunnel = tunnel_dict
+                break
+
     desired_gre = normalize_gre_tunnel(gre_tunnel)
     current_gre = (
         normalize_gre_tunnel(existing_gre_tunnel) if existing_gre_tunnel else {}
     )
 
-    fields_to_exclude = ["id"]
-    differences_detected = False
-    for key, value in desired_gre.items():
-        if key not in fields_to_exclude and current_gre.get(key) != value:
-            differences_detected = True
-            # module.warn(
-            #     f"Difference detected in {key}. Current: {current_gre.get(key)}, Desired: {value}"
-            # )
+    differences_detected = any(
+        current_gre.get(k) != desired_gre.get(k) for k in desired_gre if k != "id"
+    )
 
     if module.check_mode:
-        # If in check mode, report changes and exit
         if state == "present" and (existing_gre_tunnel is None or differences_detected):
             module.exit_json(changed=True)
-        elif state == "absent" and existing_gre_tunnel is not None:
+        elif state == "absent" and existing_gre_tunnel:
             module.exit_json(changed=True)
         else:
             module.exit_json(changed=False)
 
-    if existing_gre_tunnel is not None:
-        id = existing_gre_tunnel.get("id")
+    # Extract the ID safely
+    if existing_gre_tunnel:
+        tunnel_id = existing_gre_tunnel.get("id")  # Always re-pull the correct ID
         existing_gre_tunnel.update(desired_gre)
-        existing_gre_tunnel["id"] = id
+        existing_gre_tunnel["id"] = tunnel_id  # Explicitly reset ID
 
     if state == "present":
-        if existing_gre_tunnel is not None:
+        if existing_gre_tunnel:
             if differences_detected:
-                """Update"""
                 update_gre = deleteNone(
                     {
-                        "tunnel_id": id,
+                        "tunnel_id": tunnel_id,
                         "source_ip": gre_tunnel.get("source_ip"),
                         "comment": gre_tunnel.get("comment"),
                         "internal_ip_range": gre_tunnel.get("internal_ip_range"),
                         "ip_unnumbered": gre_tunnel.get("ip_unnumbered"),
                         "within_country": gre_tunnel.get("within_country"),
-                        "primary_dest_vip_id": (
-                            gre_tunnel.get("primary_dest_vip_id")[0]
-                            if gre_tunnel.get("primary_dest_vip_id")
-                            else None
-                        ),
-                        "secondary_dest_vip_id": (
-                            gre_tunnel.get("secondary_dest_vip_id")[0]
-                            if gre_tunnel.get("secondary_dest_vip_id")
-                            else None
-                        ),
+                        "primary_dest_vip": gre_tunnel.get("primary_dest_vip"),
+                        "secondary_dest_vip": gre_tunnel.get("secondary_dest_vip"),
                         "sub_cloud": gre_tunnel.get("sub_cloud"),
                     }
                 )
-                updated_gre = client.traffic.update_gre_tunnel(**update_gre).to_dict()
-                module.exit_json(changed=True, data=updated_gre)
+                # if "source_ip" in update_gre:
+                #     update_gre["sourceIp"] = update_gre.pop("source_ip")
+
+                # if "internal_ip_range" in update_gre:
+                #     update_gre["internalIPRange"] = update_gre.pop("internal_ip_range")
+
+                result, _unused, error = client.gre_tunnel.update_gre_tunnel(
+                    **update_gre
+                )
+                if error or not result:
+                    module.fail_json(
+                        msg=f"Failed to update GRE tunnel: {to_native(error)}"
+                    )
+                module.exit_json(changed=True, data=result.as_dict())
             else:
-                """No changes needed"""
                 module.exit_json(
                     changed=False, data=existing_gre_tunnel, msg="No changes detected."
                 )
         else:
-            """Create"""
             create_tunnel = deleteNone(
                 {
                     "source_ip": gre_tunnel.get("source_ip"),
@@ -278,33 +299,33 @@ def core(module):
                     "internal_ip_range": gre_tunnel.get("internal_ip_range"),
                     "ip_unnumbered": gre_tunnel.get("ip_unnumbered"),
                     "within_country": gre_tunnel.get("within_country"),
-                    "primary_dest_vip_id": (
-                        gre_tunnel.get("primary_dest_vip_id")[0]
-                        if gre_tunnel.get("primary_dest_vip_id")
-                        else None
-                    ),
-                    "secondary_dest_vip_id": (
-                        gre_tunnel.get("secondary_dest_vip_id")[0]
-                        if gre_tunnel.get("secondary_dest_vip_id")
-                        else None
-                    ),
+                    "primary_dest_vip": gre_tunnel.get("primary_dest_vip"),
+                    "secondary_dest_vip": gre_tunnel.get("secondary_dest_vip"),
                     "sub_cloud": gre_tunnel.get("sub_cloud"),
                 }
             )
-            try:
-                new_tunnel = client.traffic.add_gre_tunnel(**create_tunnel).to_dict()
-                module.exit_json(changed=True, data=new_tunnel)
-            except Exception as e:
-                module.fail_json(msg=f"Failed to create GRE Tunnel: {str(e)}")
-    elif (
-        state == "absent"
-        and existing_gre_tunnel is not None
-        and existing_gre_tunnel.get("id") is not None
-    ):
-        code = client.traffic.delete_gre_tunnel(tunnel_id=id)
-        if code > 299:
-            module.exit_json(changed=False, data=None)
+            # if "source_ip" in create_tunnel:
+            #     create_tunnel["sourceIp"] = create_tunnel.pop("source_ip")
+
+            # if "internal_ip_range" in create_tunnel:
+            #     create_tunnel["internalIPRange"] = create_tunnel.pop("internal_ip_range")
+
+            module.warn(f"gre_tunnel keys: {gre_tunnel.keys()}")
+            module.warn(f"gre_tunnel source_ip: {gre_tunnel.get('source_ip')}")
+            result, _unused, error = client.gre_tunnel.add_gre_tunnel(**create_tunnel)
+            module.warn(f"create_tunnel payload: {create_tunnel}")
+            if error or not result:
+                module.fail_json(msg=f"Failed to create GRE tunnel: {to_native(error)}")
+            module.exit_json(changed=True, data=result.as_dict())
+
+    elif state == "absent" and existing_gre_tunnel and tunnel_id:
+        _unused, _unused, error = client.gre_tunnel.delete_gre_tunnel(
+            tunnel_id=tunnel_id
+        )
+        if error:
+            module.fail_json(msg=f"Failed to delete GRE tunnel: {to_native(error)}")
         module.exit_json(changed=True, data=existing_gre_tunnel)
+
     module.exit_json(changed=False, data={})
 
 
@@ -318,8 +339,22 @@ def main():
         within_country=dict(type="bool", required=False),
         ip_unnumbered=dict(type="bool", required=False),
         sub_cloud=dict(type="str", required=False),
-        primary_dest_vip_id=dict(type="list", elements="str", required=False),
-        secondary_dest_vip_id=dict(type="list", elements="str", required=False),
+        primary_dest_vip=dict(
+            type="dict",
+            required=False,
+            options=dict(
+                id=dict(type="str", required=False),
+                virtual_ip=dict(type="str", required=False),
+            ),
+        ),
+        secondary_dest_vip=dict(
+            type="dict",
+            required=False,
+            options=dict(
+                id=dict(type="str", required=False),
+                virtual_ip=dict(type="str", required=False),
+            ),
+        ),
         state=dict(type="str", choices=["present", "absent"], default="present"),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)

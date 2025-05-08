@@ -100,7 +100,6 @@ data:
 """
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
@@ -109,39 +108,52 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 
 def core(module):
-    engine_id = module.params.get("id", None)
-    engine_name = module.params.get("name", None)
+    engine_id = module.params.get("id")
+    engine_name = module.params.get("name")
+
     client = ZIAClientHelper(module)
+    engines = []
 
     if engine_id is not None:
-        engine = client.dlp.get_dlp_engines(engine_id)
-        if engine:
-            module.exit_json(changed=False, data=engine.to_dict())
-        else:
+        engine_obj, _unused, error = client.dlp_engine.get_dlp_engines(engine_id)
+        if error or engine_obj is None:
             module.fail_json(
-                msg=f"Failed to retrieve DLP engine with ID: '{engine_id}'"
+                msg=f"Failed to retrieve DLP Engine with ID '{engine_id}': {to_native(error)}"
             )
-
-    engines = client.dlp.list_dlp_engines()
-    if engine_name:
-        # Search for both custom and predefined engine names
-        engine = next(
-            (
-                dlp
-                for dlp in engines
-                if dlp.get("name") == engine_name
-                or dlp.get("predefined_engine_name") == engine_name
-            ),
-            None,
-        )
-        if engine:
-            module.exit_json(changed=False, data=engine.to_dict())
-        else:
-            module.fail_json(
-                msg=f"Failed to retrieve DLP engine with name: '{engine_name}'"
-            )
+        engines = [engine_obj.as_dict()]
     else:
-        module.exit_json(changed=False, data=[engine.to_dict() for engine in engines])
+        query_params = {}
+        if engine_name:
+            query_params["search"] = engine_name
+
+        result, _unused, error = client.dlp_engine.list_dlp_engines(
+            query_params=query_params
+        )
+        if error:
+            module.fail_json(msg=f"Error retrieving DLP Engines: {to_native(error)}")
+
+        engine_list = [e.as_dict() for e in result] if result else []
+
+        if engine_name:
+            matched = next(
+                (
+                    e
+                    for e in engine_list
+                    if e.get("name") == engine_name
+                    or e.get("predefined_engine_name") == engine_name
+                ),
+                None,
+            )
+            if not matched:
+                available = [e.get("name") for e in engine_list]
+                module.fail_json(
+                    msg=f"DLP Engine with name '{engine_name}' not found. Available engines: {available}"
+                )
+            engines = [matched]
+        else:
+            engines = engine_list
+
+    module.exit_json(changed=False, engines=engines)
 
 
 def main():
@@ -150,7 +162,13 @@ def main():
         name=dict(type="str", required=False),
         id=dict(type="int", required=False),
     )
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=True,
+        mutually_exclusive=[["name", "id"]],
+    )
+
     try:
         core(module)
     except Exception as e:

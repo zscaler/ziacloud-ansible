@@ -58,6 +58,33 @@ options:
         - This is a required field for IP auth type and is not applicable to other auth types.
     required: false
     type: str
+  type:
+    description:
+        - Only gets VPN credentials for the specified type.
+        - This parameter is not supported for partner API keys.
+    required: false
+    type: str
+    choices:
+      - CN
+      - IP
+      - UFQDN
+      - XAUTH
+  include_only_without_location:
+    description:
+        - Include VPN credential only if not associated to any location.
+    required: false
+    type: bool
+  location_id:
+    description:
+        - Gets the VPN credentials for the specified location ID.
+    required: false
+    type: int
+  managed_by:
+    description:
+        - Gets the VPN credentials that are managed by the given partner.
+        - This filter is automatically applied when called with a partner API key, and it cannot be overridden.
+    required: false
+    type: int
 """
 
 EXAMPLES = r"""
@@ -117,47 +144,64 @@ credentials:
 """
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
+    collect_all_items,
+)
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
     ZIAClientHelper,
 )
 
 
 def core(module):
-    client = ZIAClientHelper(module)
-    vpn_id = module.params.get("id", None)
-    fqdn = module.params.get("fqdn", None)
-    ip_address = module.params.get("ip_address", None)
+    vpn_id = module.params.get("id")
+    fqdn = module.params.get("fqdn")
+    ip_address = module.params.get("ip_address")
 
+    client = ZIAClientHelper(module)
     credentials = []
+
     if vpn_id is not None:
-        credentialBox = client.traffic.get_vpn_credential(credential_id=vpn_id)
-        if credentialBox is None:
+        vpn_obj, _unused, error = client.traffic_vpn_credentials.get_vpn_credential(
+            credential_id=vpn_id
+        )
+        if error or vpn_obj is None:
             module.fail_json(
-                msg="Failed to retrieve VPN credential with ID: '%s'" % vpn_id
+                msg=f"Failed to retrieve VPN credential with ID '{vpn_id}': {to_native(error)}"
             )
-        credentials = [credentialBox.to_dict()]
-    elif fqdn is not None:
-        credentialBox = client.traffic.get_vpn_credential(fqdn=fqdn)
-        if credentialBox is None:
-            module.fail_json(
-                msg="Failed to retrieve VPN credential with FQDN: '%s'" % fqdn
-            )
-        credentials = [credentialBox.to_dict()]
-    elif ip_address is not None:
-        all_credentials = client.traffic.list_vpn_credentials().to_list()
-        for cred in all_credentials:
-            if cred.get("ip_address") == ip_address:
-                credentials.append(cred)
-        if not credentials:
-            module.fail_json(
-                msg="Failed to retrieve VPN credential with IP address: '%s'"
-                % ip_address
-            )
+        credentials = [vpn_obj.as_dict()]
     else:
-        credentials = client.traffic.list_vpn_credentials().to_list()
+        query_params = {}
+
+        # Set implicit search
+        if fqdn:
+            query_params["search"] = fqdn
+        elif ip_address:
+            query_params["search"] = ip_address
+
+        # Add additional filters
+        for param in [
+            "type",
+            "include_only_without_location",
+            "location_id",
+            "managed_by",
+        ]:
+            val = module.params.get(param)
+            if val is not None:
+                query_params[param] = val
+
+        result, err = collect_all_items(
+            client.traffic_vpn_credentials.list_vpn_credentials, query_params or None
+        )
+        if err:
+            module.fail_json(msg=f"Error retrieving VPN credentials: {to_native(err)}")
+
+        credentials = (
+            [c.as_dict() if hasattr(c, "as_dict") else c for c in result]
+            if result
+            else []
+        )
 
     module.exit_json(changed=False, credentials=credentials)
 
@@ -165,11 +209,20 @@ def core(module):
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
+        id=dict(type="int", required=False),
         fqdn=dict(type="str", required=False),
         ip_address=dict(type="str", required=False),
-        id=dict(type="int", required=False),
+        type=dict(type="str", required=False, choices=["CN", "IP", "UFQDN", "XAUTH"]),
+        include_only_without_location=dict(type="bool", required=False),
+        location_id=dict(type="int", required=False),
+        managed_by=dict(type="int", required=False),
     )
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=True,
+    )
+
     try:
         core(module)
     except Exception as e:

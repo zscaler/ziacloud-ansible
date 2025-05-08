@@ -115,31 +115,26 @@ RETURN = r"""
 
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
     ZIAClientHelper,
 )
 
 
 def normalize_dlp_template(template):
-    """
-    Normalize dlp notification template data by setting computed values.
-    """
-    normalized = template.copy()
-
-    computed_values = []
+    """Normalize dlp template data by removing computed values"""
+    normalized = template.copy() if template else {}
+    computed_values = ["id"]
     for attr in computed_values:
         normalized.pop(attr, None)
-
     return normalized
 
 
 def core(module):
     state = module.params.get("state")
     client = ZIAClientHelper(module)
+
     params = [
         "id",
         "name",
@@ -149,29 +144,45 @@ def core(module):
         "html_message",
         "tls_enabled",
     ]
+
     template = {param: module.params.get(param) for param in params}
-
     template_id = template.get("id")
-    existing_template = (
-        client.dlp.get_dlp_templates(template_id).to_dict() if template_id else None
-    )
-    if not existing_template and template.get("name"):
-        templates = client.dlp.list_dlp_templates().to_list()
-        existing_template = next(
-            (t for t in templates if t.get("name") == template.get("name")), None
-        )
+    template_name = template.get("name")
 
+    existing_template = None
+    if template_id:
+        result = client.dlp_templates.get_dlp_templates(template_id)
+        if result[2]:  # Error check
+            module.fail_json(
+                msg=f"Error fetching DLP template ID {template_id}: {to_native(result[2])}"
+            )
+        existing_template = result[0].as_dict() if result[0] else None
+    else:
+        result = client.dlp_templates.list_dlp_templates()
+        if result[2]:  # Error check
+            module.fail_json(msg=f"Error listing DLP templates: {to_native(result[2])}")
+        for t in result[0]:
+            if t.name == template_name:
+                existing_template = t.as_dict()
+                break
+
+    # Normalize and compare states
+    desired = normalize_dlp_template(template)
+    current = normalize_dlp_template(existing_template) if existing_template else {}
+
+    # Drift detection
     differences_detected = False
-    if existing_template:
-        updated_template = {k: v for k, v in template.items() if v is not None}
-        differences_detected = any(
-            existing_template.get(k) != v for k, v in updated_template.items()
-        )
+    for key, value in desired.items():
+        if current.get(key) != value:
+            differences_detected = True
+            module.warn(
+                f"Difference detected in {key}. Current: {current.get(key)}, Desired: {value}"
+            )
 
     if module.check_mode:
         if state == "present" and (existing_template is None or differences_detected):
             module.exit_json(changed=True)
-        elif state == "absent" and existing_template is not None:
+        elif state == "absent" and existing_template:
             module.exit_json(changed=True)
         else:
             module.exit_json(changed=False)
@@ -179,20 +190,36 @@ def core(module):
     if state == "present":
         if existing_template:
             if differences_detected:
-                updated_template["template_id"] = existing_template["id"]
-                response = client.dlp.update_dlp_template(**updated_template).to_dict()
-                module.exit_json(changed=True, data=response)
+                update_data = {k: v for k, v in template.items() if v is not None}
+                update_data["template_id"] = existing_template["id"]
+                module.warn("Payload Update for SDK: {}".format(update_data))
+                updated = client.dlp_templates.update_dlp_template(**update_data)
+                if updated[2]:
+                    module.fail_json(
+                        msg=f"Error updating DLP template: {to_native(updated[2])}"
+                    )
+                module.exit_json(changed=True, data=updated[0].as_dict())
             else:
                 module.exit_json(changed=False, data=existing_template)
         else:
-            response = client.dlp.add_dlp_template(**template).to_dict()
-            module.exit_json(changed=True, data=response)
+            module.warn("Payload Update for SDK: {}".format(template))
+            created = client.dlp_templates.add_dlp_template(**template)
+            if created[2]:
+                module.fail_json(
+                    msg=f"Error creating DLP template: {to_native(created[2])}"
+                )
+            module.exit_json(changed=True, data=created[0].as_dict())
     elif state == "absent":
         if existing_template:
-            client.dlp.delete_dlp_template(template_id=existing_template["id"])
+            deleted = client.dlp_templates.delete_dlp_template(
+                template_id=existing_template["id"]
+            )
+            if deleted[2]:
+                module.fail_json(
+                    msg=f"Error deleting DLP template: {to_native(deleted[2])}"
+                )
             module.exit_json(changed=True, data=existing_template)
-        else:
-            module.exit_json(changed=False, data={})
+        module.exit_json(changed=False, data={})
 
 
 def main():

@@ -47,11 +47,20 @@ options:
     description: URL category ID. See U(https://help.zscaler.com/zia/url-categories#/urlCategories-get)
     required: false
     type: str
-  configured_name:
+  name:
     description: "Name of the URL category. This is only required for custom URL categories."
     required: false
     type: str
-
+  custom_only:
+    description: If set to true, gets information on custom URL categories only.
+    required: false
+    type: bool
+  include_only_url_keyword_counts:
+    description:
+      - By default this parameter is set to false, so the response includes URLs and keywords for custom URL categories only
+      - If set to true, the response only includes URL and keyword counts.
+    required: false
+    type: bool
 """
 
 EXAMPLES = r"""
@@ -77,7 +86,7 @@ categories:
       returned: always
       type: str
       sample: "CUSTOM_02"
-    configured_name:
+    name:
       description: The name configured for the URL category.
       returned: when custom categories are queried
       type: str
@@ -160,7 +169,6 @@ categories:
 """
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
@@ -169,45 +177,58 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 
 def core(module):
-    category_id = module.params.get("id", None)
-    configured_name = module.params.get("configured_name", None)
+    category_id = module.params.get("id")
+    configured_name = module.params.get("name")  # Standard Ansible alias for search
+    custom_only = module.params.get("custom_only")
+    include_keyword_counts = module.params.get("include_only_url_keyword_counts")
+
     client = ZIAClientHelper(module)
+    categories = []
 
-    # Retrieve all categories
-    categories = client.url_categories.list_categories().to_list()
-
-    # Search by ID
     if category_id is not None:
-        for category in categories:
-            if category.get("id") == category_id:
-                module.exit_json(changed=False, categories=[category])
-        module.fail_json(msg="Failed to retrieve URL category ID: '%s'" % (category_id))
-
-    # Search by Configured Name for Custom Categories
-    elif configured_name is not None:
-        for category in categories:
-            if (
-                category.get("custom_category")
-                and category.get("configured_name") == configured_name
-            ):
-                module.exit_json(changed=False, categories=[category])
-        module.fail_json(
-            msg="Failed to retrieve URL category with configured name: '%s'"
-            % (configured_name)
-        )
-
-    # If neither ID nor Configured Name is provided, return all categories
+        category_obj, _unused, error = client.url_categories.get_category(category_id)
+        if error or category_obj is None:
+            module.fail_json(
+                msg=f"Failed to retrieve URL category with ID '{category_id}': {to_native(error)}"
+            )
+        categories = [category_obj.as_dict()]
     else:
-        module.exit_json(changed=False, categories=categories)
+        query_params = {}
+
+        # Map Ansible 'name' to search on configured_name
+        if configured_name:
+            query_params["search"] = configured_name
+        if custom_only is not None:
+            query_params["custom_only"] = custom_only
+        if include_keyword_counts is not None:
+            query_params["include_only_url_keyword_counts"] = include_keyword_counts
+
+        result, _unused, error = client.url_categories.list_categories(
+            query_params=query_params
+        )
+        if error:
+            module.fail_json(msg=f"Error retrieving URL categories: {to_native(error)}")
+
+        categories = [c.as_dict() for c in result] if result else []
+
+    module.exit_json(changed=False, categories=categories)
 
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         id=dict(type="str", required=False),
-        configured_name=dict(type="str", required=False),
+        name=dict(type="str", required=False),
+        custom_only=dict(type="bool", required=False),
+        include_only_url_keyword_counts=dict(type="bool", required=False),
     )
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=True,
+        mutually_exclusive=[["id", "name"]],
+    )
+
     try:
         core(module)
     except Exception as e:

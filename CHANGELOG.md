@@ -1,5 +1,116 @@
 # Zscaler Internet Access (ZIA) Ansible Collection Changelog
 
+## 2.0.0 (May, 6 2025) - BREAKING CHANGES
+
+### Notes
+
+- Python Versions: **v3.9, v3.10, v3.11**
+
+#### Enhancements - Zscaler OneAPI Support - BREAKING CHANGES
+
+[PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68): The ZIA Ansible Collection now offers support for [OneAPI](https://help.zscaler.com/oneapi/understanding-oneapi) Oauth2 authentication through [Zidentity](https://help.zscaler.com/zidentity/what-zidentity).
+
+**NOTE** As of version v2.0.0, this collection offers backwards compatibility to the Zscaler legacy API framework. This is the recommended authentication method for organizations whose tenants are still not migrated to [Zidentity](https://help.zscaler.com/zidentity/what-zidentity).
+
+⚠️ **WARNING**: Please refer to the [Authentication Page](https://ziacloud-ansible.readthedocs.io/en/latest/authentication.html) for details on authentication requirements prior to upgrading your collection configuration.
+
+⚠️ **WARNING**: Attention Government customers. OneAPI and Zidentity is not currently supported for the following clouds: `zscalergov` and `zscalerten`. Refer to the [Legacy API Framework](https://github.com/zscaler/terraform-provider-zpa/blob/master/docs/index) section for more information on how authenticate to these environments using the legacy method.
+
+### ENV VARS: ZIA Sandbox Submission - BREAKING CHANGES
+
+[PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68): Authentication to Zscaler Sandbox service now use the following attributes.
+
+- `sandboxToken` - Can also be sourced from the `ZSCALER_SANDBOX_TOKEN` environment variable.
+- `sandboxCloud` - Can also be sourced from the `ZSCALER_SANDBOX_CLOUD` environment variable.
+
+The use of the previous envioronment variables combination `ZIA_SANDBOX_TOKEN` and `ZIA_CLOUD` is now deprecated.
+
+[PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68): The following resources have been renamed:
+
+- `zia_cloud_firewall_filtering_rule.py` - Renamed to `zia_cloud_firewall_rule`
+- `zia_cloud_firewall_filtering_rule_info.py.py` - Renamed to `zia_cloud_firewall_rule_info`
+- `zia_cloud_firewall_filtering_rule_info.py.py` - Renamed to `zia_cloud_firewall_rule_info`
+
+### NEW - RESOURCES
+
+[PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68): The following new resources and data sources have been introduced:
+
+- Added resource ``zia_advanced_settings`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Manages advanced threat configuration settings
+- Added info resource ``zia_advanced_settings_info`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Retrieves advanced threat configuration settings
+[Configuring Advanced Settings](https://help.zscaler.com/zia/configuring-advanced-settings)
+
+- Added resource ``zia_atp_malicious_urls`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Manages malicious URLs added to the denylist in ATP policy
+- Added info resource ``zia_atp_malicious_urls_info`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Retrieves malicious URLs added to the denylist in ATP policy
+
+- Added resource ``zia_atp_settings`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Updates the advanced threat configuration settings
+- Added info resource ``zia_atp_settings_info`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Retrieves the advanced threat configuration settings
+
+- Added resource ``zia_atp_security_exceptions`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Manages Security Exceptions (URL Bypass List) for the ATP policy
+- Added info resource ``zia_atp_security_exceptions_info`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Retrieves information about the security exceptions configured for the ATP policy
+
+- Added resource ``zia_atp_malware_inspection`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Updates the traffic inspection configurations of Malware Protection policy
+- Added info resource ``zia_atp_malware_inspection_info`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Retrieves the traffic inspection configurations of Malware Protection policy. [Malware Protection](https://help.zscaler.com/zia/policies/malware-protection)
+[Malware Protection](https://help.zscaler.com/zia/policies/malware-protection)
+
+- Added resource ``zia_atp_malware_protocols`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68)
+- Added info resource ``zia_atp_malware_protocols_info`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Retrieves Advanced Threat Protection Malware Protocols configuration. [Malware Protection](https://help.zscaler.com/zia/policies/malware-protection)
+
+- Added resource ``zia_atp_malware_settings`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Manages Advanced Threat Protection Malware Settings.
+- Added inforesource ``zia_atp_malware_settings_info`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Retrieves Advanced Threat Protection Malware Settings. [Malware Protection](https://help.zscaler.com/zia/policies/malware-protection)
+
+- Added resource ``zia_atp_malware_policy`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Manages Advanced Threat Protection Malware Policy. [Malware Protection](https://help.zscaler.com/zia/policies/malware-protection)
+- Added info resource ``zia_atp_malware_policy_info`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Retrieves Advanced Threat Protection Malware Policy. [Malware Protection](https://help.zscaler.com/zia/policies/malware-protection)
+
+- Added resource ``zia_mobile_advanced_threat_settings`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Manages Mobile Malware Protection Policy. [Malware Protection](https://help.zscaler.com/zia/policies/malware-protection)
+- Added info resource ``zia_mobile_advanced_threat_settings_info`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Retrieves Mobile Malware Protection Policy [Mobile Malware Protection](https://help.zscaler.com/zia/understanding-mobile-malware-protection)
+
+- Added resource ``zia_end_user_notification`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Manages browser-based end user notification (EUN) configuration details.
+- Added resource ``zia_end_user_notification_info`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Manages browser-based end user notification (EUN) configuration details. [Understanding Browser-Based End User Notifications](https://help.zscaler.com/zia/understanding-browser-based-end-user-notifications)
+
+- Added resource ``zia_ftp_control_policy`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Updates the FTP Control settings.
+- Added resource ``zia_ftp_control_policy_info`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Retrieves the FTP Control status and the list of URL categories for which FTP is allowed. [About FTP Control Policy](https://help.zscaler.com/zia/about-ftp-control)
+
+- Added resource ``zia_sandbox_rules`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Manage Sandbox Rules
+- Added info resource ``zia_sandbox_rules_info`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Retrieve Sandbox Rules information
+
+- Added resource ``zia_cloud_firewall_dns_rule`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Manage Cloud Firewall DNS Rules
+- Added info resource ``zia_cloud_firewall_dns_rule_info``[PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Manage Cloud Firewall DNS Rules
+
+- Added info resource ``zia_cloud_firewall_ips_rules`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Retrieve Cloud Firewall IPS Rules
+- Added info resource ``zia_cloud_firewall_ips_rules_info`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Retrieve Cloud Firewall IPS Rules
+
+- Added resource ``zia_file_type_control_rules`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Manage File Type Control Rules
+- Added info resource ``zia_file_type_control_rules_info`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Retrieve File Type Control Rules
+
+- Added resource ``zia_ssl_inspection_rules`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Manages SSL Inspection Rules.
+- Added info resource ``zia_ssl_inspection_rules_info`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Retrives SSL Inspection Rules.
+
+- Added resource ``zia_nat_control_policy`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Manages NAT Control Policy.
+- Added info resource ``zia_nat_control_policy_info`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Retrives NAT Control Policy.
+
+- Added and resource ``zia_url_filtering_and_cloud_app_settings`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Manages the URL and Cloud App Control advanced policy settings.
+- Added info resource ``zia_url_filtering_and_cloud_app_settings_info`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Retrives the URL and Cloud App Control advanced policy settings. [Configuring Advanced Policy Settings](https://help.zscaler.com/zia/configuring-advanced-policy-settings)
+
+- Added info resource ``zia_cloud_applications_info`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Retrieves Predefined and User Defined Cloud Applications associated with the DLP rules, Cloud App Control rules, Advanced Settings, Bandwidth Classes, File Type Control rules, and SSL Inspection rules.
+
+- Added resource ``zia_dns_gateway`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Manages DNS Gateway object.
+- Added info resource ``zia_dns_gateway_info`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Retrives DNS Gateway object.
+
+- Added resource ``zia_third_party_proxy_service`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Manages third party proxy objects.
+- Added info resource ``zia_third_party_proxy_service_info`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Retrives third party proxy objects.
+
+- Added resource ``zia_nss_servers`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Manages NSS Server objects.
+- Added info resource ``zia_nss_servers_info`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Retrives NSS Server objects.
+
+- Added resource ``zia_cloud_application_instances`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Manages Cloud Application Instances.
+- Added info resource ``zia_cloud_application_instances_info`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Retrives Cloud Application Instances object.
+
+- Added resource ``zia_risk_profiles`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Manages Risk Profiles objects.
+- Added info resource ``zia_risk_profiles_info`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Retrives Risk Profiles configuration.
+
+- Added resource ``zia_remote_assistance`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Manages Remote Assistance configuration.
+- Added info resource ``zia_remote_assistance_info`` [PR #68](https://github.com/zscaler/ziacloud-ansible/pull/68) :rocket: - Retrives Remote Assistance configuration.
+
 ## v1.3.5 (March, 20 2025)
 
 ### Notes

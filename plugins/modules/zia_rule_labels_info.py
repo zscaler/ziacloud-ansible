@@ -139,26 +139,43 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 
 def core(module):
-    label_id = module.params.get("id", None)
-    label_name = module.params.get("name", None)
+    label_id = module.params.get("id")
+    label_name = module.params.get("name")
+
     client = ZIAClientHelper(module)
     labels = []
+
     if label_id is not None:
-        label = client.labels.get_label(label_id).to_dict()
-        labels = [label]
+        label_obj, _unused, error = client.rule_labels.get_label(label_id)
+        if error or label_obj is None:
+            module.fail_json(
+                msg=f"Failed to retrieve Rule Label with ID '{label_id}': {to_native(error)}"
+            )
+        labels = [label_obj.as_dict()]
     else:
-        labels = client.labels.list_labels().to_list()
-        if label_name is not None:
-            label = None
-            for rule in labels:
-                if rule.get("name", None) == label_name:
-                    label = rule
-                    break
-            if label is None:
+        query_params = {}
+        if label_name:
+            query_params["search"] = label_name
+
+        result, _unused, error = client.rule_labels.list_labels(
+            query_params=query_params
+        )
+        if error:
+            module.fail_json(msg=f"Error retrieving Rule Labels: {to_native(error)}")
+
+        label_list = [g.as_dict() for g in result] if result else []
+
+        if label_name:
+            matched = next((g for g in label_list if g.get("name") == label_name), None)
+            if not matched:
+                available = [g.get("name") for g in label_list]
                 module.fail_json(
-                    msg="Failed to retrieve ip source group: '%s'" % (label_name)
+                    msg=f"Rule Label with name '{label_name}' not found. Available labels: {available}"
                 )
-            labels = [label]
+            labels = [matched]
+        else:
+            labels = label_list
+
     module.exit_json(changed=False, labels=labels)
 
 
@@ -168,7 +185,13 @@ def main():
         name=dict(type="str", required=False),
         id=dict(type="int", required=False),
     )
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=True,
+        mutually_exclusive=[["name", "id"]],
+    )
+
     try:
         core(module)
     except Exception as e:

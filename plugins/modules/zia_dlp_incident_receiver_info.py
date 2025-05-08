@@ -101,7 +101,6 @@ receivers:
 """
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
@@ -110,27 +109,43 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 
 def core(module):
-    receiver_id = module.params.get("id", None)
-    receiver_name = module.params.get("name", None)
+    receiver_id = module.params.get("id")
+    receiver_name = module.params.get("name")
+
     client = ZIAClientHelper(module)
     receivers = []
+
     if receiver_id is not None:
-        receiver = client.dlp.get_dlp_incident_receiver(receiver_id).to_dict()
-        receivers = [receiver]
+        receivers_obj, _unused, error = client.dlp_resources.get_dlp_incident_receiver(
+            receiver_id
+        )
+        if error or receivers_obj is None:
+            module.fail_json(
+                msg=f"Failed to retrieve DLP Incident Receiver with ID '{receiver_id}': {to_native(error)}"
+            )
+        receivers = [receivers_obj.as_dict()]
     else:
-        receivers = client.dlp.list_dlp_incident_receiver().to_list()
-        if receiver_name is not None:
-            receiver = None
-            for dlp in receivers:
-                if dlp.get("name", None) == receiver_name:
-                    receiver = dlp
-                    break
-            if receiver is None:
+        result, _unused, error = client.dlp_resources.list_dlp_incident_receiver()
+        if error:
+            module.fail_json(
+                msg=f"Error retrieving DLP Incident Receivers: {to_native(error)}"
+            )
+
+        receiver_list = [i.as_dict() for i in result] if result else []
+
+        if receiver_name:
+            matched = next(
+                (i for i in receiver_list if i.get("name") == receiver_name), None
+            )
+            if not matched:
+                available = [i.get("name") for i in receiver_list]
                 module.fail_json(
-                    msg="Failed to retrieve dlp incident receiver: '%s'"
-                    % (receiver_name)
+                    msg=f"DLP Incident Receiver named '{receiver_name}' not found. Available: {available}"
                 )
-            receivers = [receiver]
+            receivers = [matched]
+        else:
+            receivers = receiver_list
+
     module.exit_json(changed=False, receivers=receivers)
 
 
@@ -140,7 +155,13 @@ def main():
         name=dict(type="str", required=False),
         id=dict(type="int", required=False),
     )
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=True,
+        mutually_exclusive=[["name", "id"]],
+    )
+
     try:
         core(module)
     except Exception as e:

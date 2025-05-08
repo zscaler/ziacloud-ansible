@@ -125,37 +125,48 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 
 def core(module):
-    group_id = module.params.get("id", None)
-    group_name = module.params.get("name", None)
+    group_id = module.params.get("id")
+    group_name = module.params.get("name")
+
     client = ZIAClientHelper(module)
-    service_groups = []
+    groups = []
 
     if group_id is not None:
-        service_group = client.firewall.get_network_svc_group(group_id).to_dict()
-        service_groups = [service_group]
-    else:
-        service_groups = client.firewall.list_network_svc_groups(
-            search=group_name
-        ).to_list()
-        if not service_groups:
+        group_obj, _unused, error = client.cloud_firewall.get_network_svc_group(
+            group_id
+        )
+        if error or group_obj is None:
             module.fail_json(
-                msg="Failed to retrieve network services group: '%s'" % (group_name)
+                msg=f"Failed to retrieve Network Service Groups with ID '{group_id}': {to_native(error)}"
             )
-        elif group_name is not None:
-            service_group = None
-            for service in service_groups:
-                if service.get("name", None) == group_name:
-                    service_group = service
-                    break
+        groups = [group_obj.as_dict()]
+    else:
+        query_params = {}
+        if group_name:
+            query_params["search"] = group_name
 
-            if service_group is None:
+        result, _unused, error = client.cloud_firewall.list_network_svc_groups(
+            query_params=query_params
+        )
+        if error:
+            module.fail_json(
+                msg=f"Error retrieving Network Service Groups: {to_native(error)}"
+            )
+
+        group_list = [g.as_dict() for g in result] if result else []
+
+        if group_name:
+            matched = next((g for g in group_list if g.get("name") == group_name), None)
+            if not matched:
+                available = [g.get("name") for g in group_list]
                 module.fail_json(
-                    msg="Failed to retrieve network services group: '%s'. Available services: %s"
-                    % (group_name, service_groups)
+                    msg=f"Network Service Groups with name '{group_name}' not found. Available groups: {available}"
                 )
-            service_groups = [service_group]
+            groups = [matched]
+        else:
+            groups = group_list
 
-    module.exit_json(changed=False, service_groups=service_groups)
+    module.exit_json(changed=False, groups=groups)
 
 
 def main():
@@ -165,7 +176,11 @@ def main():
         id=dict(type="int", required=False),
     )
 
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=True,
+        mutually_exclusive=[["name", "id"]],
+    )
 
     try:
         core(module)

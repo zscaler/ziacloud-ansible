@@ -330,20 +330,16 @@ try:
     import pytz
 
     HAS_PYTZ = True
-    PYTZ_IMPORT_ERROR = None  # Explicitly set to None when import is successful
+    PYTZ_IMPORT_ERROR = None
 except ImportError:
-    pytz = None  # Set to None to indicate the module is unavailable
+    pytz = None
     HAS_PYTZ = False
-    PYTZ_IMPORT_ERROR = missing_required_lib(
-        "pytz"
-    )  # Use missing_required_lib for better error messages
+    PYTZ_IMPORT_ERROR = missing_required_lib("pytz")
 
 
 def validate_and_convert_time_fields(rule):
     if not HAS_PYTZ:
-        raise ImportError(
-            PYTZ_IMPORT_ERROR
-        )  # Properly handle the case where pytz is not available
+        raise ImportError(PYTZ_IMPORT_ERROR)
 
     enforce_time_validity = rule.get("enforce_time_validity")
     if enforce_time_validity:
@@ -371,36 +367,24 @@ def validate_and_convert_time_fields(rule):
 
 
 def validate_additional_fields(rule):
-    """
-    Validates additional fields in the rule.
-    """
-
-    # Validate time_quota
     time_quota = rule.get("time_quota")
     if time_quota and (time_quota < 15 or time_quota > 600):
         raise ValueError("time_quota must be within the range of 15 to 600 minutes")
 
-    # Validate and convert size_quota from MB to KB
     size_quota_mb = rule.get("size_quota")
     if size_quota_mb:
         if size_quota_mb < 10 or size_quota_mb > 100000:
             raise ValueError(
                 "size_quota must be within the range of 10 MB to 100000 MB"
             )
-        # Convert MB to KB for API
         rule["size_quota"] = size_quota_mb * 1024
 
 
 def normalize_rule(rule):
-    """
-    Normalize rule data by setting computed values.
-    """
     if not rule:
         return {}
 
     normalized = rule.copy()
-
-    # Add 'profile_seq' to the list of computed values to be removed
     computed_values = ["profile_seq"]
     for attr in computed_values:
         if (
@@ -413,16 +397,27 @@ def normalize_rule(rule):
     return normalized
 
 
+def preprocess_rule(rule, params):
+    for attr in params:
+        if attr in rule and rule[attr] is not None:
+            if isinstance(rule[attr], list):
+                if all(isinstance(item, dict) and "id" in item for item in rule[attr]):
+                    rule[attr] = [item["id"] for item in rule[attr]]
+                else:
+                    rule[attr] = sorted(rule[attr])
+    return rule
+
+
 def core(module):
     state = module.params.get("state", None)
     client = ZIAClientHelper(module)
-    rule = dict()
+
     params = [
         "id",
         "name",
         "description",
         "actions",
-        "type",  # This will store the value from rule_type
+        "type",
         "order",
         "protocols",
         "locations",
@@ -454,87 +449,95 @@ def core(module):
         "cbi_profile",
     ]
 
-    # Map rule_type to type in the payload
-    rule["type"] = module.params.get("rule_type", None)
-
-    for param_name in params:
-        if param_name != "type":  # Skip because it's already handled above
-            rule[param_name] = module.params.get(param_name, None)
+    rule = {param: module.params.get(param) for param in params}
+    rule["type"] = module.params.get("rule_type")
 
     # Normalize boolean attributes
     bool_attributes = ["enforce_time_validity", "cascading_enabled"]
     rule = normalize_boolean_attributes(rule, bool_attributes)
 
-    # Add the validation and conversion logic here
+    # Validate and convert fields
     validate_and_convert_time_fields(rule)
-
-    # Validate and convert additional fields
     validate_additional_fields(rule)
 
-    rule_id = rule.get("id", None)
-    rule_name = rule.get("name", None)
-    rule_type = rule.get("type", None)  # Use the mapped type
+    rule_id = rule.get("id")
+    rule_name = rule.get("name")
+    rule_type = rule.get("type")
 
     existing_rule = None
     if rule_id is not None:
-        ruleBox = client.cloudappcontrol.get_rule(rule_type=rule_type, rule_id=rule_id)
-        if ruleBox is not None:
-            existing_rule = ruleBox.to_dict()
-    elif rule_name is not None:
-        rules = client.cloudappcontrol.list_rules(rule_type=rule_type).to_list()
-        for rule_ in rules:
-            if rule_.get("name") == rule_name:
-                existing_rule = rule_
+        result, _unused, error = client.cloudappcontrol.get_rule(
+            rule_type=rule_type, rule_id=rule_id
+        )
+        if error:
+            module.fail_json(
+                msg=f"Error fetching rule with id {rule_id}: {to_native(error)}"
+            )
+        if result:
+            existing_rule = result.as_dict()
+    else:
+        result, _unused, error = client.cloudappcontrol.list_rules(rule_type=rule_type)
+        if error:
+            module.fail_json(msg=f"Error listing rules: {to_native(error)}")
+        if result:
+            for rule_ in result:
+                if rule_.name == rule_name:
+                    existing_rule = rule_.as_dict()
+                    break
 
-    # Normalize and compare existing and desired data
+    # Normalize and compare
     desired_rule = normalize_rule(rule)
     current_rule = normalize_rule(existing_rule) if existing_rule else {}
 
-    def preprocess_rules(rule, params):
-        """
-        Preprocess specific attributes in the rule based on their type and structure.
-        :param rule: Dict containing the rule data.
-        :param params: List of attribute names to be processed.
-        :return: Preprocessed rule.
-        """
-        for attr in params:
-            if attr in rule and rule[attr] is not None:
-                # Process list attributes
-                if isinstance(rule[attr], list):
-                    # If list contains dictionaries with 'id', extract IDs
-                    if all(
-                        isinstance(item, dict) and "id" in item for item in rule[attr]
-                    ):
-                        rule[attr] = [item["id"] for item in rule[attr]]
-                    else:
-                        # Sort lists for consistent order
-                        rule[attr] = sorted(rule[attr])
-                # Add more conditions here if needed for other types
-        return rule
+    desired_rule_preprocessed = preprocess_rule(desired_rule, params)
+    existing_rule_preprocessed = preprocess_rule(current_rule, params)
 
-    existing_rule_preprocessed = preprocess_rules(current_rule, params)
-    desired_rule_preprocessed = preprocess_rules(desired_rule, params)
-
-    # Then proceed with your comparison logic
     differences_detected = False
+    list_attributes = [
+        "locations",
+        "groups",
+        "departments",
+        "users",
+        "time_windows",
+        "cloud_app_instances",
+        "tenancy_profile_ids",
+        "location_groups",
+        "labels",
+        "user_agent_types",
+        "device_trust_levels",
+        "device_groups",
+        "devices",
+        "user_risk_score_levels",
+    ]
+
     for key in params:
         desired_value = desired_rule_preprocessed.get(key)
         current_value = existing_rule_preprocessed.get(key)
 
-        # Skip comparison for 'id' if it's not in the desired rule but present in the existing rule
         if key == "id" and desired_value is None and current_value is not None:
             continue
 
-        # Convert 'state' in current_rule to boolean 'enabled'
         if key == "enabled" and "state" in current_rule:
             current_value = current_rule["state"] == "ENABLED"
 
-        # Handling None values for all attributes
-        if desired_value is None and key != "enabled":
-            # Explicitly setting to empty list or empty value based on type
-            rule[key] = [] if isinstance(current_value, list) else None
+        # Special handling for list attributes - treat empty list and None as equivalent
+        if key in list_attributes:
+            if desired_value in (None, []) and current_value in (None, []):
+                continue
+            if desired_value is None:
+                desired_value = []
+            if current_value is None:
+                current_value = []
 
-        # Special handling for lists of IDs like device_groups
+        # Special handling for quota fields - treat 0 and None as equivalent
+        if key in ["time_quota", "size_quota"]:
+            if desired_value in (None, 0) and current_value in (None, 0):
+                continue
+            if desired_value is None:
+                desired_value = 0
+            if current_value is None:
+                current_value = 0
+
         if isinstance(desired_value, list) and isinstance(current_value, list):
             if all(isinstance(x, int) for x in desired_value) and all(
                 isinstance(x, int) for x in current_value
@@ -549,7 +552,6 @@ def core(module):
             )
 
     if module.check_mode:
-        # If in check mode, report changes and exit
         if state == "present" and (existing_rule is None or differences_detected):
             module.exit_json(changed=True)
         elif state == "absent" and existing_rule is not None:
@@ -557,130 +559,135 @@ def core(module):
         else:
             module.exit_json(changed=False)
 
-    if existing_rule is not None:
-        id = existing_rule.get("id")
-        existing_rule.update(rule)
-        existing_rule["id"] = id
-
-    module.warn(f"Final payload being sent to SDK: {rule}")
     if state == "present":
-        if existing_rule is not None:
+        if existing_rule:
             if differences_detected:
-                """Update"""
-                update_rule = deleteNone(
-                    dict(
-                        rule_id=existing_rule.get("id", ""),
-                        name=existing_rule.get("name", ""),
-                        description=existing_rule.get("description", ""),
-                        enabled=existing_rule.get("enabled", ""),
-                        actions=existing_rule.get("actions", ""),
-                        type=existing_rule.get("type", ""),
-                        order=existing_rule.get("order", ""),
-                        locations=existing_rule.get("locations", ""),
-                        groups=existing_rule.get("groups", ""),
-                        departments=existing_rule.get("departments", ""),
-                        users=existing_rule.get("users", ""),
-                        device_groups=existing_rule.get("device_groups", ""),
-                        devices=existing_rule.get("devices", ""),
-                        time_windows=existing_rule.get("time_windows", ""),
-                        rank=existing_rule.get("rank", ""),
-                        applications=existing_rule.get("applications", ""),
-                        tenancy_profile_ids=existing_rule.get(
-                            "tenancy_profile_ids", ""
-                        ),
-                        cloud_app_risk_profile=existing_rule.get(
-                            "cloud_app_risk_profile", ""
-                        ),
-                        cloud_app_instances=existing_rule.get(
-                            "cloud_app_instances", ""
-                        ),
-                        cascading_enabled=existing_rule.get("cascading_enabled", ""),
-                        time_quota=existing_rule.get("time_quota", ""),
-                        size_quota=existing_rule.get("size_quota", ""),
-                        location_groups=existing_rule.get("location_groups", ""),
-                        labels=existing_rule.get("labels", ""),
-                        validity_start_time=existing_rule.get(
-                            "validity_start_time", ""
-                        ),
-                        validity_end_time=existing_rule.get("validity_end_time", ""),
-                        validity_time_zone_id=existing_rule.get(
-                            "validity_time_zone_id", ""
-                        ),
-                        enforce_time_validity=existing_rule.get(
-                            "enforce_time_validity", ""
-                        ),
-                        user_agent_types=existing_rule.get("user_agent_types", ""),
-                        user_risk_score_levels=existing_rule.get(
-                            "user_risk_score_levels", ""
-                        ),
-                        device_trust_levels=existing_rule.get(
-                            "device_trust_levels", ""
-                        ),
-                        cbi_profile=existing_rule.get("cbi_profile", ""),
+                rule_id_to_update = existing_rule.get("id")
+                if not rule_id_to_update:
+                    module.fail_json(
+                        msg="Cannot update rule: ID is missing from the existing resource."
                     )
+
+                update_data = deleteNone(
+                    {
+                        "rule_id": rule_id_to_update,
+                        "name": desired_rule.get("name"),
+                        "description": desired_rule.get("description"),
+                        "enabled": desired_rule.get("enabled"),
+                        "actions": desired_rule.get("actions"),
+                        "type": desired_rule.get("type"),
+                        "order": desired_rule.get("order"),
+                        "locations": desired_rule.get("locations"),
+                        "groups": desired_rule.get("groups"),
+                        "departments": desired_rule.get("departments"),
+                        "users": desired_rule.get("users"),
+                        "device_groups": desired_rule.get("device_groups"),
+                        "devices": desired_rule.get("devices"),
+                        "time_windows": desired_rule.get("time_windows"),
+                        "rank": desired_rule.get("rank"),
+                        "applications": desired_rule.get("applications"),
+                        "tenancy_profile_ids": desired_rule.get("tenancy_profile_ids"),
+                        "cloud_app_risk_profile": desired_rule.get(
+                            "cloud_app_risk_profile"
+                        ),
+                        "cloud_app_instances": desired_rule.get("cloud_app_instances"),
+                        "cascading_enabled": desired_rule.get("cascading_enabled"),
+                        "time_quota": desired_rule.get("time_quota"),
+                        "size_quota": desired_rule.get("size_quota"),
+                        "location_groups": desired_rule.get("location_groups"),
+                        "labels": desired_rule.get("labels"),
+                        "validity_start_time": desired_rule.get("validity_start_time"),
+                        "validity_end_time": desired_rule.get("validity_end_time"),
+                        "validity_time_zone_id": desired_rule.get(
+                            "validity_time_zone_id"
+                        ),
+                        "enforce_time_validity": desired_rule.get(
+                            "enforce_time_validity"
+                        ),
+                        "user_agent_types": desired_rule.get("user_agent_types"),
+                        "user_risk_score_levels": desired_rule.get(
+                            "user_risk_score_levels"
+                        ),
+                        "device_trust_levels": desired_rule.get("device_trust_levels"),
+                        "cbi_profile": desired_rule.get("cbi_profile"),
+                    }
+                )
+                module.warn("Payload Update for SDK: {}".format(update_data))
+                updated_rule, _unused, error = client.cloudappcontrol.update_rule(
+                    rule_type, **update_data
+                )
+                if error:
+                    module.fail_json(msg=f"Error updating rule: {to_native(error)}")
+                module.exit_json(changed=True, data=updated_rule.as_dict())
+            else:
+                module.exit_json(changed=False, data=existing_rule)
+        else:
+            create_data = deleteNone(
+                {
+                    "name": desired_rule.get("name"),
+                    "description": desired_rule.get("description"),
+                    "enabled": desired_rule.get("enabled"),
+                    "actions": desired_rule.get("actions"),
+                    "type": desired_rule.get("type"),
+                    "order": desired_rule.get("order"),
+                    "locations": desired_rule.get("locations"),
+                    "groups": desired_rule.get("groups"),
+                    "departments": desired_rule.get("departments"),
+                    "users": desired_rule.get("users"),
+                    "device_groups": desired_rule.get("device_groups"),
+                    "devices": desired_rule.get("devices"),
+                    "time_windows": desired_rule.get("time_windows"),
+                    "rank": desired_rule.get("rank"),
+                    "applications": desired_rule.get("applications"),
+                    "tenancy_profile_ids": desired_rule.get("tenancy_profile_ids"),
+                    "cloud_app_risk_profile": desired_rule.get(
+                        "cloud_app_risk_profile"
+                    ),
+                    "cloud_app_instances": desired_rule.get("cloud_app_instances"),
+                    "cascading_enabled": desired_rule.get("cascading_enabled"),
+                    "time_quota": desired_rule.get("time_quota"),
+                    "size_quota": desired_rule.get("size_quota"),
+                    "location_groups": desired_rule.get("location_groups"),
+                    "labels": desired_rule.get("labels"),
+                    "validity_start_time": desired_rule.get("validity_start_time"),
+                    "validity_end_time": desired_rule.get("validity_end_time"),
+                    "validity_time_zone_id": desired_rule.get("validity_time_zone_id"),
+                    "enforce_time_validity": desired_rule.get("enforce_time_validity"),
+                    "user_agent_types": desired_rule.get("user_agent_types"),
+                    "user_risk_score_levels": desired_rule.get(
+                        "user_risk_score_levels"
+                    ),
+                    "device_trust_levels": desired_rule.get("device_trust_levels"),
+                    "cbi_profile": desired_rule.get("cbi_profile"),
+                }
+            )
+            module.warn("Payload Update for SDK: {}".format(create_data))
+            new_rule, _unused, error = client.cloudappcontrol.add_rule(
+                rule_type, **create_data
+            )
+            if error:
+                module.fail_json(msg=f"Error creating rule: {to_native(error)}")
+            module.exit_json(changed=True, data=new_rule.as_dict())
+
+    elif state == "absent":
+        if existing_rule:
+            rule_id_to_delete = existing_rule.get("id")
+            if not rule_id_to_delete:
+                module.fail_json(
+                    msg="Cannot delete rule: ID is missing from the existing resource."
                 )
 
-                module.warn("Payload Update for SDK: {}".format(update_rule))
-                updated_rule = client.cloudappcontrol.update_rule(
-                    rule_type, **update_rule
-                ).to_dict()
-                module.exit_json(changed=True, data=updated_rule)
-        else:
-            module.warn("Creating new rule as no existing rule found")
-            """Create"""
-            create_rule = deleteNone(
-                dict(
-                    name=rule.get("name", ""),
-                    description=rule.get("description", ""),
-                    enabled=rule.get("enabled", ""),
-                    actions=rule.get("actions", ""),
-                    type=rule.get("type", ""),
-                    order=rule.get("order", ""),
-                    locations=rule.get("locations", ""),
-                    groups=rule.get("groups", ""),
-                    departments=rule.get("departments", ""),
-                    users=rule.get("users", ""),
-                    device_groups=rule.get("device_groups", ""),
-                    devices=rule.get("devices", ""),
-                    time_windows=rule.get("time_windows", ""),
-                    rank=rule.get("rank", ""),
-                    applications=rule.get("applications", ""),
-                    tenancy_profile_ids=rule.get("tenancy_profile_ids", ""),
-                    cloud_app_risk_profile=rule.get("cloud_app_risk_profile", ""),
-                    cloud_app_instances=rule.get("cloud_app_instances", ""),
-                    cascading_enabled=rule.get("cascading_enabled", ""),
-                    time_quota=rule.get("time_quota", ""),
-                    size_quota=rule.get("size_quota", ""),
-                    location_groups=rule.get("location_groups", ""),
-                    labels=rule.get("labels", ""),
-                    validity_start_time=rule.get("validity_start_time", ""),
-                    validity_end_time=rule.get("validity_end_time", ""),
-                    validity_time_zone_id=rule.get("validity_time_zone_id", ""),
-                    enforce_time_validity=rule.get("enforce_time_validity", ""),
-                    user_agent_types=rule.get("user_agent_types", ""),
-                    user_risk_score_levels=rule.get("user_risk_score_levels", ""),
-                    device_trust_levels=rule.get("device_trust_levels", ""),
-                    cbi_profile=rule.get("cbi_profile", ""),
-                )
+            _unused, _unused, error = client.cloudappcontrol.delete_rule(
+                rule_type, rule_id=rule_id_to_delete
             )
-            module.warn("Payload for SDK: {}".format(create_rule))
-            new_rule = client.cloudappcontrol.add_rule(
-                rule_type, **create_rule
-            ).to_dict()
-            module.exit_json(changed=True, data=new_rule)
-    elif (
-        state == "absent"
-        and existing_rule is not None
-        and existing_rule.get("id") is not None
-    ):
-        # Delete the rule with the correct rule_type
-        code = client.cloudappcontrol.delete_rule(
-            rule_type, rule_id=existing_rule.get("id")
-        )
-        if code > 299:
-            module.exit_json(changed=False, data=None)
-        module.exit_json(changed=True, data=existing_rule)
-    module.exit_json(changed=False, data={})
+            if error:
+                module.fail_json(msg=f"Error deleting rule: {to_native(error)}")
+            module.exit_json(changed=True, data=existing_rule)
+        else:
+            module.exit_json(changed=False, data={})
+
+    else:
+        module.exit_json(changed=False, data={})
 
 
 def main():
@@ -761,7 +768,7 @@ def main():
             required=False,
             choices=["LOW", "MEDIUM", "HIGH", "CRITICAL"],
         ),
-        rule_type=dict(  # This is mapped to `type` in the payload
+        rule_type=dict(
             type="str",
             required=True,
             choices=[

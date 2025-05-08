@@ -26,6 +26,8 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 from ansible.module_utils.basic import missing_required_lib
+import re
+from datetime import datetime
 
 try:
     from netaddr import IPAddress, AddrFormatError
@@ -36,6 +38,45 @@ except ImportError:
     IPAddress = None  # Setting to None to indicate unavailability
     HAS_NETADDR = False
     ADDR_IMPORT_ERROR = missing_required_lib("netaddr")  # Store the error for reporting
+
+
+try:
+    import pytz
+
+    HAS_PYTZ = True
+    PYTZ_IMPORT_ERROR = None
+except ImportError:
+    pytz = None
+    HAS_PYTZ = False
+    PYTZ_IMPORT_ERROR = missing_required_lib("pytz")
+
+
+try:
+    from babel.core import Locale, UnknownLocaleError
+
+    HAS_BABEL = True
+    BABEL_IMPORT_ERROR = None
+except ImportError:
+    Locale = None
+    UnknownLocaleError = None
+    HAS_BABEL = False
+    BABEL_IMPORT_ERROR = (
+        "The 'babel' module is required. Please install it using 'pip install Babel'."
+    )
+
+
+def to_snake_case(string):
+    return re.sub(r"(?<!^)(?=[A-Z])", "_", string).lower()
+
+
+def convert_keys_to_snake_case(data):
+    if isinstance(data, dict):
+        return {
+            to_snake_case(k): convert_keys_to_snake_case(v) for k, v in data.items()
+        }
+    elif isinstance(data, list):
+        return [convert_keys_to_snake_case(i) for i in data]
+    return data
 
 
 def validate_iso3166_alpha2(country_code):
@@ -56,6 +97,22 @@ def validate_iso3166_alpha2(country_code):
         country = pycountry.countries.get(alpha_2=country_code)
         return country is not None
     except AttributeError:
+        return False
+
+
+def validate_locale_code(locale):
+    """
+    Validates whether a locale string is BCP 47-compliant (e.g., en-US, fr-FR, zh-CN).
+    Returns True if valid, False otherwise.
+    """
+    if not HAS_BABEL:
+        raise ImportError(BABEL_IMPORT_ERROR)
+
+    try:
+        # Babel expects underscores like 'en_US', but we allow hyphen input like 'en-US'
+        Locale.parse(locale.replace("-", "_"))
+        return True
+    except (UnknownLocaleError, ValueError):
         return False
 
 
@@ -132,6 +189,25 @@ def convert_to_minutes(time_value, time_unit):
     elif time_unit == "DAY":
         return time_value * 60 * 24
     return time_value  # For MINUTE or undefined units, return as is
+
+
+def parse_rfc1123_to_epoch_millis(date_str):
+    """
+    Convert an RFC1123 or friendly date string to epoch milliseconds.
+    Example accepted: "Mon, 02 Jan 2006 15:04:05 UTC"
+    """
+    if not HAS_PYTZ:
+        raise ImportError(PYTZ_IMPORT_ERROR)
+
+    try:
+        dt = datetime.strptime(date_str, "%a, %d %b %Y %H:%M:%S %Z")
+        if dt.tzinfo is None:
+            dt = pytz.utc.localize(dt)
+        return int(dt.timestamp() * 1000)
+    except Exception as e:
+        raise ValueError(
+            f"Failed to parse date '{date_str}'. Ensure it's in RFC1123 format like 'Mon, 02 Jan 2006 15:04:05 UTC'. Error: {e}"
+        )
 
 
 def validate_location_mgmt(location_mgmt):
@@ -373,6 +449,23 @@ def process_vpn_credentials(vpn_creds):
     return processed_creds
 
 
+def normalize_list(values):
+    """
+    Normalize a list of strings by stripping whitespace, lowering case, removing duplicates, and sorting.
+
+    Args:
+        values (list): The list to normalize
+
+    Returns:
+        list: A cleaned, sorted list of unique values
+    """
+    if not isinstance(values, list):
+        return []
+    return sorted(
+        set([v.strip().lower() for v in values if isinstance(v, str) and v.strip()])
+    )
+
+
 # Utility Function: normalize_boolean_attributes
 def normalize_boolean_attributes(rule, bool_attributes):
     """
@@ -389,4 +482,34 @@ def normalize_boolean_attributes(rule, bool_attributes):
     for attr in bool_attributes:
         if rule.get(attr) is None:
             rule[attr] = False
+    return rule
+
+
+def collect_all_items(list_fn, query_params=None):
+    """
+    Collects all pages of results from a paginated ZIA SDK list_* method.
+    """
+    items, resp, err = list_fn(query_params)
+    if err:
+        return None, err
+
+    all_items = items or []
+    while resp and resp.has_next():
+        page, err = resp.next()
+        if err:
+            return None, err
+        if page:
+            all_items.extend(page)
+
+    return all_items, None
+
+
+def preprocess_rule(rule, params):
+    for attr in params:
+        if attr in rule and rule[attr] is not None:
+            if isinstance(rule[attr], list):
+                if all(isinstance(item, dict) and "id" in item for item in rule[attr]):
+                    rule[attr] = [item["id"] for item in rule[attr]]
+                else:
+                    rule[attr] = sorted(rule[attr])
     return rule

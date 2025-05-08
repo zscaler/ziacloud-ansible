@@ -32,7 +32,7 @@ short_description: "Forwarding Control policy rule"
 description: "Adds a new Forwarding Control policy rule"
 author:
   - William Guilherme (@willguibr)
-version_added: "0.1.0"
+version_added: "1.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 notes:
@@ -57,7 +57,7 @@ options:
     type: str
   order:
     description: "Rule order number of the Forwarding Control policy rule"
-    required: true
+    required: false
     type: int
   rank:
     description: "Admin rank of the Forwarding Control policy rule"
@@ -363,19 +363,7 @@ def normalize_rule(rule):
     """
     normalized = rule.copy()
 
-    computed_values = [
-        "id",
-        "src_ips",
-        "dest_addresses",
-        "dest_countries",
-        "dest_ip_categories",
-        "res_categories",
-        "proxy_gateway",
-        "zpa_gateway",
-        "zpa_app_segments",
-        "zpa_application_segments",
-        "zpa_application_segment_groups",
-    ]
+    computed_values = []
 
     for attr in computed_values:
         if attr in normalized and normalized[attr] is None:
@@ -488,13 +476,13 @@ def core(module):
         "zpa_application_segments",
         "zpa_application_segment_groups",
     ]
-    for param_name in params:
-        rule[param_name] = module.params.get(param_name, None)
+
+    rule = {param: module.params.get(param) for param in params}
 
     # Validate forwarding rule constraints
     validation_error = validate_forwarding_rule_constraints(module)
     if validation_error:
-        return validation_error  # This will terminate the execution if there's a validation error
+        return validation_error
 
     # Perform validation and prepending 'COUNTRY_' for dest_countries
     dest_countries = rule.get("dest_countries")
@@ -515,16 +503,18 @@ def core(module):
 
     # Preprocess specific attributes
     def preprocess_attributes(rule):
-        if rule.get("proxy_gateway"):
-            rule["proxy_gateway"] = {
-                "id": rule["proxy_gateway"]["id"],
-                "name": rule["proxy_gateway"]["name"],
-            }
-        if rule.get("zpa_gateway"):
-            rule["zpa_gateway"] = {
-                "id": rule["zpa_gateway"]["id"],
-                "name": rule["zpa_gateway"]["name"],
-            }
+        proxy = rule.get("proxy_gateway")
+        if isinstance(proxy, dict) and proxy.get("id"):
+            rule["proxy_gateway"] = {"id": proxy["id"], "name": proxy.get("name", "")}
+        else:
+            rule["proxy_gateway"] = None
+
+        zpa = rule.get("zpa_gateway")
+        if isinstance(zpa, dict) and zpa.get("id"):
+            rule["zpa_gateway"] = {"id": zpa["id"], "name": zpa.get("name", "")}
+        else:
+            rule["zpa_gateway"] = None
+
         if rule.get("zpa_app_segments"):
             if rule["zpa_app_segments"] is None:
                 rule["zpa_app_segments"] = []
@@ -544,81 +534,118 @@ def core(module):
                 for segment in rule["zpa_application_segment_groups"]
             ]
 
-    preprocess_attributes(rule)  # Ensure this call is included
+    preprocess_attributes(rule)
 
     rule_id = rule.get("id", None)
     rule_name = rule.get("name", None)
 
     existing_rule = None
     if rule_id is not None:
-        ruleBox = client.forwarding_control.get_rule(rule_id=rule_id)
-        if ruleBox is not None:
-            existing_rule = ruleBox.to_dict()
-    elif rule_name is not None:
-        rules = client.forwarding_control.list_rules().to_list()
-        for rule_ in rules:
-            if rule_.get("name") == rule_name:
-                existing_rule = rule_
+        result, _unused, error = client.forwarding_control.get_rule(rule_id=rule_id)
+        if error:
+            module.fail_json(
+                msg=f"Error fetching rule with id {rule_id}: {to_native(error)}"
+            )
+        if result:
+            existing_rule = result.as_dict()
+    else:
+        result, _unused, error = client.forwarding_control.list_rules()
+        if error:
+            module.fail_json(msg=f"Error listing rules: {to_native(error)}")
+        if result:
+            for rule_ in result:
+                if rule_.name == rule_name:
+                    existing_rule = rule_.as_dict()
+                    break
+
+    # Handle predefined/default rules
+    if (
+        state == "absent"
+        and existing_rule
+        and (
+            existing_rule.get("default_rule", False)
+            or existing_rule.get("predefined", False)
+        )
+    ):
+        module.exit_json(
+            changed=False, msg="Deletion of default or predefined rule is not allowed."
+        )
 
     # Normalize and compare existing and desired data
     desired_rule = normalize_rule(rule)
     current_rule = normalize_rule(existing_rule) if existing_rule else {}
 
-    def preprocess_rules(rule, params):
-        """
-        Preprocess specific attributes in the rule based on their type and structure.
-        :param rule: Dict containing the rule data.
-        :param params: List of attribute names to be processed.
-        :return: Preprocessed rule.
-        """
+    def preprocess_rule(rule_dict, params):
+        """Preprocess rule attributes for comparison."""
+        processed = rule_dict.copy()
         for attr in params:
-            if attr in rule and rule[attr] is not None:
-                # Process list attributes
-                if isinstance(rule[attr], list):
-                    # If list contains dictionaries with 'id', extract IDs
+            if attr in processed and processed[attr] is not None:
+                if isinstance(processed[attr], list):
                     if all(
-                        isinstance(item, dict) and "id" in item for item in rule[attr]
+                        isinstance(item, dict) and "id" in item
+                        for item in processed[attr]
                     ):
-                        rule[attr] = [item["id"] for item in rule[attr]]
-                    elif all(isinstance(item, dict) for item in rule[attr]):
-                        # Handle lists of dictionaries without sorting
-                        rule[attr] = sorted(
-                            rule[attr],
-                            key=lambda x: (x.get("external_id", ""), x.get("name", "")),
-                        )
+                        processed[attr] = [item["id"] for item in processed[attr]]
                     else:
-                        # Sort lists for consistent order
-                        rule[attr] = sorted(rule[attr])
-                # Add more conditions here if needed for other types
-        return rule
+                        processed[attr] = sorted(processed[attr])
+        return processed
 
-    existing_rule_preprocessed = preprocess_rules(current_rule, params)
-    desired_rule_preprocessed = preprocess_rules(desired_rule, params)
+    desired_processed = preprocess_rule(desired_rule, params)
+    current_processed = preprocess_rule(current_rule, params)
 
-    # Then proceed with your comparison logic
+    # List of attributes where empty list and None should be treated as equivalent
+    list_attributes = [
+        "locations",
+        "location_groups",
+        "ec_groups",
+        "departments",
+        "groups",
+        "users",
+        "src_ips",
+        "src_ip_groups",
+        "src_ipv6_groups",
+        "dest_addresses",
+        "dest_ip_categories",
+        "dest_countries",
+        "res_categories",
+        "dest_ip_groups",
+        "dest_ipv6_groups",
+        "nw_services",
+        "nw_service_groups",
+        "nw_applications",
+        "nw_application_groups",
+        "app_service_groups",
+        "labels",
+        "proxy_gateway",
+        "zpa_gateway",
+        "zpa_app_segments",
+        "zpa_application_segments",
+        "zpa_application_segment_groups",
+    ]
+
     differences_detected = False
     for key in params:
-        desired_value = desired_rule_preprocessed.get(key)
-        current_value = existing_rule_preprocessed.get(key)
+        desired_value = desired_processed.get(key)
+        current_value = current_processed.get(key)
 
-        # Handling for list attributes where None should be treated as an empty list
-        if isinstance(current_value, list) and desired_value is None:
-            desired_value = []
-
-        # Skip comparison for 'id' if it's not in the desired rule but present in the existing rule
+        # Skip ID comparison if not in desired rule
         if key == "id" and desired_value is None and current_value is not None:
             continue
 
-        # Convert 'state' in current_rule to boolean 'enabled'
+        # Convert state to enabled boolean for comparison
         if key == "enabled" and "state" in current_rule:
             current_value = current_rule["state"] == "ENABLED"
 
-        # Handling None values for all attributes
-        if desired_value is None and key != "enabled":
-            # Explicitly setting to empty list or empty value based on type
-            rule[key] = [] if isinstance(current_value, list) else None
+        # Handle list attributes - treat None and [] as equivalent
+        if key in list_attributes:
+            if desired_value in (None, []) and current_value in (None, []):
+                continue
+            if desired_value is None:
+                desired_value = []
+            if current_value is None:
+                current_value = []
 
-        # Special handling for lists of IDs
+        # Sort lists of IDs for comparison
         if isinstance(desired_value, list) and isinstance(current_value, list):
             if all(isinstance(x, int) for x in desired_value) and all(
                 isinstance(x, int) for x in current_value
@@ -628,12 +655,11 @@ def core(module):
 
         if current_value != desired_value:
             differences_detected = True
-            # module.warn(
-            #     f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
-            # )
+            module.warn(
+                f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
+            )
 
     if module.check_mode:
-        # If in check mode, report changes and exit
         if state == "present" and (existing_rule is None or differences_detected):
             module.exit_json(changed=True)
         elif state == "absent" and existing_rule is not None:
@@ -641,233 +667,134 @@ def core(module):
         else:
             module.exit_json(changed=False)
 
-    if existing_rule is not None:
-        id = existing_rule.get("id")
-        existing_rule.update(rule)
-        existing_rule["id"] = id
-
-    # module.warn(f"Final payload being sent to SDK: {rule}")
     if state == "present":
-        if existing_rule is not None:
+        if existing_rule:
             if differences_detected:
-                """Update"""
+                rule_id_to_update = existing_rule.get("id")
+                if not rule_id_to_update:
+                    module.fail_json(
+                        msg="Cannot update rule: ID is missing from the existing resource."
+                    )
+
                 update_rule = deleteNone(
-                    dict(
-                        rule_id=existing_rule.get("id"),
-                        name=existing_rule.get("name"),
-                        order=existing_rule.get("order"),
-                        rank=existing_rule.get("rank"),
-                        type=existing_rule.get("type"),
-                        forward_method=existing_rule.get("forward_method"),
-                        enabled=existing_rule.get("enabled"),
-                        description=existing_rule.get("description"),
-                        src_ips=existing_rule.get("src_ips"),
-                        dest_addresses=existing_rule.get("dest_addresses"),
-                        dest_ip_categories=existing_rule.get("dest_ip_categories"),
-                        dest_countries=existing_rule.get("dest_countries"),
-                        res_categories=existing_rule.get("res_categories"),
-                        nw_applications=existing_rule.get("nw_applications"),
-                        dest_ip_groups=existing_rule.get("dest_ip_groups"),
-                        nw_services=existing_rule.get("nw_services"),
-                        nw_service_groups=existing_rule.get("nw_service_groups"),
-                        nw_application_groups=existing_rule.get(
+                    {
+                        "rule_id": existing_rule.get("id"),
+                        "name": desired_rule.get("name"),
+                        "description": desired_rule.get("description"),
+                        "order": desired_rule.get("order"),
+                        "rank": desired_rule.get("rank"),
+                        "type": desired_rule.get("type"),
+                        "forward_method": desired_rule.get("forward_method"),
+                        "enabled": desired_rule.get("enabled", True),
+                        "src_ips": desired_rule.get("src_ips"),
+                        "dest_addresses": desired_rule.get("dest_addresses"),
+                        "dest_ip_categories": desired_rule.get("dest_ip_categories"),
+                        "dest_countries": desired_rule.get("dest_countries"),
+                        "res_categories": desired_rule.get("res_categories"),
+                        "nw_applications": desired_rule.get("nw_applications"),
+                        "dest_ip_groups": desired_rule.get("dest_ip_groups"),
+                        "nw_services": desired_rule.get("nw_services"),
+                        "nw_service_groups": desired_rule.get("nw_service_groups"),
+                        "nw_application_groups": desired_rule.get(
                             "nw_application_groups"
                         ),
-                        app_service_groups=existing_rule.get("app_service_groups"),
-                        labels=existing_rule.get("labels"),
-                        locations=existing_rule.get("locations"),
-                        location_groups=existing_rule.get("location_groups"),
-                        ec_groups=existing_rule.get("ec_groups"),
-                        departments=existing_rule.get("departments"),
-                        groups=existing_rule.get("groups"),
-                        users=existing_rule.get("users"),
-                        src_ip_groups=existing_rule.get("src_ip_groups"),
-                        proxy_gateway=existing_rule.get("proxy_gateway"),
-                        zpa_gateway=existing_rule.get("zpa_gateway"),
-                        zpa_app_segments=existing_rule.get("zpa_app_segments"),
-                        zpa_application_segments=existing_rule.get(
+                        "app_service_groups": desired_rule.get("app_service_groups"),
+                        "labels": desired_rule.get("labels"),
+                        "locations": desired_rule.get("locations"),
+                        "location_groups": desired_rule.get("location_groups"),
+                        "ec_groups": desired_rule.get("ec_groups"),
+                        "departments": desired_rule.get("departments"),
+                        "groups": desired_rule.get("groups"),
+                        "users": desired_rule.get("users"),
+                        "src_ip_groups": desired_rule.get("src_ip_groups"),
+                        "src_ipv6_groups": desired_rule.get("src_ipv6_groups"),
+                        "proxy_gateway": desired_rule.get("proxy_gateway"),
+                        "zpa_gateway": desired_rule.get("zpa_gateway"),
+                        "zpa_app_segments": desired_rule.get("zpa_app_segments"),
+                        "zpa_application_segments": desired_rule.get(
                             "zpa_application_segments"
                         ),
-                        zpa_application_segment_groups=existing_rule.get(
+                        "zpa_application_segment_groups": desired_rule.get(
                             "zpa_application_segment_groups"
                         ),
-                    )
+                    }
                 )
-                # module.warn("Payload Update for SDK: {}".format(update_rule))
-                updated_rule = client.forwarding_control.update_rule(
+
+                module.warn("Payload Update for SDK: {}".format(update_rule))
+                updated_rule, _unused, error = client.forwarding_control.update_rule(
                     **update_rule
-                ).to_dict()
-                module.exit_json(changed=True, data=updated_rule)
-            else:
-                """No changes needed"""
-                module.exit_json(
-                    changed=False, data=existing_rule, msg="No changes detected."
                 )
+                if error:
+                    module.fail_json(msg=f"Error updating rule: {to_native(error)}")
+                module.exit_json(changed=True, data=updated_rule.as_dict())
+            else:
+                module.exit_json(changed=False, data=existing_rule)
         else:
-            module.warn("Creating new rule as no existing rule found")
-            """Create"""
             create_rule = deleteNone(
-                dict(
-                    name=rule.get("name"),
-                    description=rule.get("description"),
-                    order=rule.get("order"),
-                    rank=rule.get("rank"),
-                    type=rule.get("type"),
-                    forward_method=rule.get("forward_method"),
-                    enabled=rule.get("enabled"),
-                    src_ips=rule.get("src_ips"),
-                    dest_addresses=rule.get("dest_addresses"),
-                    dest_ip_categories=rule.get("dest_ip_categories"),
-                    dest_countries=rule.get("dest_countries"),
-                    res_categories=rule.get("res_categories"),
-                    nw_applications=rule.get("nw_applications"),
-                    dest_ip_groups=rule.get("dest_ip_groups"),
-                    dest_ipv6_groups=rule.get("dest_ipv6_groups"),
-                    nw_services=rule.get("nw_services"),
-                    nw_service_groups=rule.get("nw_service_groups"),
-                    nw_application_groups=rule.get("nw_application_groups"),
-                    app_service_groups=rule.get("app_service_groups"),
-                    labels=rule.get("labels"),
-                    locations=rule.get("locations"),
-                    location_groups=rule.get("location_groups"),
-                    ec_groups=rule.get("ec_groups"),
-                    departments=rule.get("departments"),
-                    groups=rule.get("groups"),
-                    users=rule.get("users"),
-                    src_ip_groups=rule.get("src_ip_groups"),
-                    src_ipv6_groups=rule.get("src_ipv6_groups"),
-                    proxy_gateway=rule.get("proxy_gateway"),
-                    zpa_gateway=rule.get("zpa_gateway"),
-                    zpa_app_segments=rule.get("zpa_app_segments"),
-                    zpa_application_segments=rule.get("zpa_application_segments"),
-                    zpa_application_segment_groups=rule.get(
+                {
+                    "name": desired_rule.get("name"),
+                    "description": desired_rule.get("description"),
+                    "order": desired_rule.get("order"),
+                    "rank": desired_rule.get("rank"),
+                    "type": desired_rule.get("type"),
+                    "forward_method": desired_rule.get("forward_method"),
+                    "enabled": desired_rule.get("enabled", True),
+                    "src_ips": desired_rule.get("src_ips"),
+                    "dest_addresses": desired_rule.get("dest_addresses"),
+                    "dest_ip_categories": desired_rule.get("dest_ip_categories"),
+                    "dest_countries": desired_rule.get("dest_countries"),
+                    "res_categories": desired_rule.get("res_categories"),
+                    "nw_applications": desired_rule.get("nw_applications"),
+                    "dest_ip_groups": desired_rule.get("dest_ip_groups"),
+                    "nw_services": desired_rule.get("nw_services"),
+                    "nw_service_groups": desired_rule.get("nw_service_groups"),
+                    "nw_application_groups": desired_rule.get("nw_application_groups"),
+                    "app_service_groups": desired_rule.get("app_service_groups"),
+                    "labels": desired_rule.get("labels"),
+                    "locations": desired_rule.get("locations"),
+                    "location_groups": desired_rule.get("location_groups"),
+                    "ec_groups": desired_rule.get("ec_groups"),
+                    "departments": desired_rule.get("departments"),
+                    "groups": desired_rule.get("groups"),
+                    "users": desired_rule.get("users"),
+                    "src_ip_groups": desired_rule.get("src_ip_groups"),
+                    "src_ipv6_groups": desired_rule.get("src_ipv6_groups"),
+                    "proxy_gateway": desired_rule.get("proxy_gateway"),
+                    "zpa_gateway": desired_rule.get("zpa_gateway"),
+                    "zpa_app_segments": desired_rule.get("zpa_app_segments"),
+                    "zpa_application_segments": desired_rule.get(
+                        "zpa_application_segments"
+                    ),
+                    "zpa_application_segment_groups": desired_rule.get(
                         "zpa_application_segment_groups"
                     ),
-                )
+                }
             )
-            # module.warn("Payload for SDK: {}".format(create_rule))
-            new_rule = client.forwarding_control.add_rule(**create_rule).to_dict()
-            module.exit_json(changed=True, data=new_rule)
-    elif (
-        state == "absent"
-        and existing_rule is not None
-        and existing_rule.get("id") is not None
-    ):
-        code = client.forwarding_control.delete_rule(rule_id=existing_rule.get("id"))
-        if code > 299:
-            module.exit_json(changed=False, data=None)
-        module.exit_json(changed=True, data=existing_rule)
-    module.exit_json(changed=False, data={})
+            module.warn("Payload for SDK: {}".format(create_rule))
+            new_rule, _unused, error = client.forwarding_control.add_rule(**create_rule)
+            if error:
+                module.fail_json(msg=f"Error creating rule: {to_native(error)}")
+            module.exit_json(changed=True, data=new_rule.as_dict())
 
+    elif state == "absent":
+        if existing_rule:
+            rule_id_to_delete = existing_rule.get("id")
+            if not rule_id_to_delete:
+                module.fail_json(
+                    msg="Cannot delete rule: ID is missing from the existing resource."
+                )
 
-def main():
-    argument_spec = ZIAClientHelper.zia_argument_spec()
-    id_spec = dict(
-        type="list",
-        elements="int",
-        required=False,
-    )
-    # Define the spec for a dictionary with id and name
-    id_name_dict_spec = dict(
-        id=dict(type="int", required=True),
-        name=dict(type="str", required=True),
-    )
-    external_id_name_dict_spec = dict(
-        external_id=dict(type="str", required=True),
-        name=dict(type="str", required=True),
-    )
+            _unused, _unused, error = client.forwarding_control.delete_rule(
+                rule_id=rule_id_to_delete
+            )
+            if error:
+                module.fail_json(msg=f"Error deleting rule: {to_native(error)}")
+            module.exit_json(changed=True, data=existing_rule)
+        else:
+            module.exit_json(changed=False, data={})
 
-    # Define specifications for nested dictionaries
-    proxy_gateway_spec = dict(
-        type="dict",
-        required=False,
-        options=dict(
-            id=dict(type="int", required=True),
-            name=dict(type="str", required=True),
-        ),
-    )
-
-    zpa_gateway_spec = dict(
-        type="dict",
-        required=False,
-        options=dict(
-            id=dict(type="int", required=True),
-            name=dict(type="str", required=True),
-        ),
-    )
-
-    argument_spec.update(
-        id=dict(type="int", required=False),
-        name=dict(type="str", required=True),
-        description=dict(type="str", required=False),
-        enabled=dict(type="bool", required=False),
-        order=dict(type="int", required=True),
-        rank=dict(type="int", required=False, default=7),
-        src_ips=dict(type="list", elements="str", required=False),
-        dest_addresses=dict(type="list", elements="str", required=False),
-        dest_ip_categories=dict(type="list", elements="str", required=False),
-        dest_countries=dict(type="list", elements="str", required=False),
-        res_categories=dict(type="list", elements="str", required=False),
-        source_countries=dict(type="list", elements="str", required=False),
-        type=dict(
-            type="str",
-            required=False,
-            choices=[
-                "FIREWALL",
-                "DNS",
-                "DNAT",
-                "SNAT",
-                "FORWARDING",
-                "INTRUSION_PREVENTION",
-                "EC_DNS",
-                "EC_RDR",
-                "EC_SELF",
-                "DNS_RESPONSE",
-            ],
-        ),
-        forward_method=dict(
-            type="str",
-            required=False,
-            choices=[
-                "INVALID",
-                "DIRECT",
-                "PROXYCHAIN",
-                "ZIA",
-                "ZPA",
-                "ECZPA",
-                "ECSELF",
-                "DROP",
-            ],
-        ),
-        device_groups=id_spec,
-        nw_applications=id_spec,
-        dest_ip_groups=id_spec,
-        dest_ipv6_groups=id_spec,
-        nw_services=id_spec,
-        nw_service_groups=id_spec,
-        nw_application_groups=id_spec,
-        app_service_groups=id_spec,
-        labels=id_spec,
-        locations=id_spec,
-        location_groups=id_spec,
-        ec_groups=id_spec,
-        departments=id_spec,
-        groups=id_spec,
-        users=id_spec,
-        src_ip_groups=id_spec,
-        src_ipv6_groups=id_spec,
-        proxy_gateway=proxy_gateway_spec,
-        zpa_gateway=zpa_gateway_spec,
-        zpa_app_segments=external_id_name_dict_spec,
-        zpa_application_segments=id_name_dict_spec,
-        zpa_application_segment_groups=id_name_dict_spec,
-        state=dict(type="str", choices=["present", "absent"], default="present"),
-    )
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
-    try:
-        core(module)
-    except Exception as e:
-        module.fail_json(msg=to_native(e), exception=format_exc())
+    else:
+        module.exit_json(changed=False, data={})
 
 
 def main():
@@ -926,7 +853,7 @@ def main():
         name=dict(type="str", required=True),
         description=dict(type="str", required=False),
         enabled=dict(type="bool", required=False),
-        order=dict(type="int", required=True),
+        order=dict(type="int", required=False),
         rank=dict(type="int", required=False, default=7),
         src_ips=dict(type="list", elements="str", required=False),
         dest_addresses=dict(type="list", elements="str", required=False),

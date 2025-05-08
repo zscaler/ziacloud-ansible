@@ -134,30 +134,54 @@ from traceback import format_exc
 
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
+    collect_all_items,
+)
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
     ZIAClientHelper,
 )
 
 
 def core(module):
-    user_id = module.params.get("id", None)
-    user_name = module.params.get("name", None)
+    user_id = module.params.get("id")
+    user_name = module.params.get("name")
+
     client = ZIAClientHelper(module)
     users = []
+
     if user_id is not None:
-        user = client.users.get_user(user_id).to_dict()
-        users = [user]
+        result, _unused, error = client.user_management.get_user(user_id)
+        if error or result is None:
+            module.fail_json(
+                msg=f"Failed to retrieve User with ID '{user_id}': {to_native(error)}"
+            )
+        users = [result.as_dict()]
     else:
-        users = client.users.list_users().to_list()
-        if user_name is not None:
-            user = None
-            for usr in users:
-                if usr.get("name", None) == user_name:
-                    user = usr
-                    break
-            if user is None:
-                module.fail_json(msg="Failed to retrieve user: '%s'" % (user_name))
-            users = [user]
+        query_params = {}
+        if user_name:
+            query_params["search"] = user_name
+
+        result, err = collect_all_items(client.user_management.list_users, query_params)
+        if err:
+            module.fail_json(msg=f"Error retrieving Users: {to_native(err)}")
+
+        user_list = (
+            [u.as_dict() if hasattr(u, "as_dict") else u for u in result]
+            if result
+            else []
+        )
+
+        if user_name:
+            matched = next((u for u in user_list if u.get("name") == user_name), None)
+            if not matched:
+                available = [u.get("name") for u in user_list]
+                module.fail_json(
+                    msg=f"User with name '{user_name}' not found. Available users: {available}"
+                )
+            users = [matched]
+        else:
+            users = user_list
+
     module.exit_json(changed=False, users=users)
 
 
@@ -167,7 +191,13 @@ def main():
         name=dict(type="str", required=False),
         id=dict(type="int", required=False),
     )
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=True,
+        mutually_exclusive=[["name", "id"]],
+    )
+
     try:
         core(module)
     except Exception as e:

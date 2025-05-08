@@ -119,26 +119,49 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 
 def core(module):
-    service_id = module.params.get("id", None)
-    service_name = module.params.get("name", None)
+    service_id = module.params.get("id")
+    service_name = module.params.get("name")
+
     client = ZIAClientHelper(module)
     services = []
+
     if service_id is not None:
-        service = client.firewall.get_network_service(service_id).to_dict()
-        services = [service]
+        service_obj, _unused, error = client.cloud_firewall.get_network_service(
+            service_id
+        )
+        if error or service_obj is None:
+            module.fail_json(
+                msg=f"Failed to retrieve Network Services with ID '{service_id}': {to_native(error)}"
+            )
+        services = [service_obj.as_dict()]
     else:
-        services = client.firewall.list_network_services().to_list()
-        if service_name is not None:
-            service = None
-            for svc in services:
-                if svc.get("name", None) == service_name:
-                    service = svc
-                    break
-            if service is None:
+        query_params = {}
+        if service_name:
+            query_params["search"] = service_name
+
+        result, _unused, error = client.cloud_firewall.list_network_services(
+            query_params=query_params
+        )
+        if error:
+            module.fail_json(
+                msg=f"Error retrieving Network Services: {to_native(error)}"
+            )
+
+        service_list = [g.as_dict() for g in result] if result else []
+
+        if service_name:
+            matched = next(
+                (g for g in service_list if g.get("name") == service_name), None
+            )
+            if not matched:
+                available = [g.get("name") for g in service_list]
                 module.fail_json(
-                    msg="Failed to retrieve service: '%s'" % (service_name)
+                    msg=f"Network Services with name '{service_name}' not found. Available services: {available}"
                 )
-            services = [service]
+            services = [matched]
+        else:
+            services = service_list
+
     module.exit_json(changed=False, services=services)
 
 
@@ -148,7 +171,13 @@ def main():
         name=dict(type="str", required=False),
         id=dict(type="int", required=False),
     )
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=True,
+        mutually_exclusive=[["name", "id"]],
+    )
+
     try:
         core(module)
     except Exception as e:

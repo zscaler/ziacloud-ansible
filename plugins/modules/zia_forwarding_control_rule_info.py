@@ -172,37 +172,38 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 
 def core(module):
-    rule_id = module.params.get("id", None)
-    rule_name = module.params.get("name", None)
+    rule_id = module.params.get("id")
+    rule_name = module.params.get("name")
+
     client = ZIAClientHelper(module)
     rules = []
 
     if rule_id is not None:
-        # Fetch rule by ID
-        ruleBox = client.forwarding_control.get_rule(rule_id=rule_id)
-        if ruleBox is None:
+        rules_obj, _unused, error = client.forwarding_control.get_rule(rule_id)
+        if error or rules_obj is None:
             module.fail_json(
-                msg="Failed to retrieve Forwarding Control Rule ID: '%s'" % (rule_id)
+                msg=f"Failed to retrieve Forwarding Control Rule with ID '{rule_id}': {to_native(error)}"
             )
-        rules = [ruleBox.to_dict()]
+        rules = [rules_obj.as_dict()]
     else:
-        # Fetch all rules and search by name
-        all_rules = client.forwarding_control.list_rules().to_list()
-        if rule_name is not None:
-            # Iterate over rules to find the matching name
-            for rule in all_rules:
-                if rule.get("name") == rule_name:
-                    rules = [rule]
-                    break
-            # Handle case where no rule with the given name is found
-            if not rules:
+        result, _unused, error = client.forwarding_control.list_rules()
+        if error:
+            module.fail_json(
+                msg=f"Error retrieving Forwarding Control Rules: {to_native(error)}"
+            )
+
+        rule_list = [i.as_dict() for i in result] if result else []
+
+        if rule_name:
+            matched = next((i for i in rule_list if i.get("name") == rule_name), None)
+            if not matched:
+                available = [i.get("name") for i in rule_list]
                 module.fail_json(
-                    msg="Failed to retrieve Forwarding Control Rule Name: '%s'"
-                    % (rule_name)
+                    msg=f"Forwarding Control Rule named '{rule_name}' not found. Available: {available}"
                 )
+            rules = [matched]
         else:
-            # Return all rules if no specific name is provided
-            rules = all_rules
+            rules = rule_list
 
     module.exit_json(changed=False, rules=rules)
 
@@ -213,7 +214,13 @@ def main():
         name=dict(type="str", required=False),
         id=dict(type="int", required=False),
     )
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=True,
+        mutually_exclusive=[["name", "id"]],
+    )
+
     try:
         core(module)
     except Exception as e:

@@ -73,7 +73,6 @@ RETURN = r"""
 """
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
@@ -81,16 +80,12 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 )
 
 
-def normalize_labels(group):
+def normalize_labels(label):
     """
-    Normalize ip source group data by setting computed values.
+    Remove computed attributes from a label dict to make comparison easier.
     """
-    normalized = group.copy()
-
+    normalized = label.copy() if label else {}
     computed_values = [
-        "id",
-        "name",
-        "description",
         "last_modified_time",
         "last_modified_by",
         "last_modified_by.id",
@@ -102,98 +97,116 @@ def normalize_labels(group):
     ]
     for attr in computed_values:
         normalized.pop(attr, None)
-
     return normalized
 
 
 def core(module):
-    state = module.params.get("state", None)
+    state = module.params.get("state")
     client = ZIAClientHelper(module)
-    rule_label = dict()
-    params = [
-        "id",
-        "name",
-        "description",
-    ]
-    for param_name in params:
-        rule_label[param_name] = module.params.get(param_name, None)
 
-    label_id = rule_label.get("id", None)
-    label_name = rule_label.get("name", None)
+    rule_label_params = {p: module.params.get(p) for p in ["id", "name", "description"]}
+    label_id = rule_label_params.get("id")
+    label_name = rule_label_params.get("name")
 
     existing_rule_label = None
-    if label_id is not None:
-        existing_rule_label = client.labels.get_label(label_id).to_dict()
+
+    if label_id:
+        result, _unused, error = client.rule_labels.get_label(label_id)
+        if error:
+            module.fail_json(
+                msg=f"Error fetching label with id {label_id}: {to_native(error)}"
+            )
+        existing_rule_label = result.as_dict()
     else:
-        rule_labels = client.labels.list_labels().to_list()
-        if label_name is not None:
-            for label in rule_labels:
-                if label.get("name", None) == label_name:
+        result, _unused, error = client.rule_labels.list_labels()
+        if error:
+            module.fail_json(msg=f"Error listing labels: {to_native(error)}")
+        labels_list = [label.as_dict() for label in result]
+        if label_name:
+            for label in labels_list:
+                if label.get("name") == label_name:
                     existing_rule_label = label
                     break
 
-    # Normalize and compare existing and desired data
-    normalized_label = normalize_labels(rule_label)
-    normalized_existing_label = (
+    normalized_desired = normalize_labels(rule_label_params)
+    normalized_existing = (
         normalize_labels(existing_rule_label) if existing_rule_label else {}
     )
 
-    fields_to_exclude = ["id"]
     differences_detected = False
-    for key, value in normalized_label.items():
-        if key not in fields_to_exclude and normalized_existing_label.get(key) != value:
+    for key, value in normalized_desired.items():
+        if normalized_existing.get(key) != value:
             differences_detected = True
             module.warn(
-                f"Difference detected in {key}. Current: {normalized_existing_label.get(key)}, Desired: {value}"
+                f"Difference detected in {key}. Current: {normalized_existing.get(key)}, Desired: {value}"
             )
 
     if module.check_mode:
-        # If in check mode, report changes and exit
         if state == "present" and (existing_rule_label is None or differences_detected):
             module.exit_json(changed=True)
-        elif state == "absent" and existing_rule_label is not None:
+        elif state == "absent" and existing_rule_label:
             module.exit_json(changed=True)
         else:
             module.exit_json(changed=False)
 
-    if existing_rule_label is not None:
-        id = existing_rule_label.get("id")
-        existing_rule_label.update(normalized_label)
-        existing_rule_label["id"] = id  # Ensure the ID is not overwritten by the update
-
     if state == "present":
-        if existing_rule_label is not None:
+        if existing_rule_label:
             if differences_detected:
-                """Update"""
-                existing_rule_label = client.labels.update_label(
-                    label_id=existing_rule_label.get("id", ""),
-                    name=existing_rule_label.get("name", ""),
-                    description=existing_rule_label.get("description", ""),
-                ).to_dict()
-                module.exit_json(changed=True, data=existing_rule_label)
+                label_id_to_update = existing_rule_label.get("id")
+                if not label_id_to_update:
+                    module.fail_json(
+                        msg="Cannot update label: ID is missing from the existing resource."
+                    )
+
+                updated_label, _unused, error = client.rule_labels.update_label(
+                    label_id=label_id_to_update,
+                    name=rule_label_params.get("name"),
+                    description=rule_label_params.get("description"),
+                )
+                if error:
+                    module.fail_json(msg=f"Error updating label: {to_native(error)}")
+                module.exit_json(changed=True, data=updated_label.as_dict())
+            else:
+                module.exit_json(changed=False, data=existing_rule_label)
         else:
-            """Create"""
-            rule_label = client.labels.add_label(
-                name=rule_label.get("name", ""),
-                description=rule_label.get("description", ""),
-            ).to_dict()
-            module.exit_json(changed=False, data=rule_label)
+            new_label, _unused, error = client.rule_labels.add_label(
+                name=rule_label_params.get("name"),
+                description=rule_label_params.get("description"),
+            )
+            if error:
+                module.fail_json(msg=f"Error adding label: {to_native(error)}")
+            module.exit_json(changed=True, data=new_label.as_dict())
+
     elif state == "absent":
-        if existing_rule_label is not None:
-            code = client.labels.delete_label(existing_rule_label.get("id"))
-            if code > 299:
-                module.exit_json(changed=False, data=None)
+        if existing_rule_label:
+            label_id_to_delete = existing_rule_label.get("id")
+            if not label_id_to_delete:
+                module.fail_json(
+                    msg="Cannot delete label: ID is missing from the existing resource."
+                )
+
+            _unused, _unused, error = client.rule_labels.delete_label(
+                label_id_to_delete
+            )
+            if error:
+                module.fail_json(msg=f"Error deleting label: {to_native(error)}")
             module.exit_json(changed=True, data=existing_rule_label)
-    module.exit_json(changed=False, data={})
+        else:
+            module.exit_json(changed=False, data={})
+
+    else:
+        module.exit_json(changed=False, data={})
 
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
-        id=dict(type="int", required=False),
-        name=dict(type="str", required=True),
-        description=dict(type="str", required=False),
-        state=dict(type="str", choices=["present", "absent"], default="present"),
+        dict(
+            id=dict(type="int", required=False),
+            name=dict(type="str", required=True),
+            description=dict(type="str", required=False),
+            state=dict(type="str", choices=["present", "absent"], default="present"),
+        )
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
     try:

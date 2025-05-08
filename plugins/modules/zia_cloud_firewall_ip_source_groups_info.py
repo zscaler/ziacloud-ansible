@@ -105,7 +105,6 @@ groups:
 """
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
@@ -114,26 +113,45 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 
 def core(module):
-    group_id = module.params.get("id", None)
-    group_name = module.params.get("name", None)
+    group_id = module.params.get("id")
+    group_name = module.params.get("name")
+
     client = ZIAClientHelper(module)
     groups = []
+
     if group_id is not None:
-        group = client.firewall.get_ip_source_group(group_id).to_dict()
-        groups = [group]
+        group_obj, _unused, error = client.cloud_firewall.get_ip_source_group(group_id)
+        if error or group_obj is None:
+            module.fail_json(
+                msg=f"Failed to retrieve IP Source Group with ID '{group_id}': {to_native(error)}"
+            )
+        groups = [group_obj.as_dict()]
     else:
-        groups = client.firewall.list_ip_source_groups().to_list()
-        if group_name is not None:
-            group = None
-            for dest in groups:
-                if dest.get("name", None) == group_name:
-                    group = dest
-                    break
-            if group is None:
+        query_params = {}
+        if group_name:
+            query_params["search"] = group_name
+
+        result, _unused, error = client.cloud_firewall.list_ip_source_groups(
+            query_params=query_params
+        )
+        if error:
+            module.fail_json(
+                msg=f"Error retrieving IP Source Groups: {to_native(error)}"
+            )
+
+        group_list = [g.as_dict() for g in result] if result else []
+
+        if group_name:
+            matched = next((g for g in group_list if g.get("name") == group_name), None)
+            if not matched:
+                available = [g.get("name") for g in group_list]
                 module.fail_json(
-                    msg="Failed to retrieve ip source group: '%s'" % (group_name)
+                    msg=f"IP Source Group with name '{group_name}' not found. Available groups: {available}"
                 )
-            groups = [group]
+            groups = [matched]
+        else:
+            groups = group_list
+
     module.exit_json(changed=False, groups=groups)
 
 
@@ -143,7 +161,13 @@ def main():
         name=dict(type="str", required=False),
         id=dict(type="int", required=False),
     )
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=True,
+        mutually_exclusive=[["name", "id"]],
+    )
+
     try:
         core(module)
     except Exception as e:

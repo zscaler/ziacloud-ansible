@@ -1,20 +1,63 @@
----
-  name: AutomationHub Token Keepalive
-  # Inactive tokens expire after 30 days, this will stop the 30 day timer with regular check-ins
+name: Sanity Checks
 
-  "on":
-    schedule:
-      - cron: '0 0 1,15 * *' # Scheduled for 00:00 on day 1 and day 15 of every month
-    workflow_dispatch:
+on:
+  push:
+    branches: [master]
+  pull_request:
+  schedule:
+   - cron: '0 14 * * 1-5'
 
-  jobs:
-    automationhub_token_keepalive:
-      runs-on: "ubuntu-latest"
-      steps:
-        - name: "Execute keepalive command"
-          run: |
-            curl ${{ secrets.AUTOMATION_HUB_SSO_URL }} \
-              -d grant_type=refresh_token \
-              -d client_id="cloud-services" \
-              -d refresh_token="${{ secrets.AUTOMATION_HUB_API_TOKEN }}" \
-              --fail --silent --show-error --output /dev/null
+env:
+  NAMESPACE: zscaler
+  COLLECTION_NAME: ziacloud
+  PYTHON_VERSION: 3.8
+
+jobs:
+  ## Sanity is required:
+  #
+  # https://docs.ansible.com/ansible/latest/dev_guide/testing_sanity.html
+  sanity:
+    name: Sanity (Ansible ${{ matrix.ansible }} - Python ${{ matrix.python_ver }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - ansible: "2.15"
+            python_ver: "3.11"
+          - ansible: "2.16"
+            python_ver: "3.11"
+          - ansible: "2.17"
+            python_ver: "3.11"
+          - ansible: "2.18"
+            python_ver: "3.11"
+    defaults:
+      run:
+        working-directory: ./ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: ./ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python_ver }}
+
+      - name: Install Poetry
+        uses: Gr1N/setup-poetry@v9
+
+      # Install the head of the given branch (devel, stable-2.10)
+      - name: Install ansible-base (${{ matrix.ansible }})
+        run: |
+          poetry run pip install https://github.com/ansible/ansible/archive/stable-${{ matrix.ansible }}.tar.gz --disable-pip-version-check
+
+      - name: Create lock file
+        run: poetry lock
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Run sanity tests
+        timeout-minutes: 10
+        run: poetry run make new-sanity

@@ -79,12 +79,9 @@ RETURN = r"""
 """
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
-    deleteNone,
-)
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import deleteNone
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
     ZIAClientHelper,
 )
@@ -92,144 +89,151 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 def normalize_svc_group(group):
     """
-    Normalize network service group data by setting computed values.
+    Normalize service group data for drift comparison.
     """
-    normalized = group.copy()
-
-    computed_values = [
-        "id",
-        # "name",
-        # "description",
-        # "service_ids",
-    ]
-    for attr in computed_values:
-        normalized.pop(attr, None)
-
+    normalized = group.copy() if group else {}
+    if "service_ids" in normalized and normalized["service_ids"]:
+        normalized["service_ids"] = sorted(normalized["service_ids"])
+    normalized.pop("id", None)
     return normalized
 
 
 def core(module):
-    state = module.params.get("state", None)
+    state = module.params.get("state")
     client = ZIAClientHelper(module)
-    service_group = dict()
-    params = [
-        "id",
-        "name",
-        "description",
-        "service_ids",
-    ]
-    for param_name in params:
-        service_group[param_name] = module.params.get(param_name, None)
-    group_id = service_group.get("id", None)
-    group_name = service_group.get("name", None)
 
-    existing_service_group = None
-    if group_id is not None:
-        group_box = client.firewall.get_network_svc_group(group_id=group_id)
-        if group_box is not None:
-            existing_service_group = group_box.to_dict()
-    elif group_name is not None:
-        groups = client.firewall.list_network_svc_groups().to_list()
-        for group_ in groups:
-            if group_.get("name") == group_name:
-                existing_service_group = group_
+    service_group = {
+        p: module.params.get(p) for p in ["id", "name", "description", "service_ids"]
+    }
+    group_id = service_group.get("id")
+    group_name = service_group.get("name")
 
-    # Normalize and compare existing and desired data
-    desired_group = normalize_svc_group(service_group)
-    current_group = (
-        normalize_svc_group(existing_service_group) if existing_service_group else {}
+    existing_group = None
+
+    if group_id:
+        result, _unused, error = client.cloud_firewall.get_network_svc_group(
+            group_id=group_id
+        )
+        if error:
+            module.fail_json(
+                msg=f"Error retrieving service group by ID {group_id}: {to_native(error)}"
+            )
+        existing_group = result.as_dict()
+        if "services" in existing_group:
+            existing_group["service_ids"] = sorted(
+                [svc["id"] for svc in existing_group["services"]]
+            )
+    elif group_name:
+        result, _unused, error = client.cloud_firewall.list_network_svc_groups()
+        if error:
+            module.fail_json(msg=f"Error listing service groups: {to_native(error)}")
+        for g in result:
+            group_dict = g.as_dict()
+            if group_dict.get("name") == group_name:
+                existing_group = group_dict
+                if "services" in existing_group:
+                    existing_group["service_ids"] = sorted(
+                        [svc["id"] for svc in existing_group["services"]]
+                    )
+                break
+
+    normalized_desired = normalize_svc_group(service_group)
+    normalized_existing = normalize_svc_group(existing_group) if existing_group else {}
+
+    differences_detected = any(
+        normalized_desired[k] != normalized_existing.get(k)
+        for k in normalized_desired
+        if k != "id"
     )
 
-    fields_to_exclude = ["id"]
-    differences_detected = False
-    for key, value in desired_group.items():
-        if key not in fields_to_exclude and current_group.get(key) != value:
-            differences_detected = True
-            # module.warn(
-            #     f"Difference detected in {key}. Current: {current_group.get(key)}, Desired: {value}"
-            # )
-
     if module.check_mode:
-        # If in check mode, report changes and exit
-        if state == "present" and (
-            existing_service_group is None or differences_detected
-        ):
+        if state == "present" and (existing_group is None or differences_detected):
             module.exit_json(changed=True)
-        elif state == "absent" and existing_service_group is not None:
+        elif state == "absent" and existing_group:
             module.exit_json(changed=True)
         else:
             module.exit_json(changed=False)
 
-    if existing_service_group is not None:
-        id = existing_service_group.get("id")
-        existing_service_group.update(service_group)
-        existing_service_group["id"] = id
+    if existing_group:
+        existing_group.update(normalized_desired)
+        existing_group["id"] = existing_group.get("id") or group_id
 
-    # module.warn(f"Final payload being sent to SDK: {service_group}")
     if state == "present":
-        if existing_service_group is not None:
+        if existing_group:
             if differences_detected:
-                """Update"""
-                existing_service_group = deleteNone(
+                group_id_to_update = existing_group.get("id")
+                if not group_id_to_update:
+                    module.fail_json(msg="Cannot update service group: ID is missing.")
+
+                payload = deleteNone(
                     dict(
-                        group_id=existing_service_group.get("id"),
-                        name=existing_service_group.get("name", None),
-                        service_ids=existing_service_group.get("service_ids", None),
-                        description=existing_service_group.get("description", None),
+                        group_id=group_id_to_update,
+                        name=service_group.get("name"),
+                        service_ids=service_group.get("service_ids"),
+                        description=service_group.get("description"),
                     )
                 )
-                # module.warn("Payload Update for SDK: {}".format(existing_service_group))
-                existing_service_group = client.firewall.update_network_svc_group(
-                    **existing_service_group
-                ).to_dict()
-                module.exit_json(changed=True, data=existing_service_group)
+
+                updated_group, _unused, error = (
+                    client.cloud_firewall.update_network_svc_group(**payload)
+                )
+                if error:
+                    module.fail_json(
+                        msg=f"Error updating service group: {to_native(error)}"
+                    )
+                module.exit_json(changed=True, data=updated_group.as_dict())
             else:
-                """No Changes Needed"""
-                module.exit_json(changed=False, data=existing_service_group)
+                module.exit_json(changed=False, data=existing_group)
         else:
-            module.warn(
-                "Creating services group as no existing services group was found"
-            )
-            """Create"""
-            service_group = deleteNone(
+            payload = deleteNone(
                 dict(
-                    name=service_group.get("name", None),
-                    service_ids=service_group.get("service_ids", None),
-                    description=service_group.get("description", None),
+                    name=service_group.get("name"),
+                    service_ids=service_group.get("service_ids"),
+                    description=service_group.get("description"),
                 )
             )
-            # module.warn("Payload for SDK: {}".format(service_group))
-            service_group = client.firewall.add_network_svc_group(**service_group)
-            module.exit_json(changed=True, data=service_group)
-    elif (
-        state == "absent"
-        and existing_service_group is not None
-        and existing_service_group.get("id") is not None
-    ):
-        code = client.firewall.delete_network_svc_group(
-            group_id=existing_service_group.get("id"),
-        )
-        if code > 299:
-            module.exit_json(changed=False, data=None)
-        module.exit_json(changed=True, data=existing_service_group)
+
+            created_group, _unused, error = client.cloud_firewall.add_network_svc_group(
+                **payload
+            )
+            if error:
+                module.fail_json(
+                    msg=f"Error creating service group: {to_native(error)}"
+                )
+            module.exit_json(changed=True, data=created_group.as_dict())
+
+    elif state == "absent":
+        if existing_group:
+            group_id_to_delete = existing_group.get("id")
+            if not group_id_to_delete:
+                module.fail_json(msg="Cannot delete service group: ID is missing.")
+
+            _unused, _unused, error = client.cloud_firewall.delete_network_svc_group(
+                group_id=group_id_to_delete
+            )
+            if error:
+                module.fail_json(
+                    msg=f"Error deleting service group: {to_native(error)}"
+                )
+            module.exit_json(changed=True, data=existing_group)
+        else:
+            module.exit_json(changed=False, data={})
+
     module.exit_json(changed=False, data={})
 
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
-    id_name_spec = dict(
-        type="list",
-        elements="int",
-        required=True,
-    )
     argument_spec.update(
         id=dict(type="int", required=False),
         name=dict(type="str", required=True),
         description=dict(type="str", required=False),
-        service_ids=id_name_spec,
+        service_ids=dict(type="list", elements="int", required=True),
         state=dict(type="str", choices=["present", "absent"], default="present"),
     )
+
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+
     try:
         core(module)
     except Exception as e:

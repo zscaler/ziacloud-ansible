@@ -157,7 +157,7 @@ EXAMPLES = r"""
   zscaler.ziacloud.zia_url_categories:
     provider: '{{ provider }}'
     super_category: USER_DEFINED
-    configured_name: Example_Category
+    name: Example_Category
     description: Example_Category
     type: URL_CATEGORY
     keywords:
@@ -197,16 +197,9 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 
 def normalize_url_category(category):
-    """
-    Normalize URL category data by setting computed values and sorting URLs.
-    """
     normalized = category.copy()
+    normalized.pop("id", None)
 
-    computed_values = ["id"]
-    for attr in computed_values:
-        normalized.pop(attr, None)
-
-    # Sort URLs for consistent comparison
     if "urls" in normalized and normalized["urls"] is not None:
         normalized["urls"] = sorted(normalized["urls"])
 
@@ -214,47 +207,31 @@ def normalize_url_category(category):
 
 
 def preprocess_category(category, params):
-    """
-    Preprocess specific attributes in the category based on their type and structure.
-    :param category: Dict containing the category data.
-    :param params: List of attribute names to be processed.
-    :return: Preprocessed category.
-    """
     preprocessed = {}
     for attr in params:
         if attr in category:
             value = category[attr]
-
-            # Handling the 'editable' attribute, default to False if not provided
             if attr == "editable":
                 preprocessed[attr] = True if value is None else value
-
-            # Handle list attributes
             elif isinstance(value, list):
                 preprocessed[attr] = sorted(value) if value else []
-
             else:
                 preprocessed[attr] = value
-
         else:
-            # Assign default values for missing keys
-            if attr == "editable":
-                preprocessed[attr] = False
-            else:
-                preprocessed[attr] = None
-
+            preprocessed[attr] = False if attr == "editable" else None
     return preprocessed
 
 
 def core(module):
     state = module.params.get("state", None)
     client = ZIAClientHelper(module)
+
     category = dict()
     params = [
         "id",
         "configured_name",
         "description",
-        "super_category",  # This will be excluded from the comparison
+        "super_category",
         "custom_category",
         "keywords",
         "keywords_retaining_parent_category",
@@ -266,49 +243,53 @@ def core(module):
         "type",
         "editable",
     ]
+
     for param_name in params:
         category[param_name] = module.params.get(param_name, None)
 
     category_id = category.get("id", None)
     existing_category = None
-    if category_id is not None:
-        categoryBox = client.url_categories.get_category(category_id=category_id)
-        if categoryBox is not None:
-            existing_category = categoryBox.to_dict()
-    elif category.get("configured_name"):
-        categories = client.url_categories.list_categories().to_list()
-        for category_ in categories:
-            if category_.get("configured_name") == category.get("configured_name"):
-                existing_category = category_
 
-    # Normalize and compare existing and desired data
+    if category_id:
+        result, _unused, error = client.url_categories.get_category(
+            category_id=category_id
+        )
+        if error:
+            module.fail_json(msg=f"Error fetching category: {to_native(error)}")
+        if result:
+            existing_category = result.as_dict()
+    elif category.get("configured_name"):
+        result, _unused, error = client.url_categories.list_categories()
+        if error:
+            module.fail_json(msg=f"Error listing categories: {to_native(error)}")
+        for category_ in result or []:
+            if category_.configured_name == category.get("configured_name"):
+                existing_category = category_.as_dict()
+                break
+
     desired_category = normalize_url_category(category)
     current_category = (
         normalize_url_category(existing_category) if existing_category else {}
     )
 
-    existing_category_preprocessed = preprocess_category(current_category, params)
-    desired_category_preprocessed = preprocess_category(desired_category, params)
+    existing_pre = preprocess_category(current_category, params)
+    desired_pre = preprocess_category(desired_category, params)
 
-    # Exclude 'super_category' from the comparison
-    if "super_category" in desired_category_preprocessed:
-        desired_category_preprocessed.pop("super_category")
-    if "super_category" in existing_category_preprocessed:
-        existing_category_preprocessed.pop("super_category")
+    # Remove super_category from diff comparison
+    existing_pre.pop("super_category", None)
+    desired_pre.pop("super_category", None)
 
-    # Comparison logic
     differences_detected = False
     for key in params:
         if key == "super_category":
             continue
-        desired_value = desired_category_preprocessed.get(key)
-        current_value = existing_category_preprocessed.get(key)
 
-        # Handling for list attributes where None should be treated as an empty list
+        desired_value = desired_pre.get(key)
+        current_value = existing_pre.get(key)
+
         if isinstance(current_value, list) and desired_value is None:
             desired_value = []
 
-        # Skip comparison for 'id' if it's not in the desired category but present in the existing category
         if key == "id" and desired_value is None and current_value is not None:
             continue
 
@@ -321,12 +302,11 @@ def core(module):
 
         if current_value != desired_value:
             differences_detected = True
-            # module.warn(
-            #     f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
-            # )
+            module.warn(
+                f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
+            )
 
     if module.check_mode:
-        # If in check mode, report changes and exit
         if state == "present" and (existing_category is None or differences_detected):
             module.exit_json(changed=True)
         elif state == "absent" and existing_category is not None:
@@ -334,43 +314,58 @@ def core(module):
         else:
             module.exit_json(changed=False)
 
-    if existing_category is not None:
-        id = existing_category.get("id")
+    if existing_category:
+        category_id = existing_category.get("id")
         existing_category.update(category)
-        existing_category["id"] = id
+        existing_category["id"] = category_id
 
-    # module.warn(f"Final payload being sent to SDK: {category}")
+    module.warn(f"Final payload being sent to SDK: {category}")
     if state == "present":
-        if existing_category is not None:
+        if existing_category:
             if differences_detected:
-                updated_category = deleteNone(category)
-                updated_category["category_id"] = existing_category.get("id")
-                updated_category = client.url_categories.update_url_category(
-                    **updated_category
-                ).to_dict()
-                module.exit_json(changed=True, data=updated_category)
+                # if category.get("custom_category") and category.get("name"):
+                #     category["configured_name"] = category.pop("name")
+
+                updated_data = deleteNone(category)
+                updated_data["category_id"] = existing_category["id"]
+                module.warn("Payload for SDK (update): {}".format(updated_data))
+
+                result, _unused, error = client.url_categories.update_url_category(
+                    **updated_data
+                )
+                if error or not result:
+                    module.fail_json(
+                        msg=f"Failed to update category: {to_native(error)}"
+                    )
+                module.exit_json(changed=True, data=result.as_dict())
+
             else:
-                # Existing category found but no differences detected, so no changes are made
                 module.exit_json(
-                    changed=False,
-                    data=existing_category,
-                    msg="No changes needed as the existing category matches the desired state.",
+                    changed=False, data=existing_category, msg="No changes needed."
                 )
         else:
-            created_category = deleteNone(category)
-            # module.warn("Payload for SDK: {}".format(created_category))
-            new_category = client.url_categories.add_url_category(
-                **created_category
-            ).to_dict()
-            module.exit_json(changed=True, data=new_category)
+            # if category.get("custom_category") and category.get("name"):
+            #     category["configured_name"] = category.pop("name")  # 🛠 Fix before deleteNone
+
+            payload = deleteNone(category)
+            module.warn("Payload for SDK: {}".format(payload))
+            result, _unused, error = client.url_categories.add_url_category(**payload)
+            if error or not result:
+                module.fail_json(msg=f"Failed to create category: {to_native(error)}")
+            module.exit_json(changed=True, data=result.as_dict())
+
     elif state == "absent":
         if existing_category:
-            client.url_categories.delete_category(
-                category_id=existing_category.get("id")
+            _unused, _unused, error = client.url_categories.delete_category(
+                category_id=existing_category["id"]
             )
+            if error:
+                module.fail_json(msg=f"Failed to delete category: {to_native(error)}")
             module.exit_json(changed=True, data=existing_category)
         else:
             module.exit_json(changed=False, data={})
+
+    module.exit_json(changed=False, data={})
 
 
 def main():
@@ -385,9 +380,9 @@ def main():
         configured_name=dict(type="str", required=False),
         description=dict(type="str", required=False),
         custom_category=dict(type="bool", required=False),
-        keywords=dict(type="list", elements="str", required=False, no_log=True),
+        keywords=dict(type="list", elements="str", required=False, no_log=False),
         keywords_retaining_parent_category=dict(
-            type="list", elements="str", required=False, no_log=True
+            type="list", elements="str", required=False, no_log=False
         ),
         urls=dict(type="list", elements="str", required=False),
         db_categorized_urls=dict(type="list", elements="str", required=False),

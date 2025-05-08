@@ -146,7 +146,6 @@ dictionaries:
 
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
@@ -155,27 +154,45 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 
 def core(module):
-    dict_id = module.params.get("id", None)
-    dict_name = module.params.get("name", None)
-    client = ZIAClientHelper(module)
+    dict_id = module.params.get("id")
+    dict_name = module.params.get("name")
 
+    client = ZIAClientHelper(module)
     dictionaries = []
+
     if dict_id is not None:
-        dictionary = client.dlp.get_dict(dict_id).to_dict()
-        dictionaries = [dictionary]
+        dict_obj, _unused, error = client.dlp_dictionary.get_dict(dict_id)
+        if error or dict_obj is None:
+            module.fail_json(
+                msg=f"Failed to retrieve DLP Dictionary with ID '{dict_id}': {to_native(error)}"
+            )
+        dictionaries = [dict_obj.as_dict()]
     else:
-        dictionaries = client.dlp.list_dicts().to_list()
-        if dict_name is not None:
-            dictionary = None
-            for dict in dictionaries:
-                if dict.get("name", None) == dict_name:
-                    dictionary = dict
-                    break
-            if dictionary is None:
+        query_params = {}
+        if dict_name:
+            query_params["search"] = dict_name
+
+        result, _unused, error = client.dlp_dictionary.list_dicts(
+            query_params=query_params
+        )
+        if error:
+            module.fail_json(
+                msg=f"Error retrieving DLP Dictionaries: {to_native(error)}"
+            )
+
+        dict_list = [d.as_dict() for d in result] if result else []
+
+        if dict_name:
+            matched = next((d for d in dict_list if d.get("name") == dict_name), None)
+            if not matched:
+                available = [d.get("name") for d in dict_list]
                 module.fail_json(
-                    msg="Failed to retrieve dlp dictionary: '%s'" % (dict_name)
+                    msg=f"DLP Dictionary named '{dict_name}' not found. Available: {available}"
                 )
-            dictionaries = [dictionary]
+            dictionaries = [matched]
+        else:
+            dictionaries = dict_list
+
     module.exit_json(changed=False, dictionaries=dictionaries)
 
 
@@ -185,7 +202,13 @@ def main():
         name=dict(type="str", required=False),
         id=dict(type="int", required=False),
     )
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=True,
+        mutually_exclusive=[["name", "id"]],
+    )
+
     try:
         core(module)
     except Exception as e:

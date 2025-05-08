@@ -227,12 +227,9 @@ RETURN = r"""
 """
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
-    deleteNone,
-)
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import deleteNone
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
     ZIAClientHelper,
 )
@@ -240,154 +237,155 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 def normalize_service(service):
     """
-    Normalize network service data by setting computed values.
+    Normalize network service data:
+    - Removes non-drift-relevant fields
+    - Sorts all port range blocks by (start, end)
     """
-    normalized = service.copy()
+    normalized = service.copy() if service else {}
 
-    computed_values = [
-        "creatorContext",
-        "isNameL10nTag",
-    ]
-    for attr in computed_values:
-        normalized.pop(attr, None)
+    def sorted_ports(port_list):
+        if not port_list:
+            return []
+        return sorted(port_list, key=lambda p: (p.get("start", 0), p.get("end", 0)))
+
+    for key in ["src_tcp_ports", "dest_tcp_ports", "src_udp_ports", "dest_udp_ports"]:
+        if key in normalized:
+            normalized[key] = sorted_ports(normalized[key])
+
+    # Clean up computed fields
+    for field in ["creatorContext", "isNameL10nTag", "id"]:
+        normalized.pop(field, None)
 
     return normalized
 
 
 def core(module):
-    state = module.params.get("state", None)
+    state = module.params.get("state")
     client = ZIAClientHelper(module)
-    network_service = dict()
-    params = [
-        "id",
-        "name",
-        "description",
-        "tag",
-        "type",
-        "src_tcp_ports",
-        "dest_tcp_ports",
-        "src_udp_ports",
-        "dest_udp_ports",
-    ]
-    for param_name in params:
-        network_service[param_name] = module.params.get(param_name, None)
-    service_id = network_service.get("id", None)
-    service_name = network_service.get("name", None)
-    existing_network_service = None
-    if service_id is not None:
-        existing_network_service = client.firewall.get_network_service(
-            service_id
-        ).to_dict()
-    else:
-        network_services = client.firewall.list_network_services().to_list()
-        if service_name is not None:
-            for svc in network_services:
-                if svc.get("name", None) == service_name:
-                    existing_network_service = svc
-                    break
 
-    # Normalize and compare existing and desired data
-    normalized_service = normalize_service(network_service)
-    normalized_existing_service = (
-        normalize_service(existing_network_service) if existing_network_service else {}
+    network_service = {
+        p: module.params.get(p)
+        for p in [
+            "id",
+            "name",
+            "description",
+            "tag",
+            "type",
+            "src_tcp_ports",
+            "dest_tcp_ports",
+            "src_udp_ports",
+            "dest_udp_ports",
+        ]
+    }
+
+    service_id = network_service.get("id")
+    service_name = network_service.get("name")
+    existing = None
+
+    if service_id:
+        result, _unused, error = client.cloud_firewall.get_network_service(service_id)
+        if error:
+            module.fail_json(
+                msg=f"Error fetching service ID {service_id}: {to_native(error)}"
+            )
+        existing = result.as_dict()
+    elif service_name:
+        result, _unused, error = client.cloud_firewall.list_network_services()
+        if error:
+            module.fail_json(msg=f"Error listing services: {to_native(error)}")
+        for svc in result:
+            svc_dict = svc.as_dict()
+            if svc_dict.get("name") == service_name:
+                existing = svc_dict
+                break
+
+    normalized_desired = normalize_service(network_service)
+    normalized_existing = normalize_service(existing)
+
+    differences_detected = any(
+        normalized_desired.get(k) != normalized_existing.get(k)
+        for k in normalized_desired
     )
 
-    fields_to_exclude = ["id"]
-    differences_detected = False
-    for key, value in normalized_service.items():
-        if (
-            key not in fields_to_exclude
-            and normalized_existing_service.get(key) != value
-        ):
-            differences_detected = True
-            # module.warn(
-            #     f"Difference detected in {key}. Current: {normalized_existing_service.get(key)}, Desired: {value}"
-            # )
-
     if module.check_mode:
-        # If in check mode, report changes and exit
-        if state == "present" and (
-            existing_network_service is None or differences_detected
-        ):
+        if state == "present" and (not existing or differences_detected):
             module.exit_json(changed=True)
-        elif state == "absent" and existing_network_service is not None:
+        elif state == "absent" and existing:
             module.exit_json(changed=True)
         else:
             module.exit_json(changed=False)
 
-    if existing_network_service is not None:
-        id = existing_network_service.get("id")
-        existing_network_service.update(normalized_service)
-        existing_network_service["id"] = id
+    if existing:
+        existing.update(normalized_desired)
+        existing["id"] = existing.get("id") or service_id
 
-    # module.warn(f"Final payload being sent to SDK: {normalized_service}")
     if state == "present":
-        if existing_network_service is not None:
+        if existing:
             if differences_detected:
-                """Update"""
-                update_service = deleteNone(
+                if not existing.get("id"):
+                    module.fail_json(msg="Missing ID for update.")
+
+                payload = deleteNone(
                     dict(
-                        service_id=existing_network_service.get("id"),
-                        name=existing_network_service.get("name"),
-                        description=existing_network_service.get("description"),
-                        type=existing_network_service.get("type"),
-                        tag=existing_network_service.get("tag"),
-                        src_tcp_ports=existing_network_service.get("src_tcp_ports"),
-                        dest_tcp_ports=existing_network_service.get("dest_tcp_ports"),
-                        src_udp_ports=existing_network_service.get("src_udp_ports"),
-                        dest_udp_ports=existing_network_service.get("dest_udp_ports"),
+                        service_id=existing.get("id"),
+                        name=network_service.get("name"),
+                        description=network_service.get("description"),
+                        tag=network_service.get("tag"),
+                        type=network_service.get("type"),
+                        src_tcp_ports=network_service.get("src_tcp_ports"),
+                        dest_tcp_ports=network_service.get("dest_tcp_ports"),
+                        src_udp_ports=network_service.get("src_udp_ports"),
+                        dest_udp_ports=network_service.get("dest_udp_ports"),
                     )
                 )
-                module.warn("Payload Update for SDK: {}".format(update_service))
-                update_service = client.firewall.update_network_service(
-                    **update_service
-                ).to_dict()
-                module.exit_json(changed=True, data=update_service)
+
+                updated, _unused, error = client.cloud_firewall.update_network_service(
+                    **payload
+                )
+                if error:
+                    module.fail_json(msg=f"Error updating service: {to_native(error)}")
+                module.exit_json(changed=True, data=updated.as_dict())
             else:
-                module.exit_json(changed=False, data=existing_network_service)
+                module.exit_json(changed=False, data=existing)
         else:
-            module.warn("Creating new service as no existing service found")
-            """Create"""
-            create_service = deleteNone(
+            payload = deleteNone(
                 dict(
                     name=network_service.get("name"),
+                    description=network_service.get("description"),
                     tag=network_service.get("tag"),
                     type=network_service.get("type"),
                     src_tcp_ports=network_service.get("src_tcp_ports"),
                     dest_tcp_ports=network_service.get("dest_tcp_ports"),
                     src_udp_ports=network_service.get("src_udp_ports"),
                     dest_udp_ports=network_service.get("dest_udp_ports"),
-                    description=network_service.get("description"),
                 )
             )
-            # module.warn("Payload for SDK: {}".format(create_service))
-            create_service = client.firewall.add_network_service(
-                **create_service
-            ).to_dict()
-            module.exit_json(changed=True, data=create_service)
+
+            created, _unused, error = client.cloud_firewall.add_network_service(
+                **payload
+            )
+            if error:
+                module.fail_json(msg=f"Error creating service: {to_native(error)}")
+            module.exit_json(changed=True, data=created.as_dict())
+
     elif state == "absent":
-        if existing_network_service is not None:
-            service_type = existing_network_service.get("type")
+        if existing:
+            service_type = existing.get("type")
             if service_type in ["PREDEFINED", "STANDARD"]:
                 module.exit_json(
                     changed=False,
-                    msg=f"Skipping deletion as the network service type '{service_type}' is protected.",
+                    msg=f"Skipping delete of protected type: {service_type}",
                 )
-            else:
-                code = client.firewall.delete_network_service(
-                    existing_network_service.get("id")
-                )
-                if code > 299:
-                    module.fail_json(msg="Failed to delete the network service.")
-                module.exit_json(
-                    changed=True,
-                    data=existing_network_service,
-                    msg="Network service deleted successfully.",
-                )
-        else:
-            module.exit_json(
-                changed=False, msg="No matching network service found to delete."
+            _unused, _unused, error = client.cloud_firewall.delete_network_service(
+                existing.get("id")
             )
+            if error:
+                module.fail_json(msg=f"Error deleting service: {to_native(error)}")
+            module.exit_json(changed=True, data=existing, msg="Service deleted")
+        else:
+            module.exit_json(changed=False, msg="Service not found")
+
+    module.exit_json(changed=False, data={})
 
 
 def main():
@@ -396,47 +394,30 @@ def main():
         id=dict(type="int", required=False),
         name=dict(type="str", required=True),
         description=dict(type="str", required=False),
-        type=dict(
-            type="str",
-            required=False,
-            default="CUSTOM",
-            choices=["CUSTOM"],
-        ),
+        type=dict(type="str", default="CUSTOM", choices=["CUSTOM"]),
         src_tcp_ports=dict(
             type="list",
             elements="dict",
-            options=dict(
-                start=dict(type="int", required=False),
-                end=dict(type="int", required=False),
-            ),
             required=False,
+            options=dict(start=dict(type="int"), end=dict(type="int")),
         ),
         dest_tcp_ports=dict(
             type="list",
             elements="dict",
-            options=dict(
-                start=dict(type="int", required=False),
-                end=dict(type="int", required=False),
-            ),
             required=False,
+            options=dict(start=dict(type="int"), end=dict(type="int")),
         ),
         src_udp_ports=dict(
             type="list",
             elements="dict",
-            options=dict(
-                start=dict(type="int", required=False),
-                end=dict(type="int", required=False),
-            ),
             required=False,
+            options=dict(start=dict(type="int"), end=dict(type="int")),
         ),
         dest_udp_ports=dict(
             type="list",
             elements="dict",
-            options=dict(
-                start=dict(type="int", required=False),
-                end=dict(type="int", required=False),
-            ),
             required=False,
+            options=dict(start=dict(type="int"), end=dict(type="int")),
         ),
         tag=dict(
             type="list",
@@ -509,6 +490,7 @@ def main():
         state=dict(type="str", choices=["present", "absent"], default="present"),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+
     try:
         core(module)
     except Exception as e:

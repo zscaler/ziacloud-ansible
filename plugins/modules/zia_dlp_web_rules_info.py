@@ -160,7 +160,6 @@ dlp_web_rules:
 
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
@@ -169,27 +168,37 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 
 def core(module):
-    rule_id = module.params.get("id", None)
-    rule_name = module.params.get("name", None)
+    rule_id = module.params.get("id")
+    rule_name = module.params.get("name")
+
     client = ZIAClientHelper(module)
     rules = []
+
     if rule_id is not None:
-        ruleBox = client.web_dlp.get_rule(rule_id=rule_id)
-        if ruleBox is None:
-            module.fail_json(msg="Failed to retrieve DLP Web Rule ID: '%s'" % (rule_id))
-        rules = [ruleBox.to_dict()]
+        rules_obj, _unused, error = client.dlp_web_rules.get_rule(rule_id)
+        if error or rules_obj is None:
+            module.fail_json(
+                msg=f"Failed to retrieve DLP Web Rule with ID '{rule_id}': {to_native(error)}"
+            )
+        rules = [rules_obj.as_dict()]
     else:
-        rules = client.web_dlp.list_rules().to_list()
-        if rule_name is not None:
-            ruleFound = False
-            for rule in rules:
-                if rule.get("name") == rule_name:
-                    ruleFound = True
-                    rules = [rule]
-            if not ruleFound:
+        result, _unused, error = client.dlp_web_rules.list_rules()
+        if error:
+            module.fail_json(msg=f"Error retrieving DLP Web Rules: {to_native(error)}")
+
+        rule_list = [i.as_dict() for i in result] if result else []
+
+        if rule_name:
+            matched = next((i for i in rule_list if i.get("name") == rule_name), None)
+            if not matched:
+                available = [i.get("name") for i in rule_list]
                 module.fail_json(
-                    msg="Failed to retrieve DLP Web Rule Name: '%s'" % (rule_name)
+                    msg=f"DLP Web Rule named '{rule_name}' not found. Available: {available}"
                 )
+            rules = [matched]
+        else:
+            rules = rule_list
+
     module.exit_json(changed=False, rules=rules)
 
 
@@ -199,7 +208,13 @@ def main():
         name=dict(type="str", required=False),
         id=dict(type="int", required=False),
     )
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=True,
+        mutually_exclusive=[["name", "id"]],
+    )
+
     try:
         core(module)
     except Exception as e:

@@ -107,20 +107,33 @@ def core(module):
     client = ZIAClientHelper(module)
 
     try:
-        # Retrieving the list of MD5 hashes blocked by Sandbox
-        behavioral_analysis_data = client.sandbox.get_behavioral_analysis().to_dict()
+        behavioral_analysis_data, _unused, error1 = (
+            client.sandbox.get_behavioral_analysis()
+        )
+        if error1:
+            module.fail_json(
+                msg=f"Error retrieving behavioral analysis: {to_native(error1)}"
+            )
 
-        # Retrieving the used and unused quota for blocking MD5 file hashes
-        file_hash_count_data = client.sandbox.get_file_hash_count().to_dict()
+        file_hash_count_data, _unused, error2 = client.sandbox.get_file_hash_count()
+        if error2:
+            module.fail_json(
+                msg=f"Error retrieving file hash count: {to_native(error2)}"
+            )
 
-        # Preparing the results to be returned
-        results = {
-            "behavioral_analysis": behavioral_analysis_data,
-            "file_hash_count": file_hash_count_data,
-        }
-
-        # Returning the results
-        module.exit_json(changed=False, results=results)
+        module.exit_json(
+            changed=False,
+            behavioral_analysis=(
+                behavioral_analysis_data.as_dict()
+                if hasattr(behavioral_analysis_data, "as_dict")
+                else behavioral_analysis_data
+            ),
+            file_hash_count=(
+                file_hash_count_data.as_dict()
+                if hasattr(file_hash_count_data, "as_dict")
+                else file_hash_count_data
+            ),
+        )
 
     except Exception as e:
         module.fail_json(msg=to_native(e), exception=format_exc())
@@ -128,6 +141,7 @@ def core(module):
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
+
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
 
     core(module)

@@ -86,10 +86,8 @@ options:
     type: list
     elements: str
     choices:
-        - SMRULEF_ZPA_BROKERS_RULE
-        - ANY_RULE
-        - TCP_RULE
-        - UDP_RULE
+        - WEBSOCKETSSL_RULE
+        - WEBSOCKET_RULE
         - DOHTTPS_RULE
         - TUNNELSSL_RULE
         - HTTP_PROXY
@@ -99,8 +97,7 @@ options:
         - HTTP_RULE
         - SSL_RULE
         - TUNNEL_RULE
-        - WEBSOCKETSSL_RULE
-        - WEBSOCKET_RULE
+
   locations:
     description:
         - Name-ID pairs of locations for which rule must be applied
@@ -132,10 +129,11 @@ options:
     required: false
   url_categories:
     description:
-        - List of URL categories for which rule must be applied
+      - The URL categories to which the rule applies
+      - Use the info resource zia_url_categories_info to retrieve the category names.
+    required: false
     type: list
     elements: str
-    required: false
   device_groups:
     description:
       - Name-ID pairs of device groups for which the rule must be applied.
@@ -181,6 +179,14 @@ options:
         - TRACE
         - CONNECT
         - OTHER
+        - PROPFIND
+        - PROPPATCH
+        - MOVE
+        - MKCOL
+        - LOCK
+        - COPY
+        - UNLOCK
+        - PATCH
   user_agent_types:
     description:
         - Any number of user agents to which the rule applies.
@@ -363,6 +369,7 @@ from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule, missing_required_lib
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
     deleteNone,
+    normalize_boolean_attributes,
 )
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
     ZIAClientHelper,
@@ -372,20 +379,16 @@ try:
     import pytz
 
     HAS_PYTZ = True
-    PYTZ_IMPORT_ERROR = None  # Explicitly set to None when import is successful
+    PYTZ_IMPORT_ERROR = None
 except ImportError:
-    pytz = None  # Set to None to indicate the module is unavailable
+    pytz = None
     HAS_PYTZ = False
-    PYTZ_IMPORT_ERROR = missing_required_lib(
-        "pytz"
-    )  # Use missing_required_lib for better error messages
+    PYTZ_IMPORT_ERROR = missing_required_lib("pytz")
 
 
 def validate_and_convert_time_fields(rule):
     if not HAS_PYTZ:
-        raise ImportError(
-            PYTZ_IMPORT_ERROR
-        )  # Properly handle the case where pytz is not available
+        raise ImportError(PYTZ_IMPORT_ERROR)
 
     enforce_time_validity = rule.get("enforce_time_validity")
     if enforce_time_validity:
@@ -412,41 +415,11 @@ def validate_and_convert_time_fields(rule):
                 rule[time_field] = int(time.mktime(time_with_tz.timetuple()))
 
 
-def validate_additional_fields(rule):
-    """
-    Validates additional fields in the rule.
-    """
-    # Adjust for action 'CAUTION'
-    if rule.get("action") == "CAUTION":
-        # Set request methods when action is 'CAUTION'
-        rule["request_methods"] = ["CONNECT", "GET", "HEAD"]
-
-    # Validate time_quota
-    time_quota = rule.get("time_quota")
-    if time_quota and (time_quota < 15 or time_quota > 600):
-        raise ValueError("time_quota must be within the range of 15 to 600 minutes")
-
-    # Validate and convert size_quota from MB to KB
-    size_quota_mb = rule.get("size_quota")
-    if size_quota_mb:
-        if size_quota_mb < 10 or size_quota_mb > 100000:
-            raise ValueError(
-                "size_quota must be within the range of 10 MB to 100000 MB"
-            )
-        # Convert MB to KB for API
-        rule["size_quota"] = size_quota_mb * 1024
-
-
 def normalize_rule(rule):
-    """
-    Normalize rule data by setting computed values.
-    """
     if not rule:
         return {}
 
     normalized = rule.copy()
-
-    # Add 'profile_seq' to the list of computed values to be removed
     computed_values = ["profile_seq"]
     for attr in computed_values:
         if (
@@ -459,142 +432,220 @@ def normalize_rule(rule):
     return normalized
 
 
+def preprocess_rule(rule, params):
+    for attr in params:
+        if attr in rule and rule[attr] is not None:
+            if isinstance(rule[attr], list):
+                if all(isinstance(item, dict) and "id" in item for item in rule[attr]):
+                    rule[attr] = [item["id"] for item in rule[attr]]
+                else:
+                    rule[attr] = sorted(rule[attr])
+    return rule
+
+
 def core(module):
     state = module.params.get("state", None)
     client = ZIAClientHelper(module)
-    rule = dict()
+
     params = [
         "id",
         "name",
+        "description",
+        "enabled",
         "order",
+        "rank",
+        "action",
         "protocols",
+        "request_methods",
         "locations",
         "groups",
         "departments",
         "users",
-        "url_categories",
-        "enabled",
-        "time_windows",
-        "rank",
-        "request_methods",
-        "end_user_notification_url",
         "override_users",
         "override_groups",
         "block_override",
+        "url_categories",
         "time_quota",
         "size_quota",
-        "description",
+        "time_windows",
         "location_groups",
         "labels",
-        "validity_start_time",
-        "validity_end_time",
-        "validity_time_zone_id",
-        "enforce_time_validity",
-        "action",
-        "ciparule",
         "user_agent_types",
         "device_trust_levels",
         "device_groups",
         "devices",
         "user_risk_score_levels",
+        "validity_start_time",
+        "validity_end_time",
+        "validity_time_zone_id",
+        "enforce_time_validity",
+        "end_user_notification_url",
+        "cipa_rule",
         "cbi_profile",
         "workload_groups",
     ]
-    for param_name in params:
-        rule[param_name] = module.params.get(param_name, None)
 
-    # Add the validation and conversion logic here
-    validate_and_convert_time_fields(rule)
+    # Only include attributes that are explicitly set in the playbook
+    rule = {}
+    for param in params:
+        if module.params.get(param) is not None:
+            rule[param] = module.params.get(param)
 
-    # Validate and convert additional fields
-    validate_additional_fields(rule)
+    module.debug(f"Initial parameters received (only explicitly set values): {rule}")
 
-    rule_id = rule.get("id", None)
-    rule_name = rule.get("name", None)
+    # Normalize boolean attributes (only if they exist in the rule)
+    bool_attributes = ["enforce_time_validity", "block_override"]
+    rule = normalize_boolean_attributes(rule, bool_attributes)
+    module.debug(f"Parameters after boolean normalization: {rule}")
+
+    # Validate and convert fields (only if enforce_time_validity is set)
+    if "enforce_time_validity" in rule:
+        validate_and_convert_time_fields(rule)
+        module.debug(f"Parameters after time field validation/conversion: {rule}")
+    else:
+        module.debug("Skipping time validation as enforce_time_validity is not set")
+
+    rule_id = rule.get("id")
+    rule_name = rule.get("name")
 
     existing_rule = None
     if rule_id is not None:
-        ruleBox = client.url_filtering.get_rule(rule_id=rule_id)
-        if ruleBox is not None:
-            existing_rule = ruleBox.to_dict()
-    elif rule_name is not None:
-        rules = client.url_filtering.list_rules().to_list()
-        for rule_ in rules:
-            if rule_.get("name") == rule_name:
-                existing_rule = rule_
+        module.debug(f"Fetching existing rule with ID: {rule_id}")
+        result, _unused, error = client.url_filtering.get_rule(rule_id=rule_id)
+        if error:
+            module.fail_json(
+                msg=f"Error fetching rule with id {rule_id}: {to_native(error)}"
+            )
+        if result:
+            existing_rule = result.as_dict()
+            module.warn(f"Raw existing rule keys: {existing_rule.keys()}")
+            module.warn(
+                f"user_agent_types from API: {existing_rule.get('user_agent_types')}"
+            )
+    else:
+        module.debug(f"Listing rules to find by name: {rule_name}")
+        result, _unused, error = client.url_filtering.list_rules()
+        if error:
+            module.fail_json(msg=f"Error listing rules: {to_native(error)}")
+        if result:
+            for rule_ in result:
+                if rule_.name == rule_name:
+                    existing_rule = rule_.as_dict()
+                    module.debug(f"Found existing rule by name: {existing_rule}")
+                    break
 
-    # Normalize and compare existing and desired data
+    # Normalize and compare
     desired_rule = normalize_rule(rule)
+
+    for k in ["protocols", "request_methods", "user_agent_types"]:
+        if k in desired_rule and isinstance(desired_rule[k], list):
+            desired_rule[k] = sorted(desired_rule[k])
+
     current_rule = normalize_rule(existing_rule) if existing_rule else {}
 
-    def preprocess_rules(rule, params):
-        """
-        Preprocess specific attributes in the rule based on their type and structure.
-        :param rule: Dict containing the rule data.
-        :param params: List of attribute names to be processed.
-        :return: Preprocessed rule.
-        """
-        for attr in params:
-            if attr in rule and rule[attr] is not None:
-                # Process list attributes
-                if isinstance(rule[attr], list):
-                    # If list contains dictionaries with 'id', extract IDs
-                    if all(
-                        isinstance(item, dict) and "id" in item for item in rule[attr]
-                    ):
-                        rule[attr] = [item["id"] for item in rule[attr]]
-                    else:
-                        # Sort lists for consistent order
-                        rule[attr] = sorted(rule[attr])
-                # Add more conditions here if needed for other types
-        return rule
+    for k in ["protocols", "request_methods", "user_agent_types"]:
+        if k in current_rule and isinstance(current_rule[k], list):
+            current_rule[k] = sorted(current_rule[k])
 
-    existing_rule_preprocessed = preprocess_rules(current_rule, params)
-    desired_rule_preprocessed = preprocess_rules(desired_rule, params)
+    module.debug(f"Normalized desired rule: {desired_rule}")
+    module.debug(f"Normalized current rule: {current_rule}")
 
-    # Then proceed with your comparison logic
+    desired_rule_preprocessed = preprocess_rule(desired_rule, params)
+    existing_rule_preprocessed = preprocess_rule(current_rule, params)
+    module.debug(f"Preprocessed desired rule: {desired_rule_preprocessed}")
+    module.debug(f"Preprocessed current rule: {existing_rule_preprocessed}")
+
     differences_detected = False
+    list_attributes = [
+        "protocols",
+        "request_methods",
+        "locations",
+        "groups",
+        "departments",
+        "users",
+        "override_users",
+        "override_groups",
+        "url_categories",
+        "time_windows",
+        "location_groups",
+        "labels",
+        "user_agent_types",
+        "device_trust_levels",
+        "device_groups",
+        "devices",
+        "user_risk_score_levels",
+        "workload_groups",
+    ]
+
+    # Attributes where order should be ignored
+    order_agnostic_attributes = ["protocols", "user_agent_types", "request_methods"]
+
     for key in params:
         desired_value = desired_rule_preprocessed.get(key)
         current_value = existing_rule_preprocessed.get(key)
 
-        # Handle 'block_override' and 'enforce_time_validity' specifically
-        if key in ["block_override", "enforce_time_validity"]:
-            if desired_value is None:
-                if current_value is False:  # Assuming 'False' is the default value
-                    continue  # Skip as it's the default value
-            elif desired_value == current_value:
-                continue  # Skip as values are the same
-
-        # Skip comparison for 'id' if it's not in the desired rule but present in the existing rule
         if key == "id" and desired_value is None and current_value is not None:
             continue
 
-        # Convert 'state' in current_rule to boolean 'enabled'
         if key == "enabled" and "state" in current_rule:
             current_value = current_rule["state"] == "ENABLED"
 
-        # Handling None values for all attributes
-        if desired_value is None and key != "enabled":
-            # Explicitly setting to empty list or empty value based on type
-            rule[key] = [] if isinstance(current_value, list) else None
+        # Special handling for list attributes - treat empty list and None as equivalent
+        if key in list_attributes:
+            if desired_value in (None, []) and current_value in (None, []):
+                continue
+            if desired_value is None:
+                desired_value = []
+            if current_value is None:
+                current_value = []
 
-        # Special handling for lists of IDs like device_groups
+        # Special handling for quota fields - treat 0 and None as equivalent
+        if key in ["time_quota", "size_quota"]:
+            if desired_value in (None, 0) and current_value in (None, 0):
+                continue
+            if desired_value is None:
+                desired_value = 0
+            if current_value is None:
+                current_value = 0
+
         if isinstance(desired_value, list) and isinstance(current_value, list):
-            if all(isinstance(x, int) for x in desired_value) and all(
-                isinstance(x, int) for x in current_value
-            ):
-                desired_value = sorted(desired_value)
-                current_value = sorted(current_value)
-
-        if current_value != desired_value:
+            if key in order_agnostic_attributes:
+                # For order-agnostic attributes, compare sets instead of sorted lists
+                if set(desired_value) != set(current_value):
+                    differences_detected = True
+                    module.warn(
+                        f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
+                    )
+            else:
+                # For other list attributes, maintain original comparison logic
+                if all(isinstance(x, int) for x in desired_value) and all(
+                    isinstance(x, int) for x in current_value
+                ):
+                    desired_value = sorted(desired_value)
+                    current_value = sorted(current_value)
+                if current_value != desired_value:
+                    differences_detected = True
+                    module.warn(
+                        f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
+                    )
+        elif current_value != desired_value:
             differences_detected = True
-            # module.warn(
-            #     f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
-            # )
+            module.warn(
+                f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
+            )
 
     if module.check_mode:
-        # If in check mode, report changes and exit
+        if state == "present" and not existing_rule:
+            action = "create"
+        elif differences_detected:
+            action = "update"
+        elif state == "absent" and existing_rule:
+            action = "delete"
+        else:
+            action = "do nothing"
+
+        module.debug(f"Check mode - would {action}")
+
         if state == "present" and (existing_rule is None or differences_detected):
             module.exit_json(changed=True)
         elif state == "absent" and existing_rule is not None:
@@ -602,121 +653,158 @@ def core(module):
         else:
             module.exit_json(changed=False)
 
-    if existing_rule is not None:
-        id = existing_rule.get("id")
-        existing_rule.update(rule)
-        existing_rule["id"] = id
-
-    # module.warn(f"Final payload being sent to SDK: {rule}")
+    module.warn(f"Final payload being sent to SDK: {rule}")
     if state == "present":
-        if existing_rule is not None:
+        if existing_rule:
             if differences_detected:
-                """Update"""
-                update_rule = deleteNone(
-                    dict(
-                        rule_id=existing_rule.get("id"),
-                        name=existing_rule.get("name"),
-                        order=existing_rule.get("order"),
-                        protocols=existing_rule.get("protocols"),
-                        locations=existing_rule.get("locations"),
-                        groups=existing_rule.get("groups"),
-                        departments=existing_rule.get("departments"),
-                        users=existing_rule.get("users"),
-                        device_groups=existing_rule.get("device_groups"),
-                        devices=existing_rule.get("devices"),
-                        url_categories=existing_rule.get("url_categories"),
-                        enabled=existing_rule.get("enabled"),
-                        time_windows=existing_rule.get("time_windows"),
-                        rank=existing_rule.get("rank"),
-                        request_methods=existing_rule.get("request_methods"),
-                        end_user_notification_url=existing_rule.get(
-                            "end_user_notification_url"
-                        ),
-                        override_users=existing_rule.get("override_users"),
-                        override_groups=existing_rule.get("override_groups"),
-                        block_override=existing_rule.get("block_override"),
-                        time_quota=existing_rule.get("time_quota"),
-                        size_quota=existing_rule.get("size_quota"),
-                        description=existing_rule.get("description"),
-                        location_groups=existing_rule.get("location_groups"),
-                        labels=existing_rule.get("labels"),
-                        validity_start_time=existing_rule.get("validity_start_time"),
-                        validity_end_time=existing_rule.get("validity_end_time"),
-                        validity_time_zone_id=existing_rule.get(
-                            "validity_time_zone_id"
-                        ),
-                        enforce_time_validity=existing_rule.get(
-                            "enforce_time_validity"
-                        ),
-                        action=existing_rule.get("action"),
-                        cipa_rule=existing_rule.get("cipa_rule"),
-                        user_agent_types=existing_rule.get("user_agent_types"),
-                        user_risk_score_levels=existing_rule.get(
+                rule_id_to_update = existing_rule.get("id")
+                if not rule_id_to_update:
+                    module.fail_json(
+                        msg="Cannot update rule: ID is missing from the existing resource."
+                    )
+
+                update_data = deleteNone(
+                    {
+                        "rule_id": rule_id_to_update,
+                        "name": desired_rule.get("name"),
+                        "description": desired_rule.get("description"),
+                        "enabled": desired_rule.get("enabled"),
+                        "order": desired_rule.get("order"),
+                        "rank": desired_rule.get("rank"),
+                        "action": desired_rule.get("action"),
+                        "protocols": desired_rule.get("protocols"),
+                        "request_methods": desired_rule.get("request_methods"),
+                        "locations": desired_rule.get("locations"),
+                        "groups": desired_rule.get("groups"),
+                        "departments": desired_rule.get("departments"),
+                        "users": desired_rule.get("users"),
+                        "override_users": desired_rule.get("override_users"),
+                        "override_groups": desired_rule.get("override_groups"),
+                        "url_categories": desired_rule.get("url_categories"),
+                        "time_quota": desired_rule.get("time_quota"),
+                        "size_quota": desired_rule.get("size_quota"),
+                        "time_windows": desired_rule.get("time_windows"),
+                        "location_groups": desired_rule.get("location_groups"),
+                        "labels": desired_rule.get("labels"),
+                        "user_agent_types": desired_rule.get("user_agent_types"),
+                        "device_trust_levels": desired_rule.get("device_trust_levels"),
+                        "device_groups": desired_rule.get("device_groups"),
+                        "devices": desired_rule.get("devices"),
+                        "user_risk_score_levels": desired_rule.get(
                             "user_risk_score_levels"
                         ),
-                        device_trust_levels=existing_rule.get("device_trust_levels"),
-                        cbi_profile=existing_rule.get("cbi_profile"),
-                        workload_groups=existing_rule.get("workload_groups"),
-                    )
+                        "validity_start_time": desired_rule.get("validity_start_time"),
+                        "validity_end_time": desired_rule.get("validity_end_time"),
+                        "validity_time_zone_id": desired_rule.get(
+                            "validity_time_zone_id"
+                        ),
+                        "end_user_notification_url": desired_rule.get(
+                            "end_user_notification_url"
+                        ),
+                        "cipa_rule": desired_rule.get("cipa_rule"),
+                        "cbi_profile": desired_rule.get("cbi_profile"),
+                        "workload_groups": desired_rule.get("workload_groups"),
+                    }
                 )
 
-                # module.warn("Payload Update for SDK: {}".format(update_rule))
-                updated_rule = client.url_filtering.update_rule(**update_rule).to_dict()
-                module.exit_json(changed=True, data=updated_rule)
-        else:
-            # module.warn("Creating new rule as no existing rule found")
-            """Create"""
-            create_rule = deleteNone(
-                dict(
-                    name=rule.get("name"),
-                    order=rule.get("order"),
-                    protocols=rule.get("protocols"),
-                    locations=rule.get("locations"),
-                    groups=rule.get("groups"),
-                    departments=rule.get("departments"),
-                    users=rule.get("users"),
-                    device_groups=rule.get("device_groups"),
-                    devices=rule.get("devices"),
-                    url_categories=rule.get("url_categories"),
-                    enabled=rule.get("enabled"),
-                    time_windows=rule.get("time_windows"),
-                    rank=rule.get("rank"),
-                    request_methods=rule.get("request_methods"),
-                    end_user_notification_url=rule.get("end_user_notification_url"),
-                    override_users=rule.get("override_users"),
-                    override_groups=rule.get("override_groups"),
-                    block_override=rule.get("block_override"),
-                    time_quota=rule.get("time_quota"),
-                    size_quota=rule.get("size_quota"),
-                    description=rule.get("description"),
-                    location_groups=rule.get("location_groups"),
-                    labels=rule.get("labels"),
-                    validity_start_time=rule.get("validity_start_time"),
-                    validity_end_time=rule.get("validity_end_time"),
-                    validity_time_zone_id=rule.get("validity_time_zone_id"),
-                    enforce_time_validity=rule.get("enforce_time_validity"),
-                    action=rule.get("action"),
-                    cipa_rule=rule.get("cipa_rule"),
-                    user_agent_types=rule.get("user_agent_types"),
-                    user_risk_score_levels=rule.get("user_risk_score_levels"),
-                    device_trust_levels=rule.get("device_trust_levels"),
-                    cbi_profile=rule.get("cbi_profile"),
-                    workload_groups=rule.get("workload_groups"),
+                # Conditionally add the special boolean fields if they were set
+                if "block_override" in desired_rule:
+                    update_data["block_override"] = desired_rule["block_override"]
+                if "enforce_time_validity" in desired_rule:
+                    update_data["enforce_time_validity"] = desired_rule[
+                        "enforce_time_validity"
+                    ]
+
+                module.warn("Payload Update for SDK: {}".format(update_data))
+                updated_rule, _unused, error = client.url_filtering.update_rule(
+                    **update_data
                 )
+                if error:
+                    module.fail_json(msg=f"Error updating rule: {to_native(error)}")
+                module.exit_json(changed=True, data=updated_rule.as_dict())
+            else:
+                module.exit_json(changed=False, data=existing_rule)
+        else:
+            module.warn("Creating new rule as no existing rule found")
+            """Create"""
+            create_data = deleteNone(
+                {
+                    "name": desired_rule.get("name"),
+                    "description": desired_rule.get("description"),
+                    "enabled": desired_rule.get("enabled"),
+                    "order": desired_rule.get("order"),
+                    "rank": desired_rule.get("rank"),
+                    "action": desired_rule.get("action"),
+                    "protocols": desired_rule.get("protocols"),
+                    "request_methods": desired_rule.get("request_methods"),
+                    "locations": desired_rule.get("locations"),
+                    "groups": desired_rule.get("groups"),
+                    "departments": desired_rule.get("departments"),
+                    "users": desired_rule.get("users"),
+                    "override_users": desired_rule.get("override_users"),
+                    "override_groups": desired_rule.get("override_groups"),
+                    "url_categories": desired_rule.get("url_categories"),
+                    "time_quota": desired_rule.get("time_quota"),
+                    "size_quota": desired_rule.get("size_quota"),
+                    "time_windows": desired_rule.get("time_windows"),
+                    "location_groups": desired_rule.get("location_groups"),
+                    "labels": desired_rule.get("labels"),
+                    "user_agent_types": desired_rule.get("user_agent_types"),
+                    "device_trust_levels": desired_rule.get("device_trust_levels"),
+                    "device_groups": desired_rule.get("device_groups"),
+                    "devices": desired_rule.get("devices"),
+                    "user_risk_score_levels": desired_rule.get(
+                        "user_risk_score_levels"
+                    ),
+                    "validity_start_time": desired_rule.get("validity_start_time"),
+                    "validity_end_time": desired_rule.get("validity_end_time"),
+                    "validity_time_zone_id": desired_rule.get("validity_time_zone_id"),
+                    "end_user_notification_url": desired_rule.get(
+                        "end_user_notification_url"
+                    ),
+                    "cipa_rule": desired_rule.get("cipa_rule"),
+                    "cbi_profile": desired_rule.get("cbi_profile"),
+                    "workload_groups": desired_rule.get("workload_groups"),
+                }
             )
-            # module.warn("Payload for SDK: {}".format(create_rule))
-            new_rule = client.url_filtering.add_rule(**create_rule).to_dict()
-            module.exit_json(changed=True, data=new_rule)
-    elif (
-        state == "absent"
-        and existing_rule is not None
-        and existing_rule.get("id") is not None
-    ):
-        code = client.url_filtering.delete_rule(rule_id=existing_rule.get("id"))
-        if code > 299:
-            module.exit_json(changed=False, data=None)
-        module.exit_json(changed=True, data=existing_rule)
-    module.exit_json(changed=False, data={})
+
+            # Conditionally add the special boolean fields if they were set
+            if "block_override" in desired_rule:
+                create_data["block_override"] = desired_rule["block_override"]
+            if "enforce_time_validity" in desired_rule:
+                create_data["enforce_time_validity"] = desired_rule[
+                    "enforce_time_validity"
+                ]
+
+            module.warn("Payload for SDK: {}".format(create_data))
+            new_rule, _unused, error = client.url_filtering.add_rule(**create_data)
+            if error:
+                module.fail_json(msg=f"Error creating rule: {to_native(error)}")
+            module.exit_json(changed=True, data=new_rule.as_dict())
+
+    elif state == "absent":
+        if existing_rule:
+            rule_id_to_delete = existing_rule.get("id")
+            if not rule_id_to_delete:
+                module.fail_json(
+                    msg="Cannot delete rule: ID is missing from the existing resource."
+                )
+
+            module.debug(f"About to delete rule with ID: {rule_id_to_delete}")
+            _unused, _unused, error = client.url_filtering.delete_rule(
+                rule_id=rule_id_to_delete
+            )
+            if error:
+                module.fail_json(msg=f"Error deleting rule: {to_native(error)}")
+            module.debug(f"Successfully deleted rule with ID: {rule_id_to_delete}")
+            module.exit_json(changed=True, data=existing_rule)
+        else:
+            module.debug("No rule found to delete")
+            module.exit_json(changed=False, data={})
+
+    else:
+        module.debug(f"Unhandled state: {state}")
+        module.exit_json(changed=False, data={})
 
 
 def main():
@@ -738,33 +826,6 @@ def main():
         enabled=dict(type="bool", required=False),
         order=dict(type="int", required=False),
         rank=dict(type="int", required=False, default=7),
-        locations=id_spec,
-        groups=id_spec,
-        departments=id_spec,
-        device_groups=id_spec,
-        devices=id_spec,
-        users=id_spec,
-        override_users=id_spec,
-        override_groups=id_spec,
-        time_windows=id_spec,
-        location_groups=id_spec,
-        labels=id_spec,
-        workload_groups=id_spec,
-        end_user_notification_url=dict(type="str", required=False),
-        block_override=dict(type="bool", required=False),
-        time_quota=dict(type="int", required=False),
-        size_quota=dict(type="int", required=False),
-        validity_start_time=dict(type="str", required=False),
-        validity_end_time=dict(type="str", required=False),
-        validity_time_zone_id=dict(type="str", required=False),
-        enforce_time_validity=dict(type="bool", required=False),
-        url_categories=dict(type="list", elements="str", required=False),
-        cipa_rule=dict(type="bool", required=False),
-        cbi_profile=dict(
-            type="dict",
-            options=id_name_url_dict_spec,
-            required=False,
-        ),
         action=dict(
             type="str",
             required=False,
@@ -775,10 +836,8 @@ def main():
             elements="str",
             required=False,
             choices=[
-                "SMRULEF_ZPA_BROKERS_RULE",
-                "ANY_RULE",
-                "TCP_RULE",
-                "UDP_RULE",
+                "WEBSOCKETSSL_RULE",
+                "WEBSOCKET_RULE",
                 "DOHTTPS_RULE",
                 "TUNNELSSL_RULE",
                 "HTTP_PROXY",
@@ -788,8 +847,6 @@ def main():
                 "HTTP_RULE",
                 "SSL_RULE",
                 "TUNNEL_RULE",
-                "WEBSOCKETSSL_RULE",
-                "WEBSOCKET_RULE",
             ],
         ),
         request_methods=dict(
@@ -806,6 +863,14 @@ def main():
                 "TRACE",
                 "CONNECT",
                 "OTHER",
+                "PROPFIND",
+                "PROPPATCH",
+                "MOVE",
+                "MKCOL",
+                "LOCK",
+                "COPY",
+                "UNLOCK",
+                "PATCH",
             ],
         ),
         user_agent_types=dict(
@@ -823,6 +888,19 @@ def main():
                 "MSCHREDGE",
             ],
         ),
+        locations=id_spec,
+        groups=id_spec,
+        departments=id_spec,
+        users=id_spec,
+        override_users=id_spec,
+        override_groups=id_spec,
+        block_override=dict(type="bool", required=False),
+        url_categories=dict(type="list", elements="str", required=False),
+        time_quota=dict(type="int", required=False),
+        size_quota=dict(type="int", required=False),
+        time_windows=id_spec,
+        location_groups=id_spec,
+        labels=id_spec,
         device_trust_levels=dict(
             type="list",
             elements="str",
@@ -840,6 +918,20 @@ def main():
             elements="str",
             required=False,
             choices=["LOW", "MEDIUM", "HIGH", "CRITICAL"],
+        ),
+        device_groups=id_spec,
+        devices=id_spec,
+        validity_start_time=dict(type="str", required=False),
+        validity_end_time=dict(type="str", required=False),
+        validity_time_zone_id=dict(type="str", required=False),
+        enforce_time_validity=dict(type="bool", required=False),
+        end_user_notification_url=dict(type="str", required=False),
+        cipa_rule=dict(type="bool", required=False),
+        workload_groups=id_spec,
+        cbi_profile=dict(
+            type="dict",
+            options=id_name_url_dict_spec,
+            required=False,
         ),
         state=dict(type="str", choices=["present", "absent"], default="present"),
     )

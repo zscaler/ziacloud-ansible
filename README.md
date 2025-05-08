@@ -56,9 +56,19 @@ You can also include it in a `requirements.yml` file and install it via `ansible
     - zscaler.ziacloud
 ```
 
-## Using modules from the ziacloud Collection in your playbooks
+## Zscaler OneAPI New Framework
 
-It's preferable to use content in this collection using their [Fully Qualified Collection Namespace (FQCN)](https://ansible.readthedocs.io/projects/lint/rules/fqcn/), for example `zscaler.ziacloud.zia_cloud_firewall_filtering_rule`:
+The ZIA Ansible Collection now offers support for [OneAPI](https://help.zscaler.com/oneapi/understanding-oneapi) OAuth2 authentication through [Zidentity](https://help.zscaler.com/zidentity/what-zidentity).
+
+**NOTE** As of version v2.0.0, this Ansible Collection offers backwards compatibility to the Zscaler legacy API framework. This is the recommended authentication method for organizations whose tenants are still not migrated to [Zidentity](https://help.zscaler.com/zidentity/what-zidentity).
+
+**NOTE** Notice that OneAPI and Zidentity is not currently supported for the following clouds: `zscalergov` and `zscalerten`. Refer to the [Legacy API Framework](#legacy-api-framework) for more information on how authenticate to these environments
+
+## OneAPI - Using modules from the ziacloud Collection in your playbooks
+
+It's preferable to use content in this collection using their [Fully Qualified Collection Namespace (FQCN)](https://ansible.readthedocs.io/projects/lint/rules/fqcn/), for example `zscaler.ziacloud.zia_cloud_firewall_rule`:
+
+### Examples Usage - Client Secret Authentication
 
 ```yaml
 ---
@@ -67,14 +77,14 @@ It's preferable to use content in this collection using their [Fully Qualified C
 
   vars:
     zia_cloud:
-      username: "{{ lookup('env', 'ZIA_USERNAME') }}"
-      password: "{{ lookup('env', 'ZIA_PASSWORD') }}"
-      api_key: "{{ lookup('env', 'ZIA_API_KEY') }}"
-      cloud: "{{ lookup('env', 'ZIA_CLOUD') | default(omit) }}"
+      client_id: "{{ lookup('env', 'ZSCALER_CLIENT_ID') }}"
+      client_secret: "{{ lookup('env', 'ZSCALER_CLIENT_SECRET') }}"
+      vanity_domain: "{{ lookup('env', 'ZSCALER_VANITY_DOMAIN') }}"
+      cloud: "{{ lookup('env', 'ZSCALER_CLOUD') | default(omit) }}"
 
   tasks:
-    - name: Create/update firewall filtering rule
-      zscaler.ziacloud.zia_cloud_firewall_filtering_rule:
+    - name: Create/update firewall rule
+      zscaler.ziacloud.zia_cloud_firewall_rule:
         provider: "{{ zia_cloud }}"
         name: "Ansible Example"
         description: "Ansible Example"
@@ -91,6 +101,174 @@ It's preferable to use content in this collection using their [Fully Qualified C
 ```
 
 (Note that [use of the `collections` key is now discouraged](https://ansible-lint.readthedocs.io/rules/fqcn/))
+
+**NOTE**: The `zscaler_cloud` is optional and only required when authenticating to other environments i.e `beta`
+
+⚠️ **WARNING:** Hard-coding credentials into any Ansible playbook configuration is not recommended, and risks secret leakage should this file be committed to public version controls.
+
+### Examples Usage - Private Key Authentication
+
+```yaml
+---
+- name: ZIA Cloud Firewall Rule
+  hosts: localhost
+
+  vars:
+    zia_cloud:
+      client_id: "{{ client_id | default(omit) }}"
+      private_key: "{{ lookup('file', 'private_key.pem') | default(omit) }}"
+      vanity_domain: "{{ vanity_domain | default(omit) }}"
+      cloud: "{{ cloud | default(omit) }}"
+
+  tasks:
+    - name: Create/update firewall rule
+      zscaler.ziacloud.zia_cloud_firewall_rule:
+        provider: "{{ zia_cloud }}"
+        name: "Ansible Example"
+        description: "Ansible Example"
+        action: "ALLOW"
+        rule_state: "ENABLED"
+        order: 1
+        enable_full_logging: true
+        nw_services:
+          - "774003"
+          - "774013"
+      register: created_rule
+    - debug:
+        msg: "{{ created_rule }}"
+```
+
+## Authentication - OneAPI New Framework
+
+As of version v2.0.0, this provider supports authentication via the new Zscaler API framework [OneAPI](https://help.zscaler.com/oneapi/understanding-oneapi)
+
+Zscaler OneAPI uses the OAuth 2.0 authorization framework to provide secure access to Zscaler Internet Access (ZIA) APIs. OAuth 2.0 allows third-party applications to obtain controlled access to protected resources using access tokens. OneAPI uses the Client Credentials OAuth flow, in which client applications can exchange their credentials with the authorization server for an access token and obtain access to the API resources, without any user authentication involved in the process.
+
+- [ZIA API](https://help.zscaler.com/oneapi/understanding-oneapi#:~:text=managed%20using%20OneAPI.-,ZIA%20API,-Zscaler%20Internet%20Access)
+
+### Default Environment variables
+
+You can provide credentials via the `ZSCALER_CLIENT_ID`, `ZSCALER_CLIENT_SECRET`, `ZSCALER_VANITY_DOMAIN`, `ZSCALER_CLOUD` environment variables, representing your Zidentity OneAPI credentials `clientId`, `clientSecret`, `vanityDomain` and `zscaler_cloud` respectively.
+
+| Argument        | Description                                                                                         | Environment Variable     |
+|-----------------|-----------------------------------------------------------------------------------------------------|--------------------------|
+| `client_id`     | _(String)_ Zscaler API Client ID, used with `client_secret` or `private_key` OAuth auth mode.         | `ZSCALER_CLIENT_ID`      |
+| `client_secret` | _(String)_ Secret key associated with the API Client ID for authentication.                         | `ZSCALER_CLIENT_SECRET`  |
+| `private_key`    | _(String)_ A string Private key value.                                                              | `ZSCALER_PRIVATE_KEY`    |
+| `vanity_domain` | _(String)_ Refers to the domain name used by your organization.                                     | `ZSCALER_VANITY_DOMAIN`  |
+| `zscaler_cloud`         | _(String)_ The name of the Zidentity cloud, e.g., beta.                                             | `ZSCALER_CLOUD`          |
+
+### Alternative OneAPI Cloud Environments
+
+OneAPI supports authentication and can interact with alternative Zscaler enviornments i.e `beta`. To authenticate to these environments you must provide the following values:
+
+| Argument         | Description                                                                                         |   | Environment Variable     |
+|------------------|-----------------------------------------------------------------------------------------------------|---|--------------------------|
+| `vanity_domain`   | _(String)_ Refers to the domain name used by your organization |   | `ZSCALER_VANITY_DOMAIN`  |
+| `zscaler_cloud`          | _(String)_ The name of the Zidentity cloud i.e beta      |   | `ZSCALER_CLOUD`          |
+
+For example: Authenticating to Zscaler Beta environment:
+
+```sh
+export ZSCALER_VANITY_DOMAIN="acme"
+export ZSCALER_CLOUD="beta"
+```
+
+### OneAPI (API Client Scope)
+
+OneAPI Resources are automatically created within the ZIdentity Admin UI based on the RBAC Roles
+applicable to APIs within the various products. For example, in ZIA, navigate to `Administration -> Role
+Management` and select `Add API Role`.
+
+Once this role has been saved, return to the ZIdentity Admin UI and from the Integration menu
+select API Resources. Click the `View` icon to the right of Zscaler APIs and under the ZIA
+dropdown you will see the newly created Role. In the event a newly created role is not seen in the
+ZIdentity Admin UI a `Sync Now` button is provided in the API Resources menu which will initiate an
+on-demand sync of newly created roles.
+
+## Legacy API Framework
+
+### ZIA Native Authentication
+
+- As of version v2.0.0, this Ansible Collection offers backwards compatibility to the Zscaler legacy API framework. This is the recommended authentication method for organizations whose tenants are still **NOT** migrated to [Zidentity](https://help.zscaler.com/zidentity/what-zidentity).
+
+### Examples Usage
+
+```yaml
+---
+- name: ZIA Cloud Firewall Rule
+  hosts: localhost
+
+  vars:
+    zia_cloud:
+      username: "{{ username | default(omit) }}"
+      password: "{{ password | default(omit) }}"
+      api_key: "{{ api_key | default(omit) }}"
+      cloud: "{{ cloud | default(omit) }}"
+      use_legacy_client: "{{ use_legacy_client | default(omit) }}"
+
+  tasks:
+    - name: Create/update firewall rule
+      zscaler.ziacloud.zia_cloud_firewall_rule:
+        provider: "{{ zia_cloud }}"
+        name: "Ansible Example"
+        description: "Ansible Example"
+        action: "ALLOW"
+        rule_state: "ENABLED"
+        order: 1
+        enable_full_logging: true
+        nw_services:
+          - "774003"
+          - "774013"
+      register: created_rule
+    - debug:
+        msg: "{{ created_rule }}"
+```
+
+The ZIA Cloud is identified by several cloud name prefixes, which determines which API endpoint the requests should be sent to. The following cloud environments are supported:
+
+- `zscaler`
+- `zscloud`
+- `zscalerone`
+- `zscalertwo`
+- `zscalerthree`
+- `zscalerbeta`
+- `zscalergov`
+- `zscalerten`
+- `zspreview`
+
+### Environment variables
+
+You can provide credentials via the `ZIA_USERNAME`, `ZIA_PASSWORD`, `ZIA_API_KEY`, `ZIA_CLOUD`, `ZSCALER_USE_LEGACY_CLIENT` environment variables, representing your ZIA `username`, `password`, `api_key`,  `zia_cloud` and `use_legacy_client` respectively.
+
+| Argument     | Description | Environment variable |
+|--------------|-------------|-------------------|
+| `username`       | _(String)_ A string that contains the email ID of the API admin.| `ZIA_USERNAME` |
+| `password`       | _(String)_ A string that contains the password for the API admin.| `ZIA_PASSWORD` |
+| `api_key`       | _(String)_ A string that contains the obfuscated API key (i.e., the return value of the obfuscateApiKey() method).| `ZIA_API_KEY` |
+| `zia_cloud`       | _(String)_ The host and basePath for the cloud services API is `$zsapi.<Zscaler Cloud Name>/api/v1`.| `ZIA_CLOUD` |
+| `use_legacy_client`       | _(Bool)_ Enable use of the legacy ZIA API Client.| `ZSCALER_USE_LEGACY_CLIENT` |
+
+```sh
+# Change place holder values denoted by brackets to real values, including the
+# brackets.
+
+$ export ZIA_USERNAME="[ZIA_USERNAME]"
+$ export ZIA_PASSWORD="[ZIA_PASSWORD]"
+$ export ZIA_API_KEY="[ZIA_API_KEY]"
+$ export ZIA_CLOUD="[ZIA_CLOUD]"
+$ export ZSCALER_USE_LEGACY_CLIENT=true
+```
+
+⚠️ **WARNING:** Hard-coding credentials into any Ansible playbook configuration is not recommended, and risks secret leakage should this file be committed to public version control
+
+For details about how to retrieve your tenant Base URL and API key/token refer to the Zscaler help portal. <https://help.zscaler.com/zia/getting-started-zia-api>
+
+### Zscaler Sandbox Authentication
+
+As of version v2.0.0, the legacy sandbox authentication environment variables `ZIA_CLOUD` and `ZIA_SANDBOX_TOKEN` are no longer supported.
+
+Authentication to the Zscaler Sandbox service requires the following new environment variables the `ZSCALER_SANDBOX_CLOUD` and `ZSCALER_SANDBOX_TOKEN` or authentication attributes `sandbox_token` and `sandbox_cloud`. For details on how obtain the API Token visit the Zscaler help portal [About Sandbox API Token](https://help.zscaler.com/zia/about-sandbox-api-token)
 
 ## Releasing, changelogs, versioning and deprecation
 

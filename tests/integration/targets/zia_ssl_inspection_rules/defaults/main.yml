@@ -1,0 +1,77 @@
+---
+rule_name: test_zia_ansible
+description: test_zia_ansible
+rule_order: 1
+rank: 7
+enabled: true
+road_warrior_for_kerberos: true
+cloud_applications:
+  - CHATGPT_AI
+  - ANDI
+url_categories:
+  - GENERAL_AI_ML
+  - AI_ML_APPS
+platforms:
+  - SCAN_IOS
+  - SCAN_ANDROID
+  - SCAN_MACOS
+  - SCAN_WINDOWS
+  - NO_CLIENT_CONNECTOR
+  - SCAN_LINUX
+user_agent_types:
+  - OPERA
+  - FIREFOX
+  - MSIE
+  - MSEDGE
+  - CHROME
+  - SAFARI
+  - OTHER
+  - MSCHREDGE
+rule_action:
+  type: DECRYPT
+  override_default_certificate: true
+  decrypt_sub_actions:
+    server_certificates: ALLOW
+    ocsp_check: true
+    block_undecrypt: true
+    block_ssl_traffic_with_no_sni_enabled: true
+    min_client_tls_version: CLIENT_TLS_1_1
+    min_server_tls_version: SERVER_TLS_1_1
+
+# SSL Inspection Update
+name_update: test_zia_ansible
+description_update: test_zia_ansible
+order_update: 1
+rank_update: 7
+enabled_update: false
+road_warrior_for_kerberos_update: true
+cloud_applications_update:
+  - CHATGPT_AI
+  - ANDI
+url_categories_update:
+  - GENERAL_AI_ML
+  - AI_ML_APPS
+platforms_update:
+  - SCAN_IOS
+  - SCAN_ANDROID
+  - SCAN_MACOS
+  - SCAN_WINDOWS
+user_agent_types_update:
+  - OPERA
+  - FIREFOX
+  - MSIE
+  - MSEDGE
+  - CHROME
+  - SAFARI
+  - OTHER
+  - MSCHREDGE
+rule_action_update:
+  type: DECRYPT
+  override_default_certificate: true
+  decrypt_sub_actions:
+    server_certificates: ALLOW
+    ocsp_check: true
+    block_undecrypt: true
+    block_ssl_traffic_with_no_sni_enabled: true
+    min_client_tls_version: CLIENT_TLS_1_2
+    min_server_tls_version: SERVER_TLS_1_2

@@ -29,103 +29,289 @@ __metaclass__ = type
 DOCUMENTATION = r"""
 ---
 module: zia_authentication_settings
-short_description: Adds or removes URLs authentication exempt list.
-description: Adds or removes URLs from the cookie authentication exempt list.
+short_description: Updates the organization's default authentication settings
+description:
+  - Updates the organization's default authentication settings in the ZIA Admin Portal.
 author:
   - William Guilherme (@willguibr)
-version_added: "1.0.0"
+version_added: "2.0.0"
 requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 notes:
-    - Check mode is supported.
+  - Check mode is supported.
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
   - zscaler.ziacloud.fragments.documentation
-  - zscaler.ziacloud.fragments.state
+  - zscaler.ziacloud.fragments.modified_state
 
 options:
-  urls:
+  org_auth_type:
     description:
-        - Domains or URLs which are exempted from SSL Inspection.
-    type: list
-    elements: str
-    required: true
+      - User authentication type. If set to an LDAP-based value, the LDAP configuration must also be valid.
+    type: str
+    choices:
+      - ANY
+      - NONE
+      - SAFECHANNEL_DIR
+      - MICROSOFT_ACTIVE_DIR
+      - OPENLDAP_DIR
+      - NOVELL_DIR
+      - IBM_DOMINO_DIR
+      - SUN_DIR
+      - SMAUTH_ENTERPRISE_HOSTED
+    required: false
+
+  one_time_auth:
+    description:
+      - Controls how one-time passwords are handled when org_auth_type is NONE.
+    type: str
+    choices:
+      - OTP_DISABLED
+      - OTP_TOKEN
+      - OTP_LINK
+    required: false
+
+  saml_enabled:
+    description:
+      - Whether SAML authentication is enabled.
+    type: bool
+    required: false
+
+  kerberos_enabled:
+    description:
+      - Whether Kerberos authentication is enabled.
+    type: bool
+    required: false
+
+  auth_frequency:
+    description:
+      - Defines how frequently users must reauthenticate.
+    type: str
+    choices:
+      - DAILY_COOKIE
+      - PERMANENT_COOKIE
+      - SESSION_COOKIE
+      - CUSTOM_COOKIE
+    required: false
+
+  auth_custom_frequency:
+    description:
+      - The custom cookie authentication frequency in days. Required if auth_frequency is CUSTOM_COOKIE.
+    type: int
+    required: false
+
+  password_strength:
+    description:
+      - Enforces minimum password strength for hosted DB user authentication.
+    type: str
+    choices:
+      - NONE
+      - MEDIUM
+      - STRONG
+    required: false
+
+  password_expiry:
+    description:
+      - Defines how often user passwords expire.
+    type: str
+    choices:
+      - NEVER
+      - ONE_MONTH
+      - THREE_MONTHS
+      - SIX_MONTHS
+    required: false
+
+  last_sync_start_time:
+    description:
+      - Timestamp for when the last LDAP directory sync started (epoch time).
+    type: int
+    required: false
+
+  last_sync_end_time:
+    description:
+      - Timestamp for when the last LDAP directory sync completed (epoch time).
+    type: int
+    required: false
+
+  mobile_admin_saml_idp_enabled:
+    description:
+      - Whether Mobile Admin can be used as an identity provider.
+    type: bool
+    required: false
+
+  auto_provision:
+    description:
+      - Whether to enable SAML-based user auto-provisioning.
+    type: bool
+    required: false
+
+  directory_sync_migrate_to_scim_enabled:
+    description:
+      - If true, disables legacy LDAP sync to migrate to SCIM-based provisioning.
+    type: bool
+    required: false
+
+  state:
+    description:
+      - Whether the resource should be present. Only C(present) is supported.
+    type: str
+    choices: [present]
+    default: present
 """
 
-EXAMPLES = """
-- name: Create/Update/Delete URLs
+EXAMPLES = r"""
+- name: Updates the organization's default authentication settings information
   zscaler.ziacloud.zia_authentication_settings:
-    urls:
-      - .okta.com
-      - .oktacdn.com
-      - .mtls.oktapreview.com
-      - .mtls.okta.com
+    provider: '{{ provider }}'
+    org_auth_type: true
+    one_time_auth: false
+    saml_enabled: false
+    kerberos_enabled: false
+    auth_frequency: DAILY_COOKIE
+    auth_custom_frequency: false
+    password_strength: MEDIUM
+    password_expiry: SIX_MONTHS
+    mobile_admin_saml_idp_enabled: false
+    auto_provision: false
+    directory_sync_migrate_to_scim_enabled: false
 """
 
 RETURN = r"""
-# The list of exempted URLs.
+#  Authentication settings Configured.
 """
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
     ZIAClientHelper,
 )
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
+    convert_keys_to_snake_case,
+)
 
 
 def core(module):
-    state = module.params.get("state", None)
-    urls = module.params.get("urls", [])
+    state = module.params.get("state")
+    if state != "present":
+        module.fail_json(msg="Only 'present' is supported for this module.")
 
     client = ZIAClientHelper(module)
 
-    auth_settings_api = client.authentication_settings
+    # Define the supported malware fields
+    params = [
+        "org_auth_type",
+        "one_time_auth",
+        "saml_enabled",
+        "kerberos_enabled",
+        "auth_frequency",
+        "auth_custom_frequency",
+        "password_strength",
+        "password_expiry",
+        "last_sync_start_time",
+        "last_sync_end_time",
+        "mobile_admin_saml_idp_enabled",
+        "auto_provision",
+        "directory_sync_migrate_to_scim_enabled",
+    ]
 
-    current_exempted_urls = auth_settings_api.get_exempted_urls()
+    # Filter only explicitly set values
+    settings_data = {
+        k: module.params.get(k) for k in params if module.params.get(k) is not None
+    }
 
-    if state == "present":
-        new_urls = [url for url in urls if url not in current_exempted_urls]
-        if new_urls:
-            if module.check_mode:
-                # Just simulate adding URLs without making any changes
-                module.exit_json(
-                    changed=True,
-                    msg="URLs would be added.",
-                    exempted_urls=current_exempted_urls + new_urls,
-                )
-            updated_list = auth_settings_api.add_urls_to_exempt_list(new_urls)
-            module.exit_json(changed=True, exempted_urls=updated_list)
-        else:
-            module.exit_json(changed=False, msg="No new URLs to add.")
+    current_settings, _unused, error = (
+        client.authentication_settings.get_authentication_settings()
+    )
+    if error:
+        module.fail_json(
+            msg=f"Error fetching authentication settings: {to_native(error)}"
+        )
 
-    elif state == "absent":
-        urls_to_remove = [url for url in urls if url in current_exempted_urls]
-        if urls_to_remove:
-            if module.check_mode:
-                # Simulate removing URLs without making any changes
-                updated_list = [
-                    url for url in current_exempted_urls if url not in urls_to_remove
-                ]
-                module.exit_json(
-                    changed=True,
-                    msg="URLs would be removed.",
-                    exempted_urls=updated_list,
-                )
-            updated_list = auth_settings_api.delete_urls_from_exempt_list(
-                urls_to_remove
+    # Extract raw config from SDK and convert keys to snake_case
+    raw_response = getattr(current_settings, "_raw_config", {})
+    current_dict = convert_keys_to_snake_case(raw_response)
+
+    drift = any(current_dict.get(k) != settings_data.get(k) for k in settings_data)
+
+    module.warn(f"📦 Raw SDK response: {current_settings}")
+    module.warn(f"🐍 Snake_case converted: {current_dict}")
+    module.warn(f"🔍 Current settings: {current_dict}")
+    module.warn(f"📥 Desired settings: {settings_data}")
+    module.warn(f"🧠 Drift detected: {drift}")
+
+    if module.check_mode:
+        module.exit_json(changed=drift)
+
+    if drift:
+        for k, v in settings_data.items():
+            setattr(current_settings, k, v)
+
+        updated, _unused, error = (
+            client.authentication_settings.update_authentication_settings(
+                current_settings
             )
-            module.exit_json(changed=True, exempted_urls=updated_list)
-        else:
-            module.exit_json(changed=False, msg="URLs not in the exempted list.")
+        )
+        if error:
+            module.fail_json(
+                msg=f"Error updating authentication settings: {to_native(error)}"
+            )
+
+        module.exit_json(changed=True, auth_settings=updated.as_dict())
+
+    module.exit_json(changed=False, auth_settings=current_dict)
 
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
-        urls=dict(type="list", elements="str", required=True),
-        state=dict(type="str", choices=["present", "absent"], default="present"),
+        org_auth_type=dict(
+            type="str",
+            required=False,
+            choices=[
+                "ANY",
+                "NONE",
+                "SAFECHANNEL_DIR",
+                "MICROSOFT_ACTIVE_DIR",
+                "OPENLDAP_DIR",
+                "NOVELL_DIR",
+                "IBM_DOMINO_DIR",
+                "SUN_DIR",
+                "SMAUTH_ENTERPRISE_HOSTED",
+            ],
+        ),
+        one_time_auth=dict(
+            type="str",
+            required=False,
+            choices=["OTP_DISABLED", "OTP_TOKEN", "OTP_LINK"],
+        ),
+        saml_enabled=dict(type="bool", required=False),
+        kerberos_enabled=dict(type="bool", required=False),
+        auth_frequency=dict(
+            type="str",
+            required=False,
+            choices=[
+                "DAILY_COOKIE",
+                "PERMANENT_COOKIE",
+                "SESSION_COOKIE",
+                "CUSTOM_COOKIE",
+            ],
+        ),
+        auth_custom_frequency=dict(type="int", required=False),
+        password_strength=dict(
+            type="str", required=False, choices=["NONE", "MEDIUM", "STRONG"]
+        ),
+        password_expiry=dict(
+            type="str",
+            required=False,
+            choices=["NEVER", "ONE_MONTH", "THREE_MONTHS", "SIX_MONTHS"],
+        ),
+        last_sync_start_time=dict(type="int", required=False),
+        last_sync_end_time=dict(type="int", required=False),
+        mobile_admin_saml_idp_enabled=dict(type="bool", required=False),
+        auto_provision=dict(type="bool", required=False),
+        directory_sync_migrate_to_scim_enabled=dict(type="bool", required=False),
+        state=dict(type="str", choices=["present"], default="present"),
     )
 
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)

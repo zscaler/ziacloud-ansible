@@ -147,67 +147,50 @@ def serialize_complex_data(group):
 
 
 def core(module):
-    group_id = module.params.get("id", None)
-    group_name = module.params.get("name", None)
+    group_id = module.params.get("id")
+    group_name = module.params.get("name")
+
     client = ZIAClientHelper(module)
 
-    # Initialize the result
-    result = dict(changed=False)
+    # Fetch all workload groups
+    result, _unused, error = client.workload_groups.list_groups()
+    if error:
+        module.fail_json(msg=f"Failed to retrieve workload groups: {to_native(error)}")
 
-    try:
-        # Case 1: Return all groups if no name or ID is provided
-        if group_id is None and group_name is None:
-            groups = client.workload_groups.list_groups()
-            if groups is None:
-                module.fail_json(msg="No workload groups found")
-            else:
-                result["workload_groups"] = [
-                    serialize_complex_data(group) for group in groups
-                ]
+    all_groups = [g.as_dict() for g in result] if result else []
 
-        # Case 2: Return group by name
-        elif group_name is not None:
-            group = client.workload_groups.get_group_by_name(group_name)
-            if group is None:
-                module.fail_json(
-                    msg=f"No workload group found with name '{group_name}'"
-                )
-            else:
-                result["workload_group"] = group
+    matched = None
+    if group_id is not None:
+        matched = next(
+            (g for g in all_groups if str(g.get("id")) == str(group_id)), None
+        )
+        if not matched:
+            module.fail_json(msg=f"No workload group found with ID '{group_id}'")
+    elif group_name is not None:
+        matched = next((g for g in all_groups if g.get("name") == group_name), None)
+        if not matched:
+            module.fail_json(msg=f"No workload group found with name '{group_name}'")
 
-        # Case 3: Return group by ID
-        elif group_id is not None:
-            group = client.workload_groups.get_group_by_id(group_id)
-            if group is None:
-                module.fail_json(msg=f"No workload group found with id '{group_id}'")
-            else:
-                result["workload_group"] = group
-
-        # Serialize complex data structures for Ansible compatibility
-        if "workload_group" in result:
-            if "expression_json" in result["workload_group"]:
-                result["workload_group"]["expression_json"] = json.dumps(
-                    result["workload_group"]["expression_json"]
-                )
-
-            if "last_modified_by" in result["workload_group"]:
-                result["workload_group"]["last_modified_by"] = json.dumps(
-                    result["workload_group"]["last_modified_by"]
-                )
-
-    except Exception as e:
-        module.fail_json(msg=to_native(e), exception=format_exc())
-
-    module.exit_json(**result)
+    if matched:
+        module.exit_json(changed=False, workload_group=serialize_complex_data(matched))
+    else:
+        serialized_groups = [serialize_complex_data(g) for g in all_groups]
+        module.exit_json(changed=False, workload_groups=serialized_groups)
 
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
-        name=dict(type="str", required=False),
         id=dict(type="int", required=False),
+        name=dict(type="str", required=False),
     )
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=True,
+        mutually_exclusive=[["id", "name"]],
+    )
+
     try:
         core(module)
     except Exception as e:

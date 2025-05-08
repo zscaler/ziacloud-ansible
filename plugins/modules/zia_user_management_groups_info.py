@@ -94,28 +94,53 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
     ZIAClientHelper,
 )
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
+    collect_all_items,
+)
 
 
 def core(module):
-    group_id = module.params.get("id", None)
-    group_name = module.params.get("name", None)
+    group_id = module.params.get("id")
+    group_name = module.params.get("name")
+
     client = ZIAClientHelper(module)
     groups = []
 
     if group_id is not None:
-        group = client.users.get_group(group_id).to_dict()
-        groups = [group]
+        result, _unused, error = client.user_management.get_group(group_id)
+        if error or result is None:
+            module.fail_json(
+                msg=f"Failed to retrieve Group with ID '{group_id}': {to_native(error)}"
+            )
+        groups = [result.as_dict()]
     else:
-        groups = client.users.list_groups().to_list()
-        if group_name is not None:
-            group = None
-            for grp in groups:
-                if grp.get("name", None) == group_name:
-                    group = grp
-                    break
-            if group is None:
-                module.fail_json(msg=f"Failed to retrieve group: '{group_name}'")
-            groups = [group]
+        query_params = {}
+        if group_name:
+            query_params["search"] = group_name
+
+        result, err = collect_all_items(
+            client.user_management.list_groups, query_params
+        )
+        if err:
+            module.fail_json(msg=f"Error retrieving Groups: {to_native(err)}")
+
+        group_list = (
+            [g.as_dict() if hasattr(g, "as_dict") else g for g in result]
+            if result
+            else []
+        )
+
+        if group_name:
+            matched = next((g for g in group_list if g.get("name") == group_name), None)
+            if not matched:
+                available = [g.get("name") for g in group_list]
+                module.fail_json(
+                    msg=f"Group with name '{group_name}' not found. Available groups: {available}"
+                )
+            groups = [matched]
+        else:
+            groups = group_list
+
     module.exit_json(changed=False, groups=groups)
 
 
@@ -125,7 +150,12 @@ def main():
         name=dict(type="str", required=False),
         id=dict(type="int", required=False),
     )
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=True,
+        mutually_exclusive=[["name", "id"]],
+    )
 
     try:
         core(module)

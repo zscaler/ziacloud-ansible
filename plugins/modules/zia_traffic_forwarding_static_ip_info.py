@@ -146,7 +146,6 @@ static_ips:
 
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
@@ -155,36 +154,62 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 
 def core(module):
-    static_ip_id = module.params.get("id", None)
-    ip_address = module.params.get("ip_address", None)
+    static_ip_id = module.params.get("id")
+    ip_address = module.params.get("ip_address")
+
     client = ZIAClientHelper(module)
     static_ips = []
+
     if static_ip_id is not None:
-        static_ip = client.traffic.get_static_ip(static_ip_id).to_dict()
-        static_ips = [static_ip]
+        ip_obj, _unused, error = client.traffic_static_ip.get_static_ip(static_ip_id)
+        if error or ip_obj is None:
+            module.fail_json(
+                msg=f"Failed to retrieve static IP with ID '{static_ip_id}': {to_native(error)}"
+            )
+        static_ips = [ip_obj.as_dict()]
     else:
-        static_ips = client.traffic.list_static_ips().to_list()
-        if ip_address is not None:
-            static_ip = None
-            for ip in static_ips:
-                if ip.get("ip_address", None) == ip_address:
-                    static_ip = ip
-                    break
-            if static_ip is None:
+        query_params = {}
+
+        if ip_address:
+            query_params["ip_address"] = ip_address
+
+        result, _unused, error = client.traffic_static_ip.list_static_ips(
+            query_params=query_params if query_params else None
+        )
+        if error:
+            module.fail_json(msg=f"Error retrieving static IPs: {to_native(error)}")
+
+        ip_list = [ip.as_dict() for ip in result] if result else []
+
+        if ip_address:
+            matched = next(
+                (ip for ip in ip_list if ip.get("ip_address") == ip_address), None
+            )
+            if not matched:
+                available = [ip.get("ip_address") for ip in ip_list]
                 module.fail_json(
-                    msg="Failed to retrieve static ip address: '%s'" % (ip_address)
+                    msg=f"Static IP '{ip_address}' not found. Available: {available}"
                 )
-            static_ips = [static_ip]
+            static_ips = [matched]
+        else:
+            static_ips = ip_list
+
     module.exit_json(changed=False, static_ips=static_ips)
 
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
-        ip_address=dict(type="str", required=False),
         id=dict(type="int", required=False),
+        ip_address=dict(type="str", required=False),
     )
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=True,
+        mutually_exclusive=[["id", "ip_address"]],
+    )
+
     try:
         core(module)
     except Exception as e:

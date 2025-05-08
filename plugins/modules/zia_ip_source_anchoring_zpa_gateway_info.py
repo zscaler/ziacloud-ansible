@@ -76,7 +76,6 @@ RETURN = r"""
 
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
@@ -85,26 +84,45 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 
 def core(module):
-    gateway_id = module.params.get("id", None)
-    gateway_name = module.params.get("name", None)
+    gateway_id = module.params.get("id")
+    gateway_name = module.params.get("name")
+
     client = ZIAClientHelper(module)
     gateways = []
+
     if gateway_id is not None:
-        gateway = client.zpa_gateway.get_gateway(gateway_id).to_dict()
-        gateways = [gateway]
+        gateway_obj, _unused, error = client.zpa_gateway.get_gateway(gateway_id)
+        if error or gateway_obj is None:
+            module.fail_json(
+                msg=f"Failed to retrieve ZPA Gateway with ID '{gateway_id}': {to_native(error)}"
+            )
+        gateways = [gateway_obj.as_dict()]
     else:
-        gateways = client.zpa_gateway.list_gateways().to_list()
-        if gateway_name is not None:
-            gateway = None
-            for gw in gateways:
-                if gw.get("name", None) == gateway_name:
-                    gateway = gw
-                    break
-            if gateway is None:
+        query_params = {}
+        if gateway_name:
+            query_params["search"] = gateway_name
+
+        result, _unused, error = client.zpa_gateway.list_gateways(
+            query_params=query_params
+        )
+        if error:
+            module.fail_json(msg=f"Error retrieving ZPA Gateways: {to_native(error)}")
+
+        gateway_list = [g.as_dict() for g in result] if result else []
+
+        if gateway_name:
+            matched = next(
+                (g for g in gateway_list if g.get("name") == gateway_name), None
+            )
+            if not matched:
+                available = [g.get("name") for g in gateway_list]
                 module.fail_json(
-                    msg="Failed to retrieve zpa gateway: '%s'" % (gateway_name)
+                    msg=f"ZPA Gateway named '{gateway_name}' not found. Available: {available}"
                 )
-            gateways = [gateway]
+            gateways = [matched]
+        else:
+            gateways = gateway_list
+
     module.exit_json(changed=False, gateways=gateways)
 
 
@@ -114,7 +132,13 @@ def main():
         name=dict(type="str", required=False),
         id=dict(type="int", required=False),
     )
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=True,
+        mutually_exclusive=[["name", "id"]],
+    )
+
     try:
         core(module)
     except Exception as e:

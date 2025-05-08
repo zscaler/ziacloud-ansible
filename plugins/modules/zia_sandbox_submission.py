@@ -92,23 +92,24 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 def core(module):
     file_path = module.params.get("file_path", "")
     force = module.params.get("force", False)
-    inspection_mode = module.params.get(
-        "inspection_mode", "sandbox"
-    )  # either 'sandbox' or 'out_of_band'
+    inspection_mode = module.params.get("inspection_mode", "sandbox")
 
     client = ZIAClientHelper(module)
 
-    sandbox_api = client.sandbox
-
     if inspection_mode == "sandbox":
-        result = sandbox_api.submit_file(file_path, force=force)
+        result, _unused, error = client.sandbox.submit_file(file_path, force=force)
     elif inspection_mode == "out_of_band":
-        result = sandbox_api.submit_file_for_inspection(file_path)
+        result, _unused, error = client.sandbox.submit_file_for_inspection(file_path)
+    else:
+        module.fail_json(msg="Invalid inspection mode provided.")
+
+    if error:
+        module.fail_json(msg=f"File submission failed: {to_native(error)}")
 
     if result:
         module.exit_json(changed=True, submission_response=result)
     else:
-        module.exit_json(changed=False, msg="Submission failed.")
+        module.exit_json(changed=False, msg="File submission returned no result.")
 
 
 def main():

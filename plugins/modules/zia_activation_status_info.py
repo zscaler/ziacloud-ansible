@@ -31,7 +31,7 @@ DOCUMENTATION = """
 ---
 module: zia_activation_status_info
 short_description: Gets the activation status
-version_added: "1.0.0"
+version_added: "2.0.0"
 description:
     - Gets the activation status for the saved configuration changes
 author:
@@ -90,11 +90,23 @@ def core(module):
     activation_status = module.params.get("status", None)
     client = ZIAClientHelper(module)
 
-    current_activation_status = client.activate.status()
+    # Get the activation status tuple (result, response, error)
+    status_result, _unused, error = client.activate.status()
+
+    if error:
+        module.fail_json(
+            msg=f"Failed to get activation status: {to_native(error)}",
+            exception=format_exc(),
+        )
+
+    current_activation_status = status_result.as_dict() if status_result else None
 
     # If specific status provided, check if it matches the current activation status
     if activation_status:
-        if current_activation_status == activation_status:
+        if (
+            current_activation_status
+            and current_activation_status.get("status") == activation_status
+        ):
             module.exit_json(
                 changed=False, data=current_activation_status, status_matches=True
             )
@@ -103,7 +115,10 @@ def core(module):
                 changed=False,
                 data=current_activation_status,
                 status_matches=False,
-                msg=f"Provided status '{activation_status}' does not match the current activation status '{current_activation_status}'",
+                msg=(
+                    f"Provided status '{activation_status}' does not match the current activation "
+                    f"status '{current_activation_status.get('status') if current_activation_status else 'None'}'"
+                ),
             )
     else:
         module.exit_json(

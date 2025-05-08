@@ -86,7 +86,6 @@ RETURN = r"""
 """
 
 from traceback import format_exc
-
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
@@ -97,97 +96,94 @@ import re
 
 
 def hash_type_and_validate(hash_string):
-    """
-    Validates the hash string and identifies its type.
-
-    Args:
-        hash_string (str): The hash string to validate and identify.
-
-    Returns:
-        tuple: (bool, str) - A tuple containing a boolean indicating validity and a string indicating the hash type.
-    """
-    # Regular expression patterns for different hash types
     md5_pattern = r"^[a-f0-9]{32}$"
     sha1_pattern = r"^[a-f0-9]{40}$"
     sha256_pattern = r"^[a-f0-9]{64}$"
 
-    # Check for MD5 hash (ignoring case)
     if re.fullmatch(md5_pattern, hash_string, re.IGNORECASE):
         return True, "MD5"
-
-    # Check for SHA1 hash (ignoring case)
     if re.fullmatch(sha1_pattern, hash_string, re.IGNORECASE):
         return False, "SHA1"
-
-    # Check for SHA256 hash (ignoring case)
     if re.fullmatch(sha256_pattern, hash_string, re.IGNORECASE):
         return False, "SHA256"
-
-    # If none of the above, it's an invalid format
     return False, "Invalid Format"
 
 
 def core(module):
-    state = module.params.get("state", None)
+    state = module.params.get("state")
     file_hashes_to_be_blocked = module.params.get("file_hashes_to_be_blocked", [])
 
-    # Validate each hash in the list
+    # Validate MD5 hashes
     for hash_string in file_hashes_to_be_blocked:
         is_valid, hash_type = hash_type_and_validate(hash_string)
         if not is_valid:
             module.fail_json(
-                msg=f"Error: The provided string '{hash_string}' is not a valid {hash_type} hash. Only MD5 hashes are supported."
+                msg=f"Invalid hash '{hash_string}' ({hash_type}). Only MD5 hashes are supported."
             )
 
     client = ZIAClientHelper(module)
     sandbox_api = client.sandbox
 
-    # Retrieve the current list of MD5 hashes blocked by Sandbox
-    current_hashes = sandbox_api.get_behavioral_analysis().file_hashes_to_be_blocked
+    current_data, _unused, error = sandbox_api.get_behavioral_analysis()
+    if error or not current_data:
+        module.fail_json(
+            msg=f"Error retrieving behavioral analysis config: {to_native(error)}"
+        )
 
-    # Determine if a change is needed
-    desired_hashes_set = set(file_hashes_to_be_blocked)
-    current_hashes_set = set(current_hashes)
+    current_hashes = current_data.get("fileHashesToBeBlocked", [])
+    desired_set = set(file_hashes_to_be_blocked)
+    current_set = set(current_hashes)
+
     change_needed = (
-        (desired_hashes_set != current_hashes_set)
-        if state == "present"
-        else bool(current_hashes_set)
+        desired_set != current_set if state == "present" else bool(current_set)
     )
 
     if module.check_mode:
-        # Report potential changes in check_mode without making any API calls
         module.exit_json(
             changed=change_needed,
             msg=(
-                "Changes would be made to the MD5 hash list."
+                "MD5 hash list will be updated."
                 if change_needed
-                else "No changes needed for MD5 hash list."
+                else "No change needed."
             ),
         )
 
-    # Perform update only if change is needed
     if change_needed:
         if state == "present":
-            sandbox_api.add_hash_to_custom_list(list(desired_hashes_set))
-            action_message = "MD5 hash list has been updated."
+            _unused, _unused, error = sandbox_api.add_hash_to_custom_list(
+                list(desired_set)
+            )
+            action_msg = "MD5 hash list has been updated."
         elif state == "absent":
-            sandbox_api.add_hash_to_custom_list([])  # Clear the list
-            action_message = "MD5 hash list has been cleared."
+            _unused, _unused, error = sandbox_api.add_hash_to_custom_list(
+                []
+            )  # clear list
+            action_msg = "MD5 hash list has been cleared."
 
-        # Fetch the updated hash count after the operation
-        file_hash_count_data = sandbox_api.get_file_hash_count().to_dict()
+        if error:
+            module.fail_json(msg=f"Error updating MD5 hash list: {to_native(error)}")
+
+        # ✅ Fetch updated count
+        count_data, _unused, error = sandbox_api.get_file_hash_count()
+        if error or not count_data:
+            module.fail_json(msg=f"Error retrieving hash count: {to_native(error)}")
+
         module.exit_json(
             changed=True,
-            msg="MD5 hash list has been updated.",
-            file_hash_count=file_hash_count_data,
+            msg=action_msg,
+            file_hash_count=count_data,
         )
+
     else:
-        # If no change is needed, just return the file hash count
-        file_hash_count_data = sandbox_api.get_file_hash_count().to_dict()
+        # ✅ Fetch current count again
+        count_data, _unused, error = sandbox_api.get_file_hash_count()
+        if error or not count_data:
+            module.fail_json(msg=f"Error retrieving hash count: {to_native(error)}")
+
         module.exit_json(
             changed=False,
             msg="No change needed for MD5 hash list.",
-            file_hash_count=file_hash_count_data,
+            file_hash_count=count_data,
         )
 
 
