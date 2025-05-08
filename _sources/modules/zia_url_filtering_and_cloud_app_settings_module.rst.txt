@@ -1,0 +1,2016 @@
+.. Document meta
+
+:orphan:
+
+.. |antsibull-internal-nbsp| unicode:: 0xA0
+    :trim:
+
+.. meta::
+  :antsibull-docs: 2.16.3
+
+.. Anchors
+
+.. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module:
+
+.. Anchors: short name for ansible.builtin
+
+.. Title
+
+zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings module -- Gets the URL Filtering and Cloud App Control settings.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+.. Collection note
+
+.. note::
+    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 2.0.0).
+
+    It is not included in ``ansible-core``.
+    To check whether it is installed, run :code:`ansible-galaxy collection list`.
+
+    To install it, use: :code:`ansible-galaxy collection install zscaler.ziacloud`.
+    You need further requirements to be able to use this module,
+    see :ref:`Requirements <ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module_requirements>` for details.
+
+    To use it in a playbook, specify: :code:`zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings`.
+
+.. version_added
+
+.. rst-class:: ansible-version-added
+
+New in zscaler.ziacloud 2.0.0
+
+.. contents::
+   :local:
+   :depth: 1
+
+.. Deprecated
+
+
+Synopsis
+--------
+
+.. Description
+
+- Gets the URL Filtering and Cloud App Control settings.
+
+
+.. Aliases
+
+
+.. Requirements
+
+.. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module_requirements:
+
+Requirements
+------------
+The below requirements are needed on the host that executes this module.
+
+- Zscaler SDK Python can be obtained from PyPI at https://pypi.org/project/zscaler-sdk-python/
+
+
+
+
+
+
+.. Options
+
+Parameters
+----------
+
+.. tabularcolumns:: \X{1}{3}\X{2}{3}
+
+.. list-table::
+  :width: 100%
+  :widths: auto
+  :header-rows: 1
+  :class: longtable ansible-option-table
+
+  * - Parameter
+    - Comments
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-api_key"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-api_key:
+
+      .. rst-class:: ansible-option-title
+
+      **api_key**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-api_key" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the obfuscated API key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-block_skype"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-block_skype:
+
+      .. rst-class:: ansible-option-title
+
+      **block_skype**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-block_skype" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates whether access to Skype is blocked or not.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-client_id"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-client_id:
+
+      .. rst-class:: ansible-option-title
+
+      **client_id**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-client_id" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The client ID for OAuth2 authentication.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-client_secret"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-client_secret:
+
+      .. rst-class:: ansible-option-title
+
+      **client_secret**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-client_secret" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The client secret for OAuth2 authentication.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-cloud"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-cloud:
+
+      .. rst-class:: ansible-option-title
+
+      **cloud**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-cloud" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The Zscaler cloud name provisioned for your organization.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"zscloud"`
+      - :ansible-option-choices-entry:`"zscaler"`
+      - :ansible-option-choices-entry:`"zscalerone"`
+      - :ansible-option-choices-entry:`"zscalertwo"`
+      - :ansible-option-choices-entry:`"zscalerthree"`
+      - :ansible-option-choices-entry:`"zscalerbeta"`
+      - :ansible-option-choices-entry:`"zscalergov"`
+      - :ansible-option-choices-entry:`"zscalerten"`
+      - :ansible-option-choices-entry:`"beta"`
+      - :ansible-option-choices-entry:`"production"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-consider_embedded_sites"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-consider_embedded_sites:
+
+      .. rst-class:: ansible-option-title
+
+      **consider_embedded_sites**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-consider_embedded_sites" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates if URL filtering rules must be applied to sites that are translated using translation services or not.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-enable_block_override_for_non_auth_user"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-enable_block_override_for_non_auth_user:
+
+      .. rst-class:: ansible-option-title
+
+      **enable_block_override_for_non_auth_user**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-enable_block_override_for_non_auth_user" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates if authorized users can temporarily override block action on websites by providing their authentication information
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-enable_chat_gpt_prompt"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-enable_chat_gpt_prompt:
+
+      .. rst-class:: ansible-option-title
+
+      **enable_chat_gpt_prompt**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-enable_chat_gpt_prompt" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates if the use of generative AI prompts with ChatGPT by users should be categorized and logged
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-enable_cipa_compliance"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-enable_cipa_compliance:
+
+      .. rst-class:: ansible-option-title
+
+      **enable_cipa_compliance**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-enable_cipa_compliance" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates if the predefined CIPA Compliance Rule is enabled or not.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-enable_dynamic_content_cat"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-enable_dynamic_content_cat:
+
+      .. rst-class:: ansible-option-title
+
+      **enable_dynamic_content_cat**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-enable_dynamic_content_cat" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates if dynamic categorization of URLs by analyzing content of uncategorized websites using AI/ML tools is enabled or not.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-enable_gemini_prompt"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-enable_gemini_prompt:
+
+      .. rst-class:: ansible-option-title
+
+      **enable_gemini_prompt**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-enable_gemini_prompt" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates if the use of generative AI prompts with Google Gemini by users should be categorized and logged
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-enable_meta_prompt"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-enable_meta_prompt:
+
+      .. rst-class:: ansible-option-title
+
+      **enable_meta_prompt**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-enable_meta_prompt" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates if the use of generative AI prompts with Meta AI by users should be categorized and logged
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-enable_microsoft_copilot_prompt"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-enable_microsoft_copilot_prompt:
+
+      .. rst-class:: ansible-option-title
+
+      **enable_microsoft_copilot_prompt**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-enable_microsoft_copilot_prompt" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates if the use of generative AI prompts with Microsoft Copilot by users should be categorized and logged
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-enable_msft_o365"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-enable_msft_o365:
+
+      .. rst-class:: ansible-option-title
+
+      **enable_msft_o365**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-enable_msft_o365" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates if the Zscaler service is allowed to permit secure local breakout for Office 365
+
+      Traffic automatically without any manual configuration needed.
+
+      Enabling this option turns off SSL Interception for all Office 365 destinations as per Microsoft's recommendation.
+
+      If you want to continue using existing granular controls for Office 365, disable this option and enable preexisting configuration.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-enable_newly_registered_domains"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-enable_newly_registered_domains:
+
+      .. rst-class:: ansible-option-title
+
+      **enable_newly_registered_domains**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-enable_newly_registered_domains" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates whether newly registered and observed domains that are identified within hours of going live are allowed or blocked
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-enable_office365"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-enable_office365:
+
+      .. rst-class:: ansible-option-title
+
+      **enable_office365**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-enable_office365" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Enables or disables Microsoft Office 365 configuration.
+
+      If you want to continue using existing granular controls for Office 365
+
+      Recommended to turn off the enableMsftO365 option and enable this option instead.
+
+      This is a legacy option used for backward compatibility.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-enable_perplexity_prompt"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-enable_perplexity_prompt:
+
+      .. rst-class:: ansible-option-title
+
+      **enable_perplexity_prompt**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-enable_perplexity_prompt" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates if the use of generative AI prompts with Perplexity by users should be categorized and logged
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-enable_poe_prompt"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-enable_poe_prompt:
+
+      .. rst-class:: ansible-option-title
+
+      **enable_poe_prompt**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-enable_poe_prompt" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates if the use of generative AI prompts with Poe by users should be categorized and logged
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-enable_ucaas_log_me_in"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-enable_ucaas_log_me_in:
+
+      .. rst-class:: ansible-option-title
+
+      **enable_ucaas_log_me_in**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-enable_ucaas_log_me_in" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates if the Zscaler service is allowed to automatically permit secure local breakout for GoTo traffic
+
+      Without any manual configuration needed. When enabled, this option turns off SSL interception for all GoTo destinations.
+
+      To continue using existing granular controls for GoTo traffic
+
+      Disable this option and enable Cloud Application and Firewall Network Application policies accordingly.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-enable_ucaas_ring_central"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-enable_ucaas_ring_central:
+
+      .. rst-class:: ansible-option-title
+
+      **enable_ucaas_ring_central**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-enable_ucaas_ring_central" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates if the Zscaler service is allowed to automatically permit secure local breakout for RingCentral traffic
+
+      Without any manual configuration needed. When enabled, this option turns off SSL interception for all RingCentral destinations
+
+      To continue using existing granular controls for RingCentral traffic
+
+      Disable this option and enable Cloud Application and Firewall Network Application policies accordingly.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-enable_ucaas_talkdesk"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-enable_ucaas_talkdesk:
+
+      .. rst-class:: ansible-option-title
+
+      **enable_ucaas_talkdesk**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-enable_ucaas_talkdesk" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates if the Zscaler service is allowed to automatically permit secure local breakout for Talkdesk traffic
+
+      With minimal or no manual configuration needed. When enabled, this option turns off SSL interception for all Talkdesk destinations
+
+      To continue using existing granular controls for Talkdesk traffic
+
+      Disable this option and enable Cloud Application, DNS, and Firewall Network Application policies accordingly.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-enable_ucaas_webex"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-enable_ucaas_webex:
+
+      .. rst-class:: ansible-option-title
+
+      **enable_ucaas_webex**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-enable_ucaas_webex" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates if the Zscaler service is allowed to automatically permit secure local breakout for Webex traffic
+
+      Without any manual configuration needed. When enabled, this option turns off SSL interception for all Webex destinations
+
+      To continue using existing granular controls for Webex traffic
+
+      Disable this option and enable Cloud Application and Firewall Network Application policies accordingly.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-enable_ucaas_zoom"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-enable_ucaas_zoom:
+
+      .. rst-class:: ansible-option-title
+
+      **enable_ucaas_zoom**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-enable_ucaas_zoom" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates if the Zscaler service is allowed to automatically permit secure local breakout for Zoom traffic
+
+      Without any manual configuration needed. When enabled, this option turns off SSL interception for all Zoom destinations.
+
+      To continue using existing granular controls for Zoom traffic
+
+      Disable this option and enable Cloud Application and Firewall Network Application policies accordingly.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-enforce_safe_search"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-enforce_safe_search:
+
+      .. rst-class:: ansible-option-title
+
+      **enforce_safe_search**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-enforce_safe_search" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates whether only safe content must be returned for web, image, and video search.
+
+      Safe search is supported for specific search engines and other platforms
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-password"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-password:
+
+      .. rst-class:: ansible-option-title
+
+      **password**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-password" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the password for the API admin.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-private_key"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-private_key:
+
+      .. rst-class:: ansible-option-title
+
+      **private_key**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-private_key" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The private key for JWT-based OAuth2 authentication.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-provider:
+
+      .. rst-class:: ansible-option-title
+
+      **provider**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`dictionary`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A dict containing authentication credentials.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/api_key"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-provider/api_key:
+
+      .. rst-class:: ansible-option-title
+
+      **api_key**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/api_key" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Obfuscated API key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/client_id"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-provider/client_id:
+
+      .. rst-class:: ansible-option-title
+
+      **client_id**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/client_id" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      OAuth2 client ID.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/client_secret"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-provider/client_secret:
+
+      .. rst-class:: ansible-option-title
+
+      **client_secret**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/client_secret" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      OAuth2 client secret.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/cloud"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-provider/cloud:
+
+      .. rst-class:: ansible-option-title
+
+      **cloud**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/cloud" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Zscaler cloud name.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"zscloud"`
+      - :ansible-option-choices-entry:`"zscaler"`
+      - :ansible-option-choices-entry:`"zscalerone"`
+      - :ansible-option-choices-entry:`"zscalertwo"`
+      - :ansible-option-choices-entry:`"zscalerthree"`
+      - :ansible-option-choices-entry:`"zscalerbeta"`
+      - :ansible-option-choices-entry:`"zscalergov"`
+      - :ansible-option-choices-entry:`"zscalerten"`
+      - :ansible-option-choices-entry:`"beta"`
+      - :ansible-option-choices-entry:`"production"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/password"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-provider/password:
+
+      .. rst-class:: ansible-option-title
+
+      **password**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/password" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Password for the API admin.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/private_key"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-provider/private_key:
+
+      .. rst-class:: ansible-option-title
+
+      **private_key**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/private_key" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Private key for OAuth2 JWT.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/sandbox_cloud"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-provider/sandbox_cloud:
+
+      .. rst-class:: ansible-option-title
+
+      **sandbox_cloud**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/sandbox_cloud" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Sandbox Cloud environment.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/sandbox_token"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-provider/sandbox_token:
+
+      .. rst-class:: ansible-option-title
+
+      **sandbox_token**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/sandbox_token" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Sandbox API Key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/use_legacy_client"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-provider/use_legacy_client:
+
+      .. rst-class:: ansible-option-title
+
+      **use_legacy_client**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/use_legacy_client" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Whether to use the legacy Zscaler API client.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/username"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-provider/username:
+
+      .. rst-class:: ansible-option-title
+
+      **username**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/username" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Email ID of the API admin.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/vanity_domain"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-provider/vanity_domain:
+
+      .. rst-class:: ansible-option-title
+
+      **vanity_domain**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/vanity_domain" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Vanity domain for OAuth2.
+
+
+      .. raw:: html
+
+        </div>
+
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-sandbox_cloud"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-sandbox_cloud:
+
+      .. rst-class:: ansible-option-title
+
+      **sandbox_cloud**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-sandbox_cloud" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The Sandbox cloud environment for API access.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-sandbox_token"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-sandbox_token:
+
+      .. rst-class:: ansible-option-title
+
+      **sandbox_token**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-sandbox_token" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the Sandbox API Key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-state"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-state:
+
+      .. rst-class:: ansible-option-title
+
+      **state**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-state" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Specifies the desired state of the resource.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry-default:`"present"` :ansible-option-choices-default-mark:`← (default)`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-use_legacy_client"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-use_legacy_client:
+
+      .. rst-class:: ansible-option-title
+
+      **use_legacy_client**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-use_legacy_client" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Whether to use the legacy Zscaler API client.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-username"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-username:
+
+      .. rst-class:: ansible-option-title
+
+      **username**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-username" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the email ID of the API admin.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-vanity_domain"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_module__parameter-vanity_domain:
+
+      .. rst-class:: ansible-option-title
+
+      **vanity_domain**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-vanity_domain" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The vanity domain provisioned by Zscaler for OAuth2 flows.
+
+
+      .. raw:: html
+
+        </div>
+
+
+.. Attributes
+
+
+.. Notes
+
+Notes
+-----
+
+.. note::
+   - Check mode is supported.
+
+.. Seealso
+
+
+.. Examples
+
+Examples
+--------
+
+.. code-block:: yaml+jinja
+
+    - name: Configure Advanced Url Filter And Cloud App Settings
+      zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings:
+        provider: '{{ provider }}'
+        block_skype: true
+        consider_embedded_sites: true
+        enable_block_override_for_non_auth_user: true
+        enable_chat_gpt_prompt: false
+        enable_cipa_compliance: false
+        enable_dynamic_content_cat: true
+        enable_gemini_prompt: false
+        enable_meta_prompt: false
+        enable_microsoft_co_pilot_prompt: false
+        enable_msft_o365: true
+        enable_newly_registered_domains: true
+        enable_office365: true
+        enable_per_plexity_prompt: false
+        enable_poe_prompt: false
+        enable_ucaas_log_me_in: false
+        enable_ucaas_ring_central: false
+        enable_ucaas_talkdesk: false
+        enable_ucaas_webex: false
+        enable_ucaas_zoom: true
+        enforce_safe_search: true
+
+
+
+.. Facts
+
+
+.. Return values
+
+
+..  Status (Presently only deprecated)
+
+
+.. Authors
+
+Authors
+~~~~~~~
+
+- William Guilherme (@willguibr)
+
+
+
+.. Extra links
+
+Collection links
+~~~~~~~~~~~~~~~~
+
+.. ansible-links::
+
+  - title: "Issue Tracker"
+    url: "https://github.com/zscaler/ziacloud-ansible/issues"
+    external: true
+  - title: "Repository (Sources)"
+    url: "https://github.com/zscaler/ziacloud-ansible"
+    external: true
+
+
+.. Parsing errors

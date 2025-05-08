@@ -32,7 +32,7 @@ The following module allows for interaction with the ZIA Cloud Firewall API endp
 .. code-block:: yaml
 
   - name: Create/Update/Delete Cloud Firewall Filtering Rule
-    zscaler.ziacloud.zia_cloud_firewall_filtering_rule:
+    zscaler.ziacloud.zia_cloud_firewall_rule:
       provider: '{{ zia_cloud }}'
       name: 'sampleCloudFIrewallRule'
       description: 'TT#1965232865'
@@ -175,6 +175,220 @@ This module creates a Network Application Group resource, which can then be asso
           - 'SHAREPOINT_ONLINE'
           - 'ONEDRIVE'
 
+Cloud Firewall NAT Control Policy
+----------------------------------
+
+The following module allows for interaction with the ZIA NAT Control Policy API endpoints and adds a new NAT Control rule.
+
+.. code-block:: yaml
+
+  - name: Create/update NAT Control Rule
+    zscaler.ziacloud.zia_nat_control_policy:
+      name: "NAT_Ansible_Example_Rule1"
+      description: "TT#1965232865"
+      rank: 7
+      enabled: true
+      order: 1
+      redirect_port: 2000
+      redirect_ip: "1.1.1.1"
+      src_ips:
+        - 192.168.100.0/24
+        - "192.168.200.1"
+      dest_addresses:
+        - 3.217.228.0-3.217.231.255
+        - 3.235.112.0-3.235.119.255
+        - 35.80.88.0-35.80.95.255
+        - server1.acme.com
+        - "*.acme.com"
+      dest_countries:
+        - BR
+        - CA
+        - US
+      locations:
+        - 36788941
+
+Cloud Firewall IPS Rule
+-----------------------------
+
+The following module allows for interaction with the ZIA Cloud Firewall API endpoints and adds a new Cloud Firewall IPS rule.
+
+.. code-block:: yaml
+
+  - name: Create/update firewall filtering ips rule
+    zscaler.ziacloud.zia_cloud_firewall_ips_rules:
+      name: "Ansible_Example_Rule1"
+      description: "TT#1965232865"
+      action: "ALLOW"
+      rank: 7
+      enabled: true
+      order: 1
+      enable_full_logging: false
+      source_countries:
+        - BR
+        - CA
+        - US
+      dest_countries:
+        - BR
+        - CA
+        - US
+      locations:
+        - 36788941
+
+Cloud Firewall DNS Rule
+-----------------------------
+
+The following module allows for interaction with the ZIA Cloud Firewall API endpoints and adds a new Cloud Firewall DNS rule.
+
+.. code-block:: yaml
+
+  - name: Create/update firewall filtering DNS rule
+    zscaler.ziacloud.zia_cloud_firewall_dns_rules:
+      name: "Ansible_Example_Rule1"
+      description: "TT#1965232865"
+      action: "BLOCK_WITH_RESPONSE"
+      rank: 7
+      enabled: true
+      order: 1
+      protocols:
+        - ANY_RULE
+      source_countries:
+        - BR
+        - CA
+        - US
+      dest_countries:
+        - BR
+        - CA
+        - US
+      dns_gateway:
+        id: 9269563
+
+Cloud SSL Inspection Rule
+-----------------------------
+
+The following module allows for interaction with the ZIA SSL Inspection API endpoints and adds a new SSL Inspection rule.
+
+.. code-block:: yaml
+
+  - name: Create SSL Inspection Rule
+    zscaler.ziacloud.zia_ssl_inspection_rules:
+      name: "SSL_Inspection_Ansible_Example"
+      description: "SSL_Inspection_Ansible_Example"
+      enabled: true
+      order: 1
+      rank: 7
+      action:
+        type: DECRYPT
+        override_default_certificate: true
+        decrypt_sub_actions:
+          server_certificates: ALLOW
+          ocsp_check: true
+          block_undecrypt: true
+          http2_enabled: true
+          block_ssl_traffic_with_no_sni_enabled: true
+          min_client_tls_version: CLIENT_TLS_1_2
+          min_server_tls_version: SERVER_TLS_1_2
+
+        ssl_interception_cert:
+          id: 1
+      url_categories:
+        - ADULT_THEMES
+        - SEXUALITY
+        - ADULT_SEX_EDUCATION
+        - K_12_SEX_EDUCATION
+      user_agent_types:
+        - OPERA
+        - FIREFOX
+        - MSIE
+        - MSEDGE
+        - CHROME
+        - SAFARI
+        - OTHER
+        - MSCHREDGE
+
+File Type Control Policy
+----------------------------------
+
+The following module allows for interaction with the ZIA File Type Control Policy API endpoints and adds a new File Type Control rule.
+
+.. code-block:: yaml
+
+  - name: Configure ZIA File Type Control Rule
+    zscaler.ziacloud.zia_file_type_control_rules:
+      name: "Ansible_File_Type01"
+      description: "Ansible_File_Type01"
+      enabled: true
+      order: 1
+      rank: 7
+      filtering_action: "BLOCK"
+      operation: "DOWNLOAD"
+      active_content: true
+      unscannable: false
+      max_size: 409600
+      device_trust_levels:
+        - "UNKNOWN_DEVICETRUSTLEVEL"
+        - "LOW_TRUST"
+        - "MEDIUM_TRUST"
+        - "HIGH_TRUST"
+      file_types:
+        - "FTCATEGORY_MS_WORD"
+        - "FTCATEGORY_MS_POWERPOINT"
+        - "FTCATEGORY_PDF_DOCUMENT"
+        - "FTCATEGORY_MS_EXCEL"
+      protocols:
+        - "FOHTTP_RULE"
+        - "FTP_RULE"
+        - "HTTPS_RULE"
+        - "HTTP_RULE"
+
+Cloud Sandbox Rule
+-----------------------------
+
+The following module allows for interaction with the ZIA Sandbox Rule API endpoints and adds a new Sandbox rule.
+
+.. code-block:: yaml
+
+  - name: Create Sandbox Rules
+    zscaler.ziacloud.zia_sandbox_rules:
+      name: Ansible_SandboxRule01
+      description: Ansible_SandboxRule01
+      rank: 7
+      order: 1
+      enabled: true
+      first_time_enable: true
+      ml_action_enabled: true
+      first_time_operation: ALLOW_SCAN
+      ba_rule_action: BLOCK
+      by_threat_score: 40
+      ba_policy_categories:
+        - ADWARE_BLOCK
+        - BOTMAL_BLOCK
+        - ANONYP2P_BLOCK
+        - RANSOMWARE_BLOCK
+      file_types:
+        - FTCATEGORY_MS_WORD
+        - FTCATEGORY_PDF_DOCUMENT
+        - FTCATEGORY_TAR
+        - FTCATEGORY_SCZIP
+        - FTCATEGORY_WINDOWS_EXECUTABLES
+        - FTCATEGORY_HTA
+        - FTCATEGORY_FLASH
+        - FTCATEGORY_RAR
+        - FTCATEGORY_MS_EXCEL
+        - FTCATEGORY_VISUAL_BASIC_SCRIPT
+        - FTCATEGORY_MS_POWERPOINT
+        - FTCATEGORY_WINDOWS_LIBRARY
+        - FTCATEGORY_POWERSHELL
+        - FTCATEGORY_APK
+        - FTCATEGORY_ZIP
+        - FTCATEGORY_BZIP2
+        - FTCATEGORY_JAVA_APPLET
+        - FTCATEGORY_MS_RTF
+      protocols:
+        - FOHTTP_RULE
+        - FTP_RULE
+        - HTTPS_RULE
+        - HTTP_RULE
+
 DLP Web Rule
 ------------
 
@@ -218,6 +432,74 @@ The following module allows for interaction with the ZIA Data Loss Prevention (D
         - 45513075
       departments:
         - 45513014
+
+URL Filtering Rule
+-----------------------------
+
+The following module allows for interaction with the ZIA URL Filtering Policy API endpoints and adds a new URL Filtering rule.
+
+.. code-block:: yaml
+
+  - name: Create/Update/Delete a URL Filtering Rule
+    zscaler.ziacloud.zia_url_filtering_rules:
+      name: "URL_Ansible_Example"
+      description: "URL_Ansible_Example"
+      enabled: true
+      action: "ALLOW"
+      order: 1
+      rank: 7
+      url_categories:
+        - ADULT_THEMES
+        - SEXUALITY
+        - ADULT_SEX_EDUCATION
+        - K_12_SEX_EDUCATION
+      protocols:
+        - TUNNELSSL_RULE
+        - HTTP_PROXY
+        - FOHTTP_RULE
+        - FTP_RULE
+        - SSL_RULE
+        - TUNNEL_RULE
+        - HTTPS_RULE
+        - WEBSOCKETSSL_RULE
+        - WEBSOCKET_RULE
+        - HTTP_RULE
+        - DOHTTPS_RULE
+      request_methods:
+        - CONNECT
+        - DELETE
+        - GET
+        - HEAD
+        - OPTIONS
+        - OTHER
+        - POST
+        - PUT
+        - TRACE
+        - PROPFIND
+        - PROPPATCH
+        - MKCOL
+        - MOVE
+        - LOCK
+        - UNLOCK
+        - PATCH
+        - COPY
+      user_agent_types:
+        - OPERA
+        - FIREFOX
+        - MSIE
+        - MSEDGE
+        - CHROME
+        - SAFARI
+        - OTHER
+        - MSCHREDGE
+      locations:
+        - 22150453
+      groups:
+        - 12006601
+        - 12006580
+      departments:
+        - 15616629
+        - 15616630
 
 DLP Dictionary
 --------------

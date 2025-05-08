@@ -22,7 +22,7 @@ zscaler.ziacloud.zia_dlp_dictionaries_info module -- Custom and predefined DLP d
 .. Collection note
 
 .. note::
-    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 1.3.4).
+    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 2.0.0).
 
     It is not included in ``ansible-core``.
     To check whether it is installed, run :code:`ansible-galaxy collection list`.
@@ -125,6 +125,74 @@ Parameters
   * - .. raw:: html
 
         <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-client_id"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_dlp_dictionaries_info_module__parameter-client_id:
+
+      .. rst-class:: ansible-option-title
+
+      **client_id**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-client_id" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The client ID for OAuth2 authentication.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-client_secret"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_dlp_dictionaries_info_module__parameter-client_secret:
+
+      .. rst-class:: ansible-option-title
+
+      **client_secret**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-client_secret" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The client secret for OAuth2 authentication.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
         <div class="ansibleOptionAnchor" id="parameter-cloud"></div>
 
       .. _ansible_collections.zscaler.ziacloud.zia_dlp_dictionaries_info_module__parameter-cloud:
@@ -149,7 +217,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      The Zscaler cloud name was provisioned for your organization.
+      The Zscaler cloud name provisioned for your organization.
 
 
       .. rst-class:: ansible-option-line
@@ -164,6 +232,8 @@ Parameters
       - :ansible-option-choices-entry:`"zscalerbeta"`
       - :ansible-option-choices-entry:`"zscalergov"`
       - :ansible-option-choices-entry:`"zscalerten"`
+      - :ansible-option-choices-entry:`"beta"`
+      - :ansible-option-choices-entry:`"production"`
 
 
       .. raw:: html
@@ -275,6 +345,40 @@ Parameters
   * - .. raw:: html
 
         <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-private_key"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_dlp_dictionaries_info_module__parameter-private_key:
+
+      .. rst-class:: ansible-option-title
+
+      **private_key**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-private_key" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The private key for JWT-based OAuth2 authentication.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
         <div class="ansibleOptionAnchor" id="parameter-provider"></div>
 
       .. _ansible_collections.zscaler.ziacloud.zia_dlp_dictionaries_info_module__parameter-provider:
@@ -299,7 +403,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      A dict object containing connection details. This is optional; credentials can also be provided directly at the top level.
+      A dict containing authentication credentials.
 
 
       .. raw:: html
@@ -341,7 +445,91 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      A string that contains the obfuscated API key.
+      Obfuscated API key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/client_id"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_dlp_dictionaries_info_module__parameter-provider/client_id:
+
+      .. rst-class:: ansible-option-title
+
+      **client_id**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/client_id" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      OAuth2 client ID.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/client_secret"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_dlp_dictionaries_info_module__parameter-provider/client_secret:
+
+      .. rst-class:: ansible-option-title
+
+      **client_secret**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/client_secret" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      OAuth2 client secret.
 
 
       .. raw:: html
@@ -383,7 +571,7 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      The Zscaler cloud name was provisioned for your organization.
+      Zscaler cloud name.
 
 
       .. rst-class:: ansible-option-line
@@ -398,6 +586,8 @@ Parameters
       - :ansible-option-choices-entry:`"zscalerbeta"`
       - :ansible-option-choices-entry:`"zscalergov"`
       - :ansible-option-choices-entry:`"zscalerten"`
+      - :ansible-option-choices-entry:`"beta"`
+      - :ansible-option-choices-entry:`"production"`
 
 
       .. raw:: html
@@ -439,7 +629,91 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      A string that contains the password for the API admin.
+      Password for the API admin.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/private_key"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_dlp_dictionaries_info_module__parameter-provider/private_key:
+
+      .. rst-class:: ansible-option-title
+
+      **private_key**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/private_key" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Private key for OAuth2 JWT.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/sandbox_cloud"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_dlp_dictionaries_info_module__parameter-provider/sandbox_cloud:
+
+      .. rst-class:: ansible-option-title
+
+      **sandbox_cloud**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/sandbox_cloud" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Sandbox Cloud environment.
 
 
       .. raw:: html
@@ -481,7 +755,57 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      A string that contains the Sandbox API Key.
+      Sandbox API Key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/use_legacy_client"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_dlp_dictionaries_info_module__parameter-provider/use_legacy_client:
+
+      .. rst-class:: ansible-option-title
+
+      **use_legacy_client**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/use_legacy_client" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Whether to use the legacy Zscaler API client.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
+      - :ansible-option-choices-entry:`true`
 
 
       .. raw:: html
@@ -523,13 +847,89 @@ Parameters
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      A string that contains the email ID of the API admin.
+      Email ID of the API admin.
 
 
       .. raw:: html
 
         </div>
 
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/vanity_domain"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_dlp_dictionaries_info_module__parameter-provider/vanity_domain:
+
+      .. rst-class:: ansible-option-title
+
+      **vanity_domain**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/vanity_domain" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Vanity domain for OAuth2.
+
+
+      .. raw:: html
+
+        </div>
+
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-sandbox_cloud"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_dlp_dictionaries_info_module__parameter-sandbox_cloud:
+
+      .. rst-class:: ansible-option-title
+
+      **sandbox_cloud**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-sandbox_cloud" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The Sandbox cloud environment for API access.
+
+
+      .. raw:: html
+
+        </div>
 
   * - .. raw:: html
 
@@ -568,6 +968,48 @@ Parameters
   * - .. raw:: html
 
         <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-use_legacy_client"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_dlp_dictionaries_info_module__parameter-use_legacy_client:
+
+      .. rst-class:: ansible-option-title
+
+      **use_legacy_client**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-use_legacy_client" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Whether to use the legacy Zscaler API client.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
         <div class="ansibleOptionAnchor" id="parameter-username"></div>
 
       .. _ansible_collections.zscaler.ziacloud.zia_dlp_dictionaries_info_module__parameter-username:
@@ -593,6 +1035,40 @@ Parameters
         <div class="ansible-option-cell">
 
       A string that contains the email ID of the API admin.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-vanity_domain"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_dlp_dictionaries_info_module__parameter-vanity_domain:
+
+      .. rst-class:: ansible-option-title
+
+      **vanity_domain**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-vanity_domain" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The vanity domain provisioned by Zscaler for OAuth2 flows.
 
 
       .. raw:: html

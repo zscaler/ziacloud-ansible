@@ -1,0 +1,3227 @@
+.. Document meta
+
+:orphan:
+
+.. |antsibull-internal-nbsp| unicode:: 0xA0
+    :trim:
+
+.. meta::
+  :antsibull-docs: 2.16.3
+
+.. Anchors
+
+.. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module:
+
+.. Anchors: short name for ansible.builtin
+
+.. Title
+
+zscaler.ziacloud.zia_advanced_settings module -- Updates the advanced settings configuration in the ZIA Admin Portal
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+.. Collection note
+
+.. note::
+    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 2.0.0).
+
+    It is not included in ``ansible-core``.
+    To check whether it is installed, run :code:`ansible-galaxy collection list`.
+
+    To install it, use: :code:`ansible-galaxy collection install zscaler.ziacloud`.
+    You need further requirements to be able to use this module,
+    see :ref:`Requirements <ansible_collections.zscaler.ziacloud.zia_advanced_settings_module_requirements>` for details.
+
+    To use it in a playbook, specify: :code:`zscaler.ziacloud.zia_advanced_settings`.
+
+.. version_added
+
+.. rst-class:: ansible-version-added
+
+New in zscaler.ziacloud 2.0.0
+
+.. contents::
+   :local:
+   :depth: 1
+
+.. Deprecated
+
+
+Synopsis
+--------
+
+.. Description
+
+- Updates the advanced settings configuration in the ZIA Admin Portal
+
+
+.. Aliases
+
+
+.. Requirements
+
+.. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module_requirements:
+
+Requirements
+------------
+The below requirements are needed on the host that executes this module.
+
+- Zscaler SDK Python can be obtained from PyPI \ `https://pypi.org/project/zscaler-sdk-python/ <https://pypi.org/project/zscaler-sdk-python/>`__
+
+
+
+
+
+
+.. Options
+
+Parameters
+----------
+
+.. tabularcolumns:: \X{1}{3}\X{2}{3}
+
+.. list-table::
+  :width: 100%
+  :widths: auto
+  :header-rows: 1
+  :class: longtable ansible-option-table
+
+  * - Parameter
+    - Comments
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-api_key"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-api_key:
+
+      .. rst-class:: ansible-option-title
+
+      **api_key**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-api_key" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the obfuscated API key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-auth_bypass_apps"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-auth_bypass_apps:
+
+      .. rst-class:: ansible-option-title
+
+      **auth_bypass_apps**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-auth_bypass_apps" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Cloud applications that are exempted from cookie authentication
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-auth_bypass_url_categories"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-auth_bypass_url_categories:
+
+      .. rst-class:: ansible-option-title
+
+      **auth_bypass_url_categories**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-auth_bypass_url_categories" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      URL categories that are exempted from cookie authentication
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-auth_bypass_urls"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-auth_bypass_urls:
+
+      .. rst-class:: ansible-option-title
+
+      **auth_bypass_urls**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-auth_bypass_urls" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Custom URLs that are exempted from cookie authentication for users
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-basic_bypass_apps"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-basic_bypass_apps:
+
+      .. rst-class:: ansible-option-title
+
+      **basic_bypass_apps**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-basic_bypass_apps" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Cloud applications that are exempted from Basic authentication
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-basic_bypass_url_categories"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-basic_bypass_url_categories:
+
+      .. rst-class:: ansible-option-title
+
+      **basic_bypass_url_categories**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-basic_bypass_url_categories" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      URL categories that are exempted from Basic authentication
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-block_connect_host_sni_mismatch"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-block_connect_host_sni_mismatch:
+
+      .. rst-class:: ansible-option-title
+
+      **block_connect_host_sni_mismatch**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-block_connect_host_sni_mismatch" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates whether CONNECT host and SNI mismatch
+
+      i.e., CONNECT host doesn't match the SSL/TLS client hello SNI is blocked or not
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-block_domain_fronting_apps"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-block_domain_fronting_apps:
+
+      .. rst-class:: ansible-option-title
+
+      **block_domain_fronting_apps**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-block_domain_fronting_apps" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Applications that are exempted from domain fronting
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-block_domain_fronting_on_host_header"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-block_domain_fronting_on_host_header:
+
+      .. rst-class:: ansible-option-title
+
+      **block_domain_fronting_on_host_header**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-block_domain_fronting_on_host_header" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A Boolean value indicating whether to block HTTP and HTTPS transactions that have an FQDN mismatch
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-block_http_tunnel_on_non_http_ports"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-block_http_tunnel_on_non_http_ports:
+
+      .. rst-class:: ansible-option-title
+
+      **block_http_tunnel_on_non_http_ports**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-block_http_tunnel_on_non_http_ports" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A Boolean value indicating whether HTTP CONNECT method requests to non-standard ports are allowed or not
+
+      i.e., requests directed to ports other than the standard HTTP and HTTPS ports, 80 and 443
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-block_non_compliant_http_request_on_http_ports"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-block_non_compliant_http_request_on_http_ports:
+
+      .. rst-class:: ansible-option-title
+
+      **block_non_compliant_http_request_on_http_ports**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-block_non_compliant_http_request_on_http_ports" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates whether to allow or block traffic that is not compliant with RFC HTTP protocol standards
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-block_non_http_on_http_port_enabled"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-block_non_http_on_http_port_enabled:
+
+      .. rst-class:: ansible-option-title
+
+      **block_non_http_on_http_port_enabled**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-block_non_http_on_http_port_enabled" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates whether non-HTTP Traffic on HTTP and HTTPS ports are allowed or blocked
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-cascade_url_filtering"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-cascade_url_filtering:
+
+      .. rst-class:: ansible-option-title
+
+      **cascade_url_filtering**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-cascade_url_filtering" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates whether to apply the URL Filtering policy even when the Cloud App Control policy already allows a transaction explicitly
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-client_id"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-client_id:
+
+      .. rst-class:: ansible-option-title
+
+      **client_id**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-client_id" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The client ID for OAuth2 authentication.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-client_secret"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-client_secret:
+
+      .. rst-class:: ansible-option-title
+
+      **client_secret**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-client_secret" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The client secret for OAuth2 authentication.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-cloud"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-cloud:
+
+      .. rst-class:: ansible-option-title
+
+      **cloud**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-cloud" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The Zscaler cloud name provisioned for your organization.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"zscloud"`
+      - :ansible-option-choices-entry:`"zscaler"`
+      - :ansible-option-choices-entry:`"zscalerone"`
+      - :ansible-option-choices-entry:`"zscalertwo"`
+      - :ansible-option-choices-entry:`"zscalerthree"`
+      - :ansible-option-choices-entry:`"zscalerbeta"`
+      - :ansible-option-choices-entry:`"zscalergov"`
+      - :ansible-option-choices-entry:`"zscalerten"`
+      - :ansible-option-choices-entry:`"beta"`
+      - :ansible-option-choices-entry:`"production"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-digest_auth_bypass_apps"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-digest_auth_bypass_apps:
+
+      .. rst-class:: ansible-option-title
+
+      **digest_auth_bypass_apps**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-digest_auth_bypass_apps" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Cloud applications that are exempted from Digest authentication
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-digest_auth_bypass_url_categories"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-digest_auth_bypass_url_categories:
+
+      .. rst-class:: ansible-option-title
+
+      **digest_auth_bypass_url_categories**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-digest_auth_bypass_url_categories" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      URL categories that are exempted from Digest authentication
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-digest_auth_bypass_urls"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-digest_auth_bypass_urls:
+
+      .. rst-class:: ansible-option-title
+
+      **digest_auth_bypass_urls**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-digest_auth_bypass_urls" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Custom URLs that are exempted from Digest authentication
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-dns_resolution_on_transparent_proxy_apps"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-dns_resolution_on_transparent_proxy_apps:
+
+      .. rst-class:: ansible-option-title
+
+      **dns_resolution_on_transparent_proxy_apps**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-dns_resolution_on_transparent_proxy_apps" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Cloud applications to which DNS optimization on transparent proxy mode applies
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-dns_resolution_on_transparent_proxy_exempt_apps"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-dns_resolution_on_transparent_proxy_exempt_apps:
+
+      .. rst-class:: ansible-option-title
+
+      **dns_resolution_on_transparent_proxy_exempt_apps**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-dns_resolution_on_transparent_proxy_exempt_apps" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Cloud applications that are excluded from DNS optimization on transparent proxy mode
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-dns_resolution_on_transparent_proxy_exempt_url_categories"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-dns_resolution_on_transparent_proxy_exempt_url_categories:
+
+      .. rst-class:: ansible-option-title
+
+      **dns_resolution_on_transparent_proxy_exempt_url_categories**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-dns_resolution_on_transparent_proxy_exempt_url_categories" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      URL categories that are excluded from DNS optimization on transparent proxy mode
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-dns_resolution_on_transparent_proxy_exempt_urls"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-dns_resolution_on_transparent_proxy_exempt_urls:
+
+      .. rst-class:: ansible-option-title
+
+      **dns_resolution_on_transparent_proxy_exempt_urls**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-dns_resolution_on_transparent_proxy_exempt_urls" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      URLs that are excluded from DNS optimization on transparent proxy mode
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-dns_resolution_on_transparent_proxy_ipv6_apps"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-dns_resolution_on_transparent_proxy_ipv6_apps:
+
+      .. rst-class:: ansible-option-title
+
+      **dns_resolution_on_transparent_proxy_ipv6_apps**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-dns_resolution_on_transparent_proxy_ipv6_apps" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Cloud applications to which DNS optimization for IPv6 addresses on transparent proxy mode applies
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-dns_resolution_on_transparent_proxy_ipv6_exempt_apps"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-dns_resolution_on_transparent_proxy_ipv6_exempt_apps:
+
+      .. rst-class:: ansible-option-title
+
+      **dns_resolution_on_transparent_proxy_ipv6_exempt_apps**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-dns_resolution_on_transparent_proxy_ipv6_exempt_apps" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Cloud applications that are excluded from DNS optimization for IPv6 addresses on transparent proxy mode
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-dns_resolution_on_transparent_proxy_ipv6_exempt_url_categories"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-dns_resolution_on_transparent_proxy_ipv6_exempt_url_categories:
+
+      .. rst-class:: ansible-option-title
+
+      **dns_resolution_on_transparent_proxy_ipv6_exempt_url_categories**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-dns_resolution_on_transparent_proxy_ipv6_exempt_url_categories" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      IPv6 URL categories that are excluded from DNS optimization on transparent proxy mode
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-dns_resolution_on_transparent_proxy_ipv6_url_categories"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-dns_resolution_on_transparent_proxy_ipv6_url_categories:
+
+      .. rst-class:: ansible-option-title
+
+      **dns_resolution_on_transparent_proxy_ipv6_url_categories**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-dns_resolution_on_transparent_proxy_ipv6_url_categories" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      IPv6 URL categories to which DNS optimization on transparent proxy mode applies
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-dns_resolution_on_transparent_proxy_url_categories"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-dns_resolution_on_transparent_proxy_url_categories:
+
+      .. rst-class:: ansible-option-title
+
+      **dns_resolution_on_transparent_proxy_url_categories**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-dns_resolution_on_transparent_proxy_url_categories" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      URL categories to which DNS optimization on transparent proxy mode applies
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-dns_resolution_on_transparent_proxy_urls"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-dns_resolution_on_transparent_proxy_urls:
+
+      .. rst-class:: ansible-option-title
+
+      **dns_resolution_on_transparent_proxy_urls**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-dns_resolution_on_transparent_proxy_urls" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      URLs to which DNS optimization on transparent proxy mode applies
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-domain_fronting_bypass_url_categories"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-domain_fronting_bypass_url_categories:
+
+      .. rst-class:: ansible-option-title
+
+      **domain_fronting_bypass_url_categories**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-domain_fronting_bypass_url_categories" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      URL categories that are exempted from domain fronting
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-dynamic_user_risk_enabled"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-dynamic_user_risk_enabled:
+
+      .. rst-class:: ansible-option-title
+
+      **dynamic_user_risk_enabled**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-dynamic_user_risk_enabled" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates whether to dynamically update user risk score by tracking risky user activities in real time
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-ecs_for_all_enabled"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-ecs_for_all_enabled:
+
+      .. rst-class:: ansible-option-title
+
+      **ecs_for_all_enabled**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-ecs_for_all_enabled" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates whether or not to include the ECS option in all DNS queries, originating from all locations and remote users.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-ecs_object"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-ecs_object:
+
+      .. rst-class:: ansible-option-title
+
+      **ecs_object**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-ecs_object" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`dictionary`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The ECS prefix that must be used in DNS queries when the ECS option is enabled.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-ecs_object/external_id"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-ecs_object/external_id:
+
+      .. rst-class:: ansible-option-title
+
+      **external_id**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-ecs_object/external_id" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      The ECS external ID.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-ecs_object/id"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-ecs_object/id:
+
+      .. rst-class:: ansible-option-title
+
+      **id**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-ecs_object/id" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`integer`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      The internal ECS ID.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-ecs_object/name"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-ecs_object/name:
+
+      .. rst-class:: ansible-option-title
+
+      **name**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-ecs_object/name" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      The ECS name.
+
+
+      .. raw:: html
+
+        </div>
+
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-enable_admin_rank_access"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-enable_admin_rank_access:
+
+      .. rst-class:: ansible-option-title
+
+      **enable_admin_rank_access**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-enable_admin_rank_access" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates whether ranks are enabled for admins to allow admin ranks in policy configuration and management
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-enable_dns_resolution_on_transparent_proxy"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-enable_dns_resolution_on_transparent_proxy:
+
+      .. rst-class:: ansible-option-title
+
+      **enable_dns_resolution_on_transparent_proxy**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-enable_dns_resolution_on_transparent_proxy" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      whether DNS optimization is enabled or disabled for Z-Tunnel 2.0 and transparent proxy mode traffic
+
+      e.g., traffic via GRE or IPSec tunnels without a PAC file.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-enable_evaluate_policy_on_global_ssl_bypass"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-enable_evaluate_policy_on_global_ssl_bypass:
+
+      .. rst-class:: ansible-option-title
+
+      **enable_evaluate_policy_on_global_ssl_bypass**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-enable_evaluate_policy_on_global_ssl_bypass" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates whether policy evaluation for global SSL bypass traffic is enabled or not
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-enable_ipv6_dns_optimization_on_all_transparent_proxy"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-enable_ipv6_dns_optimization_on_all_transparent_proxy:
+
+      .. rst-class:: ansible-option-title
+
+      **enable_ipv6_dns_optimization_on_all_transparent_proxy**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-enable_ipv6_dns_optimization_on_all_transparent_proxy" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates whether DNS optimization is enabled or disabled for all IPv6 transparent proxy traffic
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-enable_ipv6_dns_resolution_on_transparent_proxy"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-enable_ipv6_dns_resolution_on_transparent_proxy:
+
+      .. rst-class:: ansible-option-title
+
+      **enable_ipv6_dns_resolution_on_transparent_proxy**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-enable_ipv6_dns_resolution_on_transparent_proxy" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      whether DNS optimization is enabled or disabled for IPv6 traffic sent via Z-Tunnel 2.0 and
+
+      transparent proxy mode traffic e.g., traffic via GRE or IPSec tunnels without a PAC file.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-enable_office365"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-enable_office365:
+
+      .. rst-class:: ansible-option-title
+
+      **enable_office365**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-enable_office365" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A Boolean value indicating whether Microsoft Office 365 One Click Configuration is enabled or not
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-enable_policy_for_unauthenticated_traffic"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-enable_policy_for_unauthenticated_traffic:
+
+      .. rst-class:: ansible-option-title
+
+      **enable_policy_for_unauthenticated_traffic**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-enable_policy_for_unauthenticated_traffic" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates whether policies that include user and department criteria can be configured and applied for unauthenticated traffic
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-enforce_surrogate_ip_for_windows_app"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-enforce_surrogate_ip_for_windows_app:
+
+      .. rst-class:: ansible-option-title
+
+      **enforce_surrogate_ip_for_windows_app**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-enforce_surrogate_ip_for_windows_app" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Enforce Surrogate IP authentication for Windows app traffic
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-http2_nonbrowser_traffic_enabled"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-http2_nonbrowser_traffic_enabled:
+
+      .. rst-class:: ansible-option-title
+
+      **http2_nonbrowser_traffic_enabled**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-http2_nonbrowser_traffic_enabled" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates whether or not HTTP/2 should be the default web protocol for accessing various applications at your organizational level
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-http_range_header_remove_url_categories"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-http_range_header_remove_url_categories:
+
+      .. rst-class:: ansible-option-title
+
+      **http_range_header_remove_url_categories**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-http_range_header_remove_url_categories" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      URL categories for which HTTP range headers must be removed
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-kerberos_bypass_apps"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-kerberos_bypass_apps:
+
+      .. rst-class:: ansible-option-title
+
+      **kerberos_bypass_apps**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-kerberos_bypass_apps" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Cloud applications that are exempted from Kerberos authentication
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-kerberos_bypass_url_categories"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-kerberos_bypass_url_categories:
+
+      .. rst-class:: ansible-option-title
+
+      **kerberos_bypass_url_categories**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-kerberos_bypass_url_categories" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      URL categories that are exempted from Kerberos authentication
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-kerberos_bypass_urls"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-kerberos_bypass_urls:
+
+      .. rst-class:: ansible-option-title
+
+      **kerberos_bypass_urls**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-kerberos_bypass_urls" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Custom URLs that are exempted from Kerberos authentication
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-log_internal_ip"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-log_internal_ip:
+
+      .. rst-class:: ansible-option-title
+
+      **log_internal_ip**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-log_internal_ip" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A Boolean value indicating whether to log internal IP address present in X-Forwarded-For (XFF) proxy header or not
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-password"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-password:
+
+      .. rst-class:: ansible-option-title
+
+      **password**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-password" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the password for the API admin.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-prefer_sni_over_conn_host"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-prefer_sni_over_conn_host:
+
+      .. rst-class:: ansible-option-title
+
+      **prefer_sni_over_conn_host**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-prefer_sni_over_conn_host" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates whether or not to use the SSL/TLS client hello Server Name Indication SNI
+
+      for DNS resolution instead of the CONNECT host for forward proxy connections
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-prefer_sni_over_conn_host_apps"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-prefer_sni_over_conn_host_apps:
+
+      .. rst-class:: ansible-option-title
+
+      **prefer_sni_over_conn_host_apps**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-prefer_sni_over_conn_host_apps" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Applications that are exempted from the preferSniOverConnHost setting
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-private_key"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-private_key:
+
+      .. rst-class:: ansible-option-title
+
+      **private_key**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-private_key" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The private key for JWT-based OAuth2 authentication.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-provider:
+
+      .. rst-class:: ansible-option-title
+
+      **provider**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`dictionary`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A dict containing authentication credentials.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/api_key"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-provider/api_key:
+
+      .. rst-class:: ansible-option-title
+
+      **api_key**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/api_key" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Obfuscated API key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/client_id"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-provider/client_id:
+
+      .. rst-class:: ansible-option-title
+
+      **client_id**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/client_id" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      OAuth2 client ID.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/client_secret"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-provider/client_secret:
+
+      .. rst-class:: ansible-option-title
+
+      **client_secret**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/client_secret" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      OAuth2 client secret.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/cloud"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-provider/cloud:
+
+      .. rst-class:: ansible-option-title
+
+      **cloud**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/cloud" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Zscaler cloud name.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"zscloud"`
+      - :ansible-option-choices-entry:`"zscaler"`
+      - :ansible-option-choices-entry:`"zscalerone"`
+      - :ansible-option-choices-entry:`"zscalertwo"`
+      - :ansible-option-choices-entry:`"zscalerthree"`
+      - :ansible-option-choices-entry:`"zscalerbeta"`
+      - :ansible-option-choices-entry:`"zscalergov"`
+      - :ansible-option-choices-entry:`"zscalerten"`
+      - :ansible-option-choices-entry:`"beta"`
+      - :ansible-option-choices-entry:`"production"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/password"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-provider/password:
+
+      .. rst-class:: ansible-option-title
+
+      **password**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/password" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Password for the API admin.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/private_key"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-provider/private_key:
+
+      .. rst-class:: ansible-option-title
+
+      **private_key**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/private_key" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Private key for OAuth2 JWT.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/sandbox_cloud"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-provider/sandbox_cloud:
+
+      .. rst-class:: ansible-option-title
+
+      **sandbox_cloud**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/sandbox_cloud" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Sandbox Cloud environment.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/sandbox_token"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-provider/sandbox_token:
+
+      .. rst-class:: ansible-option-title
+
+      **sandbox_token**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/sandbox_token" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Sandbox API Key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/use_legacy_client"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-provider/use_legacy_client:
+
+      .. rst-class:: ansible-option-title
+
+      **use_legacy_client**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/use_legacy_client" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Whether to use the legacy Zscaler API client.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/username"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-provider/username:
+
+      .. rst-class:: ansible-option-title
+
+      **username**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/username" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Email ID of the API admin.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/vanity_domain"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-provider/vanity_domain:
+
+      .. rst-class:: ansible-option-title
+
+      **vanity_domain**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/vanity_domain" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Vanity domain for OAuth2.
+
+
+      .. raw:: html
+
+        </div>
+
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-sandbox_cloud"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-sandbox_cloud:
+
+      .. rst-class:: ansible-option-title
+
+      **sandbox_cloud**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-sandbox_cloud" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The Sandbox cloud environment for API access.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-sandbox_token"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-sandbox_token:
+
+      .. rst-class:: ansible-option-title
+
+      **sandbox_token**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-sandbox_token" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the Sandbox API Key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-sipa_xff_header_enabled"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-sipa_xff_header_enabled:
+
+      .. rst-class:: ansible-option-title
+
+      **sipa_xff_header_enabled**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-sipa_xff_header_enabled" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates whether or not to insert XFF header to all traffic forwarded from ZIA to ZPA
+
+      Including source IP-anchored and ZIA-inspected ZPA application traffic.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-sni_dns_optimization_bypass_url_categories"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-sni_dns_optimization_bypass_url_categories:
+
+      .. rst-class:: ansible-option-title
+
+      **sni_dns_optimization_bypass_url_categories**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-sni_dns_optimization_bypass_url_categories" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      URL categories that are excluded from the preferSniOverConnHost setting
+
+      i.e., prefer SSL/TLS client hello SNI for DNS resolution instead of the CONNECT host for forward proxy connections
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-state"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-state:
+
+      .. rst-class:: ansible-option-title
+
+      **state**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-state" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Specifies the desired state of the resource.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry-default:`"present"` :ansible-option-choices-default-mark:`← (default)`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-track_http_tunnel_on_http_ports"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-track_http_tunnel_on_http_ports:
+
+      .. rst-class:: ansible-option-title
+
+      **track_http_tunnel_on_http_ports**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-track_http_tunnel_on_http_ports" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A Boolean value indicating whether to apply configured policies on tunneled HTTP traffic sent via a CONNECT method request on port 80
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-ui_session_timeout"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-ui_session_timeout:
+
+      .. rst-class:: ansible-option-title
+
+      **ui_session_timeout**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-ui_session_timeout" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Specifies the login session timeout for admins accessing the ZIA Admin Portal
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-use_legacy_client"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-use_legacy_client:
+
+      .. rst-class:: ansible-option-title
+
+      **use_legacy_client**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-use_legacy_client" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Whether to use the legacy Zscaler API client.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-username"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-username:
+
+      .. rst-class:: ansible-option-title
+
+      **username**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-username" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the email ID of the API admin.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-vanity_domain"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-vanity_domain:
+
+      .. rst-class:: ansible-option-title
+
+      **vanity_domain**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-vanity_domain" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The vanity domain provisioned by Zscaler for OAuth2 flows.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-zscaler_client_connector1_and_pac_road_warrior_in_firewall"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__parameter-zscaler_client_connector1_and_pac_road_warrior_in_firewall:
+
+      .. rst-class:: ansible-option-title
+
+      **zscaler_client_connector1_and_pac_road_warrior_in_firewall**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-zscaler_client_connector1_and_pac_road_warrior_in_firewall" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Indicates whether to apply the Firewall rules configured without a specified location criteria
+
+      or with the Road Warrior location to remote user traffic forwarded via Z-Tunnel 1.0 or PAC files
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+
+.. Attributes
+
+
+.. Notes
+
+Notes
+-----
+
+.. note::
+   - Check mode is not supported.
+
+.. Seealso
+
+
+.. Examples
+
+Examples
+--------
+
+.. code-block:: yaml+jinja
+
+    - name: Gather Information Details of a cloud application control rule by Name
+      zscaler.ziacloud.zia_cloud_app_control_rules_info:
+        provider: '{{ provider }}'
+        auth_bypass_urls:
+          - ".newexample1.com"
+          - ".newexample2.com"
+        dns_resolution_on_transparent_proxy_apps:
+          - "CHATGPT_AI"
+        basic_bypass_url_categories:
+          - "NONE"
+        http_range_header_remove_url_categories:
+          - "NONE"
+        kerberos_bypass_urls:
+          - "test1.com"
+        kerberos_bypass_apps: []
+        dns_resolution_on_transparent_proxy_urls:
+          - "test1.com"
+          - "test2.com"
+        enable_dns_resolution_on_transparent_proxy: true
+        enable_evaluate_policy_on_global_ssl_bypass: true
+        enable_office365: true
+        log_internal_ip: true
+        enforce_surrogate_ip_for_windows_app: true
+        track_http_tunnel_on_http_ports: true
+        block_http_tunnel_on_non_http_ports: false
+        block_domain_fronting_on_host_header: false
+        zscaler_client_connector1_and_pac_road_warrior_in_firewall: true
+        cascade_url_filtering: true
+        enable_policy_for_unauthenticated_traffic: true
+        block_non_compliant_http_request_on_http_ports: true
+        enable_admin_rank_access: true
+        http2_nonbrowser_traffic_enabled: true
+        ecs_for_all_enabled: false
+        dynamic_user_risk_enabled: false
+        block_connect_host_sni_mismatch: false
+        prefer_sni_over_conn_host: false
+        sipa_xff_header_enabled: false
+        block_non_http_on_http_port_enabled: true
+        ui_session_timeout: 300
+
+
+
+.. Facts
+
+
+.. Return values
+
+Return Values
+-------------
+Common return values are documented :ref:`here <common_return_values>`, the following are the fields unique to this module:
+
+.. tabularcolumns:: \X{1}{3}\X{2}{3}
+
+.. list-table::
+  :width: 100%
+  :widths: auto
+  :header-rows: 1
+  :class: longtable ansible-option-table
+
+  * - Key
+    - Description
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="return-rules"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_advanced_settings_module__return-rules:
+
+      .. rst-class:: ansible-option-title
+
+      **rules**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#return-rules" title="Permalink to this return value"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=dictionary`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A list of cloud application control rules that match the specified criteria.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-returned-bold:`Returned:` always
+
+      .. rst-class:: ansible-option-line
+      .. rst-class:: ansible-option-sample
+
+      :ansible-option-sample-bold:`Sample:` :ansible-rv-sample-value:`[{"access\_control": "READ\_WRITE", "actions": ["ALLOW\_WEBMAIL\_VIEW", "ALLOW\_WEBMAIL\_ATTACHMENT\_SEND"], "applications": ["GOOGLE\_WEBMAIL", "YAHOO\_WEBMAIL", "WINDOWS\_LIVE\_HOTMAIL"], "browser\_eun\_template\_id": 0, "cascading\_enabled": false, "enforce\_time\_validity": false, "eun\_enabled": false, "eun\_template\_id": 0, "id": 552617, "name": "Webmail Rule-1", "order": 2, "predefined": false, "rank": 7, "state": "DISABLED", "type": "WEBMAIL"}]`
+
+
+      .. raw:: html
+
+        </div>
+
+
+
+..  Status (Presently only deprecated)
+
+
+.. Authors
+
+Authors
+~~~~~~~
+
+- William Guilherme (@willguibr)
+
+
+
+.. Extra links
+
+Collection links
+~~~~~~~~~~~~~~~~
+
+.. ansible-links::
+
+  - title: "Issue Tracker"
+    url: "https://github.com/zscaler/ziacloud-ansible/issues"
+    external: true
+  - title: "Repository (Sources)"
+    url: "https://github.com/zscaler/ziacloud-ansible"
+    external: true
+
+
+.. Parsing errors

@@ -17,14 +17,14 @@
     <link rel="shortcut icon" href="../_static/images/Ansible-Mark-RGB_Black.png"/>
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=e358f374"></script>
+      <script src="../_static/documentation_options.js?v=51b770b3"></script>
       <script src="../_static/doctools.js?v=9a2dae69"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="zscaler.ziacloud.zia_dlp_dictionaries module – Adds a new custom DLP dictionary." href="zia_dlp_dictionaries_module.html" />
-    <link rel="prev" title="zscaler.ziacloud.zia_cloud_firewall_time_windows_info module – List of time intervals" href="zia_cloud_firewall_time_windows_info_module.html" /><!-- extra head elements for Ansible beyond RTD Sphinx Theme -->
+    <link rel="prev" title="zscaler.ziacloud.zia_devices_info module – Gets a list of devices" href="zia_devices_info_module.html" /><!-- extra head elements for Ansible beyond RTD Sphinx Theme -->
 
 
 
@@ -79,21 +79,52 @@
 <li class="toctree-l1"><a class="reference internal" href="../requirements.html">Requirements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../authentication.html">Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../authentication.html#zscaler-oneapi-new-framework">Zscaler OneAPI New Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../authentication.html#legacy-api-authentication">Legacy API Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../modules.html">Module reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="zia_activation_status_info_module.html">zscaler.ziacloud.zia_activation_status_info module – Gets the activation status</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_activation_status_module.html">zscaler.ziacloud.zia_activation_status module – Activates the saved configuration changes.</a></li>
-<li class="toctree-l2"><a class="reference internal" href="zia_admin_role_management_info_module.html">zscaler.ziacloud.zia_admin_role_management_info module – Gets a list of admin roles</a></li>
-<li class="toctree-l2"><a class="reference internal" href="zia_authentication_settings_module.html">zscaler.ziacloud.zia_authentication_settings module – Adds or removes URLs authentication exempt list.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_admin_roles_info_module.html">zscaler.ziacloud.zia_admin_roles_info module – Gets a list of admin roles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_admin_users_info_module.html">zscaler.ziacloud.zia_admin_users_info module – Gets a list of admin users</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_advanced_settings_info_module.html">zscaler.ziacloud.zia_advanced_settings_info module – Gets information about the advanced settings configured in the ZIA Admin Portal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_advanced_settings_module.html">zscaler.ziacloud.zia_advanced_settings module – Updates the advanced settings configuration in the ZIA Admin Portal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_atp_malicious_urls_info_module.html">zscaler.ziacloud.zia_atp_malicious_urls_info module – Retrieves the malicious URLs added to the denylist in the Advanced Threat Protection (ATP) policy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_atp_malicious_urls_module.html">zscaler.ziacloud.zia_atp_malicious_urls module – Updates the malicious URLs added to the denylist in ATP policy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_atp_malware_inspection_info_module.html">zscaler.ziacloud.zia_atp_malware_inspection_info module – Retrieves the traffic inspection configurations of Malware Protection policy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_atp_malware_inspection_module.html">zscaler.ziacloud.zia_atp_malware_inspection module – Updates the traffic inspection configurations of Malware Protection policy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_atp_malware_policy_info_module.html">zscaler.ziacloud.zia_atp_malware_policy_info module – Retrieves information about the security exceptions configured for the Malware Protection policy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_atp_malware_policy_module.html">zscaler.ziacloud.zia_atp_malware_policy module – Updates security exceptions for the Malware Protection policy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_atp_malware_protocols_info_module.html">zscaler.ziacloud.zia_atp_malware_protocols_info module – Retrieves the protocol inspection configurations of Malware Protection policy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_atp_malware_protocols_module.html">zscaler.ziacloud.zia_atp_malware_protocols module – Updates the protocol inspection configurations of Malware Protection policy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_atp_malware_settings_info_module.html">zscaler.ziacloud.zia_atp_malware_settings_info module – Retrieves the malware protection policy configuration details</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_atp_malware_settings_module.html">zscaler.ziacloud.zia_atp_malware_settings module – Updates the malware protection policy configuration details.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_atp_security_exceptions_info_module.html">zscaler.ziacloud.zia_atp_security_exceptions_info module – Retrieves information about the security exceptions configured for the ATP policy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_atp_security_exceptions_module.html">zscaler.ziacloud.zia_atp_security_exceptions module – Updates security exceptions for the ATP policy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_atp_settings_info_module.html">zscaler.ziacloud.zia_atp_settings_info module – Retrieves the advanced threat configuration settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_atp_settings_module.html">zscaler.ziacloud.zia_atp_settings module – Updates the advanced threat configuration settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_auth_settings_urls_info_module.html">zscaler.ziacloud.zia_auth_settings_urls_info module – Gets a list of URLs that were exempted from cookie authentication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_auth_settings_urls_module.html">zscaler.ziacloud.zia_auth_settings_urls module – Adds or removes URLs authentication exempt list.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_authentication_settings_info_module.html">zscaler.ziacloud.zia_authentication_settings_info module – Retrieves the organization’s default authentication settings information</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_authentication_settings_module.html">zscaler.ziacloud.zia_authentication_settings module – Updates the organization’s default authentication settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_bandwidth_classes_info_module.html">zscaler.ziacloud.zia_bandwidth_classes_info module – Retrieves a list of bandwidth classes for an organization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_bandwidth_classes_module.html">zscaler.ziacloud.zia_bandwidth_classes module – Adds a new bandwidth class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_bandwidth_control_rules_info_module.html">zscaler.ziacloud.zia_bandwidth_control_rules_info module – Retrieves all the rules in the Bandwidth Control policy.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_bandwidth_control_rules_module.html">zscaler.ziacloud.zia_bandwidth_control_rules module – Adds a new Bandwidth Control policy rule</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_cloud_app_control_rules_info_module.html">zscaler.ziacloud.zia_cloud_app_control_rules_info module – Gets the list of cloud application rules by the type of rule..</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_cloud_app_control_rules_module.html">zscaler.ziacloud.zia_cloud_app_control_rules module – Adds a new Cloud App Control rule.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_cloud_application_instances_info_module.html">zscaler.ziacloud.zia_cloud_application_instances_info module – Retrieves the list of cloud application instances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_cloud_application_instances_module.html">zscaler.ziacloud.zia_cloud_application_instances module – Add a new cloud application instance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_cloud_applications_info_module.html">zscaler.ziacloud.zia_cloud_applications_info module – Retrieves a list of Predefined and User Defined Cloud Applications</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_cloud_browser_isolation_profile_info_module.html">zscaler.ziacloud.zia_cloud_browser_isolation_profile_info module – Retrieves cloud browser isolation profile.</a></li>
-<li class="toctree-l2"><a class="reference internal" href="zia_cloud_firewall_filtering_rule_info_module.html">zscaler.ziacloud.zia_cloud_firewall_filtering_rule_info module – Retrieves rules in the Cloud Firewall module.</a></li>
-<li class="toctree-l2"><a class="reference internal" href="zia_cloud_firewall_filtering_rule_module.html">zscaler.ziacloud.zia_cloud_firewall_filtering_rule module – Firewall Filtering policy rule.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_cloud_firewall_dns_rules_info_module.html">zscaler.ziacloud.zia_cloud_firewall_dns_rules_info module – Retrieves rules in the Cloud Firewall DNS module.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_cloud_firewall_dns_rules_module.html">zscaler.ziacloud.zia_cloud_firewall_dns_rules module – Firewall DNS policy rule.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_cloud_firewall_ip_destination_groups_info_module.html">zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups_info module – Gets a list of all IP destination groups</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_cloud_firewall_ip_destination_groups_module.html">zscaler.ziacloud.zia_cloud_firewall_ip_destination_groups module – Create IP destination groups.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_cloud_firewall_ip_source_groups_info_module.html">zscaler.ziacloud.zia_cloud_firewall_ip_source_groups_info module – Cloud Firewall IP source groups</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_cloud_firewall_ip_source_groups_module.html">zscaler.ziacloud.zia_cloud_firewall_ip_source_groups module – Cloud Firewall IP source groups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_cloud_firewall_ips_rules_info_module.html">zscaler.ziacloud.zia_cloud_firewall_ips_rules_info module – Retrieves the list of IPS Control policy rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_cloud_firewall_ips_rules_module.html">zscaler.ziacloud.zia_cloud_firewall_ips_rules module – Firewall Filtering policy IPS rule.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_cloud_firewall_network_application_group_info_module.html">zscaler.ziacloud.zia_cloud_firewall_network_application_group_info module – Gets a list of all network application groups.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_cloud_firewall_network_application_group_module.html">zscaler.ziacloud.zia_cloud_firewall_network_application_group module – Cloud Firewall Network Application Group</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_cloud_firewall_network_application_info_module.html">zscaler.ziacloud.zia_cloud_firewall_network_application_info module – Gets a list of all network application groups.</a></li>
@@ -101,7 +132,11 @@
 <li class="toctree-l2"><a class="reference internal" href="zia_cloud_firewall_network_services_groups_module.html">zscaler.ziacloud.zia_cloud_firewall_network_services_groups module – Adds a new network service group.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_cloud_firewall_network_services_info_module.html">zscaler.ziacloud.zia_cloud_firewall_network_services_info module – Gets a list of all network services.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_cloud_firewall_network_services_module.html">zscaler.ziacloud.zia_cloud_firewall_network_services module – Adds a new network service.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_cloud_firewall_rule_info_module.html">zscaler.ziacloud.zia_cloud_firewall_rule_info module – Retrieves rules in the Cloud Firewall module.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_cloud_firewall_rule_module.html">zscaler.ziacloud.zia_cloud_firewall_rule module – Firewall Filtering policy rule.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_cloud_firewall_time_windows_info_module.html">zscaler.ziacloud.zia_cloud_firewall_time_windows_info module – List of time intervals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_device_group_info_module.html">zscaler.ziacloud.zia_device_group_info module – Gets a list of device groups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_devices_info_module.html">zscaler.ziacloud.zia_devices_info module – Gets a list of devices</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">zscaler.ziacloud.zia_dlp_dictionaries_info module – Custom and predefined DLP dictionaries.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#synopsis">Synopsis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#requirements">Requirements</a></li>
@@ -124,20 +159,44 @@
 <li class="toctree-l2"><a class="reference internal" href="zia_dlp_notification_template_info_module.html">zscaler.ziacloud.zia_dlp_notification_template_info module – Get a list of DLP notification templates.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_dlp_notification_template_module.html">zscaler.ziacloud.zia_dlp_notification_template module – Manage Zscaler Internet Access (ZIA) DLP Notification Templates</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_dlp_web_rules_info_module.html">zscaler.ziacloud.zia_dlp_web_rules_info module – Gets a list of DLP policy rules, excluding SaaS Security API DLP policy rules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="zia_dlp_web_rules_module.html">zscaler.ziacloud.zia_dlp_web_rules module – Adds a new DLP policy rule.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_dlp_web_rules_module.html">zscaler.ziacloud.zia_dlp_web_rules module – Adds a new DLP policy rule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_dns_gateway_info_module.html">zscaler.ziacloud.zia_dns_gateway_info module – Retrieves a list of DNS Gateways</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_dns_gateway_module.html">zscaler.ziacloud.zia_dns_gateway module – Adds a new DNS Gateway</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_end_user_notification_info_module.html">zscaler.ziacloud.zia_end_user_notification_info module – Retrieves browser-based end user notification (EUN)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_end_user_notification_module.html">zscaler.ziacloud.zia_end_user_notification module – Retrieves browser-based end user notification (EUN)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_file_type_control_rules_info_module.html">zscaler.ziacloud.zia_file_type_control_rules_info module – Gets all rules in the Forwarding Control policy.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_file_type_control_rules_module.html">zscaler.ziacloud.zia_file_type_control_rules module – Adds a new File Type Control policy rule.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_forwarding_control_rule_info_module.html">zscaler.ziacloud.zia_forwarding_control_rule_info module – Gets all rules in the Forwarding Control policy.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_forwarding_control_rule_module.html">zscaler.ziacloud.zia_forwarding_control_rule module – Forwarding Control policy rule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_ftp_control_policy_info_module.html">zscaler.ziacloud.zia_ftp_control_policy_info module – Retrieves the FTP Control status and the list of URL categories for which FTP is allowed.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_ftp_control_policy_module.html">zscaler.ziacloud.zia_ftp_control_policy module – Updates the FTP Control settings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_ip_source_anchoring_zpa_gateway_info_module.html">zscaler.ziacloud.zia_ip_source_anchoring_zpa_gateway_info module – Gets the list of Zscaler Private Access (ZPA) gateways.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_ip_source_anchoring_zpa_gateway_module.html">zscaler.ziacloud.zia_ip_source_anchoring_zpa_gateway module – Manages ZPA Gateways within Zscaler Internet Access</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_location_groups_info_module.html">zscaler.ziacloud.zia_location_groups_info module – Gets locations only, not sub-locations.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_location_management_info_module.html">zscaler.ziacloud.zia_location_management_info module – Gets locations only, not sub-locations.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_location_management_module.html">zscaler.ziacloud.zia_location_management module – Adds new locations and sub-locations.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_mobile_advanced_threat_settings_info_module.html">zscaler.ziacloud.zia_mobile_advanced_threat_settings_info module – Retrieves all the rules in the Mobile Malware Protection policy.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_mobile_advanced_threat_settings_module.html">zscaler.ziacloud.zia_mobile_advanced_threat_settings module – Updates the Mobile Malware Protection rule information</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_nat_control_policy_info_module.html">zscaler.ziacloud.zia_nat_control_policy_info module – Retrieves a list of all configured and predefined DNAT Control policies.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_nat_control_policy_module.html">zscaler.ziacloud.zia_nat_control_policy module – Adds a new NAT Control Rule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_nss_servers_info_module.html">zscaler.ziacloud.zia_nss_servers_info module – Retrieves a list of registered NSS servers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_nss_servers_module.html">zscaler.ziacloud.zia_nss_servers module – Adds a new NSS server.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_remote_assistance_info_module.html">zscaler.ziacloud.zia_remote_assistance_info module – Retrieves information about the Remote Assistance option configured in the ZIA Admin Portal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_remote_assistance_module.html">zscaler.ziacloud.zia_remote_assistance module – Retrieves information about the Remote Assistance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_risk_profiles_info_module.html">zscaler.ziacloud.zia_risk_profiles_info module – Retrieves the cloud application risk profile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_risk_profiles_module.html">zscaler.ziacloud.zia_risk_profiles module – Adds a new cloud application risk profile</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_rule_labels_info_module.html">zscaler.ziacloud.zia_rule_labels_info module – Gets a list of rule labels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_rule_labels_module.html">zscaler.ziacloud.zia_rule_labels module – Adds a rule label.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_sandbox_advanced_settings_info_module.html">zscaler.ziacloud.zia_sandbox_advanced_settings_info module – Gets the custom list of MD5 file hashes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_sandbox_advanced_settings_module.html">zscaler.ziacloud.zia_sandbox_advanced_settings module – Manage ZIA Advanced Cloud Sandbox MD5 hash blocklist.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_sandbox_rules_info_module.html">zscaler.ziacloud.zia_sandbox_rules_info module – Retrieves the list of all Sandbox policy rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_sandbox_rules_module.html">zscaler.ziacloud.zia_sandbox_rules module – Adds a Sandbox policy rule</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_sandbox_submission_module.html">zscaler.ziacloud.zia_sandbox_submission module – Submits a file to the ZIA Advanced Cloud Sandbox for analysis.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_security_policy_settings_module.html">zscaler.ziacloud.zia_security_policy_settings module – Adds a URL to or removes a URL from the Denylist</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_ssl_inspection_rules_info_module.html">zscaler.ziacloud.zia_ssl_inspection_rules_info module – Retrieves all SSL inspection rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_ssl_inspection_rules_module.html">zscaler.ziacloud.zia_ssl_inspection_rules module – Creates a new SSL inspection rule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_third_party_proxy_service_info_module.html">zscaler.ziacloud.zia_third_party_proxy_service_info module – Retrieves a list of all proxies configured for third-party proxy services</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_third_party_proxy_service_module.html">zscaler.ziacloud.zia_third_party_proxy_service module – Adds a new object for a third-party proxy service</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_traffic_forwarding_gre_internal_ranges_info_module.html">zscaler.ziacloud.zia_traffic_forwarding_gre_internal_ranges_info module – available GRE tunnel internal IP address ranges</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_traffic_forwarding_gre_tunnel_info_module.html">zscaler.ziacloud.zia_traffic_forwarding_gre_tunnel_info module – Gets the GRE tunnel information for the specified ID</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_traffic_forwarding_gre_tunnels_module.html">zscaler.ziacloud.zia_traffic_forwarding_gre_tunnels module – GRE tunnel information</a></li>
@@ -147,6 +206,8 @@
 <li class="toctree-l2"><a class="reference internal" href="zia_traffic_forwarding_vpn_credentials_module.html">zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials module – Adds VPN credentials that can be associated to locations.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_url_categories_info_module.html">zscaler.ziacloud.zia_url_categories_info module – Gets information about all or custom URL categories.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_url_categories_module.html">zscaler.ziacloud.zia_url_categories module – Adds a new custom URL category.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_url_filtering_and_cloud_app_settings_info_module.html">zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings_info module – Gets the list of cloud application rules by the type of rule..</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zia_url_filtering_and_cloud_app_settings_module.html">zscaler.ziacloud.zia_url_filtering_and_cloud_app_settings module – Gets the URL Filtering and Cloud App Control settings.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_url_filtering_rule_info_module.html">zscaler.ziacloud.zia_url_filtering_rule_info module – Gets all url filtering rules.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_url_filtering_rules_module.html">zscaler.ziacloud.zia_url_filtering_rules module – Adds a new URL Filtering rule.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zia_user_management_department_info_module.html">zscaler.ziacloud.zia_user_management_department_info module – Gets a list of user departments</a></li>
@@ -204,7 +265,7 @@
 <h1>zscaler.ziacloud.zia_dlp_dictionaries_info module – Custom and predefined DLP dictionaries.<a class="headerlink" href="#zscaler-ziacloud-zia-dlp-dictionaries-info-module-custom-and-predefined-dlp-dictionaries" title="Link to this heading"></a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This module is part of the <a class="reference external" href="https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/">zscaler.ziacloud collection</a> (version 1.3.4).</p>
+<p>This module is part of the <a class="reference external" href="https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/">zscaler.ziacloud collection</a> (version 2.0.0).</p>
 <p>It is not included in <code class="docutils literal notranslate"><span class="pre">ansible-core</span></code>.
 To check whether it is installed, run <code class="code docutils literal notranslate"><span class="pre">ansible-galaxy</span> <span class="pre">collection</span> <span class="pre">list</span></code>.</p>
 <p>To install it, use: <code class="code docutils literal notranslate"><span class="pre">ansible-galaxy</span> <span class="pre">collection</span> <span class="pre">install</span> <span class="pre">zscaler.ziacloud</span></code>.
@@ -253,10 +314,24 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-client_id"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-dlp-dictionaries-info-module-parameter-client-id"><strong>client_id</strong></p>
+<a class="ansibleOptionLink" href="#parameter-client_id" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>The client ID for OAuth2 authentication.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-client_secret"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-dlp-dictionaries-info-module-parameter-client-secret"><strong>client_secret</strong></p>
+<a class="ansibleOptionLink" href="#parameter-client_secret" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>The client secret for OAuth2 authentication.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-cloud"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-dlp-dictionaries-info-module-parameter-cloud"><strong>cloud</strong></p>
 <a class="ansibleOptionLink" href="#parameter-cloud" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>The Zscaler cloud name was provisioned for your organization.</p>
+<td><div class="ansible-option-cell"><p>The Zscaler cloud name provisioned for your organization.</p>
 <p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;zscloud&quot;</span></code></p></li>
@@ -267,6 +342,8 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;zscalerbeta&quot;</span></code></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;zscalergov&quot;</span></code></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;zscalerten&quot;</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;beta&quot;</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;production&quot;</span></code></p></li>
 </ul>
 </div></td>
 </tr>
@@ -292,24 +369,45 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-private_key"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-dlp-dictionaries-info-module-parameter-private-key"><strong>private_key</strong></p>
+<a class="ansibleOptionLink" href="#parameter-private_key" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>The private key for JWT-based OAuth2 authentication.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-provider"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-dlp-dictionaries-info-module-parameter-provider"><strong>provider</strong></p>
 <a class="ansibleOptionLink" href="#parameter-provider" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>A dict object containing connection details. This is optional; credentials can also be provided directly at the top level.</p>
-</div></td>
-</tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="parameter-provider/api_key"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-dlp-dictionaries-info-module-parameter-provider-api-key"><strong>api_key</strong></p>
-<a class="ansibleOptionLink" href="#parameter-provider/api_key" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>A string that contains the obfuscated API key.</p>
+<td><div class="ansible-option-cell"><p>A dict containing authentication credentials.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-provider/api_key"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-dlp-dictionaries-info-module-parameter-provider-api-key"><strong>api_key</strong></p>
+<a class="ansibleOptionLink" href="#parameter-provider/api_key" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Obfuscated API key.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-provider/client_id"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-dlp-dictionaries-info-module-parameter-provider-client-id"><strong>client_id</strong></p>
+<a class="ansibleOptionLink" href="#parameter-provider/client_id" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>OAuth2 client ID.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-provider/client_secret"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-dlp-dictionaries-info-module-parameter-provider-client-secret"><strong>client_secret</strong></p>
+<a class="ansibleOptionLink" href="#parameter-provider/client_secret" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>OAuth2 client secret.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-provider/cloud"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-dlp-dictionaries-info-module-parameter-provider-cloud"><strong>cloud</strong></p>
 <a class="ansibleOptionLink" href="#parameter-provider/cloud" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The Zscaler cloud name was provisioned for your organization.</p>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Zscaler cloud name.</p>
 <p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;zscloud&quot;</span></code></p></li>
@@ -320,28 +418,70 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;zscalerbeta&quot;</span></code></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;zscalergov&quot;</span></code></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;zscalerten&quot;</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;beta&quot;</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;production&quot;</span></code></p></li>
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-provider/password"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-dlp-dictionaries-info-module-parameter-provider-password"><strong>password</strong></p>
 <a class="ansibleOptionLink" href="#parameter-provider/password" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>A string that contains the password for the API admin.</p>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Password for the API admin.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-provider/private_key"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-dlp-dictionaries-info-module-parameter-provider-private-key"><strong>private_key</strong></p>
+<a class="ansibleOptionLink" href="#parameter-provider/private_key" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Private key for OAuth2 JWT.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-provider/sandbox_cloud"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-dlp-dictionaries-info-module-parameter-provider-sandbox-cloud"><strong>sandbox_cloud</strong></p>
+<a class="ansibleOptionLink" href="#parameter-provider/sandbox_cloud" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Sandbox Cloud environment.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-provider/sandbox_token"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-dlp-dictionaries-info-module-parameter-provider-sandbox-token"><strong>sandbox_token</strong></p>
 <a class="ansibleOptionLink" href="#parameter-provider/sandbox_token" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>A string that contains the Sandbox API Key.</p>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Sandbox API Key.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-provider/use_legacy_client"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-dlp-dictionaries-info-module-parameter-provider-use-legacy-client"><strong>use_legacy_client</strong></p>
+<a class="ansibleOptionLink" href="#parameter-provider/use_legacy_client" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Whether to use the legacy Zscaler API client.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-provider/username"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-dlp-dictionaries-info-module-parameter-provider-username"><strong>username</strong></p>
 <a class="ansibleOptionLink" href="#parameter-provider/username" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>A string that contains the email ID of the API admin.</p>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Email ID of the API admin.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-provider/vanity_domain"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-dlp-dictionaries-info-module-parameter-provider-vanity-domain"><strong>vanity_domain</strong></p>
+<a class="ansibleOptionLink" href="#parameter-provider/vanity_domain" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Vanity domain for OAuth2.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-sandbox_cloud"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-dlp-dictionaries-info-module-parameter-sandbox-cloud"><strong>sandbox_cloud</strong></p>
+<a class="ansibleOptionLink" href="#parameter-sandbox_cloud" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>The Sandbox cloud environment for API access.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
@@ -352,10 +492,29 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-use_legacy_client"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-dlp-dictionaries-info-module-parameter-use-legacy-client"><strong>use_legacy_client</strong></p>
+<a class="ansibleOptionLink" href="#parameter-use_legacy_client" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Whether to use the legacy Zscaler API client.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-username"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-dlp-dictionaries-info-module-parameter-username"><strong>username</strong></p>
 <a class="ansibleOptionLink" href="#parameter-username" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>A string that contains the email ID of the API admin.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-vanity_domain"></div><p class="ansible-option-title" id="ansible-collections-zscaler-ziacloud-zia-dlp-dictionaries-info-module-parameter-vanity-domain"><strong>vanity_domain</strong></p>
+<a class="ansibleOptionLink" href="#parameter-vanity_domain" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>The vanity domain provisioned by Zscaler for OAuth2 flows.</p>
 </div></td>
 </tr>
 </tbody>
@@ -549,7 +708,7 @@ see <a class="reference internal" href="#ansible-collections-zscaler-ziacloud-zi
           
 
 <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="zia_cloud_firewall_time_windows_info_module.html" class="btn btn-neutral float-left" title="zscaler.ziacloud.zia_cloud_firewall_time_windows_info module – List of time intervals" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="zia_devices_info_module.html" class="btn btn-neutral float-left" title="zscaler.ziacloud.zia_devices_info module – Gets a list of devices" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="zia_dlp_dictionaries_module.html" class="btn btn-neutral float-right" title="zscaler.ziacloud.zia_dlp_dictionaries module – Adds a new custom DLP dictionary." accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

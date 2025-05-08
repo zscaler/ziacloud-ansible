@@ -16,7 +16,7 @@
     <link rel="shortcut icon" href="_static/images/Ansible-Mark-RGB_Black.png"/>
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=e358f374"></script>
+      <script src="_static/documentation_options.js?v=51b770b3"></script>
       <script src="_static/doctools.js?v=9a2dae69"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -78,6 +78,12 @@
 <li class="toctree-l1"><a class="reference internal" href="requirements.html">Requirements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#zscaler-oneapi-new-framework">Zscaler OneAPI New Framework</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#client-secret-authentication">Client Secret Authentication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#private-key-authentication">Private Key Authentication</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#legacy-api-authentication">Legacy API Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Module reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="common_return_values.html">Common Return Values</a></li>
@@ -127,6 +133,184 @@
   <section id="authentication">
 <h1>Authentication<a class="headerlink" href="#authentication" title="Link to this heading"></a></h1>
 <p>This guide covers the authentication methods available for the ZIA Ansible Collection modules.</p>
+</section>
+<section id="zscaler-oneapi-new-framework">
+<h1>Zscaler OneAPI New Framework<a class="headerlink" href="#zscaler-oneapi-new-framework" title="Link to this heading"></a></h1>
+<p>The ZIA Ansible Collection now offers support for (<a class="reference external" href="https://help.zscaler.com/oneapi/understanding-oneapi">OneAPI</a>) OAuth2 authentication through (<a class="reference external" href="https://help.zscaler.com/zidentity/what-zidentity">Zidentity</a>)</p>
+<ul class="simple">
+<li><p>NOTE: As of version v2.0.0, this Ansible Collection offers backwards compatibility to the Zscaler legacy API framework. This is the recommended authentication method for organizations whose tenants are still not migrated to (<a class="reference external" href="https://help.zscaler.com/zidentity/what-zidentity">Zidentity</a>)</p></li>
+<li><p>NOTE: Notice that OneAPI and Zidentity is not currently supported for the following clouds: <cite>zscalergov</cite> and <cite>zscalerten</cite>. Refer to the Legacy API Framework for more information on how authenticate to these environments</p></li>
+<li><p>NOTE: The authentication parameter <cite>cloud</cite> or <cite>ZSCALER_CLOUD</cite> are optional, and only required when authenticating to a non-production environment i.e <cite>beta</cite></p></li>
+</ul>
+<section id="client-secret-authentication">
+<h2>Client Secret Authentication<a class="headerlink" href="#client-secret-authentication" title="Link to this heading"></a></h2>
+<ol class="arabic">
+<li><p><strong>Environment Variables</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">ZSCALER_CLIENT_ID</span><span class="o">=</span><span class="s2">&quot;client_id&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">ZSCALER_CLIENT_SECRET</span><span class="o">=</span><span class="s2">&quot;client_secret&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">ZSCALER_VANITY_DOMAIN</span><span class="o">=</span><span class="s2">&quot;vanity_domain&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">ZSCALER_CLOUD</span><span class="o">=</span><span class="s1">&#39;beta&#39;</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Credential File</strong></p>
+<p>Alternatively, you can authenticate using a credentials file. This file should be passed to the playbook with the <cite>-e</cite> option.
+For example, to execute the <cite>zia_rule_labels.yml</cite> playbook using <cite>creds.yml</cite>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ansible-playbook<span class="w"> </span>zia_rule_labels.yml<span class="w"> </span>-e<span class="w"> </span>@creds.yml
+</pre></div>
+</div>
+<p>The <cite>creds.yml</cite> file should have the following structure:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">client_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;client_id&quot;</span>
+<span class="nt">client_secret</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;client_secret&quot;</span>
+<span class="nt">vanity_domain</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;vanity_domain&quot;</span>
+<span class="nt">cloud</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;beta&quot;</span>
+</pre></div>
+</div>
+<p>In your playbook, you must then have the following configuration:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create Rule Label</span>
+<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span>
+<span class="w">  </span><span class="nt">connection</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">local</span>
+
+<span class="w">  </span><span class="nt">vars</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">zia_cloud</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">client_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">client_id</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">default(omit)</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="w">      </span><span class="nt">client_secret</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">client_secret</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">default(omit)</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="w">      </span><span class="nt">vanity_domain</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vanity_domain</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">default(omit)</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="w">      </span><span class="nt">cloud</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">cloud</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">default(omit)</span><span class="nv"> </span><span class="s">}}&quot;</span>
+
+<span class="w">  </span><span class="nt">tasks</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create Rule Label</span>
+<span class="w">      </span><span class="nt">zscaler.ziacloud.zia_rule_labels</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">provider</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">zia_cloud</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Example</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Example</span>
+<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">result</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Provider Block (Empty Dictionary)</strong></p>
+<p>You can also use an empty <cite>provider</cite> block, which will then fall back to the environment variables:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create Rule Label</span>
+<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span>
+<span class="w">  </span><span class="nt">connection</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">local</span>
+
+<span class="w">  </span><span class="nt">tasks</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create Rule Label</span>
+<span class="w">      </span><span class="nt">zscaler.ziacloud.zia_rule_labels</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">provider</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Example</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Example</span>
+<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">result</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Direct Parameters in Playbook Task</strong></p>
+<p>The authentication parameters can also be set directly within the playbook task:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create Rule Label</span>
+<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span>
+<span class="w">  </span><span class="nt">connection</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">local</span>
+
+<span class="w">  </span><span class="nt">tasks</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create Rule Label</span>
+<span class="w">      </span><span class="nt">zscaler.ziacloud.zia_rule_labels</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">client_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;client_id&quot;</span>
+<span class="w">        </span><span class="nt">client_secret</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;client_secret&quot;</span>
+<span class="w">        </span><span class="nt">vanity_domain</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;vanity_domain&quot;</span>
+<span class="w">        </span><span class="nt">cloud</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;cloud&quot;</span>
+<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Example</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Example</span>
+<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">result</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="private-key-authentication">
+<h2>Private Key Authentication<a class="headerlink" href="#private-key-authentication" title="Link to this heading"></a></h2>
+<ol class="arabic">
+<li><p><strong>Environment Variables</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">ZSCALER_CLIENT_ID</span><span class="o">=</span><span class="s2">&quot;client_id&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">ZSCALER_PRIVATE_KEY</span><span class="o">=</span><span class="s2">&quot;private_key.pem&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">ZSCALER_VANITY_DOMAIN</span><span class="o">=</span><span class="s2">&quot;vanity_domain&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">ZSCALER_CLOUD</span><span class="o">=</span><span class="s1">&#39;beta&#39;</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Credential File</strong></p>
+<p>Alternatively, you can authenticate using a credentials file. This file should be passed to the playbook with the <cite>-e</cite> option.
+For example, to execute the <cite>zia_rule_labels.yml</cite> playbook using <cite>creds.yml</cite>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ansible-playbook<span class="w"> </span>zia_rule_labels.yml<span class="w"> </span>-e<span class="w"> </span>@creds.yml
+</pre></div>
+</div>
+<p>The <cite>creds.yml</cite> file should have the following structure:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">client_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;client_id&quot;</span>
+<span class="nt">private_key</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;private_key.pem&quot;</span>
+<span class="nt">vanity_domain</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;vanity_domain&quot;</span>
+<span class="nt">cloud</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;beta&quot;</span>
+</pre></div>
+</div>
+<p>In your playbook, you must then have the following configuration:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create Rule Label</span>
+<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span>
+<span class="w">  </span><span class="nt">connection</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">local</span>
+
+<span class="w">  </span><span class="nt">vars</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">zia_cloud</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">client_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">client_id</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">default(omit)</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="w">      </span><span class="nt">private_key</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">lookup(&#39;file&#39;,</span><span class="nv"> </span><span class="s">&#39;private_key.pem&#39;)</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">default(omit)</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="w">      </span><span class="nt">vanity_domain</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vanity_domain</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">default(omit)</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="w">      </span><span class="nt">cloud</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">cloud</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">default(omit)</span><span class="nv"> </span><span class="s">}}&quot;</span>
+
+<span class="w">  </span><span class="nt">tasks</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create Rule Label</span>
+<span class="w">      </span><span class="nt">zscaler.ziacloud.zia_rule_labels</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">provider</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">zia_cloud</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Example</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Example</span>
+<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">result</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Provider Block (Empty Dictionary)</strong></p>
+<p>You can also use an empty <cite>provider</cite> block, which will then fall back to the environment variables:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create Rule Label</span>
+<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span>
+<span class="w">  </span><span class="nt">connection</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">local</span>
+
+<span class="w">  </span><span class="nt">tasks</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create Rule Label</span>
+<span class="w">      </span><span class="nt">zscaler.ziacloud.zia_rule_labels</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">provider</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Example</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Example</span>
+<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">result</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Direct Parameters in Playbook Task</strong></p>
+<p>The authentication parameters can also be set directly within the playbook task:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create Rule Label</span>
+<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span>
+<span class="w">  </span><span class="nt">connection</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">local</span>
+
+<span class="w">  </span><span class="nt">tasks</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create Rule Label</span>
+<span class="w">      </span><span class="nt">zscaler.ziacloud.zia_rule_labels</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">client_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;client_id&quot;</span>
+<span class="w">        </span><span class="nt">private_key</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;private_key.pem&quot;</span>
+<span class="w">        </span><span class="nt">vanity_domain</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;vanity_domain&quot;</span>
+<span class="w">        </span><span class="nt">cloud</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;cloud&quot;</span>
+<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Example</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Example</span>
+<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">result</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+</section>
+<section id="legacy-api-authentication">
+<h1>Legacy API Authentication<a class="headerlink" href="#legacy-api-authentication" title="Link to this heading"></a></h1>
 <p>The ZIA Ansible Collection supports the following environments:</p>
 <ul class="simple">
 <li><p>zscaler</p></li>
@@ -146,6 +330,7 @@
 <span class="nb">export</span><span class="w"> </span><span class="nv">ZIA_PASSWORD</span><span class="o">=</span><span class="s2">&quot;password&quot;</span>
 <span class="nb">export</span><span class="w"> </span><span class="nv">ZIA_API_KEY</span><span class="o">=</span><span class="s2">&quot;api_key&quot;</span>
 <span class="nb">export</span><span class="w"> </span><span class="nv">ZIA_CLOUD</span><span class="o">=</span><span class="s2">&quot;zscalerone&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">ZSCALER_USE_LEGACY_CLIENT</span><span class="o">=</span><span class="nb">true</span>
 </pre></div>
 </div>
 </li>
@@ -160,6 +345,7 @@ For example, to execute the <cite>zia_rule_labels.yml</cite> playbook using <cit
 <span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;password&quot;</span>
 <span class="nt">api_key</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;api_key&quot;</span>
 <span class="nt">cloud</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;zscalerone&quot;</span>
+<span class="nt">use_legacy_client</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </pre></div>
 </div>
 <p>In your playbook, you must then have the following configuration:</p>
@@ -173,6 +359,7 @@ For example, to execute the <cite>zia_rule_labels.yml</cite> playbook using <cit
 <span class="w">      </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">password</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">default(omit)</span><span class="nv"> </span><span class="s">}}&quot;</span>
 <span class="w">      </span><span class="nt">api_key</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">api_key</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">default(omit)</span><span class="nv"> </span><span class="s">}}&quot;</span>
 <span class="w">      </span><span class="nt">cloud</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">cloud</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">default(omit)</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="w">      </span><span class="nt">use_legacy_client</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">use_legacy_client</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">default(omit)</span><span class="nv"> </span><span class="s">}}&quot;</span>
 
 <span class="w">  </span><span class="nt">tasks</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create Rule Label</span>
@@ -213,6 +400,7 @@ For example, to execute the <cite>zia_rule_labels.yml</cite> playbook using <cit
 <span class="w">        </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;password&quot;</span>
 <span class="w">        </span><span class="nt">api_key</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;api_key&quot;</span>
 <span class="w">        </span><span class="nt">cloud</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;cloud&quot;</span>
+<span class="w">        </span><span class="nt">use_legacy_client</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Example</span>
 <span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Example</span>
 <span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">result</span>
