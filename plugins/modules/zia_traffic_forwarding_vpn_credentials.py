@@ -98,7 +98,7 @@ EXAMPLES = r"""
     type: "IP"
     ip_address: "1.1.1.1"
     comments: "Created via Ansible"
-    pre_shared_key: "newPassword123!"
+    pre_shared_key: ""
 
 - name: Create/Update/Delete VPN Credentials Type UFQDN.
   zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials:
@@ -106,7 +106,7 @@ EXAMPLES = r"""
     type: "UFQDN"
     ip_address: "sjc-1-37@acme.com"
     comments: "Created via Ansible"
-    pre_shared_key: "newPassword123!"
+    pre_shared_key: ""
 """
 
 RETURN = r"""
