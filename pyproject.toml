@@ -26,6 +26,7 @@ responses = ">=0.25.3"
 flake8 = "*"
 pydash = "*"
 jinja2 = ">=3.1.0"
+toml = ">=0.10.2"
 
 [tool.poetry.group.dev.dependencies]
 black = ">=24.3.0"
