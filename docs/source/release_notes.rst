@@ -12,7 +12,7 @@ Zscaler Internet Access (ZIA) Ansible Collection Changelog
 Version 2.0.0
 =============
 
-## 2.0.0 (May, 6 2025) - BREAKING CHANGES
+2.0.0 (May, 6 2025) - BREAKING CHANGES
 ------------------------------------------
 
 Notes
@@ -23,13 +23,13 @@ Notes
 Enhancements - Zscaler OneAPI Support - BREAKING CHANGES
 ---------------------------------------------------------
 
-* (`#68 <https://github.com/zscaler/ziacloud-ansible/pull/68>`_): The ZIA Ansible Collection now offers support for [OneAPI](https://help.zscaler.com/oneapi/understanding-oneapi) Oauth2 authentication through [Zidentity](https://help.zscaler.com/zidentity/what-zidentity).
+* (`#68 <https://github.com/zscaler/ziacloud-ansible/pull/68>`_): The ZIA Ansible Collection now offers support for (`OneAPI <https://help.zscaler.com/oneapi/understanding-oneapi>`_) Oauth2 authentication through (`Zidentity <https://help.zscaler.com/zidentity/what-zidentity>`_)
 
-**NOTE** As of version v2.0.0, this collection offers backwards compatibility to the Zscaler legacy API framework. This is the recommended authentication method for organizations whose tenants are still not migrated to [Zidentity](https://help.zscaler.com/zidentity/what-zidentity).
+**NOTE** As of version v2.0.0, this collection offers backwards compatibility to the Zscaler legacy API framework. This is the recommended authentication method for organizations whose tenants are still not migrated to (`Zidentity <https://help.zscaler.com/zidentity/what-zidentity>`_)
 
-⚠️ **WARNING**: Please refer to the [Authentication Page](https://ziacloud-ansible.readthedocs.io/en/latest/authentication.html) for details on authentication requirements prior to upgrading your collection configuration.
+⚠️ **WARNING**: Please refer to the (`Authentication Page <https://ziacloud-ansible.readthedocs.io/en/latest/authentication.html>`_) for details on authentication requirements prior to upgrading your collection configuration.
 
-⚠️ **WARNING**: Attention Government customers. OneAPI and Zidentity is not currently supported for the following clouds: `zscalergov` and `zscalerten`. Refer to the [Legacy API Framework](https://github.com/zscaler/terraform-provider-zpa/blob/master/docs/index) section for more information on how authenticate to these environments using the legacy method.
+⚠️ **WARNING**: Attention Government customers. OneAPI and Zidentity is not currently supported for the following clouds: `zscalergov` and `zscalerten`. Refer to the Legacy API Framework section for more information on how authenticate to these environments using the legacy method.
 
 ENV VARS: ZIA Sandbox Submission - BREAKING CHANGES
 ----------------------------------------------------
@@ -70,22 +70,22 @@ NEW - RESOURCES
   (`Malware Protection <https://help.zscaler.com/zia/policies/malware-protection>`_)
 
 - Added resource `zia_atp_malware_protocols` - (`#68 <https://github.com/zscaler/ziacloud-ansible/pull/68>`_): Updates the protocol inspection configurations of Malware Protection policy
-- Added info resource `zia_atp_malware_protocols_info` - (`#68 <https://github.com/zscaler/ziacloud-ansible/pull/68>`_) - Retrieves Advanced Threat Protection Malware Protocols configuration. [Malware Protection](https://help.zscaler.com/zia/policies/malware-protection)
+- Added info resource `zia_atp_malware_protocols_info` - (`#68 <https://github.com/zscaler/ziacloud-ansible/pull/68>`_) - Retrieves Advanced Threat Protection Malware Protocols configuration. (`Malware Protection <https://help.zscaler.com/zia/policies/malware-protection>`_)
 
 - Added resource `zia_atp_malware_settings` - (`#68 <https://github.com/zscaler/ziacloud-ansible/pull/68>`_) - Manages Advanced Threat Protection Malware Settings.
-- Added inforesource `zia_atp_malware_settings_info` - (`#68 <https://github.com/zscaler/ziacloud-ansible/pull/68>`_) - Retrieves Advanced Threat Protection Malware Settings. [Malware Protection](https://help.zscaler.com/zia/policies/malware-protection)
+- Added inforesource `zia_atp_malware_settings_info` - (`#68 <https://github.com/zscaler/ziacloud-ansible/pull/68>`_) - Retrieves Advanced Threat Protection Malware Settings. (`Malware Protection <https://help.zscaler.com/zia/policies/malware-protection>`_)
 
-- Added resource `zia_atp_malware_policy` - (`#68 <https://github.com/zscaler/ziacloud-ansible/pull/68>`_) - Manages Advanced Threat Protection Malware Policy. [Malware Protection](https://help.zscaler.com/zia/policies/malware-protection)
-- Added info resource `zia_atp_malware_policy_info` - (`#68 <https://github.com/zscaler/ziacloud-ansible/pull/68>`_) - Retrieves Advanced Threat Protection Malware Policy. [Malware Protection](https://help.zscaler.com/zia/policies/malware-protection)
+- Added resource `zia_atp_malware_policy` - (`#68 <https://github.com/zscaler/ziacloud-ansible/pull/68>`_) - Manages Advanced Threat Protection Malware Policy. (`Malware Protection <https://help.zscaler.com/zia/policies/malware-protection>`_)
+- Added info resource `zia_atp_malware_policy_info` - (`#68 <https://github.com/zscaler/ziacloud-ansible/pull/68>`_) - Retrieves Advanced Threat Protection Malware Policy. (`Malware Protection <https://help.zscaler.com/zia/policies/malware-protection>`_)
 
-- Added resource `zia_mobile_advanced_threat_settings` - (`#68 <https://github.com/zscaler/ziacloud-ansible/pull/68>`_) - Manages Mobile Malware Protection Policy. [Malware Protection](https://help.zscaler.com/zia/policies/malware-protection)
-- Added info resource `zia_mobile_advanced_threat_settings_info` - (`#68 <https://github.com/zscaler/ziacloud-ansible/pull/68>`_) - Retrieves Mobile Malware Protection Policy [Mobile Malware Protection](https://help.zscaler.com/zia/understanding-mobile-malware-protection)
+- Added resource `zia_mobile_advanced_threat_settings` - (`#68 <https://github.com/zscaler/ziacloud-ansible/pull/68>`_) - Manages Mobile Malware Protection Policy. (`Mobile Malware Protection <https://help.zscaler.com/zia/understanding-mobile-malware-protection>`_)
+- Added info resource `zia_mobile_advanced_threat_settings_info` - (`#68 <https://github.com/zscaler/ziacloud-ansible/pull/68>`_) - Retrieves Mobile Malware Protection Policy (`Mobile Malware Protection <https://help.zscaler.com/zia/understanding-mobile-malware-protection>`_)
 
 - Added resource `zia_end_user_notification` - (`#68 <https://github.com/zscaler/ziacloud-ansible/pull/68>`_) - Manages browser-based end user notification (EUN) configuration details.
-- Added resource `zia_end_user_notification_info` - (`#68 <https://github.com/zscaler/ziacloud-ansible/pull/68>`_) - Manages browser-based end user notification (EUN) configuration details. [Understanding Browser-Based End User Notifications](https://help.zscaler.com/zia/understanding-browser-based-end-user-notifications)
+- Added resource `zia_end_user_notification_info` - (`#68 <https://github.com/zscaler/ziacloud-ansible/pull/68>`_) - Manages browser-based end user notification (EUN) configuration details. (`Understanding Browser-Based End User Notifications <https://help.zscaler.com/zia/understanding-browser-based-end-user-notifications>`_)
 
 - Added resource `zia_ftp_control_policy` - (`#68 <https://github.com/zscaler/ziacloud-ansible/pull/68>`_) - Updates the FTP Control settings.
-- Added resource `zia_ftp_control_policy_info` - (`#68 <https://github.com/zscaler/ziacloud-ansible/pull/68>`_) - Retrieves the FTP Control status and the list of URL categories for which FTP is allowed. [About FTP Control Policy](https://help.zscaler.com/zia/about-ftp-control)
+- Added resource `zia_ftp_control_policy_info` - (`#68 <https://github.com/zscaler/ziacloud-ansible/pull/68>`_) - Retrieves the FTP Control status and the list of URL categories for which FTP is allowed. (`About FTP Control Policy <https://help.zscaler.com/zia/about-ftp-control>`_)
 
 - Added resource `zia_sandbox_rules` - (`#68 <https://github.com/zscaler/ziacloud-ansible/pull/68>`_) - Manage Sandbox Rules
 - Added info resource `zia_sandbox_rules_info` - (`#68 <https://github.com/zscaler/ziacloud-ansible/pull/68>`_) - Retrieve Sandbox Rules information
@@ -106,7 +106,7 @@ NEW - RESOURCES
 - Added info resource `zia_nat_control_policy_info` - (`#68 <https://github.com/zscaler/ziacloud-ansible/pull/68>`_) - Retrives NAT Control Policy.
 
 - Added and resource `zia_url_filtering_and_cloud_app_settings` - (`#68 <https://github.com/zscaler/ziacloud-ansible/pull/68>`_) - Manages the URL and Cloud App Control advanced policy settings.
-- Added info resource `zia_url_filtering_and_cloud_app_settings_info` - (`#68 <https://github.com/zscaler/ziacloud-ansible/pull/68>`_) - Retrives the URL and Cloud App Control advanced policy settings. [Configuring Advanced Policy Settings](https://help.zscaler.com/zia/configuring-advanced-policy-settings)
+- Added info resource `zia_url_filtering_and_cloud_app_settings_info` - (`#68 <https://github.com/zscaler/ziacloud-ansible/pull/68>`_) - Retrives the URL and Cloud App Control advanced policy settings. (`Configuring Advanced Policy Settings <https://help.zscaler.com/zia/configuring-advanced-policy-settings>`_)
 
 - Added info resource `zia_cloud_applications_info` - (`#68 <https://github.com/zscaler/ziacloud-ansible/pull/68>`_) - Retrieves Predefined and User Defined Cloud Applications associated with the DLP rules, Cloud App Control rules, Advanced Settings, Bandwidth Classes, File Type Control rules, and SSL Inspection rules.
 

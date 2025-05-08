@@ -57,7 +57,7 @@ options:
     type: str
   order:
     description: "Rule order number of the Forwarding Control policy rule"
-    required: true
+    required: false
     type: int
   rank:
     description: "Admin rank of the Forwarding Control policy rule"

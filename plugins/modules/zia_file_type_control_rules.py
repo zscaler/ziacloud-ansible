@@ -130,7 +130,7 @@ options:
   protocols:
     description:
         - Protocol criteria
-    required: true
+    required: false
     type: list
     elements: str
     choices:
