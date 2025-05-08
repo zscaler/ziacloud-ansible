@@ -103,17 +103,17 @@ EXAMPLES = r"""
     secondary_ip_or_fqdn: "4.4.4.4"
     failure_behavior: FAIL_RET_ERR
     protocols:
-        - TCP
-        - UDP
-        - DOH
+      - TCP
+      - UDP
+      - DOH
     primary_ports:
-        - "53"
-        - "53"
-        - "443"
+      - "53"
+      - "53"
+      - "443"
     secondary_ports:
-        - "53"
-        - "53"
-        - "443"
+      - "53"
+      - "53"
+      - "443"
 """
 
 RETURN = r"""

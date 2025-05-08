@@ -246,10 +246,10 @@ EXAMPLES = r"""
     risk_index: [1, 2, 3, 4, 5]
     custom_tags: []
     certifications:
-        - AICPA
-        - CCPA
-        - CISP
-        - ISO_27001
+      - AICPA
+      - CCPA
+      - CISP
+      - ISO_27001
     password_strength: "GOOD"
     poor_items_of_service: "YES"
     admin_audit_logs: "YES"
@@ -259,13 +259,13 @@ EXAMPLES = r"""
     mfa_support: "YES"
     ssl_pinned: "YES"
     data_encryption_in_transit:
-        - SSLV2
-        - SSLV3
-        - TLSV1_0
-        - TLSV1_1
-        - TLSV1_2
-        - TLSV1_3
-        - UN_KNOWN
+      - SSLV2
+      - SSLV3
+      - TLSV1_0
+      - TLSV1_1
+      - TLSV1_2
+      - TLSV1_3
+      - UN_KNOWN
     http_security_headers: "YES"
     evasive: "YES"
     dns_caa_policy: "YES"

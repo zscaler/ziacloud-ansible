@@ -313,8 +313,6 @@ EXAMPLES = r"""
     ssh_tunnelling_capture: false
     crypto_mining_blocked: true
     crypto_mining_capture: false
-
-
 """
 
 RETURN = r"""

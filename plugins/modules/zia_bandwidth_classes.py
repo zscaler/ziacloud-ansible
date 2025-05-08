@@ -81,14 +81,14 @@ EXAMPLES = r"""
     provider: '{{ provider }}'
     name: "Example"
     url_categories:
-        - AI_ML_APPS
-        - GENERAL_AI_ML
+      - AI_ML_APPS
+      - GENERAL_AI_ML
     urls:
-        - test1.acme.com
-        - test2.acme.com
+      - test1.acme.com
+      - test2.acme.com
     web_applications:
-        - ACADEMICGPT
-        - AD_CREATIVES
+      - ACADEMICGPT
+      - AD_CREATIVES
 """
 
 RETURN = r"""

@@ -143,23 +143,23 @@ EXAMPLES = r"""
     max_bandwidth: 100
     min_bandwidth: 20
     bandwidth_class_ids:
-        - 4
-        - 8
+      - 4
+      - 8
     locations:
-        - 123545
-        - 654654
+      - 123545
+      - 654654
     protocols:
-        - WEBSOCKETSSL_RULE
-        - WEBSOCKET_RULE
-        - DOHTTPS_RULE
-        - TUNNELSSL_RULE
-        - HTTP_PROXY
-        - FOHTTP_RULE
-        - FTP_RULE
-        - HTTPS_RULE
-        - HTTP_RULE
-        - SSL_RULE
-        - TUNNEL_RULE
+      - WEBSOCKETSSL_RULE
+      - WEBSOCKET_RULE
+      - DOHTTPS_RULE
+      - TUNNELSSL_RULE
+      - HTTP_PROXY
+      - FOHTTP_RULE
+      - FTP_RULE
+      - HTTPS_RULE
+      - HTTP_RULE
+      - SSL_RULE
+      - TUNNEL_RULE
 """
 
 RETURN = r"""

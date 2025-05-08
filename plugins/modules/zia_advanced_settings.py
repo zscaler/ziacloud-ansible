@@ -351,20 +351,20 @@ EXAMPLES = r"""
   zscaler.ziacloud.zia_cloud_app_control_rules_info:
     provider: '{{ provider }}'
     auth_bypass_urls:
-        - ".newexample1.com"
-        - ".newexample2.com"
+      - ".newexample1.com"
+      - ".newexample2.com"
     dns_resolution_on_transparent_proxy_apps:
-        - "CHATGPT_AI"
+      - "CHATGPT_AI"
     basic_bypass_url_categories:
-        - "NONE"
+      - "NONE"
     http_range_header_remove_url_categories:
-        - "NONE"
+      - "NONE"
     kerberos_bypass_urls:
-        - "test1.com"
+      - "test1.com"
     kerberos_bypass_apps: []
     dns_resolution_on_transparent_proxy_urls:
-        - "test1.com"
-        - "test2.com"
+      - "test1.com"
+      - "test2.com"
     enable_dns_resolution_on_transparent_proxy: true
     enable_evaluate_policy_on_global_ssl_bypass: true
     enable_office365: true

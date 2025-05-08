@@ -107,13 +107,13 @@ EXAMPLES = r"""
     instance_name: "Instance01_Ansible"
     instance_type: "SHAREPOINTONLINE"
     instance_identifiers:
-        - instance_identifier_name: sharepoint01
-          instance_identifier: sharepoint01.sharepoint.com
-          identifier_type: URL
+      - instance_identifier_name: sharepoint01
+        instance_identifier: sharepoint01.sharepoint.com
+        identifier_type: URL
 
-        - instance_identifier_name: "sharepoint02"
-          instance_identifier: "sharepoint02.sharepoint.com"
-          identifier_type: "URL"
+      - instance_identifier_name: "sharepoint02"
+        instance_identifier: "sharepoint02.sharepoint.com"
+        identifier_type: "URL"
 """
 
 RETURN = r"""
