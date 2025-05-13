@@ -503,6 +503,7 @@ def normalize_boolean_attributes(rule, bool_attributes):
 
 #     return all_items, None
 
+
 def collect_all_items(list_fn, query_params=None):
     """
     Collects all pages of results from a paginated ZPA SDK list_* method.
@@ -534,6 +535,7 @@ def collect_all_items(list_fn, query_params=None):
         return all_items, None
 
     return None, f"Unexpected return structure from {list_fn.__name__}"
+
 
 def preprocess_rule(rule, params):
     for attr in params:
