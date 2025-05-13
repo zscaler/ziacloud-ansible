@@ -111,7 +111,6 @@ install:
 	rm -f zscaler*
 	ansible-galaxy collection build . --force
 	ansible-galaxy collection install zscaler* --force
-	sudo cp -R /Users/wguilherme/ansible_collections/zscaler/ziacloud /Users/wguilherme/ansible_collections/zscaler/ziacloud /Users/wguilherme/.pyenv/versions/3.11.8/lib/python3.11/site-packages/ansible_collections/zscaler
 	rm -f zscaler*
 
 .PHONY: clean-pyc clean-build docs clean local-setup
