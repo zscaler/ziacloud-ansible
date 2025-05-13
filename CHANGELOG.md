@@ -1,5 +1,15 @@
 # Zscaler Internet Access (ZIA) Ansible Collection Changelog
 
+## v2.0.1 (May, 12 2025)
+
+### Notes
+
+- Python Versions: **v3.9, v3.10, v3.11**
+
+### Bug Fixes
+
+[#72](https://github.com/zscaler/ziacloud-ansible/issues/72) - Fixed `all_collect_items` pagination argument count
+
 ## 2.0.0 (May, 6 2025) - BREAKING CHANGES
 
 ### Notes

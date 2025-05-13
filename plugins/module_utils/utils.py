@@ -485,23 +485,56 @@ def normalize_boolean_attributes(rule, bool_attributes):
     return rule
 
 
+# def collect_all_items(list_fn, query_params=None):
+#     """
+#     Collects all pages of results from a paginated ZIA SDK list_* method.
+#     """
+#     items, resp, err = list_fn(query_params)
+#     if err:
+#         return None, err
+
+#     all_items = items or []
+#     while resp and resp.has_next():
+#         page, err = resp.next()
+#         if err:
+#             return None, err
+#         if page:
+#             all_items.extend(page)
+
+#     return all_items, None
+
+
 def collect_all_items(list_fn, query_params=None):
     """
-    Collects all pages of results from a paginated ZIA SDK list_* method.
+    Collects all pages of results from a paginated ZPA SDK list_* method.
+    Handles both paginated and non-paginated SDK methods.
     """
-    items, resp, err = list_fn(query_params)
-    if err:
-        return None, err
+    result = list_fn(query_params)
 
-    all_items = items or []
-    while resp and resp.has_next():
-        page, err = resp.next()
+    # Case 1: (items, error) – non-paginated SDK methods
+    if isinstance(result, tuple) and len(result) == 2:
+        items, err = result
         if err:
             return None, err
-        if page:
-            all_items.extend(page)
+        return items or [], None
 
-    return all_items, None
+    # Case 2: (items, resp, error) – paginated SDK methods
+    if isinstance(result, tuple) and len(result) == 3:
+        items, resp, err = result
+        if err:
+            return None, err
+
+        all_items = items or []
+        while resp and resp.has_next():
+            page, resp, err = resp.next()  # ✅ unpack all 3
+            if err:
+                return None, err
+            if page:
+                all_items.extend(page)
+
+        return all_items, None
+
+    return None, f"Unexpected return structure from {list_fn.__name__}"
 
 
 def preprocess_rule(rule, params):
