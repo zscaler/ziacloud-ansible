@@ -12,6 +12,20 @@ Zscaler Internet Access (ZIA) Ansible Collection Changelog
 Version 2.0.0
 =============
 
+v2.0.2 (May, 26 2025)
+-------------------------
+
+Notes
+-----
+
+- Python Versions: **v3.9, v3.10, v3.11**
+
+Bug Fixes:
+---------------
+
+* (`#75 <https://github.com/zscaler/ziacloud-ansible/pull/75>`_) - Added new `source_ip_groups` attribute to `zia_url_filtering_rules`
+* (`#75 <https://github.com/zscaler/ziacloud-ansible/pull/75>`_) - Added new `nw_applications` attribute to `zia_cloud_firewall_rule` and `zia_forwarding_control_rule`.
+
 ## v2.0.1 (May, 12 2025)
 
 Notes
