@@ -49,5 +49,5 @@
         - targets/zia_url_categories/tasks/main.yml
         - targets/zia_url_filtering_rules/tasks/main.yml
 
-    # - name: Run final sweep to clean tenant
-    #   ansible.builtin.include_tasks: ./sweep.yml
+    - name: Run final sweep to clean tenant
+      ansible.builtin.include_tasks: ./sweep.yml
