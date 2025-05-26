@@ -22,7 +22,7 @@ zscaler.ziacloud.zia_cloud_firewall_rule module -- Firewall Filtering policy rul
 .. Collection note
 
 .. note::
-    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 2.0.0).
+    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 2.0.1).
 
     It is not included in ``ansible-core``.
     To check whether it is installed, run :code:`ansible-galaxy collection list`.
@@ -1123,7 +1123,7 @@ Parameters
 
       .. ansible-option-type-line::
 
-        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
 
       .. raw:: html
 
@@ -1136,6 +1136,8 @@ Parameters
       User-defined network service applications on which the rule is applied.
 
       If not set, the rule is not restricted to a specific network service application.
+
+      Use Info Resource zia\_cloud\_applications\_info to retrieve the list of applications
 
 
       .. raw:: html
