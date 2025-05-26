@@ -230,7 +230,7 @@ options:
       - Action block that defines what happens when SSL traffic matches the rule.
       - This includes whether to decrypt, block, or bypass SSL inspection.
     type: dict
-    required: true
+    required: false
     suboptions:
       type:
         description:
@@ -769,7 +769,7 @@ def main():
         zpa_app_segments=external_id_name_list_spec,
         action=dict(
             type="dict",
-            required=True,
+            required=False,
             options=dict(
                 type=dict(
                     type="str",

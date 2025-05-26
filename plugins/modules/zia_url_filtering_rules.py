@@ -285,6 +285,13 @@ options:
     type: list
     elements: int
     required: false
+  source_ip_groups:
+    description:
+        - User-defined source IP address groups for which the rule is applicable.
+        - If not set, the rule is not restricted to a specific source IP address group.
+    type: list
+    elements: int
+    required: false
   enforce_time_validity:
     description:
         - Enforce a set a validity time period for the URL Filtering rule.
@@ -343,6 +350,9 @@ EXAMPLES = r"""
     enabled: "ENABLED"
     action: "ALLOW"
     order: 1
+    source_ip_groups:
+      - 4361664
+      - 4522587
     protocols:
       - "HTTPS_RULE"
       - "HTTP_RULE"
@@ -483,6 +493,7 @@ def core(module):
         "cipa_rule",
         "cbi_profile",
         "workload_groups",
+        "source_ip_groups",
     ]
 
     # Only include attributes that are explicitly set in the playbook
@@ -575,6 +586,7 @@ def core(module):
         "devices",
         "user_risk_score_levels",
         "workload_groups",
+        "source_ip_groups",
     ]
 
     # Attributes where order should be ignored
@@ -704,6 +716,7 @@ def core(module):
                         "cipa_rule": desired_rule.get("cipa_rule"),
                         "cbi_profile": desired_rule.get("cbi_profile"),
                         "workload_groups": desired_rule.get("workload_groups"),
+                        "source_ip_groups": desired_rule.get("source_ip_groups"),
                     }
                 )
 
@@ -765,6 +778,7 @@ def core(module):
                     "cipa_rule": desired_rule.get("cipa_rule"),
                     "cbi_profile": desired_rule.get("cbi_profile"),
                     "workload_groups": desired_rule.get("workload_groups"),
+                    "source_ip_groups": desired_rule.get("source_ip_groups"),
                 }
             )
 
@@ -894,6 +908,7 @@ def main():
         users=id_spec,
         override_users=id_spec,
         override_groups=id_spec,
+        source_ip_groups=id_spec,
         block_override=dict(type="bool", required=False),
         url_categories=dict(type="list", elements="str", required=False),
         time_quota=dict(type="int", required=False),

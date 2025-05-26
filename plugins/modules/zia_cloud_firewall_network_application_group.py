@@ -97,12 +97,20 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 
 def normalize_group(group):
     """
-    Remove computed attributes from a group dict to make comparison easier.
+    Normalize group data by removing computed values and sorting list fields for accurate comparison.
     """
     normalized = group.copy() if group else {}
-    computed_values = ["id"]
-    for attr in computed_values:
+
+    # Remove computed fields
+    for attr in ["id"]:
         normalized.pop(attr, None)
+
+    # Normalize ordering for list-based fields
+    if "network_applications" in normalized and isinstance(
+        normalized["network_applications"], list
+    ):
+        normalized["network_applications"] = sorted(normalized["network_applications"])
+
     return normalized
 
 

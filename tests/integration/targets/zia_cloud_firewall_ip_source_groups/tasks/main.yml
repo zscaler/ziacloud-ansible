@@ -124,10 +124,11 @@
         ip_addresses: "{{ ip_addresses }}"
       register: result_idempotency_present
 
-    - name: Verify IP Source Group is absent (idempotency check)
+    - name: Verify IP Source Group is present (idempotency check)
       ansible.builtin.assert:
         that:
-          - result_idempotency_present.changed
+          - not result_idempotency_present.changed
+          - result_idempotency_present.data.name == group_name
 
     - name: Fetch all IP Source Group
       zscaler.ziacloud.zia_cloud_firewall_ip_source_groups_info:

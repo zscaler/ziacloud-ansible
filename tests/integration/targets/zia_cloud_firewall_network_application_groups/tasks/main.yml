@@ -95,6 +95,7 @@
       ansible.builtin.assert:
         that:
           - not result.changed
+          - result.data.name == group_name
 
     - name: Fetch all Network Application Group
       zscaler.ziacloud.zia_cloud_firewall_network_application_group_info:

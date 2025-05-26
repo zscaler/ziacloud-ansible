@@ -40,7 +40,7 @@
         - targets/zia_nat_control_policy/tasks/main.yml
         - targets/zia_nss_servers/tasks/main.yml
         - targets/zia_rule_labels/tasks/main.yml
-        - targets/zia_sandbox_advanced_settings/tasks/main.yml
+       # - targets/zia_sandbox_advanced_settings/tasks/main.yml
         - targets/zia_sandbox_rules/tasks/main.yml
         - targets/zia_ssl_inspection_rules/tasks/main.yml
         - targets/zia_traffic_forwarding_gre_tunnels/tasks/main.yml

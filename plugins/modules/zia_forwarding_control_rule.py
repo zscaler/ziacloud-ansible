@@ -205,8 +205,9 @@ options:
     description:
       - User-defined network service applications on which the rule is applied.
       - If not set, the rule is not restricted to a specific network service application.
+      - Use Info Resource zia_cloud_applications_info to retrieve the list of applications
     type: list
-    elements: int
+    elements: str
     required: false
   nw_application_groups:
     description:
@@ -890,7 +891,7 @@ def main():
                 "DROP",
             ],
         ),
-        nw_applications=id_spec,
+        nw_applications=dict(type="list", elements="str", required=False),
         dest_ip_groups=id_spec,
         dest_ipv6_groups=id_spec,
         nw_services=id_spec,

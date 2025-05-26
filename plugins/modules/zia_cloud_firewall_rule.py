@@ -200,8 +200,9 @@ options:
     description:
       - User-defined network service applications on which the rule is applied.
       - If not set, the rule is not restricted to a specific network service application.
+      - Use Info Resource zia_cloud_applications_info to retrieve the list of applications
     type: list
-    elements: int
+    elements: str
     required: false
   nw_application_groups:
     description:
@@ -674,7 +675,6 @@ def main():
         rank=dict(type="int", required=False, default=7),
         device_groups=id_spec,
         devices=id_spec,
-        nw_applications=id_spec,
         dest_ip_groups=id_spec,
         dest_ipv6_groups=id_spec,
         nw_services=id_spec,
@@ -692,6 +692,7 @@ def main():
         src_ip_groups=id_spec,
         src_ipv6_groups=id_spec,
         workload_groups=id_spec,
+        nw_applications=dict(type="list", elements="str", required=False),
         src_ips=dict(type="list", elements="str", required=False),
         dest_addresses=dict(type="list", elements="str", required=False),
         dest_ip_categories=dict(type="list", elements="str", required=False),
