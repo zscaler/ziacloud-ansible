@@ -88,16 +88,6 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 )
 
 
-# def normalize_group(group):
-#     """
-#     Remove computed attributes from a group dict to make comparison easier.
-#     """
-#     normalized = group.copy() if group else {}
-#     computed_values = ["id"]
-#     for attr in computed_values:
-#         normalized.pop(attr, None)
-#     return normalized
-
 def normalize_group(group):
     """
     Normalize group dictionary for drift comparison.
