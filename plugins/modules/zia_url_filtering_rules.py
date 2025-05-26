@@ -351,8 +351,8 @@ EXAMPLES = r"""
     action: "ALLOW"
     order: 1
     source_ip_groups:
-        - 4361664
-        - 4522587
+      - 4361664
+      - 4522587
     protocols:
       - "HTTPS_RULE"
       - "HTTP_RULE"
