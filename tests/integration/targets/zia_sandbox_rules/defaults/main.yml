@@ -31,7 +31,7 @@ file_types:
 name_update: test_zia_ansible
 description_update: test_zia_ansible_update
 ba_rule_action_update: BLOCK
-rule_order_update: 2
+rule_order_update: 1
 enabled_update: false
 first_time_enable_update: true
 ml_action_enabled_update: true

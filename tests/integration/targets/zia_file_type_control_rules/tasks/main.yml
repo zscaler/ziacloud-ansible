@@ -6,10 +6,10 @@
 - name: Import Random String Generator Tasks
   ansible.builtin.import_tasks: ../../../generate_random_string.yml
 
-- name: Set dynamic name values with random string
-  ansible.builtin.set_fact:
-    rule_name: "{{ rule_name }}_{{ random_string }}"
-    description: "{{ description }}_{{ random_string }}"
+# - name: Set dynamic name values with random string
+#   ansible.builtin.set_fact:
+#     rule_name: "{{ rule_name }}_{{ random_string }}"
+#     description: "{{ description }}_{{ random_string }}"
 
 - name: Ensure required environment variables are set
   ansible.builtin.fail:
