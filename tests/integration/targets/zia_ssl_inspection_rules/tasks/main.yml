@@ -173,7 +173,7 @@
     - name: Ensure SSL Inspection Rule is absent (idempotency check)
       ansible.builtin.assert:
         that:
-          - result.changed
+          - not result.changed
 
     - name: Fetch all SSL Inspection Rule
       zscaler.ziacloud.zia_ssl_inspection_rules_info:
