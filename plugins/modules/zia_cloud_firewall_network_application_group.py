@@ -111,6 +111,7 @@ def normalize_group(group):
 
     return normalized
 
+
 def core(module):
     state = module.params.get("state")
     client = ZIAClientHelper(module)
