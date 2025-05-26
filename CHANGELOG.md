@@ -10,6 +10,7 @@
 
 [#75](https://github.com/zscaler/ziacloud-ansible/pull/75) - Added new `source_ip_groups` attribute to `zia_url_filtering_rules`
 [#75](https://github.com/zscaler/ziacloud-ansible/pull/75) - Added new `nw_applications` attribute to `zia_cloud_firewall_rule` and `zia_forwarding_control_rule`.
+[#75](https://github.com/zscaler/ziacloud-ansible/pull/75) - Fixed drift with the attribute `ip_addresses` within the resource `zia_cloud_firewall_ip_source_groups`
 
 ## v2.0.1 (May, 12 2025)
 
