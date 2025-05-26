@@ -106,7 +106,9 @@ def normalize_group(group):
         normalized.pop(attr, None)
 
     # Normalize ordering for list-based fields
-    if "network_applications" in normalized and isinstance(normalized["network_applications"], list):
+    if "network_applications" in normalized and isinstance(
+        normalized["network_applications"], list
+    ):
         normalized["network_applications"] = sorted(normalized["network_applications"])
 
     return normalized
