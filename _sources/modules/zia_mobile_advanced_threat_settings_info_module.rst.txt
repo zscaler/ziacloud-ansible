@@ -6,7 +6,7 @@
     :trim:
 
 .. meta::
-  :antsibull-docs: 2.16.3
+  :antsibull-docs: 2.17.0
 
 .. Anchors
 
@@ -22,7 +22,7 @@ zscaler.ziacloud.zia_mobile_advanced_threat_settings_info module -- Retrieves al
 .. Collection note
 
 .. note::
-    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 2.0.2).
+    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 2.0.3).
 
     It is not included in ``ansible-core``.
     To check whether it is installed, run :code:`ansible-galaxy collection list`.
