@@ -84,6 +84,12 @@ options:
       - AI_ML
     required: false
 
+  app_name:
+    description:
+        - Cloud application name
+    type: str
+    required: false
+
   group_results:
     description:
         - Show count of applications grouped by application category
@@ -131,6 +137,9 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
     ZIAClientHelper,
 )
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
+    collect_all_items,
+)
 
 
 def core(module):
@@ -142,8 +151,8 @@ def core(module):
             msg="Parameter 'mode' must be either 'app_policy' or 'ssl_policy'"
         )
 
+    app_name = module.params.get("app_name")
     query_params = {}
-    name = module.params.get("name")
 
     supported_params = ["app_class", "group_results"]
     for param in supported_params:
@@ -151,9 +160,9 @@ def core(module):
         if val is not None:
             query_params[param] = val
 
-    query_params.setdefault("page_size", 200)
+    if app_name:
+        query_params["search"] = app_name  # Used by ZIA API
 
-    # Choose SDK function
     list_fn = (
         client.cloud_applications.list_cloud_app_policy
         if mode == "app_policy"
@@ -161,43 +170,22 @@ def core(module):
     )
 
     try:
-        items = []
+        results, err = collect_all_items(list_fn, query_params=query_params)
+        if err:
+            module.fail_json(msg=f"Error retrieving applications: {to_native(err)}")
 
-        # ✅ Fetch first page
-        result, response, error = list_fn(query_params)
-        if error:
-            module.fail_json(
-                msg=f"Error fetching page 1 for {mode}: {to_native(error)}"
-            )
+        all_apps = [app.as_dict() if hasattr(app, "as_dict") else app for app in results]
 
-        items.extend(result or [])
+        if app_name:
+            matched = next((a for a in all_apps if a.get("app_name") == app_name), None)
+            if not matched:
+                available = [a.get("app_name") for a in all_apps]
+                module.fail_json(
+                    msg=f"Cloud application with name '{app_name}' not found. Available: {available}"
+                )
+            all_apps = [matched]
 
-        if name:
-            for item in items:
-                if item.name == name:
-                    module.exit_json(
-                        changed=False,
-                        applications=[
-                            item.as_dict() if hasattr(item, "as_dict") else item
-                        ],
-                    )
-
-        while response and response.has_next():
-            page, error = response.next()
-            if error:
-                module.fail_json(msg=f"Pagination error in {mode}: {to_native(error)}")
-            if not page:
-                break
-            for item in page:
-                if name and item.name == name:
-                    module.exit_json(changed=False, applications=[item.as_dict()])
-                items.append(item)
-
-        # Final return
-        module.exit_json(
-            changed=False,
-            applications=[i.as_dict() if hasattr(i, "as_dict") else i for i in items],
-        )
+        module.exit_json(changed=False, applications=all_apps)
 
     except Exception as e:
         module.fail_json(msg=to_native(e), exception=format_exc())
@@ -208,6 +196,8 @@ def main():
     argument_spec.update(
         dict(
             mode=dict(type="str", choices=["app_policy", "ssl_policy"], required=True),
+            app_name=dict(type="str", required=False),
+            group_results=dict(type="bool", required=False),
             app_class=dict(
                 type="str",
                 required=False,
@@ -237,7 +227,6 @@ def main():
                     "AI_ML",
                 ],
             ),
-            group_results=dict(type="bool", required=False),
         )
     )
 
