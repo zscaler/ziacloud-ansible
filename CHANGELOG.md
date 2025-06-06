@@ -1,5 +1,15 @@
 # Zscaler Internet Access (ZIA) Ansible Collection Changelog
 
+## v2.0.4 (June 5, 2025)
+
+### Notes
+
+- Python Versions: **v3.9, v3.10, v3.11**
+
+### Bug Fixes
+
+[#79](https://github.com/zscaler/ziacloud-ansible/pull/79) - Fixed pagination for the resource `zia_cloud_applications_info`
+
 ## v2.0.3 (May, 29 2025)
 
 ### Notes

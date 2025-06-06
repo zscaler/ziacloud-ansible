@@ -64,13 +64,13 @@ options:
     type: bool
   order:
     description: "Rule order number of the URL Filtering policy rule"
-    required: false
+    required: true
     type: int
   action:
     description:
       - Action taken when traffic matches rule criteria
       - When the action is set to CAUTION the attribute request_methods accepts only the following values are CONNECT GET HEAD
-    required: false
+    required: true
     type: str
     choices:
         - ANY
@@ -82,7 +82,7 @@ options:
   protocols:
     description:
         - Protocol criteria
-    required: false
+    required: true
     type: list
     elements: str
     choices:
@@ -637,14 +637,14 @@ def core(module):
                     current_value = sorted(current_value)
                 if current_value != desired_value:
                     differences_detected = True
-                    module.warn(
-                        f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
-                    )
+                    # module.warn(
+                    #     f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
+                    # )
         elif current_value != desired_value:
             differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
-            )
+            # module.warn(
+            #     f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
+            # )
 
     if module.check_mode:
         if state == "present" and not existing_rule:
@@ -838,17 +838,17 @@ def main():
         name=dict(type="str", required=True),
         description=dict(type="str", required=False),
         enabled=dict(type="bool", required=False),
-        order=dict(type="int", required=False),
+        order=dict(type="int", required=True),
         rank=dict(type="int", required=False, default=7),
         action=dict(
             type="str",
-            required=False,
+            required=True,
             choices=["ANY", "BLOCK", "CAUTION", "ALLOW", "ISOLATE", "ICAP_RESPONSE"],
         ),
         protocols=dict(
             type="list",
             elements="str",
-            required=False,
+            required=True,
             choices=[
                 "WEBSOCKETSSL_RULE",
                 "WEBSOCKET_RULE",
