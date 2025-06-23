@@ -75,6 +75,7 @@ options:
         - URL_CATEGORY
         - TLD_CATEGORY
         - ALL
+    default: URL_CATEGORY
   keywords:
     description:
         - Custom keywords associated to a URL category.
@@ -126,6 +127,7 @@ options:
         - Set to true for custom URL category. Up to 48 custom URL categories can be added per organization.
     required: false
     type: bool
+    default: true
   scopes:
     description:
       - Scope of the custom categories.
@@ -379,7 +381,7 @@ def main():
         id=dict(type="str"),
         configured_name=dict(type="str", required=False),
         description=dict(type="str", required=False),
-        custom_category=dict(type="bool", required=False),
+        custom_category=dict(type="bool", required=False, default=True),
         keywords=dict(type="list", elements="str", required=False, no_log=False),
         keywords_retaining_parent_category=dict(
             type="list", elements="str", required=False, no_log=False
@@ -395,6 +397,7 @@ def main():
             type="str",
             required=False,
             choices=["ALL", "URL_CATEGORY", "TLD_CATEGORY"],
+            default="URL_CATEGORY",
         ),
         scopes=dict(
             type="list",
