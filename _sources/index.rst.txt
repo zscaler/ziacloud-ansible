@@ -10,7 +10,7 @@ is a collection of modules that automate configuration and operational tasks on 
 This collection is part of the broader initiative to bring Ansible Automation to Zscaler Zero Trust Platform through the offering
 **Red Hat® Ansible Certified Content**.
 
-Version: 2.0.3
+Version: 2.0.4
 
 Red Hat Ansible Certified Content for Zscaler
 =============================================

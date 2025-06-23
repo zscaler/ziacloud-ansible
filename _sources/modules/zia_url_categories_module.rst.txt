@@ -6,7 +6,7 @@
     :trim:
 
 .. meta::
-  :antsibull-docs: 2.17.0
+  :antsibull-docs: 2.17.1
 
 .. Anchors
 
@@ -22,7 +22,7 @@ zscaler.ziacloud.zia_url_categories module -- Adds a new custom URL category.
 .. Collection note
 
 .. note::
-    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 2.0.3).
+    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 2.0.4).
 
     It is not included in ``ansible-core``.
     To check whether it is installed, run :code:`ansible-galaxy collection list`.
@@ -309,7 +309,7 @@ Parameters
       :ansible-option-choices:`Choices:`
 
       - :ansible-option-choices-entry:`false`
-      - :ansible-option-choices-entry:`true`
+      - :ansible-option-choices-entry-default:`true` :ansible-option-choices-default-mark:`← (default)`
 
 
       .. raw:: html
@@ -1514,7 +1514,7 @@ Parameters
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry:`"URL\_CATEGORY"`
+      - :ansible-option-choices-entry-default:`"URL\_CATEGORY"` :ansible-option-choices-default-mark:`← (default)`
       - :ansible-option-choices-entry:`"TLD\_CATEGORY"`
       - :ansible-option-choices-entry:`"ALL"`
 
