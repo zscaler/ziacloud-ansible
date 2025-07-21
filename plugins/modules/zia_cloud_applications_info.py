@@ -174,7 +174,9 @@ def core(module):
         if err:
             module.fail_json(msg=f"Error retrieving applications: {to_native(err)}")
 
-        all_apps = [app.as_dict() if hasattr(app, "as_dict") else app for app in results]
+        all_apps = [
+            app.as_dict() if hasattr(app, "as_dict") else app for app in results
+        ]
 
         if app_name:
             matched = next((a for a in all_apps if a.get("app_name") == app_name), None)
