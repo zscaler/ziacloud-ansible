@@ -6,7 +6,7 @@
     :trim:
 
 .. meta::
-  :antsibull-docs: 2.17.1
+  :antsibull-docs: 2.19.1
 
 .. Anchors
 
@@ -22,7 +22,7 @@ zscaler.ziacloud.zia_admin_users_info module -- Gets a list of admin users
 .. Collection note
 
 .. note::
-    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 2.0.4).
+    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 2.0.5).
 
     It is not included in ``ansible-core``.
     To check whether it is installed, run :code:`ansible-galaxy collection list`.
@@ -1408,7 +1408,6 @@ Authors
 ~~~~~~~
 
 - William Guilherme (@willguibr)
-
 
 
 .. Extra links
