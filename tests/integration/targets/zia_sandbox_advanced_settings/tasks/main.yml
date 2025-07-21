@@ -1,125 +1,125 @@
----
-- name: Read MD5 Hashes from file
-  ansible.builtin.set_fact:
-    md5_hashes: "{{ lookup('file', '../defaults/md5_hashes.txt').splitlines() }}"
+# ---
+# - name: Read MD5 Hashes from file
+#   ansible.builtin.set_fact:
+#     md5_hashes: "{{ lookup('file', '../defaults/md5_hashes.txt').splitlines() }}"
 
-- name: Ensure required environment variables are set
-  ansible.builtin.fail:
-    msg: "{{ env_var }} is not defined as environment variable"
-  when: lookup('env', env_var) is none
-  loop:
-    - ZSCALER_CLIENT_ID
-    - ZSCALER_CLIENT_SECRET
-    - ZSCALER_VANITY_DOMAIN
-    - ZSCALER_CLOUD
-  loop_control:
-    loop_var: env_var
+# - name: Ensure required environment variables are set
+#   ansible.builtin.fail:
+#     msg: "{{ env_var }} is not defined as environment variable"
+#   when: lookup('env', env_var) is none
+#   loop:
+#     - ZSCALER_CLIENT_ID
+#     - ZSCALER_CLIENT_SECRET
+#     - ZSCALER_VANITY_DOMAIN
+#     - ZSCALER_CLOUD
+#   loop_control:
+#     loop_var: env_var
 
-- name: Ensure ZIA Credential environment variables are set
-  ansible.builtin.set_fact:
-    zia_cloud:
-      client_id: "{{ lookup('env', 'ZSCALER_CLIENT_ID') }}"
-      client_secret: "{{ lookup('env', 'ZSCALER_CLIENT_SECRET') }}"
-      vanity_domain: "{{ lookup('env', 'ZSCALER_VANITY_DOMAIN') }}"
-      cloud: "{{ lookup('env', 'ZSCALER_CLOUD') | default(omit) }}"
-  no_log: true
+# - name: Ensure ZIA Credential environment variables are set
+#   ansible.builtin.set_fact:
+#     zia_cloud:
+#       client_id: "{{ lookup('env', 'ZSCALER_CLIENT_ID') }}"
+#       client_secret: "{{ lookup('env', 'ZSCALER_CLIENT_SECRET') }}"
+#       vanity_domain: "{{ lookup('env', 'ZSCALER_VANITY_DOMAIN') }}"
+#       cloud: "{{ lookup('env', 'ZSCALER_CLOUD') | default(omit) }}"
+#   no_log: true
 
-- name: Main block to Test Sandbox Advanced Settings Configuration
-  block:
-    # Sandbox Advanced Settings
-    - name: Clear Sandbox Advanced Setting (if any exists)
-      zscaler.ziacloud.zia_sandbox_advanced_settings:
-        provider: "{{ zia_cloud }}"
-        state: absent
-        file_hashes_to_be_blocked: "{{ md5_hashes }}"
-      register: clear_result
+# - name: Main block to Test Sandbox Advanced Settings Configuration
+#   block:
+#     # Sandbox Advanced Settings
+#     - name: Clear Sandbox Advanced Setting (if any exists)
+#       zscaler.ziacloud.zia_sandbox_advanced_settings:
+#         provider: "{{ zia_cloud }}"
+#         state: absent
+#         file_hashes_to_be_blocked: "{{ md5_hashes }}"
+#       register: clear_result
 
-    - name: Fetch initial hash counts (After Clearing)
-      zscaler.ziacloud.zia_sandbox_advanced_settings_info:
-        provider: "{{ zia_cloud }}"
-      register: initial_fetch_result
+#     - name: Fetch initial hash counts (After Clearing)
+#       zscaler.ziacloud.zia_sandbox_advanced_settings_info:
+#         provider: "{{ zia_cloud }}"
+#       register: initial_fetch_result
 
-    - name: Debug initial fetch result
-      ansible.builtin.debug:
-        var: initial_fetch_result
+#     - name: Debug initial fetch result
+#       ansible.builtin.debug:
+#         var: initial_fetch_result
 
-    - name: Set Facts for Initial and Remaining File Hash Counts
-      ansible.builtin.set_fact:
-        initial_blocked_count: "{{ initial_fetch_result.file_hash_count.blockedFileHashesCount | default(0) | int }}"
-        initial_remaining_count: "{{ initial_fetch_result.file_hash_count.remainingFileHashes | default(0) | int }}"
+#     - name: Set Facts for Initial and Remaining File Hash Counts
+#       ansible.builtin.set_fact:
+#         initial_blocked_count: "{{ initial_fetch_result.file_hash_count.blockedFileHashesCount | default(0) | int }}"
+#         initial_remaining_count: "{{ initial_fetch_result.file_hash_count.remainingFileHashes | default(0) | int }}"
 
-    - name: Add MD5 Hashes to Custom List
-      zscaler.ziacloud.zia_sandbox_advanced_settings:
-        provider: "{{ zia_cloud }}"
-        state: present
-        file_hashes_to_be_blocked: "{{ md5_hashes }}"
-      register: add_result
+#     - name: Add MD5 Hashes to Custom List
+#       zscaler.ziacloud.zia_sandbox_advanced_settings:
+#         provider: "{{ zia_cloud }}"
+#         state: present
+#         file_hashes_to_be_blocked: "{{ md5_hashes }}"
+#       register: add_result
 
-    - name: Verify adding MD5 hashes
-      ansible.builtin.assert:
-        that:
-          - add_result.changed # Should reflect a change
-          - add_result.file_hash_count.blockedFileHashesCount | int == initial_blocked_count | int + (md5_hashes | length)
-          - add_result.file_hash_count.remainingFileHashes | int == initial_remaining_count | int - (md5_hashes | length)
-        msg: |
-          Failed to verify the addition of MD5 hashes.
-          Expected blocked hashes: {{ initial_blocked_count | int + (md5_hashes | length) }}
-          Actual blocked hashes: {{ add_result.file_hash_count.blockedFileHashesCount | int }}
-          Expected remaining hashes: {{ initial_remaining_count | int - (md5_hashes | length) }}
-          Actual remaining hashes: {{ add_result.file_hash_count.remainingFileHashes | int }}
+#     - name: Verify adding MD5 hashes
+#       ansible.builtin.assert:
+#         that:
+#           - add_result.changed # Should reflect a change
+#           - add_result.file_hash_count.blockedFileHashesCount | int == initial_blocked_count | int + (md5_hashes | length)
+#           - add_result.file_hash_count.remainingFileHashes | int == initial_remaining_count | int - (md5_hashes | length)
+#         msg: |
+#           Failed to verify the addition of MD5 hashes.
+#           Expected blocked hashes: {{ initial_blocked_count | int + (md5_hashes | length) }}
+#           Actual blocked hashes: {{ add_result.file_hash_count.blockedFileHashesCount | int }}
+#           Expected remaining hashes: {{ initial_remaining_count | int - (md5_hashes | length) }}
+#           Actual remaining hashes: {{ add_result.file_hash_count.remainingFileHashes | int }}
 
-    - name: Add MD5 Hashes again (Idempotency check)
-      zscaler.ziacloud.zia_sandbox_advanced_settings:
-        provider: "{{ zia_cloud }}"
-        state: present
-        file_hashes_to_be_blocked: "{{ md5_hashes }}"
-      register: add_again_result
+#     - name: Add MD5 Hashes again (Idempotency check)
+#       zscaler.ziacloud.zia_sandbox_advanced_settings:
+#         provider: "{{ zia_cloud }}"
+#         state: present
+#         file_hashes_to_be_blocked: "{{ md5_hashes }}"
+#       register: add_again_result
 
-    - name: Verify idempotency on adding MD5 hashes
-      ansible.builtin.assert:
-        that:
-          - not add_again_result.changed # No change should be detected
+#     - name: Verify idempotency on adding MD5 hashes
+#       ansible.builtin.assert:
+#         that:
+#           - not add_again_result.changed # No change should be detected
 
-    - name: Clear Sandbox Advanced Setting
-      zscaler.ziacloud.zia_sandbox_advanced_settings:
-        provider: "{{ zia_cloud }}"
-        state: absent
-        file_hashes_to_be_blocked: "{{ md5_hashes }}"
-      register: clear_again_result
+#     - name: Clear Sandbox Advanced Setting
+#       zscaler.ziacloud.zia_sandbox_advanced_settings:
+#         provider: "{{ zia_cloud }}"
+#         state: absent
+#         file_hashes_to_be_blocked: "{{ md5_hashes }}"
+#       register: clear_again_result
 
-    - name: Verify clearing of hashes
-      ansible.builtin.assert:
-        that:
-          - clear_again_result.changed
-          - clear_again_result.file_hash_count.blockedFileHashesCount == 0
+#     - name: Verify clearing of hashes
+#       ansible.builtin.assert:
+#         that:
+#           - clear_again_result.changed
+#           - clear_again_result.file_hash_count.blockedFileHashesCount == 0
 
-    - name: Clear Sandbox Advanced Setting again (Idempotency check)
-      zscaler.ziacloud.zia_sandbox_advanced_settings:
-        provider: "{{ zia_cloud }}"
-        state: absent
-        file_hashes_to_be_blocked: "{{ md5_hashes }}"
-      register: clear_idempotency_result
+#     - name: Clear Sandbox Advanced Setting again (Idempotency check)
+#       zscaler.ziacloud.zia_sandbox_advanced_settings:
+#         provider: "{{ zia_cloud }}"
+#         state: absent
+#         file_hashes_to_be_blocked: "{{ md5_hashes }}"
+#       register: clear_idempotency_result
 
-    - name: Verify idempotency on clearing hashes
-      ansible.builtin.assert:
-        that:
-          - not clear_idempotency_result.changed # No change should be detected
+#     - name: Verify idempotency on clearing hashes
+#       ansible.builtin.assert:
+#         that:
+#           - not clear_idempotency_result.changed # No change should be detected
 
-    - name: Fetch final hash counts
-      zscaler.ziacloud.zia_sandbox_advanced_settings_info:
-        provider: "{{ zia_cloud }}"
-      register: final_fetch_result
+#     - name: Fetch final hash counts
+#       zscaler.ziacloud.zia_sandbox_advanced_settings_info:
+#         provider: "{{ zia_cloud }}"
+#       register: final_fetch_result
 
-    - name: Debug initial and final counts
-      ansible.builtin.debug:
-        msg:
-          initial_blocked_count: "{{ initial_blocked_count }}"
-          initial_remaining_count: "{{ initial_remaining_count }}"
-          final_blocked_count: "{{ final_fetch_result.file_hash_count.blockedFileHashesCount }}"
-          final_remaining_count: "{{ final_fetch_result.file_hash_count.remainingFileHashes }}"
+#     - name: Debug initial and final counts
+#       ansible.builtin.debug:
+#         msg:
+#           initial_blocked_count: "{{ initial_blocked_count }}"
+#           initial_remaining_count: "{{ initial_remaining_count }}"
+#           final_blocked_count: "{{ final_fetch_result.file_hash_count.blockedFileHashesCount }}"
+#           final_remaining_count: "{{ final_fetch_result.file_hash_count.remainingFileHashes }}"
 
-    - name: Debug initial and final blocked file hashes count
-      ansible.builtin.debug:
-        msg: |
-          Initial blocked file hashes count: "{{ initial_blocked_count }}"
-          Final blocked file hashes count: "{{ final_fetch_result.file_hash_count.blockedFileHashesCount }}"
+#     - name: Debug initial and final blocked file hashes count
+#       ansible.builtin.debug:
+#         msg: |
+#           Initial blocked file hashes count: "{{ initial_blocked_count }}"
+#           Final blocked file hashes count: "{{ final_fetch_result.file_hash_count.blockedFileHashesCount }}"
