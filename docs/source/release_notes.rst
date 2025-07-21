@@ -8,8 +8,19 @@ Releases
 
 Zscaler Internet Access (ZIA) Ansible Collection Changelog
 ----------------------------------------------------------
-Version 2.0.5
+Version 2.0.6
 =============
+
+v2.0.6 (July 21, 2025)
+-------------------------
+
+### Notes
+
+- Python Versions: **v3.9, v3.10, v3.11**
+
+### Bug Fixes
+
+* (`#85 <https://github.com/zscaler/ziacloud-ansible/pull/85>`_) - Fixed `zia_atp_settings` argument count issue.
 
 v2.0.5 (June 23, 2025)
 -------------------------

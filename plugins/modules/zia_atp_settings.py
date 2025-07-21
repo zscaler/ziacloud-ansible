@@ -419,16 +419,16 @@ def core(module):
     else:
         raw_response = current_settings.as_dict()
 
-    module.warn(f"🧪 Raw keys from API: {list(raw_response.keys())}")
+    # module.warn(f"🧪 Raw keys from API: {list(raw_response.keys())}")
     current_dict = convert_keys_to_snake_case(raw_response)
 
     drift = any(current_dict.get(k) != settings_data.get(k) for k in settings_data)
 
-    module.warn(f"📦 Raw SDK response: {current_settings}")
-    module.warn(f"🐍 Snake_case converted: {current_dict}")
-    module.warn(f"🔍 Current settings: {current_dict}")
-    module.warn(f"📅 Desired settings: {settings_data}")
-    module.warn(f"🧠 Drift detected: {drift}")
+    # module.warn(f"📦 Raw SDK response: {current_settings}")
+    # module.warn(f"🐍 Snake_case converted: {current_dict}")
+    # module.warn(f"🔍 Current settings: {current_dict}")
+    # module.warn(f"📅 Desired settings: {settings_data}")
+    # module.warn(f"🧠 Drift detected: {drift}")
 
     if module.check_mode:
         module.exit_json(changed=drift)
@@ -438,8 +438,9 @@ def core(module):
             setattr(current_settings, k, v)
 
         updated, _unused, error = client.atp_policy.update_atp_settings(
-            current_settings
+            **current_settings.as_dict()
         )
+
         if error:
             module.fail_json(msg=f"Error updating malware settings: {to_native(error)}")
 

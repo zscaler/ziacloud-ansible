@@ -64,3 +64,5 @@ build_ignore:
   - local_dev
   - ansible.cfg
   - docs/html
+  - .ansible
+  - .github
