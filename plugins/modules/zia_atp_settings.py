@@ -424,11 +424,11 @@ def core(module):
 
     drift = any(current_dict.get(k) != settings_data.get(k) for k in settings_data)
 
-    # module.warn(f"📦 Raw SDK response: {current_settings}")
-    # module.warn(f"🐍 Snake_case converted: {current_dict}")
-    # module.warn(f"🔍 Current settings: {current_dict}")
-    # module.warn(f"📅 Desired settings: {settings_data}")
-    # module.warn(f"🧠 Drift detected: {drift}")
+    module.warn(f"📦 Raw SDK response: {current_settings}")
+    module.warn(f"🐍 Snake_case converted: {current_dict}")
+    module.warn(f"🔍 Current settings: {current_dict}")
+    module.warn(f"📅 Desired settings: {settings_data}")
+    module.warn(f"🧠 Drift detected: {drift}")
 
     if module.check_mode:
         module.exit_json(changed=drift)

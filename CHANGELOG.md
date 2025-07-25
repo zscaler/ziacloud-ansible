@@ -1,5 +1,15 @@
 # Zscaler Internet Access (ZIA) Ansible Collection Changelog
 
+## v2.0.7 (July 25, 2025)
+
+### Notes
+
+- Python Versions: **v3.9, v3.10, v3.11**
+
+### Bug Fixes
+
+[#88](https://github.com/zscaler/ziacloud-ansible/pull/88) - Fixed requirements.txt formatting issues.
+
 ## v2.0.6 (July 21, 2025)
 
 ### Notes
