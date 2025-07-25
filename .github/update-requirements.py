@@ -25,13 +25,18 @@ main_reqs = [
 
 # Function to replace package version while keeping extras/markers
 def replace_version(line):
-    match = re.match(r"^([a-zA-Z0-9\-_]+)(\[.*\])?([=><~!]+[^\s;]+)(.*)", line)
+    match = re.match(r"^([a-zA-Z0-9\-_]+)(\[.*\])?([=><~!]+[^\s;]+)?(.*)", line)
     if match:
         pkg_name, extras, constraint, rest = match.groups()
         pkg_name_lower = pkg_name.lower()
 
         if pkg_name_lower in main_deps:
-            return f"{pkg_name}{extras or ''}{main_deps[pkg_name_lower]}{rest}\n"
+            specified = main_deps[pkg_name_lower]
+            if specified == "*":
+                version = ">=0"  # Convert "*" to valid pip syntax
+            else:
+                version = specified
+            return f"{pkg_name}{extras or ''}{version}{rest}\n"
 
     return line
 
