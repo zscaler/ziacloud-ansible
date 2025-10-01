@@ -37,7 +37,7 @@ jobs:
           path: ./ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python_ver }}
 
@@ -71,7 +71,7 @@ jobs:
   #         path: ./ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}
 
   #     - name: Setup Python
-  #       uses: actions/setup-python@v5
+  #       uses: actions/setup-python@v6
   #       with:
   #         python-version: ${{ env.PYTHON_VERSION }}
 
@@ -165,7 +165,7 @@ jobs:
           path: ./ansible_collections/zscaler/ziacloud
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: 3.9
 
