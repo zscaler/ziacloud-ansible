@@ -33,7 +33,7 @@ jobs:
     environment: ${{ matrix.environment }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -113,7 +113,7 @@ jobs:
   #   environment: ${{ matrix.environment }}
   #   steps:
   #     - name: Checkout code
-  #       uses: actions/checkout@v4
+  #       uses: actions/checkout@v5
   #       with:
   #         path: ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}
   #         token: ${{ secrets.GITHUB_TOKEN }}
