@@ -282,6 +282,10 @@ options:
     description: Zscaler Incident Receiver details. Provide as dict with C(id) key.
     required: false
     type: dict
+  receiver:
+    description: Details of the DLP Incident Receiver, Provide as dict with C(id) key.
+    required: false
+    type: dict
   auditor_notification:
     description: Notification template for DLP email alerts. Provide as dict with C(id) key.
     required: false
@@ -406,6 +410,7 @@ CASB_DLP_RULE_ATTRIBUTES = [
     "file_types",
     "components",
     "zscaler_incident_receiver",
+    "receiver",
     "auditor_notification",
     "tag",
     "watermark_profile",
@@ -654,6 +659,7 @@ def main():
                     "RULE_SEVERITY_INFO",
                 ],
             ),
+            receiver=dict(type="dict", required=False),
             bucket_owner=dict(type="str", required=False),
             external_auditor_email=dict(type="str", required=False),
             content_location=dict(
