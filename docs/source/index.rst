@@ -39,9 +39,6 @@ Features
 The **Zscaler Internet Access Collection**, includes
 `modules`_ and ansible-doc to automate tasks on the Zscaler platform.
 
-Sample playbooks are available in our `samples repository`_
-contributed by the **Zscaler's Technology Alliances** team.
-
 .. toctree::
    :maxdepth: 1
    :hidden:
@@ -87,9 +84,6 @@ Author Information
    https://zscaler.github.io/ziacloud-ansible/index.html
 .. _modules:
    https://zscaler.github.io/ziacloud-ansible/modules.html
-.. _samples repository:
-   https://github.com/zscaler/ziacloud-playbooks/blob/master/README.md
-
 
 Development Leads
 -----------------

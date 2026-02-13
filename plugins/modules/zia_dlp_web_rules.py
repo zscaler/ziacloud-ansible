@@ -253,6 +253,11 @@ options:
       - If this field is set to false, Zscaler Client Connector notification is disabled.
     required: false
     type: bool
+  eun_template_id:
+    description:
+      - The EUN template ID associated with the rule
+    required: false
+    type: int 
 """
 
 EXAMPLES = r"""
@@ -398,6 +403,7 @@ def core(module):
         "workload_groups",
         "include_domain_profiles",
         "exclude_domain_profiles",
+        "eun_template_id",
     ]
 
     rule = {param: module.params.get(param) for param in params}
@@ -606,6 +612,7 @@ def core(module):
                         "zcc_notifications_enabled": desired_rule.get(
                             "zcc_notifications_enabled"
                         ),
+                        "eun_template_id": desired_rule.get("eun_template_id"),
                         "user_risk_score_levels": desired_rule.get(
                             "user_risk_score_levels"
                         ),
@@ -674,6 +681,7 @@ def core(module):
                     "zcc_notifications_enabled": desired_rule.get(
                         "zcc_notifications_enabled"
                     ),
+                    "eun_template_id": desired_rule.get("eun_template_id"),
                     "user_risk_score_levels": desired_rule.get(
                         "user_risk_score_levels"
                     ),
@@ -762,6 +770,7 @@ def main():
         zcc_notifications_enabled=dict(type="bool", required=False),
         dlp_download_scan_enabled=dict(type="bool", required=False),
         icap_server=dict(type="list", elements="int", required=False),
+        eun_template_id=dict(type="int", required=False),
         action=dict(
             type="str",
             required=False,

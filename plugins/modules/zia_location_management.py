@@ -491,14 +491,25 @@ def core(module):
         if result:
             existing_location = result.as_dict()
     else:
-        result, _unused, error = client.locations.list_locations()
+        # Use search to find locations including sublocations by name (fixes idempotency for sublocations)
+        query_params = {"search": location_name} if location_name else {}
+        result, _unused, error = client.locations.list_locations(
+            query_params=query_params
+        )
         if error:
             module.fail_json(msg=f"Error listing locations: {to_native(error)}")
         if result:
+            parent_id = location_mgmt.get("parent_id")
             for location_ in result:
-                if location_.name == location_name:
-                    existing_location = location_.as_dict()
-                    break
+                if location_.name != location_name:
+                    continue
+                loc_dict = location_.as_dict()
+                # For sublocations, also match parent_id to avoid confusing with same-named parent
+                if parent_id is not None and parent_id != 0:
+                    if loc_dict.get("parent_id") != parent_id:
+                        continue
+                existing_location = loc_dict
+                break
 
     # Normalize server's current location data and local "desired" data
     desired_location = normalize_location(location_mgmt)

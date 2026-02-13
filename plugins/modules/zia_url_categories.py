@@ -76,6 +76,15 @@ options:
         - TLD_CATEGORY
         - ALL
     default: URL_CATEGORY
+  url_type:
+    description:
+        - "Type of URL matching for the category."
+        - "EXACT matches exact URL strings; REGEX matches URLs using regular expression patterns."
+    required: false
+    type: str
+    choices:
+        - EXACT
+        - REGEX
   keywords:
     description:
         - Custom keywords associated to a URL category.
@@ -122,6 +131,20 @@ options:
     required: false
     type: list
     elements: str
+  regex_patterns:
+    description:
+        - Regular expression patterns used to match URLs when url_type is REGEX.
+        - Each entry is a regex pattern that URLs are evaluated against.
+    required: false
+    type: list
+    elements: str
+  regex_patterns_retaining_parent_category:
+    description:
+        - Retained regex patterns from the parent URL category when url_type is REGEX.
+        - Patterns from the parent category that remain associated with this custom category.
+    required: false
+    type: list
+    elements: str
   custom_category:
     description:
         - Set to true for custom URL category. Up to 48 custom URL categories can be added per organization.
@@ -159,7 +182,7 @@ EXAMPLES = r"""
   zscaler.ziacloud.zia_url_categories:
     provider: '{{ provider }}'
     super_category: USER_DEFINED
-    name: Example_Category
+    configured_name: Example_Category
     description: Example_Category
     type: URL_CATEGORY
     keywords:
@@ -180,6 +203,19 @@ EXAMPLES = r"""
       - .baidu.com
       - .cnn.com
       - .level3.com
+
+- name: Create a URL Category with regex patterns
+  zscaler.ziacloud.zia_url_categories:
+    provider: '{{ provider }}'
+    super_category: USER_DEFINED
+    configured_name: Regex_Category_Example
+    description: Category using regex URL matching
+    type: URL_CATEGORY
+    url_type: REGEX
+    regex_patterns:
+      - ".*\\.example\\.com"
+      - ".*\\.test\\.(com|org)"
+    custom_category: true
 """
 
 RETURN = r"""
@@ -204,6 +240,15 @@ def normalize_url_category(category):
 
     if "urls" in normalized and normalized["urls"] is not None:
         normalized["urls"] = sorted(normalized["urls"])
+    if "regex_patterns" in normalized and normalized["regex_patterns"] is not None:
+        normalized["regex_patterns"] = sorted(normalized["regex_patterns"])
+    if (
+        "regex_patterns_retaining_parent_category" in normalized
+        and normalized["regex_patterns_retaining_parent_category"] is not None
+    ):
+        normalized["regex_patterns_retaining_parent_category"] = sorted(
+            normalized["regex_patterns_retaining_parent_category"]
+        )
 
     return normalized
 
@@ -241,6 +286,9 @@ def core(module):
         "db_categorized_urls",
         "ip_ranges",
         "ip_ranges_retaining_parent_category",
+        "regex_patterns",
+        "regex_patterns_retaining_parent_category",
+        "url_type",
         "scopes",
         "type",
         "editable",
@@ -391,6 +439,15 @@ def main():
         ip_ranges=dict(type="list", elements="str", required=False),
         ip_ranges_retaining_parent_category=dict(
             type="list", elements="str", required=False
+        ),
+        regex_patterns=dict(type="list", elements="str", required=False),
+        regex_patterns_retaining_parent_category=dict(
+            type="list", elements="str", required=False
+        ),
+        url_type=dict(
+            type="str",
+            required=False,
+            choices=["EXACT", "REGEX"],
         ),
         editable=dict(type="bool", required=False),
         type=dict(

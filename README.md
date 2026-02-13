@@ -16,7 +16,6 @@ This collection contains modules and plugins to assist in automating the configu
 - Free software: [MIT License](https://github.com/zscaler/ziacloud-ansible/blob/master/LICENSE)
 - [Documentation](https://zscaler.github.io/ziacloud-ansible)
 - [Repository](https://github.com/zscaler/ziacloud-ansible)
-- [Example Playbooks](https://github.com/zscaler/ziacloud-playbooks)
 
 ## Tested Ansible Versions
 
@@ -102,7 +101,7 @@ It's preferable to use content in this collection using their [Fully Qualified C
 
 (Note that [use of the `collections` key is now discouraged](https://ansible-lint.readthedocs.io/rules/fqcn/))
 
-**NOTE**: The `zscaler_cloud` is optional and only required when authenticating to other environments i.e `beta`
+**NOTE**: The `cloud` parameter (ZSCALER_CLOUD) is optional for OneAPI. Omit for production. Set to `beta` only for the beta environment. Do not use Legacy cloud names (zscalerone, zscalertwo, etc.) with OneAPI—they are ignored to prevent URL breakage.
 
 ⚠️ **WARNING:** Hard-coding credentials into any Ansible playbook configuration is not recommended, and risks secret leakage should this file be committed to public version controls.
 
@@ -269,6 +268,17 @@ For details about how to retrieve your tenant Base URL and API key/token refer t
 As of version v2.0.0, the legacy sandbox authentication environment variables `ZIA_CLOUD` and `ZIA_SANDBOX_TOKEN` are no longer supported.
 
 Authentication to the Zscaler Sandbox service requires the following new environment variables the `ZSCALER_SANDBOX_CLOUD` and `ZSCALER_SANDBOX_TOKEN` or authentication attributes `sandbox_token` and `sandbox_cloud`. For details on how obtain the API Token visit the Zscaler help portal [About Sandbox API Token](https://help.zscaler.com/zia/about-sandbox-api-token)
+
+## Testing
+
+Run unit tests with coverage from the collection root:
+
+```bash
+poetry run pytest tests/unit/ --cov=plugins --cov-branch --cov-report=xml:coverage.xml --cov-report=html:htmlcov
+poetry run python scripts/check_coverage.py --line-min 70 --branch-min 48
+```
+
+This produces `coverage.xml` and `htmlcov/` (open `htmlcov/index.html` for the report). See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ## Releasing, changelogs, versioning and deprecation
 

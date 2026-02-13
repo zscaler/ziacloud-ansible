@@ -327,6 +327,16 @@ options:
         description: Name of the ZPA IP group.
         type: str
         required: false
+  is_web_eun_enabled:
+    description:
+      - If set to true, Web EUN is enabled for the rule
+    required: false
+    type: bool
+  is_web_eun_enabled:
+    description:
+      - If set to true, the default DNS rule name is used for the rule
+    required: false
+    type: bool 
 """
 
 EXAMPLES = r"""
@@ -445,6 +455,8 @@ def core(module):
         "labels",
         "res_categories",
         "edns_ecs_object",
+        "is_web_eun_enabled",
+        "is_default_rule_name",
     ]
 
     rule = {
@@ -679,6 +691,8 @@ def core(module):
                         "dns_rule_request_types": desired_rule.get(
                             "dns_rule_request_types"
                         ),
+                        "is_web_eun_enabled": desired_rule.get("is_web_eun_enabled"),
+                        "is_default_rule_name": desired_rule.get("is_default_rule_name"),
                         "redirect_ip": desired_rule.get("redirect_ip"),
                         "block_response_code": desired_rule.get("block_response_code"),
                     }
@@ -728,6 +742,8 @@ def core(module):
                     "dns_rule_request_types": desired_rule.get(
                         "dns_rule_request_types"
                     ),
+                    "is_web_eun_enabled": desired_rule.get("is_web_eun_enabled"),
+                    "is_default_rule_name": desired_rule.get("is_default_rule_name"),
                     "redirect_ip": desired_rule.get("redirect_ip"),
                     "block_response_code": desired_rule.get("block_response_code"),
                 }
@@ -856,6 +872,8 @@ def main():
         source_countries=dict(type="list", elements="str", required=False),
         res_categories=dict(type="list", elements="str", required=False),
         capture_pcap=dict(type="bool", required=False),
+        is_web_eun_enabled=dict(type="bool", required=False),
+        is_default_rule_name=dict(type="bool", required=False),
         block_response_code=dict(
             type="str",
             required=False,

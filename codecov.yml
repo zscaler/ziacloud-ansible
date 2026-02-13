@@ -1,0 +1,87 @@
+# Codecov configuration for zpacloud-ansible collection
+# https://docs.codecov.io/docs/codecov-yaml
+
+coverage:
+  precision: 2
+  round: down
+  range: "60...100"
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
+        informational: true
+    patch:
+      default:
+        target: auto
+        threshold: 1%
+        informational: true
+
+parsers:
+  gcov:
+    branch_detection:
+      conditional: true
+      loop: true
+      method: false
+      macro: false
+
+flags:
+  unittests:
+    paths:
+      - plugins/
+    carryforward: true
+
+# Components for granular coverage tracking
+# https://docs.codecov.com/docs/components
+component_management:
+  default_rules:
+    statuses:
+      - type: project
+        target: auto
+        informational: true
+  individual_components:
+    # Core utilities (zpa_client, utils)
+    - component_id: module_utils
+      name: Module Utilities
+      paths:
+        - plugins/module_utils/**
+    # Read-only info modules
+    - component_id: info_modules
+      name: Info Modules
+      paths:
+        - plugins/modules/*_info.py
+    # Policy-related modules
+    - component_id: policy_modules
+      name: Policy Modules
+      paths:
+        - plugins/modules/zpa_policy_*.py
+    # Application segment modules
+    - component_id: app_segment_modules
+      name: Application Segments
+      paths:
+        - plugins/modules/zpa_application_segment*.py
+    # PRA (Privileged Remote Access) modules
+    - component_id: pra_modules
+      name: PRA Modules
+      paths:
+        - plugins/modules/zpa_pra_*.py
+    # Connector and Service Edge modules
+    - component_id: connector_modules
+      name: Connector & Service Edge
+      paths:
+        - plugins/modules/zpa_app_connector*.py
+        - plugins/modules/zpa_service_edge*.py
+        - plugins/modules/zpa_connector*.py
+
+comment:
+  layout: "header,diff,flags,components,tree"
+  behavior: default
+  require_changes: false
+  require_base: false
+  require_head: true
+
+ignore:
+  - "tests/**/*"
+  - "docs/**/*"
+  - "local_dev/**/*"
+  - "**/__init__.py"

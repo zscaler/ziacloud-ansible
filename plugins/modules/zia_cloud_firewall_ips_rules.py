@@ -220,6 +220,16 @@ options:
         description: The name of the Application Segment
         type: str
         required: true
+  eun_template_id:
+    description:
+      - The EUN template ID associated with the rule
+    required: false
+    type: int 
+  is_eun_enabled:
+    description:
+      - If set to true, Web EUN is enabled for the rule
+    required: false
+    type: bool 
 """
 
 EXAMPLES = r"""
@@ -308,6 +318,8 @@ def core(module):
         "threat_categories",
         "res_categories",
         "zpa_app_segments",
+        "eun_template_id",
+        "is_eun_enabled",
     ]
 
     rule = {
@@ -496,6 +508,8 @@ def core(module):
                         "src_ip_groups": desired_rule.get("src_ip_groups"),
                         "zpa_app_segments": desired_rule.get("zpa_app_segments"),
                         "threat_categories": desired_rule.get("threat_categories"),
+                        "eun_template_id": desired_rule.get("eun_template_id"),
+                        "is_eun_enabled": desired_rule.get("is_eun_enabled"),
                     }
                 )
                 module.warn("Payload Update for SDK: {}".format(update_data))
@@ -535,6 +549,8 @@ def core(module):
                     "src_ip_groups": desired_rule.get("src_ip_groups"),
                     "zpa_app_segments": desired_rule.get("zpa_app_segments"),
                     "threat_categories": desired_rule.get("threat_categories"),
+                    "eun_template_id": desired_rule.get("eun_template_id"),
+                    "is_eun_enabled": desired_rule.get("is_eun_enabled"),
                 }
             )
             module.warn("Payload Update for SDK: {}".format(create_data))
@@ -605,6 +621,8 @@ def main():
         res_categories=dict(type="list", elements="str", required=False),
         enable_full_logging=dict(type="bool", default=False, required=False),
         capture_pcap=dict(type="bool", required=False),
+        eun_template_id=dict(type="int", required=False),
+        is_eun_enabled=dict(type="bool", required=False),
         action=dict(
             type="str",
             required=False,
