@@ -120,14 +120,10 @@ def core(module):
 
     # Determine changes
     urls_to_add = [u for u in desired_urls if u not in current_urls]
-    urls_to_remove = (
-        [u for u in current_urls if u in desired_urls] if state == "absent" else []
-    )
+    urls_to_remove = [u for u in current_urls if u in desired_urls] if state == "absent" else []
 
     if module.check_mode:
-        if (state == "present" and urls_to_add) or (
-            state == "absent" and urls_to_remove
-        ):
+        if (state == "present" and urls_to_add) or (state == "absent" and urls_to_remove):
             module.exit_json(changed=True)
         else:
             module.exit_json(changed=False)
@@ -135,46 +131,26 @@ def core(module):
     # Perform updates
     if state == "present" and urls_to_add:
         if url_type == "whitelist":
-            updated_obj, _unused, error = (
-                client.security_policy_settings.add_urls_to_whitelist(urls_to_add)
-            )
+            updated_obj, _unused, error = client.security_policy_settings.add_urls_to_whitelist(urls_to_add)
         else:
-            updated_obj, _unused, error = (
-                client.security_policy_settings.add_urls_to_blacklist(urls_to_add)
-            )
+            updated_obj, _unused, error = client.security_policy_settings.add_urls_to_blacklist(urls_to_add)
 
         if error:
             module.fail_json(msg=f"Failed to add URLs: {to_native(error)}")
 
-        updated_urls = normalize_urls(
-            updated_obj.whitelist_urls
-            if url_type == "whitelist"
-            else updated_obj.blacklist_urls
-        )
+        updated_urls = normalize_urls(updated_obj.whitelist_urls if url_type == "whitelist" else updated_obj.blacklist_urls)
         module.exit_json(changed=True, updated_list=updated_urls)
 
     elif state == "absent" and urls_to_remove:
         if url_type == "whitelist":
-            updated_obj, _unused, error = (
-                client.security_policy_settings.delete_urls_from_whitelist(
-                    urls_to_remove
-                )
-            )
+            updated_obj, _unused, error = client.security_policy_settings.delete_urls_from_whitelist(urls_to_remove)
         else:
-            updated_obj, _unused, error = (
-                client.security_policy_settings.delete_urls_from_blacklist(
-                    urls_to_remove
-                )
-            )
+            updated_obj, _unused, error = client.security_policy_settings.delete_urls_from_blacklist(urls_to_remove)
 
         if error:
             module.fail_json(msg=f"Failed to remove URLs: {to_native(error)}")
 
-        updated_urls = normalize_urls(
-            updated_obj.whitelist_urls
-            if url_type == "whitelist"
-            else updated_obj.blacklist_urls
-        )
+        updated_urls = normalize_urls(updated_obj.whitelist_urls if url_type == "whitelist" else updated_obj.blacklist_urls)
         module.exit_json(changed=True, updated_list=updated_urls)
 
     module.exit_json(changed=False, msg="No updates were necessary.")
@@ -185,9 +161,7 @@ def main():
     argument_spec.update(
         urls=dict(type="list", elements="str", required=True),
         state=dict(type="str", choices=["present", "absent"], default="present"),
-        url_type=dict(
-            type="str", choices=["whitelist", "blacklist"], default="whitelist"
-        ),
+        url_type=dict(type="str", choices=["whitelist", "blacklist"], default="whitelist"),
     )
 
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)

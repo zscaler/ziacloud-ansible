@@ -119,9 +119,7 @@ def core(module):
 
     result, _unused, error = client.saas_security_api.list_casb_email_label_lite()
     if error:
-        module.fail_json(
-            msg=f"Error retrieving CASB email labels: {to_native(error)}"
-        )
+        module.fail_json(msg=f"Error retrieving CASB email labels: {to_native(error)}")
     labels_list = [lbl.as_dict() for lbl in result] if result else []
 
     matched = None
@@ -135,10 +133,7 @@ def core(module):
 
     if label_id is not None or label_name:
         if matched is None:
-            module.fail_json(
-                msg=f"CASB email label with name '{label_name}' or id '{label_id}' not found. "
-                "Omit id and name to list all labels."
-            )
+            module.fail_json(msg=f"CASB email label with name '{label_name}' or id '{label_id}' not found. " "Omit id and name to list all labels.")
         labels_out = [matched]
     else:
         labels_out = labels_list

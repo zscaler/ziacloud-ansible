@@ -152,9 +152,7 @@ def core(module):
     if user_id is not None:
         result, _unused, error = client.user_management.get_user(user_id)
         if error or result is None:
-            module.fail_json(
-                msg=f"Failed to retrieve User with ID '{user_id}': {to_native(error)}"
-            )
+            module.fail_json(msg=f"Failed to retrieve User with ID '{user_id}': {to_native(error)}")
         users = [result.as_dict()]
     else:
         query_params = {}
@@ -165,19 +163,13 @@ def core(module):
         if err:
             module.fail_json(msg=f"Error retrieving Users: {to_native(err)}")
 
-        user_list = (
-            [u.as_dict() if hasattr(u, "as_dict") else u for u in result]
-            if result
-            else []
-        )
+        user_list = [u.as_dict() if hasattr(u, "as_dict") else u for u in result] if result else []
 
         if user_name:
             matched = next((u for u in user_list if u.get("name") == user_name), None)
             if not matched:
                 available = [u.get("name") for u in user_list]
-                module.fail_json(
-                    msg=f"User with name '{user_name}' not found. Available users: {available}"
-                )
+                module.fail_json(msg=f"User with name '{user_name}' not found. Available users: {available}")
             users = [matched]
         else:
             users = user_list

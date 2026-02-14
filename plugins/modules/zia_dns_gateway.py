@@ -164,9 +164,7 @@ def core(module):
     if gateway_id:
         result, _unused, error = client.dns_gatways.get_dns_gateways(gateway_id)
         if error:
-            module.fail_json(
-                msg=f"Error fetching gateway with id {gateway_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching gateway with id {gateway_id}: {to_native(error)}")
         existing_gateway = result.as_dict()
     else:
         result, _unused, error = client.dns_gatways.list_dns_gateways()
@@ -180,9 +178,7 @@ def core(module):
                     break
 
     normalized_desired = normalize_gateway(gateway_params)
-    normalized_existing = (
-        normalize_gateway(existing_gateway) if existing_gateway else {}
-    )
+    normalized_existing = normalize_gateway(existing_gateway) if existing_gateway else {}
 
     differences_detected = False
     unordered_fields = ["protocols", "primary_ports", "secondary_ports"]
@@ -190,22 +186,14 @@ def core(module):
     for key, desired_value in normalized_desired.items():
         current_value = normalized_existing.get(key)
 
-        if (
-            key in unordered_fields
-            and isinstance(desired_value, list)
-            and isinstance(current_value, list)
-        ):
+        if key in unordered_fields and isinstance(desired_value, list) and isinstance(current_value, list):
             if set(map(str, desired_value)) != set(map(str, current_value)):
                 differences_detected = True
-                module.warn(
-                    f"Difference detected in {key} (unordered). Current: {current_value}, Desired: {desired_value}"
-                )
+                module.warn(f"Difference detected in {key} (unordered). Current: {current_value}, Desired: {desired_value}")
         else:
             if current_value != desired_value:
                 differences_detected = True
-                module.warn(
-                    f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
-                )
+                module.warn(f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}")
 
     if module.check_mode:
         if state == "present" and (existing_gateway is None or differences_detected):
@@ -220,9 +208,7 @@ def core(module):
             if differences_detected:
                 gateway_id_to_update = existing_gateway.get("id")
                 if not gateway_id_to_update:
-                    module.fail_json(
-                        msg="Cannot update gateway: ID is missing from the existing resource."
-                    )
+                    module.fail_json(msg="Cannot update gateway: ID is missing from the existing resource.")
 
                 updated_gateway, _unused, error = client.dns_gatways.update_dns_gateway(
                     gateway_id=gateway_id_to_update,
@@ -257,13 +243,9 @@ def core(module):
         if existing_gateway:
             gateway_id_to_delete = existing_gateway.get("id")
             if not gateway_id_to_delete:
-                module.fail_json(
-                    msg="Cannot delete gateway: ID is missing from the existing resource."
-                )
+                module.fail_json(msg="Cannot delete gateway: ID is missing from the existing resource.")
 
-            _unused, _unused, error = client.dns_gatways.delete_dns_gateway(
-                gateway_id_to_delete
-            )
+            _unused, _unused, error = client.dns_gatways.delete_dns_gateway(gateway_id_to_delete)
             if error:
                 module.fail_json(msg=f"Error deleting gateway: {to_native(error)}")
             module.exit_json(changed=True, data=existing_gateway)

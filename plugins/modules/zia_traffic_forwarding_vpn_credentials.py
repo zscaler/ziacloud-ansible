@@ -143,17 +143,13 @@ def validate_vpn_credential_type(vpn_credentials):
 def find_existing_credential(client, vpn_params):
     """Find existing credential by ID or lookup by fqdn/ip_address."""
     if vpn_params["id"]:
-        vpn_box, _unused, error = client.traffic_vpn_credentials.get_vpn_credential(
-            credential_id=vpn_params["id"]
-        )
+        vpn_box, _unused, error = client.traffic_vpn_credentials.get_vpn_credential(credential_id=vpn_params["id"])
         if error:
             return None, f"Failed to get VPN credential: {to_native(error)}"
         return (vpn_box.as_dict() if vpn_box else None), None
 
     # If no ID, try lookup by listing all credentials and matching fqdn/ip
-    all_vpn_creds, _unused, error = (
-        client.traffic_vpn_credentials.list_vpn_credentials()
-    )
+    all_vpn_creds, _unused, error = client.traffic_vpn_credentials.list_vpn_credentials()
     if error:
         return None, f"Failed to list VPN credentials: {to_native(error)}"
 
@@ -200,11 +196,7 @@ def core(module):
         vpn_params["id"] = existing_vpn["id"]
 
     if module.check_mode:
-        changed = (
-            (state == "present" and not existing_vpn)
-            or (state == "absent" and existing_vpn is not None)
-            or (state == "present" and update_psk_flag)
-        )
+        changed = (state == "present" and not existing_vpn) or (state == "absent" and existing_vpn is not None) or (state == "present" and update_psk_flag)
         module.exit_json(changed=changed)
 
     if state == "present":
@@ -221,13 +213,9 @@ def core(module):
             )
             module.warn(f"[CREATE] Final Payload to API: {create_payload}")
 
-            new_vpn, _unused, error = client.traffic_vpn_credentials.add_vpn_credential(
-                **create_payload
-            )
+            new_vpn, _unused, error = client.traffic_vpn_credentials.add_vpn_credential(**create_payload)
             if error:
-                module.fail_json(
-                    msg=f"Failed to create VPN credential: {to_native(error)}"
-                )
+                module.fail_json(msg=f"Failed to create VPN credential: {to_native(error)}")
             module.exit_json(changed=True, data=new_vpn.as_dict())
 
         elif update_psk_flag and vpn_params["pre_shared_key"]:
@@ -241,22 +229,14 @@ def core(module):
                 "ip_address": existing_vpn.get("ip_address"),
                 "pre_shared_key": vpn_params.get("pre_shared_key"),
                 "comments": vpn_params.get("comments") or existing_vpn.get("comments"),
-                "disabled": (
-                    vpn_params.get("disabled")
-                    if vpn_params.get("disabled") is not None
-                    else existing_vpn.get("disabled")
-                ),
+                "disabled": (vpn_params.get("disabled") if vpn_params.get("disabled") is not None else existing_vpn.get("disabled")),
             }
             final_payload = deleteNone(full_update_payload)
             module.warn(f"[UPDATE] Final Payload to API: {final_payload}")
 
-            updated_vpn, _unused, error = (
-                client.traffic_vpn_credentials.update_vpn_credential(**final_payload)
-            )
+            updated_vpn, _unused, error = client.traffic_vpn_credentials.update_vpn_credential(**final_payload)
             if error:
-                module.fail_json(
-                    msg=f"Failed to update VPN credential: {to_native(error)}"
-                )
+                module.fail_json(msg=f"Failed to update VPN credential: {to_native(error)}")
             module.exit_json(
                 changed=True,
                 data=updated_vpn.as_dict() if updated_vpn else {"id": vpn_params["id"]},
@@ -268,15 +248,9 @@ def core(module):
 
     elif state == "absent":
         if existing_vpn and existing_vpn.get("id"):
-            _unused, _unused, error = (
-                client.traffic_vpn_credentials.delete_vpn_credential(
-                    credential_id=existing_vpn["id"]
-                )
-            )
+            _unused, _unused, error = client.traffic_vpn_credentials.delete_vpn_credential(credential_id=existing_vpn["id"])
             if error:
-                module.fail_json(
-                    msg=f"Failed to delete VPN credential: {to_native(error)}"
-                )
+                module.fail_json(msg=f"Failed to delete VPN credential: {to_native(error)}")
             module.exit_json(changed=True)
         else:
             module.exit_json(changed=False)

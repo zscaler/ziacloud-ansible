@@ -222,13 +222,9 @@ def core(module):
         )
 
     # Fetch existing subcloud
-    result, _unused, error = client.sub_clouds.list_sub_clouds(
-        query_params={"pageSize": 500}
-    )
+    result, _unused, error = client.sub_clouds.list_sub_clouds(query_params={"pageSize": 500})
     if error:
-        module.fail_json(
-            msg=f"Error listing subclouds: {to_native(error)}"
-        )
+        module.fail_json(msg=f"Error listing subclouds: {to_native(error)}")
     subclouds_raw = list(result or [])
     existing_raw = next(
         (s for s in subclouds_raw if getattr(s, "id", None) == cloud_id),
@@ -236,9 +232,7 @@ def core(module):
     )
 
     if existing_raw is None:
-        module.fail_json(
-            msg=f"Subcloud with cloud_id {cloud_id} not found. Use zia_sub_cloud_info to list available subclouds."
-        )
+        module.fail_json(msg=f"Subcloud with cloud_id {cloud_id} not found. Use zia_sub_cloud_info to list available subclouds.")
 
     existing = existing_raw.as_dict()
 
@@ -253,16 +247,14 @@ def core(module):
             dc_id = getattr(dc, "id", None)
         country = getattr(e, "country", None) or ""
         end_time = getattr(e, "end_time", None)
-        existing_list.append({
-            "country": country,
-            "datacenter_id": dc_id,
-            "end_time": end_time,
-        })
-    desired_list = [
-        _normalize_exclusion_from_user(exc)
-        for exc in (exclusions or [])
-        if (exc.get("datacenter") or [{}])[0].get("id") is not None
-    ]
+        existing_list.append(
+            {
+                "country": country,
+                "datacenter_id": dc_id,
+                "end_time": end_time,
+            }
+        )
+    desired_list = [_normalize_exclusion_from_user(exc) for exc in (exclusions or []) if (exc.get("datacenter") or [{}])[0].get("id") is not None]
     differences_detected = _normalize_exclusions_list(existing_list) != _normalize_exclusions_list(desired_list)
 
     if module.check_mode:
@@ -275,9 +267,7 @@ def core(module):
             **update_params,
         )
         if error:
-            module.fail_json(
-                msg=f"Error updating subcloud: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error updating subcloud: {to_native(error)}")
         module.exit_json(changed=True, data=updated.as_dict())
     else:
         module.exit_json(changed=False, data=existing)

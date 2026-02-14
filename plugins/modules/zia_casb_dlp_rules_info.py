@@ -189,16 +189,12 @@ def core(module):
     if rule_id is not None:
         rule_obj, _unused, error = client.casb_dlp_rules.get_rule(rule_id, rule_type)
         if error or rule_obj is None:
-            module.fail_json(
-                msg=f"Failed to retrieve CASB DLP rule with ID '{rule_id}' (type '{rule_type}'): {to_native(error)}"
-            )
+            module.fail_json(msg=f"Failed to retrieve CASB DLP rule with ID '{rule_id}' (type '{rule_type}'): {to_native(error)}")
         rules = [rule_obj.as_dict()]
     else:
         result, _unused, error = client.casb_dlp_rules.list_rules(rule_type)
         if error:
-            module.fail_json(
-                msg=f"Error retrieving CASB DLP rules: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error retrieving CASB DLP rules: {to_native(error)}")
 
         rule_list = [r.as_dict() for r in result] if result else []
 
@@ -209,9 +205,7 @@ def core(module):
             )
             if not matched:
                 available = [r.get("name") for r in rule_list]
-                module.fail_json(
-                    msg=f"CASB DLP rule with name '{rule_name}' (type '{rule_type}') not found. Available rules: {available}"
-                )
+                module.fail_json(msg=f"CASB DLP rule with name '{rule_name}' (type '{rule_type}') not found. Available rules: {available}")
             rules = [matched]
         else:
             rules = rule_list

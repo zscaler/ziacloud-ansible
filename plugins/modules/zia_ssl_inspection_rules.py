@@ -400,11 +400,7 @@ def normalize_rule(rule):
 
     def deep_clean(value):
         if isinstance(value, dict):
-            return {
-                k: deep_clean(v)
-                for k, v in value.items()
-                if v not in [None, False, "", [], {}]
-            }
+            return {k: deep_clean(v) for k, v in value.items() if v not in [None, False, "", [], {}]}
         elif isinstance(value, list):
             return [deep_clean(i) for i in value if i not in [None, False, "", [], {}]]
         return value
@@ -413,9 +409,7 @@ def normalize_rule(rule):
         action = normalized["action"]
 
         # Only keep the ID inside ssl_interception_cert if it's a dict
-        if "ssl_interception_cert" in action and isinstance(
-            action["ssl_interception_cert"], dict
-        ):
+        if "ssl_interception_cert" in action and isinstance(action["ssl_interception_cert"], dict):
             cert = action["ssl_interception_cert"]
             action["ssl_interception_cert"] = {"id": cert.get("id")}
 
@@ -483,15 +477,11 @@ def core(module):
         module.debug(f"Fetching existing rule with ID: {rule_id}")
         result, _unused, error = client.ssl_inspection_rules.get_rule(rule_id=rule_id)
         if error:
-            module.fail_json(
-                msg=f"Error fetching rule with id {rule_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching rule with id {rule_id}: {to_native(error)}")
         if result:
             existing_rule = result.as_dict()
             module.warn(f"Raw existing rule keys: {existing_rule.keys()}")
-            module.warn(
-                f"user_agent_types from API: {existing_rule.get('user_agent_types')}"
-            )
+            module.warn(f"user_agent_types from API: {existing_rule.get('user_agent_types')}")
     else:
         module.debug(f"Listing rules to find by name: {rule_name}")
         result, _unused, error = client.ssl_inspection_rules.list_rules()
@@ -587,26 +577,18 @@ def core(module):
                 # For order-agnostic attributes, compare sets instead of sorted lists
                 if set(desired_value) != set(current_value):
                     differences_detected = True
-                    module.warn(
-                        f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
-                    )
+                    module.warn(f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}")
             else:
                 # For other list attributes, maintain original comparison logic
-                if all(isinstance(x, int) for x in desired_value) and all(
-                    isinstance(x, int) for x in current_value
-                ):
+                if all(isinstance(x, int) for x in desired_value) and all(isinstance(x, int) for x in current_value):
                     desired_value = sorted(desired_value)
                     current_value = sorted(current_value)
                 if current_value != desired_value:
                     differences_detected = True
-                    module.warn(
-                        f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
-                    )
+                    module.warn(f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}")
         elif current_value != desired_value:
             differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
-            )
+            module.warn(f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}")
 
     if module.check_mode:
         if state == "present" and not existing_rule:
@@ -654,9 +636,7 @@ def core(module):
                         "proxy_gateways": desired_rule.get("proxy_gateways"),
                         "zpa_app_segments": desired_rule.get("zpa_app_segments"),
                         "device_trust_levels": desired_rule.get("device_trust_levels"),
-                        "road_warrior_for_kerberos": desired_rule.get(
-                            "road_warrior_for_kerberos"
-                        ),
+                        "road_warrior_for_kerberos": desired_rule.get("road_warrior_for_kerberos"),
                         "cloud_applications": desired_rule.get("cloud_applications"),
                         "url_categories": desired_rule.get("url_categories"),
                         "user_agent_types": desired_rule.get("user_agent_types"),
@@ -664,9 +644,7 @@ def core(module):
                     }
                 )
                 module.warn("Payload Update for SDK: {}".format(update_data))
-                updated_rule, _unused, error = client.ssl_inspection_rules.update_rule(
-                    **update_data
-                )
+                updated_rule, _unused, error = client.ssl_inspection_rules.update_rule(**update_data)
                 if error:
                     module.fail_json(msg=f"Error updating rule: {to_native(error)}")
                 module.exit_json(changed=True, data=updated_rule.as_dict())
@@ -696,9 +674,7 @@ def core(module):
                     "proxy_gateways": desired_rule.get("proxy_gateways"),
                     "zpa_app_segments": desired_rule.get("zpa_app_segments"),
                     "device_trust_levels": desired_rule.get("device_trust_levels"),
-                    "road_warrior_for_kerberos": desired_rule.get(
-                        "road_warrior_for_kerberos"
-                    ),
+                    "road_warrior_for_kerberos": desired_rule.get("road_warrior_for_kerberos"),
                     "cloud_applications": desired_rule.get("cloud_applications"),
                     "url_categories": desired_rule.get("url_categories"),
                     "user_agent_types": desired_rule.get("user_agent_types"),
@@ -706,18 +682,14 @@ def core(module):
                 }
             )
             module.warn("Payload for SDK: {}".format(create_data))
-            new_rule, _unused, error = client.ssl_inspection_rules.add_rule(
-                **create_data
-            )
+            new_rule, _unused, error = client.ssl_inspection_rules.add_rule(**create_data)
             if error:
                 module.fail_json(msg=f"Error creating rule: {to_native(error)}")
             module.exit_json(changed=True, data=new_rule.as_dict())
 
     elif state == "absent":
         if existing_rule:
-            _unused, _unused, error = client.ssl_inspection_rules.delete_rule(
-                rule_id=existing_rule.get("id")
-            )
+            _unused, _unused, error = client.ssl_inspection_rules.delete_rule(rule_id=existing_rule.get("id"))
             if error:
                 module.fail_json(msg=f"Error deleting rule: {to_native(error)}")
             module.exit_json(changed=True, data=existing_rule)
@@ -792,9 +764,7 @@ def main():
                     options=dict(
                         server_certificates=dict(type="str", required=False),
                         ocsp_check=dict(type="bool", required=False),
-                        block_ssl_traffic_with_no_sni_enabled=dict(
-                            type="bool", required=False
-                        ),
+                        block_ssl_traffic_with_no_sni_enabled=dict(type="bool", required=False),
                         min_client_tls_version=dict(
                             type="str",
                             required=False,
@@ -826,9 +796,7 @@ def main():
                         bypass_other_policies=dict(type="bool", required=False),
                         server_certificates=dict(type="str", required=False),
                         ocsp_check=dict(type="bool", required=False),
-                        block_ssl_traffic_with_no_sni_enabled=dict(
-                            type="bool", required=False
-                        ),
+                        block_ssl_traffic_with_no_sni_enabled=dict(type="bool", required=False),
                         min_tls_version=dict(
                             type="str",
                             required=False,

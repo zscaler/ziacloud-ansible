@@ -113,9 +113,7 @@ def core(module):
     if label_id:
         result, _unused, error = client.rule_labels.get_label(label_id)
         if error:
-            module.fail_json(
-                msg=f"Error fetching label with id {label_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching label with id {label_id}: {to_native(error)}")
         existing_rule_label = result.as_dict()
     else:
         result, _unused, error = client.rule_labels.list_labels()
@@ -129,17 +127,13 @@ def core(module):
                     break
 
     normalized_desired = normalize_labels(rule_label_params)
-    normalized_existing = (
-        normalize_labels(existing_rule_label) if existing_rule_label else {}
-    )
+    normalized_existing = normalize_labels(existing_rule_label) if existing_rule_label else {}
 
     differences_detected = False
     for key, value in normalized_desired.items():
         if normalized_existing.get(key) != value:
             differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {normalized_existing.get(key)}, Desired: {value}"
-            )
+            module.warn(f"Difference detected in {key}. Current: {normalized_existing.get(key)}, Desired: {value}")
 
     if module.check_mode:
         if state == "present" and (existing_rule_label is None or differences_detected):
@@ -154,9 +148,7 @@ def core(module):
             if differences_detected:
                 label_id_to_update = existing_rule_label.get("id")
                 if not label_id_to_update:
-                    module.fail_json(
-                        msg="Cannot update label: ID is missing from the existing resource."
-                    )
+                    module.fail_json(msg="Cannot update label: ID is missing from the existing resource.")
 
                 updated_label, _unused, error = client.rule_labels.update_label(
                     label_id=label_id_to_update,
@@ -181,13 +173,9 @@ def core(module):
         if existing_rule_label:
             label_id_to_delete = existing_rule_label.get("id")
             if not label_id_to_delete:
-                module.fail_json(
-                    msg="Cannot delete label: ID is missing from the existing resource."
-                )
+                module.fail_json(msg="Cannot delete label: ID is missing from the existing resource.")
 
-            _unused, _unused, error = client.rule_labels.delete_label(
-                label_id_to_delete
-            )
+            _unused, _unused, error = client.rule_labels.delete_label(label_id_to_delete)
             if error:
                 module.fail_json(msg=f"Error deleting label: {to_native(error)}")
             module.exit_json(changed=True, data=existing_rule_label)

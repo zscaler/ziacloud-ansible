@@ -98,23 +98,15 @@ def core(module):
     client = ZIAClientHelper(module)
 
     if profile_id is not None:
-        result, _unused, error = client.tenancy_restriction_profile.get_restriction_profile(
-            profile_id
-        )
+        result, _unused, error = client.tenancy_restriction_profile.get_restriction_profile(profile_id)
         if error:
-            module.fail_json(
-                msg=f"Failed to retrieve tenant restriction profile with ID '{profile_id}': {to_native(error)}"
-            )
+            module.fail_json(msg=f"Failed to retrieve tenant restriction profile with ID '{profile_id}': {to_native(error)}")
         profiles_out = [result.as_dict()]
     else:
         query_params = {"search": profile_name} if profile_name else {}
-        result, _unused, error = client.tenancy_restriction_profile.list_restriction_profile(
-            query_params=query_params if query_params else None
-        )
+        result, _unused, error = client.tenancy_restriction_profile.list_restriction_profile(query_params=query_params if query_params else None)
         if error:
-            module.fail_json(
-                msg=f"Error retrieving tenant restriction profiles: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error retrieving tenant restriction profiles: {to_native(error)}")
         profiles_list = [p.as_dict() for p in result] if result else []
 
         if profile_name:
@@ -123,9 +115,7 @@ def core(module):
                 None,
             )
             if matched is None:
-                module.fail_json(
-                    msg=f"Tenant restriction profile with name '{profile_name}' not found."
-                )
+                module.fail_json(msg=f"Tenant restriction profile with name '{profile_name}' not found.")
             profiles_out = [matched]
         else:
             profiles_out = profiles_list

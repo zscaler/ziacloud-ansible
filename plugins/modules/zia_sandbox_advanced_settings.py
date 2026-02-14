@@ -117,47 +117,33 @@ def core(module):
     for hash_string in file_hashes_to_be_blocked:
         is_valid, hash_type = hash_type_and_validate(hash_string)
         if not is_valid:
-            module.fail_json(
-                msg=f"Invalid hash '{hash_string}' ({hash_type}). Only MD5 hashes are supported."
-            )
+            module.fail_json(msg=f"Invalid hash '{hash_string}' ({hash_type}). Only MD5 hashes are supported.")
 
     client = ZIAClientHelper(module)
     sandbox_api = client.sandbox
 
     current_data, _unused, error = sandbox_api.get_behavioral_analysis()
     if error or not current_data:
-        module.fail_json(
-            msg=f"Error retrieving behavioral analysis config: {to_native(error)}"
-        )
+        module.fail_json(msg=f"Error retrieving behavioral analysis config: {to_native(error)}")
 
     current_hashes = current_data.get("fileHashesToBeBlocked", [])
     desired_set = set(file_hashes_to_be_blocked)
     current_set = set(current_hashes)
 
-    change_needed = (
-        desired_set != current_set if state == "present" else bool(current_set)
-    )
+    change_needed = desired_set != current_set if state == "present" else bool(current_set)
 
     if module.check_mode:
         module.exit_json(
             changed=change_needed,
-            msg=(
-                "MD5 hash list will be updated."
-                if change_needed
-                else "No change needed."
-            ),
+            msg=("MD5 hash list will be updated." if change_needed else "No change needed."),
         )
 
     if change_needed:
         if state == "present":
-            _unused, _unused, error = sandbox_api.add_hash_to_custom_list(
-                list(desired_set)
-            )
+            _unused, _unused, error = sandbox_api.add_hash_to_custom_list(list(desired_set))
             action_msg = "MD5 hash list has been updated."
         elif state == "absent":
-            _unused, _unused, error = sandbox_api.add_hash_to_custom_list(
-                []
-            )  # clear list
+            _unused, _unused, error = sandbox_api.add_hash_to_custom_list([])  # clear list
             action_msg = "MD5 hash list has been cleared."
 
         if error:

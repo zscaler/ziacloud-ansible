@@ -182,34 +182,24 @@ def core(module):
     if node_id is not None:
         node_obj, _unused, error = client.vzen_nodes.get_zen_node(node_id)
         if error or node_obj is None:
-            module.fail_json(
-                msg=f"Failed to retrieve Virtual Service Edge node with ID '{node_id}': {to_native(error)}"
-            )
+            module.fail_json(msg=f"Failed to retrieve Virtual Service Edge node with ID '{node_id}': {to_native(error)}")
         nodes = [node_obj.as_dict()]
     else:
         query_params = {}
         if node_name:
             query_params["search"] = node_name
 
-        result, _unused, error = client.vzen_nodes.list_zen_nodes(
-            query_params=query_params if query_params else None
-        )
+        result, _unused, error = client.vzen_nodes.list_zen_nodes(query_params=query_params if query_params else None)
         if error:
-            module.fail_json(
-                msg=f"Error retrieving Virtual Service Edge nodes: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error retrieving Virtual Service Edge nodes: {to_native(error)}")
 
         node_list = [n.as_dict() for n in result] if result else []
 
         if node_name:
-            matched = next(
-                (n for n in node_list if n.get("name") == node_name), None
-            )
+            matched = next((n for n in node_list if n.get("name") == node_name), None)
             if not matched:
                 available = [n.get("name") for n in node_list]
-                module.fail_json(
-                    msg=f"Virtual Service Edge node with name '{node_name}' not found. Available nodes: {available}"
-                )
+                module.fail_json(msg=f"Virtual Service Edge node with name '{node_name}' not found. Available nodes: {available}")
             nodes = [matched]
         else:
             nodes = node_list

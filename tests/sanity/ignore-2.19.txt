@@ -140,3 +140,12 @@ plugins/modules/zia_dc_exclusions.py validate-modules:missing-gplv3-license
 plugins/modules/zia_dc_exclusions_info.py validate-modules:missing-gplv3-license
 plugins/modules/zia_datacenters_info.py validate-modules:missing-gplv3-license
 plugins/modules/zia_workload_groups.py validate-modules:missing-gplv3-license
+plugins/modules/zia_alerts.py validate-modules:missing-gplv3-license
+plugins/modules/zia_alerts_info.py validate-modules:missing-gplv3-license
+plugins/modules/zia_browser_control_policy.py validate-modules:missing-gplv3-license
+plugins/modules/zia_browser_control_policy_info.py validate-modules:missing-gplv3-license
+plugins/modules/zia_casb_dlp_rules.py validate-modules:missing-gplv3-license
+plugins/modules/zia_casb_dlp_rules_info.py validate-modules:missing-gplv3-license
+plugins/modules/zia_cloud_app_control_rule_actions_info.py validate-modules:missing-gplv3-license
+plugins/modules/zia_virtual_service_edge_node.py validate-modules:missing-gplv3-license
+plugins/modules/zia_virtual_service_edge_node_info.py validate-modules:missing-gplv3-license

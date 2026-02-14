@@ -318,15 +318,11 @@ def core(module):
         module.debug(f"Fetching existing rule with ID: {rule_id}")
         result, _unused, error = client.sandbox_rules.get_rule(rule_id=rule_id)
         if error:
-            module.fail_json(
-                msg=f"Error fetching rule with id {rule_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching rule with id {rule_id}: {to_native(error)}")
         if result:
             existing_rule = result.as_dict()
             module.warn(f"Raw existing rule keys: {existing_rule.keys()}")
-            module.warn(
-                f"user_agent_types from API: {existing_rule.get('user_agent_types')}"
-            )
+            module.warn(f"user_agent_types from API: {existing_rule.get('user_agent_types')}")
     else:
         module.debug(f"Listing rules to find by name: {rule_name}")
         result, _unused, error = client.sandbox_rules.list_rules()
@@ -407,26 +403,18 @@ def core(module):
                 # For order-agnostic attributes, compare sets instead of sorted lists
                 if set(desired_value) != set(current_value):
                     differences_detected = True
-                    module.warn(
-                        f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
-                    )
+                    module.warn(f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}")
             else:
                 # For other list attributes, maintain original comparison logic
-                if all(isinstance(x, int) for x in desired_value) and all(
-                    isinstance(x, int) for x in current_value
-                ):
+                if all(isinstance(x, int) for x in desired_value) and all(isinstance(x, int) for x in current_value):
                     desired_value = sorted(desired_value)
                     current_value = sorted(current_value)
                 if current_value != desired_value:
                     differences_detected = True
-                    module.warn(
-                        f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
-                    )
+                    module.warn(f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}")
         elif current_value != desired_value:
             differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
-            )
+            module.warn(f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}")
 
     if module.check_mode:
         if state == "present" and not existing_rule:
@@ -453,9 +441,7 @@ def core(module):
             if differences_detected:
                 rule_id_to_update = existing_rule.get("id")
                 if not rule_id_to_update:
-                    module.fail_json(
-                        msg="Cannot update rule: ID is missing from the existing resource."
-                    )
+                    module.fail_json(msg="Cannot update rule: ID is missing from the existing resource.")
 
                 update_data = deleteNone(
                     {
@@ -467,14 +453,10 @@ def core(module):
                         "enabled": desired_rule.get("enabled"),
                         "ba_rule_action": desired_rule.get("ba_rule_action"),
                         "first_time_enable": desired_rule.get("first_time_enable"),
-                        "first_time_operation": desired_rule.get(
-                            "first_time_operation"
-                        ),
+                        "first_time_operation": desired_rule.get("first_time_operation"),
                         "ml_action_enabled": desired_rule.get("ml_action_enabled"),
                         "by_threat_score": desired_rule.get("by_threat_score"),
-                        "ba_policy_categories": desired_rule.get(
-                            "ba_policy_categories"
-                        ),
+                        "ba_policy_categories": desired_rule.get("ba_policy_categories"),
                         "url_categories": desired_rule.get("url_categories"),
                         "protocols": desired_rule.get("protocols"),
                         "file_types": desired_rule.get("file_types"),
@@ -489,9 +471,7 @@ def core(module):
                 )
 
                 module.warn("Payload Update for SDK: {}".format(update_data))
-                updated_rule, _unused, error = client.sandbox_rules.update_rule(
-                    **update_data
-                )
+                updated_rule, _unused, error = client.sandbox_rules.update_rule(**update_data)
                 if error:
                     module.fail_json(msg=f"Error updating rule: {to_native(error)}")
                 module.exit_json(changed=True, data=updated_rule.as_dict())
@@ -536,14 +516,10 @@ def core(module):
         if existing_rule:
             rule_id_to_delete = existing_rule.get("id")
             if not rule_id_to_delete:
-                module.fail_json(
-                    msg="Cannot delete rule: ID is missing from the existing resource."
-                )
+                module.fail_json(msg="Cannot delete rule: ID is missing from the existing resource.")
 
             module.debug(f"About to delete rule with ID: {rule_id_to_delete}")
-            _unused, _unused, error = client.sandbox_rules.delete_rule(
-                rule_id=rule_id_to_delete
-            )
+            _unused, _unused, error = client.sandbox_rules.delete_rule(rule_id=rule_id_to_delete)
             if error:
                 module.fail_json(msg=f"Error deleting rule: {to_native(error)}")
             module.debug(f"Successfully deleted rule with ID: {rule_id_to_delete}")

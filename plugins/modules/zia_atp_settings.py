@@ -390,9 +390,7 @@ def core(module):
         "malicious_urls_capture",
     ]
 
-    settings_data = {
-        k: module.params.get(k) for k in params if module.params.get(k) is not None
-    }
+    settings_data = {k: module.params.get(k) for k in params if module.params.get(k) is not None}
 
     # Validate and format country codes
     source_countries = settings_data.get("blocked_countries")
@@ -402,16 +400,12 @@ def core(module):
             if validate_iso3166_alpha2(country_code):
                 validated_source_countries.append(f"COUNTRY_{country_code}")
             else:
-                module.fail_json(
-                    msg=f"Invalid source country code '{country_code}'. Must be ISO3166 Alpha2."
-                )
+                module.fail_json(msg=f"Invalid source country code '{country_code}'. Must be ISO3166 Alpha2.")
         settings_data["blocked_countries"] = validated_source_countries
 
     current_settings, _unused, error = client.atp_policy.get_atp_settings()
     if error:
-        module.fail_json(
-            msg=f"Error fetching atp advanced settings: {to_native(error)}"
-        )
+        module.fail_json(msg=f"Error fetching atp advanced settings: {to_native(error)}")
 
     # Prefer _raw_config if available, fallback to as_dict()
     if hasattr(current_settings, "_raw_config") and current_settings._raw_config:
@@ -437,9 +431,7 @@ def core(module):
         for k, v in settings_data.items():
             setattr(current_settings, k, v)
 
-        updated, _unused, error = client.atp_policy.update_atp_settings(
-            **current_settings.as_dict()
-        )
+        updated, _unused, error = client.atp_policy.update_atp_settings(**current_settings.as_dict())
 
         if error:
             module.fail_json(msg=f"Error updating malware settings: {to_native(error)}")
@@ -499,9 +491,7 @@ def main():
             ad_spyware_sites_capture=dict(type="bool", required=False),
             dga_domains_blocked=dict(type="bool", required=False),
             dga_domains_capture=dict(type="bool", required=False),
-            alert_for_unknown_or_suspicious_c2_traffic=dict(
-                type="bool", required=False
-            ),
+            alert_for_unknown_or_suspicious_c2_traffic=dict(type="bool", required=False),
             malicious_urls_capture=dict(type="bool", required=False),
             state=dict(type="str", choices=["present"], default="present"),
         )

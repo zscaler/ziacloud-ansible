@@ -10,9 +10,7 @@ __metaclass__ = type
 import sys
 import os
 
-COLLECTION_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "..", "..", "..")
-)
+COLLECTION_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".."))
 if COLLECTION_ROOT not in sys.path:
     sys.path.insert(0, COLLECTION_ROOT)
 
@@ -191,9 +189,7 @@ class TestZIAClientHelper:
     def test_env_var_use_legacy_client(self):
         """Test that ZSCALER_USE_LEGACY_CLIENT env var is respected."""
         mock_legacy_client = MagicMock()
-        with patch.dict(
-            os.environ, {"ZSCALER_USE_LEGACY_CLIENT": "true"}, clear=False
-        ), patch(
+        with patch.dict(os.environ, {"ZSCALER_USE_LEGACY_CLIENT": "true"}, clear=False), patch(
             "ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client.HAS_ZSCALER",
             True,
         ), patch(

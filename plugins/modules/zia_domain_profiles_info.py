@@ -125,13 +125,9 @@ def core(module):
     profile_name = module.params.get("profile_name")
 
     client = ZIAClientHelper(module)
-    result, _unused, error = (
-        client.saas_security_api.list_domain_profiles_lite()
-    )
+    result, _unused, error = client.saas_security_api.list_domain_profiles_lite()
     if error:
-        module.fail_json(
-            msg=f"Error retrieving domain profiles: {to_native(error)}"
-        )
+        module.fail_json(msg=f"Error retrieving domain profiles: {to_native(error)}")
     profiles_list = [p.as_dict() for p in result] if result else []
 
     matched = None
@@ -148,8 +144,7 @@ def core(module):
     if profile_id is not None or profile_name:
         if matched is None:
             module.fail_json(
-                msg=f"Domain profile with name '{profile_name}' or id '{profile_id}' not found. "
-                "Omit profile_id and profile_name to list all profiles."
+                msg=f"Domain profile with name '{profile_name}' or id '{profile_id}' not found. " "Omit profile_id and profile_name to list all profiles."
             )
         profiles_out = [matched]
     else:

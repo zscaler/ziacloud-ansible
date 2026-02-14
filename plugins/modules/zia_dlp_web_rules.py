@@ -257,7 +257,7 @@ options:
     description:
       - The EUN template ID associated with the rule
     required: false
-    type: int 
+    type: int
 """
 
 EXAMPLES = r"""
@@ -335,9 +335,7 @@ def normalize_dlp_rule(rule):
 def get_external_dlp_engine_id(client):
     """Get the ID of the EXTERNAL DLP engine using list_dlp_engines_lite."""
     # Search specifically for EXTERNAL engine
-    engines, _unused, error = client.dlp_engine.list_dlp_engines_lite(
-        query_params={"search": "EXTERNAL"}
-    )
+    engines, _unused, error = client.dlp_engine.list_dlp_engines_lite(query_params={"search": "EXTERNAL"})
     if error:
         raise Exception(f"Failed to search DLP engines: {to_native(error)}")
 
@@ -349,15 +347,10 @@ def get_external_dlp_engine_id(client):
 
     # Find EXTERNAL engine by predefined_engine_name
     for engine in engines:
-        if (
-            hasattr(engine, "predefined_engine_name")
-            and str(engine.predefined_engine_name).upper() == "EXTERNAL"
-        ):
+        if hasattr(engine, "predefined_engine_name") and str(engine.predefined_engine_name).upper() == "EXTERNAL":
             return engine.id
 
-    raise Exception(
-        "EXTERNAL DLP engine not found. Please ensure your account has access to the EXTERNAL DLP engine"
-    )
+    raise Exception("EXTERNAL DLP engine not found. Please ensure your account has access to the EXTERNAL DLP engine")
 
 
 def core(module):
@@ -436,9 +429,7 @@ def core(module):
     if rule_id is not None:
         result, _unused, error = client.dlp_web_rules.get_rule(rule_id=rule_id)
         if error:
-            module.fail_json(
-                msg=f"Error fetching rule with id {rule_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching rule with id {rule_id}: {to_native(error)}")
         if result:
             existing_rule = result.as_dict()
     else:
@@ -535,17 +526,13 @@ def core(module):
 
         # Sort lists of IDs for comparison
         if isinstance(desired_value, list) and isinstance(current_value, list):
-            if all(isinstance(x, int) for x in desired_value) and all(
-                isinstance(x, int) for x in current_value
-            ):
+            if all(isinstance(x, int) for x in desired_value) and all(isinstance(x, int) for x in current_value):
                 desired_value = sorted(desired_value)
                 current_value = sorted(current_value)
 
         if current_value != desired_value:
             differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
-            )
+            module.warn(f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}")
 
     if module.check_mode:
         if state == "present" and (existing_rule is None or differences_detected):
@@ -560,9 +547,7 @@ def core(module):
             if differences_detected:
                 rule_id_to_update = existing_rule.get("id")
                 if not rule_id_to_update:
-                    module.fail_json(
-                        msg="Cannot update rule: ID is missing from the existing resource."
-                    )
+                    module.fail_json(msg="Cannot update rule: ID is missing from the existing resource.")
 
                 update_data = deleteNone(
                     {
@@ -586,52 +571,30 @@ def core(module):
                         "min_size": desired_rule.get("min_size"),
                         "time_windows": desired_rule.get("time_windows"),
                         "auditor": desired_rule.get("auditor"),
-                        "external_auditor_email": desired_rule.get(
-                            "external_auditor_email"
-                        ),
-                        "notification_template": desired_rule.get(
-                            "notification_template"
-                        ),
+                        "external_auditor_email": desired_rule.get("external_auditor_email"),
+                        "notification_template": desired_rule.get("notification_template"),
                         "match_only": desired_rule.get("match_only"),
                         "icap_server": desired_rule.get("icap_server"),
-                        "without_content_inspection": desired_rule.get(
-                            "without_content_inspection"
-                        ),
+                        "without_content_inspection": desired_rule.get("without_content_inspection"),
                         "labels": desired_rule.get("labels"),
                         "excluded_groups": desired_rule.get("excluded_groups"),
-                        "excluded_departments": desired_rule.get(
-                            "excluded_departments"
-                        ),
+                        "excluded_departments": desired_rule.get("excluded_departments"),
                         "excluded_users": desired_rule.get("excluded_users"),
-                        "zscaler_incident_receiver": desired_rule.get(
-                            "zscaler_incident_receiver"
-                        ),
-                        "dlp_download_scan_enabled": desired_rule.get(
-                            "dlp_download_scan_enabled"
-                        ),
-                        "zcc_notifications_enabled": desired_rule.get(
-                            "zcc_notifications_enabled"
-                        ),
+                        "zscaler_incident_receiver": desired_rule.get("zscaler_incident_receiver"),
+                        "dlp_download_scan_enabled": desired_rule.get("dlp_download_scan_enabled"),
+                        "zcc_notifications_enabled": desired_rule.get("zcc_notifications_enabled"),
                         "eun_template_id": desired_rule.get("eun_template_id"),
-                        "user_risk_score_levels": desired_rule.get(
-                            "user_risk_score_levels"
-                        ),
+                        "user_risk_score_levels": desired_rule.get("user_risk_score_levels"),
                         "severity": desired_rule.get("severity"),
                         "parent_rule": desired_rule.get("parent_rule"),
                         "workload_groups": desired_rule.get("workload_groups"),
-                        "include_domain_profiles": desired_rule.get(
-                            "include_domain_profiles"
-                        ),
-                        "exclude_domain_profiles": desired_rule.get(
-                            "exclude_domain_profiles"
-                        ),
+                        "include_domain_profiles": desired_rule.get("include_domain_profiles"),
+                        "exclude_domain_profiles": desired_rule.get("exclude_domain_profiles"),
                     }
                 )
 
                 module.warn("Payload Update for SDK: {}".format(update_data))
-                updated_rule, _unused, error = client.dlp_web_rules.update_rule(
-                    **update_data
-                )
+                updated_rule, _unused, error = client.dlp_web_rules.update_rule(**update_data)
                 if error:
                     module.fail_json(msg=f"Error updating rule: {to_native(error)}")
                 module.exit_json(changed=True, data=updated_rule.as_dict())
@@ -659,41 +622,25 @@ def core(module):
                     "min_size": desired_rule.get("min_size"),
                     "time_windows": desired_rule.get("time_windows"),
                     "auditor": desired_rule.get("auditor"),
-                    "external_auditor_email": desired_rule.get(
-                        "external_auditor_email"
-                    ),
+                    "external_auditor_email": desired_rule.get("external_auditor_email"),
                     "notification_template": desired_rule.get("notification_template"),
                     "match_only": desired_rule.get("match_only"),
                     "icap_server": desired_rule.get("icap_server"),
-                    "without_content_inspection": desired_rule.get(
-                        "without_content_inspection"
-                    ),
+                    "without_content_inspection": desired_rule.get("without_content_inspection"),
                     "labels": desired_rule.get("labels"),
                     "excluded_groups": desired_rule.get("excluded_groups"),
                     "excluded_departments": desired_rule.get("excluded_departments"),
                     "excluded_users": desired_rule.get("excluded_users"),
-                    "zscaler_incident_receiver": desired_rule.get(
-                        "zscaler_incident_receiver"
-                    ),
-                    "dlp_download_scan_enabled": desired_rule.get(
-                        "dlp_download_scan_enabled"
-                    ),
-                    "zcc_notifications_enabled": desired_rule.get(
-                        "zcc_notifications_enabled"
-                    ),
+                    "zscaler_incident_receiver": desired_rule.get("zscaler_incident_receiver"),
+                    "dlp_download_scan_enabled": desired_rule.get("dlp_download_scan_enabled"),
+                    "zcc_notifications_enabled": desired_rule.get("zcc_notifications_enabled"),
                     "eun_template_id": desired_rule.get("eun_template_id"),
-                    "user_risk_score_levels": desired_rule.get(
-                        "user_risk_score_levels"
-                    ),
+                    "user_risk_score_levels": desired_rule.get("user_risk_score_levels"),
                     "severity": desired_rule.get("severity"),
                     "parent_rule": desired_rule.get("parent_rule"),
                     "workload_groups": desired_rule.get("workload_groups"),
-                    "include_domain_profiles": desired_rule.get(
-                        "include_domain_profiles"
-                    ),
-                    "exclude_domain_profiles": desired_rule.get(
-                        "exclude_domain_profiles"
-                    ),
+                    "include_domain_profiles": desired_rule.get("include_domain_profiles"),
+                    "exclude_domain_profiles": desired_rule.get("exclude_domain_profiles"),
                 }
             )
             module.warn("Payload Update for SDK: {}".format(create_data))
@@ -706,13 +653,9 @@ def core(module):
         if existing_rule:
             rule_id_to_delete = existing_rule.get("id")
             if not rule_id_to_delete:
-                module.fail_json(
-                    msg="Cannot delete rule: ID is missing from the existing resource."
-                )
+                module.fail_json(msg="Cannot delete rule: ID is missing from the existing resource.")
 
-            _unused, _unused, error = client.dlp_web_rules.delete_rule(
-                rule_id=rule_id_to_delete
-            )
+            _unused, _unused, error = client.dlp_web_rules.delete_rule(rule_id=rule_id_to_delete)
             if error:
                 module.fail_json(msg=f"Error deleting rule: {to_native(error)}")
             module.exit_json(changed=True, data=existing_rule)

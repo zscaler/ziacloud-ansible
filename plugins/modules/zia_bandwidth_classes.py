@@ -136,9 +136,7 @@ def core(module):
     if bwd_id:
         result, _unused, error = client.bandwidth_classes.get_class(bwd_id)
         if error:
-            module.fail_json(
-                msg=f"Error fetching class with id {bwd_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching class with id {bwd_id}: {to_native(error)}")
         existing_class = result.as_dict()
     else:
         result, _unused, error = client.bandwidth_classes.list_classes()
@@ -160,22 +158,14 @@ def core(module):
     for key, desired_value in normalized_desired.items():
         current_value = normalized_existing.get(key)
 
-        if (
-            key in unordered_fields
-            and isinstance(desired_value, list)
-            and isinstance(current_value, list)
-        ):
+        if key in unordered_fields and isinstance(desired_value, list) and isinstance(current_value, list):
             if set(map(str, desired_value)) != set(map(str, current_value)):
                 differences_detected = True
-                module.warn(
-                    f"Difference detected in {key} (unordered). Current: {current_value}, Desired: {desired_value}"
-                )
+                module.warn(f"Difference detected in {key} (unordered). Current: {current_value}, Desired: {desired_value}")
         else:
             if current_value != desired_value:
                 differences_detected = True
-                module.warn(
-                    f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
-                )
+                module.warn(f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}")
 
     if module.check_mode:
         if state == "present" and (existing_class is None or differences_detected):
@@ -190,9 +180,7 @@ def core(module):
             if differences_detected:
                 bwd_id_to_update = existing_class.get("id")
                 if not bwd_id_to_update:
-                    module.fail_json(
-                        msg="Cannot update class: ID is missing from the existing resource."
-                    )
+                    module.fail_json(msg="Cannot update class: ID is missing from the existing resource.")
 
                 updated_class, _unused, error = client.bandwidth_classes.update_class(
                     bwd_id=bwd_id_to_update,
@@ -221,13 +209,9 @@ def core(module):
         if existing_class:
             bwd_id_to_delete = existing_class.get("id")
             if not bwd_id_to_delete:
-                module.fail_json(
-                    msg="Cannot delete class: ID is missing from the existing resource."
-                )
+                module.fail_json(msg="Cannot delete class: ID is missing from the existing resource.")
 
-            _unused, _unused, error = client.bandwidth_classes.delete_class(
-                bwd_id_to_delete
-            )
+            _unused, _unused, error = client.bandwidth_classes.delete_class(bwd_id_to_delete)
             if error:
                 module.fail_json(msg=f"Error deleting class: {to_native(error)}")
             module.exit_json(changed=True, data=existing_class)

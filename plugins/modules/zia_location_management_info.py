@@ -280,9 +280,7 @@ def core(module):
     if location_id is not None:
         location_obj, _unused, error = client.locations.get_location(location_id)
         if error or location_obj is None:
-            module.fail_json(
-                msg=f"Failed to retrieve location with ID '{location_id}': {to_native(error)}"
-            )
+            module.fail_json(msg=f"Failed to retrieve location with ID '{location_id}': {to_native(error)}")
         locations = [location_obj.as_dict()]
     else:
         query_params = {}
@@ -300,9 +298,7 @@ def core(module):
             if val is not None:
                 query_params[param] = val
 
-        result, _unused, error = client.locations.list_locations(
-            query_params=query_params
-        )
+        result, _unused, error = client.locations.list_locations(query_params=query_params)
         if error:
             module.fail_json(msg=f"Error retrieving locations: {to_native(error)}")
 

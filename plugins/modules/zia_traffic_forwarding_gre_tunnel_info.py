@@ -228,30 +228,20 @@ def core(module):
     if tunnel_id is not None:
         tunnel_obj, _unused, error = client.gre_tunnel.get_gre_tunnel(tunnel_id)
         if error or tunnel_obj is None:
-            module.fail_json(
-                msg=f"Failed to retrieve GRE tunnel with ID '{tunnel_id}': {to_native(error)}"
-            )
+            module.fail_json(msg=f"Failed to retrieve GRE tunnel with ID '{tunnel_id}': {to_native(error)}")
         gre_tunnels = [tunnel_obj.as_dict()]
     else:
         result, err = collect_all_items(client.gre_tunnel.list_gre_tunnels)
         if err:
             module.fail_json(msg=f"Error retrieving GRE tunnels: {to_native(err)}")
 
-        tunnel_list = (
-            [t.as_dict() if hasattr(t, "as_dict") else t for t in result]
-            if result
-            else []
-        )
+        tunnel_list = [t.as_dict() if hasattr(t, "as_dict") else t for t in result] if result else []
 
         if source_ip:
-            matched = next(
-                (t for t in tunnel_list if t.get("source_ip") == source_ip), None
-            )
+            matched = next((t for t in tunnel_list if t.get("source_ip") == source_ip), None)
             if not matched:
                 available = [t.get("source_ip") for t in tunnel_list]
-                module.fail_json(
-                    msg=f"GRE tunnel with source IP '{source_ip}' not found. Available: {available}"
-                )
+                module.fail_json(msg=f"GRE tunnel with source IP '{source_ip}' not found. Available: {available}")
             gre_tunnels = [matched]
         else:
             gre_tunnels = tunnel_list

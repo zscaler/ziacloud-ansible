@@ -87,17 +87,13 @@ def core(module):
 
     bypass_urls = module.params.get("bypass_urls")
     if bypass_urls is None:
-        module.fail_json(
-            msg="The 'bypass_urls' parameter must be a list. Use `bypass_urls: []` to explicitly provide an empty list."
-        )
+        module.fail_json(msg="The 'bypass_urls' parameter must be a list. Use `bypass_urls: []` to explicitly provide an empty list.")
 
     state = module.params.get("state")
 
     current_list, _unused, error = client.atp_policy.get_atp_security_exceptions()
     if error:
-        module.fail_json(
-            msg=f"Error fetching URLs from bypass list: {to_native(error)}"
-        )
+        module.fail_json(msg=f"Error fetching URLs from bypass list: {to_native(error)}")
 
     current_normalized = normalize_urls(current_list)
     desired_normalized = normalize_urls(bypass_urls)
@@ -123,13 +119,9 @@ def core(module):
         module.exit_json(changed=changed)
 
     if changed:
-        updated, _unused, error = client.atp_policy.update_atp_security_exceptions(
-            desired_normalized
-        )
+        updated, _unused, error = client.atp_policy.update_atp_security_exceptions(desired_normalized)
         if error:
-            module.fail_json(
-                msg=f"Error updating ATP security exception list: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error updating ATP security exception list: {to_native(error)}")
         module.exit_json(changed=True, security_exceptions=updated)
 
     module.exit_json(changed=False, security_exceptions=current_list)

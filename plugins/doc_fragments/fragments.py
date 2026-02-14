@@ -50,16 +50,17 @@ options:
         required: false
         type: str
         choices:
-            - zscloud
-            - zscaler
-            - zscalerone
-            - zscalertwo
-            - zscalerthree
-            - zscalerbeta
-            - zscalergov
-            - zscalerten
             - beta
             - production
+            - zscaler
+            - zscalerbeta
+            - zscalergov
+            - zscalerone
+            - zscalerten
+            - zscalerthree
+            - zscalertwo
+            - zscloud
+            - zspreview
     use_legacy_client:
         description:
             - Whether to use the legacy Zscaler API client.
@@ -127,16 +128,17 @@ options:
                 type: str
                 required: false
                 choices:
-                    - zscloud
-                    - zscaler
-                    - zscalerone
-                    - zscalertwo
-                    - zscalerthree
-                    - zscalerbeta
-                    - zscalergov
-                    - zscalerten
                     - beta
                     - production
+                    - zscaler
+                    - zscalerbeta
+                    - zscalergov
+                    - zscalerone
+                    - zscalerten
+                    - zscalerthree
+                    - zscalertwo
+                    - zscloud
+                    - zspreview
             use_legacy_client:
                 description:
                     - Whether to use the legacy Zscaler API client.

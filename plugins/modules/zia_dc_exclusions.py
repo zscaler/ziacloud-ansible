@@ -248,7 +248,7 @@ def core(module):
             cur_start = existing_dict.get("start_time")
             cur_end = existing_dict.get("end_time")
             cur_desc = existing_dict.get("description") or ""
-            if (use_start == cur_start and use_end == cur_end and use_desc == cur_desc):
+            if use_start == cur_start and use_end == cur_end and use_desc == cur_desc:
                 existing_out = existing.as_dict() if hasattr(existing, "as_dict") else existing
                 module.exit_json(changed=False, data=existing_out)
             updated, _unused, error = client.traffic_datacenters.update_dc_exclusion(

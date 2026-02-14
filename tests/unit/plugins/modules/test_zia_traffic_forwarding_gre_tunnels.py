@@ -3,27 +3,43 @@
 # MIT License - Auto-generated
 
 from __future__ import absolute_import, division, print_function
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from tests.unit.plugins.modules.common.utils import (
+    set_module_args,
+    AnsibleExitJson,
+    AnsibleFailJson,
+    ModuleTestCase,
+    DEFAULT_PROVIDER,
+)
+from unittest.mock import MagicMock, patch
+import pytest
+
 __metaclass__ = type
 
-import sys, os
+import sys
+import os
+
 COLLECTION_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".."))
 if COLLECTION_ROOT not in sys.path:
     sys.path.insert(0, COLLECTION_ROOT)
 
-import pytest
-from unittest.mock import MagicMock, patch
-from tests.unit.plugins.modules.common.utils import (
-    set_module_args, AnsibleExitJson, AnsibleFailJson, ModuleTestCase, DEFAULT_PROVIDER,
-)
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
 
 REAL_ARGUMENT_SPEC = ZIAClientHelper.zia_argument_spec()
 
+
 class MockBox:
-    def __init__(self, data): self._data = data or {}
-    def as_dict(self): return self._data
-    def get(self, key, default=None): return self._data.get(key, default)
-    def __getattr__(self, name): return self._data.get(name)
+    def __init__(self, data):
+        self._data = data or {}
+
+    def as_dict(self):
+        return self._data
+
+    def get(self, key, default=None):
+        return self._data.get(key, default)
+
+    def __getattr__(self, name):
+        return self._data.get(name)
+
 
 class TestTrafficForwardingGreTunnelsModule(ModuleTestCase):
     @pytest.fixture
@@ -33,11 +49,31 @@ class TestTrafficForwardingGreTunnelsModule(ModuleTestCase):
             client_instance = MagicMock()
             mock_class.return_value = client_instance
 
-            client_instance.gre_tunnel.add_gre_tunnel.return_value = (MockBox({'id': 1, 'name': 'test', 'whitelist_urls': [], 'blacklist_urls': []}), None, None)
-            client_instance.gre_tunnel.delete_gre_tunnel.return_value = (MockBox({'id': 1, 'name': 'test', 'whitelist_urls': [], 'blacklist_urls': []}), None, None)
-            client_instance.gre_tunnel.get_gre_tunnel.return_value = (MockBox({'id': 1, 'name': 'test', 'whitelist_urls': [], 'blacklist_urls': []}), None, None)
-            client_instance.gre_tunnel.list_gre_ranges.return_value = (MockBox({'id': 1, 'name': 'test', 'whitelist_urls': [], 'blacklist_urls': []}), None, None)
-            client_instance.gre_tunnel.update_gre_tunnel.return_value = (MockBox({'id': 1, 'name': 'test', 'whitelist_urls': [], 'blacklist_urls': []}), None, None)
+            client_instance.gre_tunnel.add_gre_tunnel.return_value = (
+                MockBox({"id": 1, "name": "test", "whitelist_urls": [], "blacklist_urls": []}),
+                None,
+                None,
+            )
+            client_instance.gre_tunnel.delete_gre_tunnel.return_value = (
+                MockBox({"id": 1, "name": "test", "whitelist_urls": [], "blacklist_urls": []}),
+                None,
+                None,
+            )
+            client_instance.gre_tunnel.get_gre_tunnel.return_value = (
+                MockBox({"id": 1, "name": "test", "whitelist_urls": [], "blacklist_urls": []}),
+                None,
+                None,
+            )
+            client_instance.gre_tunnel.list_gre_ranges.return_value = (
+                MockBox({"id": 1, "name": "test", "whitelist_urls": [], "blacklist_urls": []}),
+                None,
+                None,
+            )
+            client_instance.gre_tunnel.update_gre_tunnel.return_value = (
+                MockBox({"id": 1, "name": "test", "whitelist_urls": [], "blacklist_urls": []}),
+                None,
+                None,
+            )
             client_instance.gre_tunnel.list_gre_tunnels.return_value = ([], None, None)
             yield client_instance
 
@@ -45,6 +81,7 @@ class TestTrafficForwardingGreTunnelsModule(ModuleTestCase):
         mock_client.gre_tunnel.list_gre_tunnels.return_value = ([], None, None)
         set_module_args(provider=DEFAULT_PROVIDER, source_ip="1.2.3.4")
         from ansible_collections.zscaler.ziacloud.plugins.modules import zia_traffic_forwarding_gre_tunnels
+
         with pytest.raises(AnsibleExitJson) as result:
             zia_traffic_forwarding_gre_tunnels.main()
         assert result.value.result.get("changed", False) is True
@@ -54,13 +91,15 @@ class TestTrafficForwardingGreTunnelsModule(ModuleTestCase):
         mock_client.gre_tunnel.get_gre_tunnel.return_value = (mock_item, None, None)
         set_module_args(provider=DEFAULT_PROVIDER, id=1, source_ip="1.2.3.4")
         from ansible_collections.zscaler.ziacloud.plugins.modules import zia_traffic_forwarding_gre_tunnels
+
         with pytest.raises(AnsibleExitJson) as result:
             zia_traffic_forwarding_gre_tunnels.main()
         assert result.value.result.get("changed") in (True, False)
 
     def test_api_error(self, mock_client):
-        mock_client.gre_tunnel.list_gre_tunnels.return_value = (None, None, 'API Error')
+        mock_client.gre_tunnel.list_gre_tunnels.return_value = (None, None, "API Error")
         set_module_args(provider=DEFAULT_PROVIDER, source_ip="1.2.3.4")
         from ansible_collections.zscaler.ziacloud.plugins.modules import zia_traffic_forwarding_gre_tunnels
+
         with pytest.raises(AnsibleFailJson):
             zia_traffic_forwarding_gre_tunnels.main()

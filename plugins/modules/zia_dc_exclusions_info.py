@@ -150,9 +150,7 @@ def core(module):
 
     result, _unused, error = client.traffic_datacenters.list_dc_exclusions()
     if error:
-        module.fail_json(
-            msg=f"Error retrieving DC exclusions: {to_native(error)}"
-        )
+        module.fail_json(msg=f"Error retrieving DC exclusions: {to_native(error)}")
     all_exclusions = list(result or [])
 
     def _get_dcid(e):
@@ -185,9 +183,7 @@ def core(module):
         filtered = [e for e in filtered if name_lower in _get_dc_name(e).lower()]
 
     if filter_id and not filtered:
-        module.fail_json(
-            msg=f"No DC exclusion found with datacenter id {filter_id}."
-        )
+        module.fail_json(msg=f"No DC exclusion found with datacenter id {filter_id}.")
 
     exclusions_out = [_flatten_exclusion(ex) for ex in filtered]
     module.exit_json(changed=False, exclusions=exclusions_out)

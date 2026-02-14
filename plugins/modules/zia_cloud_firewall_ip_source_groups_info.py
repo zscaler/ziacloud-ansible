@@ -122,22 +122,16 @@ def core(module):
     if group_id is not None:
         group_obj, _unused, error = client.cloud_firewall.get_ip_source_group(group_id)
         if error or group_obj is None:
-            module.fail_json(
-                msg=f"Failed to retrieve IP Source Group with ID '{group_id}': {to_native(error)}"
-            )
+            module.fail_json(msg=f"Failed to retrieve IP Source Group with ID '{group_id}': {to_native(error)}")
         groups = [group_obj.as_dict()]
     else:
         query_params = {}
         if group_name:
             query_params["search"] = group_name
 
-        result, _unused, error = client.cloud_firewall.list_ip_source_groups(
-            query_params=query_params
-        )
+        result, _unused, error = client.cloud_firewall.list_ip_source_groups(query_params=query_params)
         if error:
-            module.fail_json(
-                msg=f"Error retrieving IP Source Groups: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error retrieving IP Source Groups: {to_native(error)}")
 
         group_list = [g.as_dict() for g in result] if result else []
 
@@ -145,9 +139,7 @@ def core(module):
             matched = next((g for g in group_list if g.get("name") == group_name), None)
             if not matched:
                 available = [g.get("name") for g in group_list]
-                module.fail_json(
-                    msg=f"IP Source Group with name '{group_name}' not found. Available groups: {available}"
-                )
+                module.fail_json(msg=f"IP Source Group with name '{group_name}' not found. Available groups: {available}")
             groups = [matched]
         else:
             groups = group_list

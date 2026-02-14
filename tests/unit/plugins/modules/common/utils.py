@@ -108,9 +108,7 @@ class ModuleTestCase:
         Automatically mock exit_json and fail_json for all tests.
         This allows us to capture module output.
         """
-        with patch.multiple(
-            basic.AnsibleModule, exit_json=exit_json, fail_json=fail_json
-        ):
+        with patch.multiple(basic.AnsibleModule, exit_json=exit_json, fail_json=fail_json):
             yield
 
     @pytest.fixture
@@ -119,9 +117,7 @@ class ModuleTestCase:
         Mock the ZIAClientHelper to avoid actual API calls.
         Returns the mocked client for further configuration.
         """
-        with patch(
-            "ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client.ZIAClientHelper"
-        ) as client_mock:
+        with patch("ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client.ZIAClientHelper") as client_mock:
             yield client_mock.return_value
 
     @pytest.fixture
@@ -130,9 +126,7 @@ class ModuleTestCase:
         Mock the ZIAClientHelper class and return the mock instance.
         This is the primary fixture used by module tests.
         """
-        with patch(
-            "ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client.ZIAClientHelper"
-        ) as mock_zia_client_helper_class:
+        with patch("ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client.ZIAClientHelper") as mock_zia_client_helper_class:
             mock_client_instance = MagicMock()
             mock_zia_client_helper_class.return_value = mock_client_instance
             yield mock_client_instance

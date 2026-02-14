@@ -124,10 +124,7 @@ def core(module):
     settings_data = {
         k: module.params.get(k)
         for k in params
-        if module.params.get(k) is not None
-        and not (
-            isinstance(module.params.get(k), str) and module.params.get(k).strip() == ""
-        )
+        if module.params.get(k) is not None and not (isinstance(module.params.get(k), str) and module.params.get(k).strip() == "")
     }
 
     for date_field in ["view_only_until", "full_access_until"]:
@@ -137,9 +134,7 @@ def core(module):
                 timestamp = parse_rfc1123_to_epoch_millis(value)
                 now_ms = int(datetime.now(timezone.utc).timestamp() * 1000)
                 if timestamp < now_ms:
-                    module.fail_json(
-                        msg=f"The value for '{date_field}' must be a future date. Provided: {value}"
-                    )
+                    module.fail_json(msg=f"The value for '{date_field}' must be a future date. Provided: {value}")
                 settings_data[date_field] = timestamp
             except ValueError as ve:
                 module.fail_json(msg=str(ve))
@@ -147,9 +142,7 @@ def core(module):
     # 1) Fetch current EUN settings from the SDK
     current_settings, _unused, error = client.remote_assistance.get_remote_assistance()
     if error:
-        module.fail_json(
-            msg=f"Error fetching remote assistance settings: {to_native(error)}"
-        )
+        module.fail_json(msg=f"Error fetching remote assistance settings: {to_native(error)}")
 
     # 2) Convert both current/desired data to normalized dicts
     current_dict = normalize_eun_values(current_settings.as_dict())
@@ -171,9 +164,7 @@ def core(module):
     if drift:
         module.warn("🔎 Drift found in these keys:")
         for k in diff_keys:
-            module.warn(
-                f"  {k}: current={current_dict.get(k)}, desired={desired_dict.get(k)}"
-            )
+            module.warn(f"  {k}: current={current_dict.get(k)}, desired={desired_dict.get(k)}")
 
     # 4) Respect check_mode
     if module.check_mode:
@@ -193,13 +184,9 @@ def core(module):
 
         module.warn(f"🧼 Cleaned payload sent to SDK: {payload}")
 
-        updated, _unused, error = client.remote_assistance.update_remote_assistance(
-            **payload
-        )
+        updated, _unused, error = client.remote_assistance.update_remote_assistance(**payload)
         if error:
-            module.fail_json(
-                msg=f"Error updating remote assistance settings: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error updating remote assistance settings: {to_native(error)}")
 
         module.exit_json(changed=True, end_user_notifications=updated.as_dict())
     else:

@@ -253,29 +253,19 @@ def core(module):
     subscription_id = module.params.get("id")
     subscription_email = module.params.get("email")
 
-    alert_params = {
-        p: module.params.get(p)
-        for p in ALERT_SUBSCRIPTION_ATTRIBUTES
-        if module.params.get(p) is not None
-    }
+    alert_params = {p: module.params.get(p) for p in ALERT_SUBSCRIPTION_ATTRIBUTES if module.params.get(p) is not None}
 
     existing_subscription = None
 
     if subscription_id:
-        result, _unused, error = client.alert_subscriptions.get_alert_subscription(
-            subscription_id
-        )
+        result, _unused, error = client.alert_subscriptions.get_alert_subscription(subscription_id)
         if error:
-            module.fail_json(
-                msg=f"Error fetching alert subscription with id {subscription_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching alert subscription with id {subscription_id}: {to_native(error)}")
         existing_subscription = result.as_dict()
     else:
         result, _unused, error = client.alert_subscriptions.list_alert_subscriptions()
         if error:
-            module.fail_json(
-                msg=f"Error listing alert subscriptions: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error listing alert subscriptions: {to_native(error)}")
         subscriptions_list = [s.as_dict() for s in result] if result else []
         if subscription_email:
             for sub in subscriptions_list:
@@ -284,25 +274,17 @@ def core(module):
                     break
 
     normalized_desired = normalize_alert_subscription(alert_params)
-    normalized_existing = (
-        normalize_alert_subscription(existing_subscription)
-        if existing_subscription
-        else {}
-    )
+    normalized_existing = normalize_alert_subscription(existing_subscription) if existing_subscription else {}
 
     differences_detected = False
     for key, value in normalized_desired.items():
         norm_val = _normalize_list_for_compare(value)
         if normalized_existing.get(key) != norm_val:
             differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {normalized_existing.get(key)}, Desired: {norm_val}"
-            )
+            module.warn(f"Difference detected in {key}. Current: {normalized_existing.get(key)}, Desired: {norm_val}")
 
     if module.check_mode:
-        if state == "present" and (
-            existing_subscription is None or differences_detected
-        ):
+        if state == "present" and (existing_subscription is None or differences_detected):
             module.exit_json(changed=True)
         elif state == "absent" and existing_subscription:
             module.exit_json(changed=True)
@@ -314,50 +296,32 @@ def core(module):
             if differences_detected:
                 sub_id_to_update = existing_subscription.get("id")
                 if not sub_id_to_update:
-                    module.fail_json(
-                        msg="Cannot update alert subscription: ID is missing from the existing resource."
-                    )
+                    module.fail_json(msg="Cannot update alert subscription: ID is missing from the existing resource.")
 
-                updated_sub, _unused, error = (
-                    client.alert_subscriptions.update_alert_subscription(
-                        sub_id_to_update,
-                        **alert_params,
-                    )
+                updated_sub, _unused, error = client.alert_subscriptions.update_alert_subscription(
+                    sub_id_to_update,
+                    **alert_params,
                 )
                 if error:
-                    module.fail_json(
-                        msg=f"Error updating alert subscription: {to_native(error)}"
-                    )
+                    module.fail_json(msg=f"Error updating alert subscription: {to_native(error)}")
                 module.exit_json(changed=True, data=updated_sub.as_dict())
             else:
                 module.exit_json(changed=False, data=existing_subscription)
         else:
-            new_sub, _unused, error = client.alert_subscriptions.add_alert_subscription(
-                **alert_params
-            )
+            new_sub, _unused, error = client.alert_subscriptions.add_alert_subscription(**alert_params)
             if error:
-                module.fail_json(
-                    msg=f"Error adding alert subscription: {to_native(error)}"
-                )
+                module.fail_json(msg=f"Error adding alert subscription: {to_native(error)}")
             module.exit_json(changed=True, data=new_sub.as_dict())
 
     elif state == "absent":
         if existing_subscription:
             sub_id_to_delete = existing_subscription.get("id")
             if not sub_id_to_delete:
-                module.fail_json(
-                    msg="Cannot delete alert subscription: ID is missing from the existing resource."
-                )
+                module.fail_json(msg="Cannot delete alert subscription: ID is missing from the existing resource.")
 
-            _unused, _unused, error = (
-                client.alert_subscriptions.delete_alert_subscription(
-                    sub_id_to_delete
-                )
-            )
+            _unused, _unused, error = client.alert_subscriptions.delete_alert_subscription(sub_id_to_delete)
             if error:
-                module.fail_json(
-                    msg=f"Error deleting alert subscription: {to_native(error)}"
-                )
+                module.fail_json(msg=f"Error deleting alert subscription: {to_native(error)}")
             module.exit_json(changed=True, data=existing_subscription)
         else:
             module.exit_json(changed=False, data={})

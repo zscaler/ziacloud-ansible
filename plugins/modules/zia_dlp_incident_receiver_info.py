@@ -116,32 +116,22 @@ def core(module):
     receivers = []
 
     if receiver_id is not None:
-        receivers_obj, _unused, error = client.dlp_resources.get_dlp_incident_receiver(
-            receiver_id
-        )
+        receivers_obj, _unused, error = client.dlp_resources.get_dlp_incident_receiver(receiver_id)
         if error or receivers_obj is None:
-            module.fail_json(
-                msg=f"Failed to retrieve DLP Incident Receiver with ID '{receiver_id}': {to_native(error)}"
-            )
+            module.fail_json(msg=f"Failed to retrieve DLP Incident Receiver with ID '{receiver_id}': {to_native(error)}")
         receivers = [receivers_obj.as_dict()]
     else:
         result, _unused, error = client.dlp_resources.list_dlp_incident_receiver()
         if error:
-            module.fail_json(
-                msg=f"Error retrieving DLP Incident Receivers: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error retrieving DLP Incident Receivers: {to_native(error)}")
 
         receiver_list = [i.as_dict() for i in result] if result else []
 
         if receiver_name:
-            matched = next(
-                (i for i in receiver_list if i.get("name") == receiver_name), None
-            )
+            matched = next((i for i in receiver_list if i.get("name") == receiver_name), None)
             if not matched:
                 available = [i.get("name") for i in receiver_list]
-                module.fail_json(
-                    msg=f"DLP Incident Receiver named '{receiver_name}' not found. Available: {available}"
-                )
+                module.fail_json(msg=f"DLP Incident Receiver named '{receiver_name}' not found. Available: {available}")
             receivers = [matched]
         else:
             receivers = receiver_list

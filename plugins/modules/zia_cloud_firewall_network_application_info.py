@@ -132,9 +132,7 @@ def core(module):
     if app_id:
         app_obj, _unused, error = client.cloud_firewall.get_network_app(app_id)
         if error or app_obj is None:
-            module.fail_json(
-                msg=f"Failed to retrieve Network Application with ID '{app_id}': {to_native(error)}"
-            )
+            module.fail_json(msg=f"Failed to retrieve Network Application with ID '{app_id}': {to_native(error)}")
         apps = [app_obj.as_dict()]
     else:
         query_params = {}
@@ -143,13 +141,9 @@ def core(module):
         if locale:
             query_params["locale"] = locale
 
-        result, _unused, error = client.cloud_firewall.list_network_apps(
-            query_params=query_params
-        )
+        result, _unused, error = client.cloud_firewall.list_network_apps(query_params=query_params)
         if error:
-            module.fail_json(
-                msg=f"Error retrieving Network Applications: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error retrieving Network Applications: {to_native(error)}")
 
         app_list = [a.as_dict() for a in result] if result else []
 
@@ -157,9 +151,7 @@ def core(module):
             matched = next((a for a in app_list if a.get("id") == app_name), None)
             if not matched:
                 available = [a.get("id") for a in app_list]
-                module.fail_json(
-                    msg=f"Network Application with ID '{app_name}' not found. Available: {available}"
-                )
+                module.fail_json(msg=f"Network Application with ID '{app_name}' not found. Available: {available}")
             apps = [matched]
         else:
             apps = app_list

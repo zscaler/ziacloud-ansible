@@ -99,19 +99,13 @@ def core(module):
     if rule_id is not None:
         result, _unused, error = client.traffic_capture.get_rule(rule_id)
         if error:
-            module.fail_json(
-                msg=f"Failed to retrieve Traffic Capture rule with ID '{rule_id}': {to_native(error)}"
-            )
+            module.fail_json(msg=f"Failed to retrieve Traffic Capture rule with ID '{rule_id}': {to_native(error)}")
         rules_out = [result.as_dict()]
     else:
         query_params = {"rule_name": rule_name} if rule_name else {}
-        result, _unused, error = client.traffic_capture.list_rules(
-            query_params=query_params if query_params else None
-        )
+        result, _unused, error = client.traffic_capture.list_rules(query_params=query_params if query_params else None)
         if error:
-            module.fail_json(
-                msg=f"Error retrieving Traffic Capture rules: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error retrieving Traffic Capture rules: {to_native(error)}")
         rules_list = [r.as_dict() for r in result] if result else []
 
         if rule_name:
@@ -120,9 +114,7 @@ def core(module):
                 None,
             )
             if matched is None:
-                module.fail_json(
-                    msg=f"Traffic Capture rule with name '{rule_name}' not found."
-                )
+                module.fail_json(msg=f"Traffic Capture rule with name '{rule_name}' not found.")
             rules_out = [matched]
         else:
             rules_out = rules_list

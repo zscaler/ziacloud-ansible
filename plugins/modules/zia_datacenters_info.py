@@ -218,9 +218,7 @@ def core(module):
 
     result, _unused, error = client.traffic_datacenters.list_datacenters()
     if error:
-        module.fail_json(
-            msg=f"Error retrieving datacenters: {to_native(error)}"
-        )
+        module.fail_json(msg=f"Error retrieving datacenters: {to_native(error)}")
     all_dcs = list(result or [])
 
     filtered = all_dcs
@@ -228,16 +226,10 @@ def core(module):
         filtered = [dc for dc in filtered if (getattr(dc, "id", None) or (dc.get("id") if isinstance(dc, dict) else None)) == datacenter_id]
     if filter_name:
         name_lower = filter_name.lower()
-        filtered = [
-            dc for dc in filtered
-            if name_lower in (getattr(dc, "name", None) or (dc.get("name") if isinstance(dc, dict) else "") or "").lower()
-        ]
+        filtered = [dc for dc in filtered if name_lower in (getattr(dc, "name", None) or (dc.get("name") if isinstance(dc, dict) else "") or "").lower()]
     if filter_city:
         city_lower = filter_city.lower()
-        filtered = [
-            dc for dc in filtered
-            if city_lower in (getattr(dc, "city", None) or (dc.get("city") if isinstance(dc, dict) else "") or "").lower()
-        ]
+        filtered = [dc for dc in filtered if city_lower in (getattr(dc, "city", None) or (dc.get("city") if isinstance(dc, dict) else "") or "").lower()]
 
     datacenters_out = [_flatten_datacenter(dc) for dc in filtered]
     module.exit_json(changed=False, datacenters=datacenters_out)

@@ -159,9 +159,7 @@ def core(module):
     if proxy_id is not None:
         proxy_obj, _unused, error = client.proxies.get_proxy(proxy_id)
         if error or proxy_obj is None:
-            module.fail_json(
-                msg=f"Failed to retrieve third-party proxy with ID '{proxy_id}': {to_native(error)}"
-            )
+            module.fail_json(msg=f"Failed to retrieve third-party proxy with ID '{proxy_id}': {to_native(error)}")
         proxies = [proxy_obj.as_dict()]
     else:
         query_params = {}
@@ -170,9 +168,7 @@ def core(module):
 
         result, _unused, error = client.proxies.list_proxies(query_params=query_params)
         if error:
-            module.fail_json(
-                msg=f"Error retrieving third-party proxys: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error retrieving third-party proxys: {to_native(error)}")
 
         proxy_list = [g.as_dict() for g in result] if result else []
 
@@ -180,9 +176,7 @@ def core(module):
             matched = next((g for g in proxy_list if g.get("name") == proxy_name), None)
             if not matched:
                 available = [g.get("name") for g in proxy_list]
-                module.fail_json(
-                    msg=f"third-party proxy with name '{proxy_name}' not found. Available proxies: {available}"
-                )
+                module.fail_json(msg=f"third-party proxy with name '{proxy_name}' not found. Available proxies: {available}")
             proxies = [matched]
         else:
             proxies = proxy_list

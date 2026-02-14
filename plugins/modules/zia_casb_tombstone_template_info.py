@@ -108,13 +108,9 @@ def core(module):
     template_name = module.params.get("name")
 
     client = ZIAClientHelper(module)
-    result, _unused, error = (
-        client.saas_security_api.list_quarantine_tombstone_lite()
-    )
+    result, _unused, error = client.saas_security_api.list_quarantine_tombstone_lite()
     if error:
-        module.fail_json(
-            msg=f"Error retrieving tombstone templates: {to_native(error)}"
-        )
+        module.fail_json(msg=f"Error retrieving tombstone templates: {to_native(error)}")
     templates_list = [t.as_dict() for t in result] if result else []
 
     matched = None
@@ -128,10 +124,7 @@ def core(module):
 
     if template_id is not None or template_name:
         if matched is None:
-            module.fail_json(
-                msg=f"Tombstone template with name '{template_name}' or id '{template_id}' not found. "
-                "Omit id and name to list all templates."
-            )
+            module.fail_json(msg=f"Tombstone template with name '{template_name}' or id '{template_id}' not found. " "Omit id and name to list all templates.")
         templates_out = [matched]
     else:
         templates_out = templates_list

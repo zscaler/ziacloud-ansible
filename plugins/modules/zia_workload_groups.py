@@ -174,13 +174,15 @@ def _normalize_expression(ej):
             tc = tc_raw
         if tc:
             tags = tc.get("tags") or []
-            nc["tag_container"] = [{
-                "operator": tc.get("operator"),
-                "tags": sorted(
-                    [{"key": t.get("key"), "value": t.get("value")} for t in tags],
-                    key=lambda x: (x.get("key") or "", x.get("value") or ""),
-                ),
-            }]
+            nc["tag_container"] = [
+                {
+                    "operator": tc.get("operator"),
+                    "tags": sorted(
+                        [{"key": t.get("key"), "value": t.get("value")} for t in tags],
+                        key=lambda x: (x.get("key") or "", x.get("value") or ""),
+                    ),
+                }
+            ]
         out["expression_containers"].append(nc)
     return out
 
@@ -248,16 +250,12 @@ def core(module):
     if group_id is not None:
         result, _unused, error = client.workload_groups.get_group(group_id)
         if error:
-            module.fail_json(
-                msg=f"Error fetching workload group with id {group_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching workload group with id {group_id}: {to_native(error)}")
         existing = result.as_dict()
     else:
         result, _unused, error = client.workload_groups.list_groups()
         if error:
-            module.fail_json(
-                msg=f"Error listing workload groups: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error listing workload groups: {to_native(error)}")
         groups_list = [g.as_dict() for g in result] if result else []
         if group_name:
             for g in groups_list:
@@ -283,22 +281,16 @@ def core(module):
             if differences:
                 id_to_update = existing.get("id")
                 if not id_to_update:
-                    module.fail_json(
-                        msg="Cannot update: ID is missing from the existing workload group."
-                    )
+                    module.fail_json(msg="Cannot update: ID is missing from the existing workload group.")
                 update_params = {
                     "name": desired.get("name"),
                     "description": desired.get("description"),
                 }
                 if "expression_json" in desired and desired["expression_json"] is not None:
                     update_params["expression_json"] = desired["expression_json"]
-                updated, _unused, error = client.workload_groups.update_group(
-                    id_to_update, **update_params
-                )
+                updated, _unused, error = client.workload_groups.update_group(id_to_update, **update_params)
                 if error:
-                    module.fail_json(
-                        msg=f"Error updating workload group: {to_native(error)}"
-                    )
+                    module.fail_json(msg=f"Error updating workload group: {to_native(error)}")
                 module.exit_json(changed=True, data=updated.as_dict())
             else:
                 module.exit_json(changed=False, data=existing)
@@ -313,23 +305,17 @@ def core(module):
                 add_params["expression_json"] = desired["expression_json"]
             new_group, _unused, error = client.workload_groups.add_group(**add_params)
             if error:
-                module.fail_json(
-                    msg=f"Error creating workload group: {to_native(error)}"
-                )
+                module.fail_json(msg=f"Error creating workload group: {to_native(error)}")
             module.exit_json(changed=True, data=new_group.as_dict())
 
     elif state == "absent":
         if existing:
             id_to_delete = existing.get("id")
             if not id_to_delete:
-                module.fail_json(
-                    msg="Cannot delete: ID is missing from the existing workload group."
-                )
+                module.fail_json(msg="Cannot delete: ID is missing from the existing workload group.")
             _unused, _unused, error = client.workload_groups.delete_group(id_to_delete)
             if error:
-                module.fail_json(
-                    msg=f"Error deleting workload group: {to_native(error)}"
-                )
+                module.fail_json(msg=f"Error deleting workload group: {to_native(error)}")
             module.exit_json(changed=True, data=existing)
         else:
             module.exit_json(changed=False, data={})

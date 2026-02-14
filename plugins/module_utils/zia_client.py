@@ -49,9 +49,7 @@ try:
     HAS_VERSION = True
 except ImportError as e:
     HAS_VERSION = False
-    VERSION_IMPORT_ERROR = missing_required_lib(
-        "plugins.module_utils.version (version information)"
-    )
+    VERSION_IMPORT_ERROR = missing_required_lib("plugins.module_utils.version (version information)")
 
 # =============================================================================
 # Authentication Modes (mutually exclusive)
@@ -78,17 +76,19 @@ except ImportError as e:
 # =============================================================================
 
 # Legacy API: ZIA_CLOUD values (identify endpoint e.g. zsapi.zscalerone.net)
-VALID_ZIA_CLOUD = frozenset({
-    "zscaler",
-    "zscloud",
-    "zscalerbeta",
-    "zspreview",
-    "zscalerone",
-    "zscalertwo",
-    "zscalerthree",
-    "zscalergov",
-    "zscalerten",
-})
+VALID_ZIA_CLOUD = frozenset(
+    {
+        "zscaler",
+        "zscloud",
+        "zscalerbeta",
+        "zspreview",
+        "zscalerone",
+        "zscalertwo",
+        "zscalerthree",
+        "zscalergov",
+        "zscalerten",
+    }
+)
 
 # OneAPI: ZSCALER_CLOUD values only
 VALID_ZSCALER_CLOUD = frozenset({"beta", "production"})
@@ -129,10 +129,7 @@ class ZIAClientHelper:
     @staticmethod
     def _resolve_use_legacy_client(provider, module):
         """Resolve use_legacy_client from provider, module params, or env."""
-        val = (
-            provider.get("use_legacy_client")
-            or module.params.get("use_legacy_client")
-        )
+        val = provider.get("use_legacy_client") or module.params.get("use_legacy_client")
         if val is not None:
             return bool(val)
         return os.getenv("ZSCALER_USE_LEGACY_CLIENT", "").lower() == "true"
@@ -140,16 +137,8 @@ class ZIAClientHelper:
     @staticmethod
     def _is_sandbox_mode(provider, module):
         """Sandbox mode: sandbox_token + sandbox_cloud, no Legacy/OneAPI creds."""
-        sandbox_token = (
-            provider.get("sandbox_token")
-            or module.params.get("sandbox_token")
-            or os.getenv("ZSCALER_SANDBOX_TOKEN")
-        )
-        sandbox_cloud = (
-            provider.get("sandbox_cloud")
-            or module.params.get("sandbox_cloud")
-            or os.getenv("ZSCALER_SANDBOX_CLOUD")
-        )
+        sandbox_token = provider.get("sandbox_token") or module.params.get("sandbox_token") or os.getenv("ZSCALER_SANDBOX_TOKEN")
+        sandbox_cloud = provider.get("sandbox_cloud") or module.params.get("sandbox_cloud") or os.getenv("ZSCALER_SANDBOX_CLOUD")
         has_legacy = any(
             provider.get(k) or module.params.get(k) or os.getenv(env)
             for k, env in [
@@ -206,16 +195,8 @@ class ZIAClientHelper:
 
     def _init_sandbox_client(self, module, provider):
         """Sandbox mode: sandbox_token + sandbox_cloud (separate from Legacy/OneAPI)."""
-        sandbox_token = (
-            provider.get("sandbox_token")
-            or module.params.get("sandbox_token")
-            or os.getenv("ZSCALER_SANDBOX_TOKEN")
-        )
-        sandbox_cloud = (
-            provider.get("sandbox_cloud")
-            or module.params.get("sandbox_cloud")
-            or os.getenv("ZSCALER_SANDBOX_CLOUD")
-        )
+        sandbox_token = provider.get("sandbox_token") or module.params.get("sandbox_token") or os.getenv("ZSCALER_SANDBOX_TOKEN")
+        sandbox_cloud = provider.get("sandbox_cloud") or module.params.get("sandbox_cloud") or os.getenv("ZSCALER_SANDBOX_CLOUD")
         config = {
             "sandbox_token": sandbox_token,
             "sandbox_cloud": sandbox_cloud,
@@ -286,9 +267,7 @@ class ZIAClientHelper:
             module.fail_json(msg="vanity_domain is required for OneAPI authentication")
 
         if not (client_id and (client_secret or private_key)):
-            module.fail_json(
-                msg="client_id with either client_secret or private_key is required for OneAPI authentication"
-            )
+            module.fail_json(msg="client_id with either client_secret or private_key is required for OneAPI authentication")
 
         # Build config dictionary
         config = {

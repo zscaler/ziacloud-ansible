@@ -242,13 +242,8 @@ def normalize_url_category(category):
         normalized["urls"] = sorted(normalized["urls"])
     if "regex_patterns" in normalized and normalized["regex_patterns"] is not None:
         normalized["regex_patterns"] = sorted(normalized["regex_patterns"])
-    if (
-        "regex_patterns_retaining_parent_category" in normalized
-        and normalized["regex_patterns_retaining_parent_category"] is not None
-    ):
-        normalized["regex_patterns_retaining_parent_category"] = sorted(
-            normalized["regex_patterns_retaining_parent_category"]
-        )
+    if "regex_patterns_retaining_parent_category" in normalized and normalized["regex_patterns_retaining_parent_category"] is not None:
+        normalized["regex_patterns_retaining_parent_category"] = sorted(normalized["regex_patterns_retaining_parent_category"])
 
     return normalized
 
@@ -301,9 +296,7 @@ def core(module):
     existing_category = None
 
     if category_id:
-        result, _unused, error = client.url_categories.get_category(
-            category_id=category_id
-        )
+        result, _unused, error = client.url_categories.get_category(category_id=category_id)
         if error:
             module.fail_json(msg=f"Error fetching category: {to_native(error)}")
         if result:
@@ -318,9 +311,7 @@ def core(module):
                 break
 
     desired_category = normalize_url_category(category)
-    current_category = (
-        normalize_url_category(existing_category) if existing_category else {}
-    )
+    current_category = normalize_url_category(existing_category) if existing_category else {}
 
     existing_pre = preprocess_category(current_category, params)
     desired_pre = preprocess_category(desired_category, params)
@@ -344,17 +335,13 @@ def core(module):
             continue
 
         if isinstance(desired_value, list) and isinstance(current_value, list):
-            if all(isinstance(x, int) for x in desired_value) and all(
-                isinstance(x, int) for x in current_value
-            ):
+            if all(isinstance(x, int) for x in desired_value) and all(isinstance(x, int) for x in current_value):
                 desired_value = sorted(desired_value)
                 current_value = sorted(current_value)
 
         if current_value != desired_value:
             differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
-            )
+            module.warn(f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}")
 
     if module.check_mode:
         if state == "present" and (existing_category is None or differences_detected):
@@ -380,19 +367,13 @@ def core(module):
                 updated_data["category_id"] = existing_category["id"]
                 module.warn("Payload for SDK (update): {}".format(updated_data))
 
-                result, _unused, error = client.url_categories.update_url_category(
-                    **updated_data
-                )
+                result, _unused, error = client.url_categories.update_url_category(**updated_data)
                 if error or not result:
-                    module.fail_json(
-                        msg=f"Failed to update category: {to_native(error)}"
-                    )
+                    module.fail_json(msg=f"Failed to update category: {to_native(error)}")
                 module.exit_json(changed=True, data=result.as_dict())
 
             else:
-                module.exit_json(
-                    changed=False, data=existing_category, msg="No changes needed."
-                )
+                module.exit_json(changed=False, data=existing_category, msg="No changes needed.")
         else:
             # if category.get("custom_category") and category.get("name"):
             #     category["configured_name"] = category.pop("name")  # 🛠 Fix before deleteNone
@@ -406,9 +387,7 @@ def core(module):
 
     elif state == "absent":
         if existing_category:
-            _unused, _unused, error = client.url_categories.delete_category(
-                category_id=existing_category["id"]
-            )
+            _unused, _unused, error = client.url_categories.delete_category(category_id=existing_category["id"])
             if error:
                 module.fail_json(msg=f"Failed to delete category: {to_native(error)}")
             module.exit_json(changed=True, data=existing_category)
@@ -431,19 +410,13 @@ def main():
         description=dict(type="str", required=False),
         custom_category=dict(type="bool", required=False, default=True),
         keywords=dict(type="list", elements="str", required=False, no_log=False),
-        keywords_retaining_parent_category=dict(
-            type="list", elements="str", required=False, no_log=False
-        ),
+        keywords_retaining_parent_category=dict(type="list", elements="str", required=False, no_log=False),
         urls=dict(type="list", elements="str", required=False),
         db_categorized_urls=dict(type="list", elements="str", required=False),
         ip_ranges=dict(type="list", elements="str", required=False),
-        ip_ranges_retaining_parent_category=dict(
-            type="list", elements="str", required=False
-        ),
+        ip_ranges_retaining_parent_category=dict(type="list", elements="str", required=False),
         regex_patterns=dict(type="list", elements="str", required=False),
-        regex_patterns_retaining_parent_category=dict(
-            type="list", elements="str", required=False
-        ),
+        regex_patterns_retaining_parent_category=dict(type="list", elements="str", required=False),
         url_type=dict(
             type="str",
             required=False,

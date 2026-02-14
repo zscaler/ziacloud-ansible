@@ -163,13 +163,9 @@ def core(module):
     credentials = []
 
     if vpn_id is not None:
-        vpn_obj, _unused, error = client.traffic_vpn_credentials.get_vpn_credential(
-            credential_id=vpn_id
-        )
+        vpn_obj, _unused, error = client.traffic_vpn_credentials.get_vpn_credential(credential_id=vpn_id)
         if error or vpn_obj is None:
-            module.fail_json(
-                msg=f"Failed to retrieve VPN credential with ID '{vpn_id}': {to_native(error)}"
-            )
+            module.fail_json(msg=f"Failed to retrieve VPN credential with ID '{vpn_id}': {to_native(error)}")
         credentials = [vpn_obj.as_dict()]
     else:
         query_params = {}
@@ -191,17 +187,11 @@ def core(module):
             if val is not None:
                 query_params[param] = val
 
-        result, err = collect_all_items(
-            client.traffic_vpn_credentials.list_vpn_credentials, query_params or None
-        )
+        result, err = collect_all_items(client.traffic_vpn_credentials.list_vpn_credentials, query_params or None)
         if err:
             module.fail_json(msg=f"Error retrieving VPN credentials: {to_native(err)}")
 
-        credentials = (
-            [c.as_dict() if hasattr(c, "as_dict") else c for c in result]
-            if result
-            else []
-        )
+        credentials = [c.as_dict() if hasattr(c, "as_dict") else c for c in result] if result else []
 
     module.exit_json(changed=False, credentials=credentials)
 

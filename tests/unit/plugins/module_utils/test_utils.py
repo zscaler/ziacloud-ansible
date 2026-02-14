@@ -9,14 +9,12 @@ __metaclass__ = type
 import sys
 import os
 
-COLLECTION_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "..", "..", "..")
-)
+COLLECTION_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".."))
 if COLLECTION_ROOT not in sys.path:
     sys.path.insert(0, COLLECTION_ROOT)
 
 import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
     to_snake_case,
@@ -331,7 +329,7 @@ class TestCollectAllItems:
             collect_all_items,
         )
 
-        def fn(_):
+        def fn(_page):
             return ([], "error")
 
         items, err = collect_all_items(fn)
@@ -343,7 +341,7 @@ class TestCollectAllItems:
             collect_all_items,
         )
 
-        def fn(_):
+        def fn(_page):
             return (["a", "b"], None)
 
         items, err = collect_all_items(fn)
@@ -355,7 +353,7 @@ class TestCollectAllItems:
             collect_all_items,
         )
 
-        def fn(_):
+        def fn(_page):
             return ([], None, "err")
 
         items, err = collect_all_items(fn)
@@ -375,7 +373,7 @@ class TestCollectAllItems:
         resp_has_next.has_next.return_value = True
         resp_has_next.next.return_value = (["c", "d"], resp_no_next, None)
 
-        def fn(_):
+        def fn(_page):
             return (["a", "b"], resp_has_next, None)
 
         items, err = collect_all_items(fn)
@@ -388,7 +386,7 @@ class TestCollectAllItems:
             collect_all_items,
         )
 
-        def fn(_):
+        def fn(_page):
             return ("not a tuple",)
 
         items, err = collect_all_items(fn)
@@ -403,6 +401,7 @@ class TestValidateIso3166:
             from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
                 validate_iso3166_alpha2,
             )
+
             assert validate_iso3166_alpha2("US") is True
             assert validate_iso3166_alpha2("BR") is True
             assert validate_iso3166_alpha2("XX") is False
@@ -458,11 +457,13 @@ class TestValidateLocationMgmt:
         )
 
         with pytest.raises(ValueError, match="Authentication required"):
-            validate_location_mgmt({
-                "surrogate_ip": True,
-                "idle_time_in_minutes": 60,
-                "auth_required": False,
-            })
+            validate_location_mgmt(
+                {
+                    "surrogate_ip": True,
+                    "idle_time_in_minutes": 60,
+                    "auth_required": False,
+                }
+            )
 
     def test_parent_id_requires_ip_addresses(self):
         from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
@@ -470,7 +471,9 @@ class TestValidateLocationMgmt:
         )
 
         with pytest.raises(ValueError, match="ip_addresses"):
-            validate_location_mgmt({
-                "parent_id": 123,
-                "ip_addresses": [],
-            })
+            validate_location_mgmt(
+                {
+                    "parent_id": 123,
+                    "ip_addresses": [],
+                }
+            )

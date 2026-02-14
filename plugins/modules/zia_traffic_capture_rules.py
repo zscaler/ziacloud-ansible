@@ -389,9 +389,7 @@ def core(module):
             if validate_iso3166_alpha2(code):
                 validated.append(f"COUNTRY_{code}")
             else:
-                module.fail_json(
-                    msg=f"Invalid source country code '{code}'. Must be ISO3166 Alpha2."
-                )
+                module.fail_json(msg=f"Invalid source country code '{code}'. Must be ISO3166 Alpha2.")
         rule["source_countries"] = validated
 
     dest_countries = rule.get("dest_countries")
@@ -401,15 +399,11 @@ def core(module):
             if validate_iso3166_alpha2(code):
                 validated.append(f"COUNTRY_{code}")
             else:
-                module.fail_json(
-                    msg=f"Invalid destination country code '{code}'. Must be ISO3166 Alpha2."
-                )
+                module.fail_json(msg=f"Invalid destination country code '{code}'. Must be ISO3166 Alpha2.")
         rule["dest_countries"] = validated
 
     if rule.get("exclude_src_countries") and not rule.get("source_countries"):
-        module.fail_json(
-            msg="When 'exclude_src_countries' is True, 'source_countries' must be specified."
-        )
+        module.fail_json(msg="When 'exclude_src_countries' is True, 'source_countries' must be specified.")
 
     rule_id = rule.get("id")
     rule_name = rule.get("name")
@@ -418,9 +412,7 @@ def core(module):
     if rule_id is not None:
         result, _unused, error = client.traffic_capture.get_rule(rule_id)
         if error:
-            module.fail_json(
-                msg=f"Error fetching Traffic Capture rule with id {rule_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching Traffic Capture rule with id {rule_id}: {to_native(error)}")
         if result:
             existing_rule = result.as_dict()
     else:
@@ -468,10 +460,7 @@ def core(module):
         for attr in id_list_params:
             if attr in processed and processed[attr] is not None:
                 if isinstance(processed[attr], list):
-                    if all(
-                        isinstance(item, dict) and "id" in item
-                        for item in processed[attr]
-                    ):
+                    if all(isinstance(item, dict) and "id" in item for item in processed[attr]):
                         processed[attr] = sorted([item["id"] for item in processed[attr]])
                     elif all(isinstance(item, int) for item in processed[attr]):
                         processed[attr] = sorted(processed[attr])
@@ -538,9 +527,7 @@ def core(module):
             current_value = current_rule.get("state")
 
         if isinstance(desired_value, list) and isinstance(current_value, list):
-            if all(isinstance(x, int) for x in desired_value) and all(
-                isinstance(x, int) for x in current_value
-            ):
+            if all(isinstance(x, int) for x in desired_value) and all(isinstance(x, int) for x in current_value):
                 desired_value = sorted(desired_value)
                 current_value = sorted(current_value)
 
@@ -549,12 +536,7 @@ def core(module):
             break
 
     if module.check_mode:
-        module.exit_json(
-            changed=bool(
-                (state == "present" and (not existing_rule or differences_detected))
-                or (state == "absent" and existing_rule)
-            )
-        )
+        module.exit_json(changed=bool((state == "present" and (not existing_rule or differences_detected)) or (state == "absent" and existing_rule)))
 
     if state == "present":
         if existing_rule:
@@ -597,13 +579,9 @@ def core(module):
                         "device_trust_levels": desired_rule.get("device_trust_levels"),
                     }
                 )
-                updated_rule, _unused, error = client.traffic_capture.update_rule(
-                    existing_rule.get("id"), **update_data
-                )
+                updated_rule, _unused, error = client.traffic_capture.update_rule(existing_rule.get("id"), **update_data)
                 if error:
-                    module.fail_json(
-                        msg=f"Error updating Traffic Capture rule: {to_native(error)}"
-                    )
+                    module.fail_json(msg=f"Error updating Traffic Capture rule: {to_native(error)}")
                 module.exit_json(changed=True, data=updated_rule.as_dict())
             else:
                 module.exit_json(changed=False, data=existing_rule)
@@ -613,9 +591,7 @@ def core(module):
             if order is None:
                 result, _unused, error = client.traffic_capture.list_rules()
                 if error:
-                    module.fail_json(
-                        msg=f"Error listing rules to determine order: {to_native(error)}"
-                    )
+                    module.fail_json(msg=f"Error listing rules to determine order: {to_native(error)}")
                 max_order = 0
                 if result:
                     for r in result:
@@ -664,20 +640,14 @@ def core(module):
             )
             new_rule, _unused, error = client.traffic_capture.add_rule(**create_data)
             if error:
-                module.fail_json(
-                    msg=f"Error creating Traffic Capture rule: {to_native(error)}"
-                )
+                module.fail_json(msg=f"Error creating Traffic Capture rule: {to_native(error)}")
             module.exit_json(changed=True, data=new_rule.as_dict())
 
     elif state == "absent":
         if existing_rule:
-            _unused, _unused, error = client.traffic_capture.delete_rule(
-                existing_rule.get("id")
-            )
+            _unused, _unused, error = client.traffic_capture.delete_rule(existing_rule.get("id"))
             if error:
-                module.fail_json(
-                    msg=f"Error deleting Traffic Capture rule: {to_native(error)}"
-                )
+                module.fail_json(msg=f"Error deleting Traffic Capture rule: {to_native(error)}")
             module.exit_json(changed=True, data=existing_rule)
         else:
             module.exit_json(changed=False, data={})
@@ -783,4 +753,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

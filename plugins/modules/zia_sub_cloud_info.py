@@ -125,13 +125,9 @@ def core(module):
     subcloud_name = module.params.get("name")
 
     client = ZIAClientHelper(module)
-    result, _unused, error = client.sub_clouds.list_sub_clouds(
-        query_params={"pageSize": 500}
-    )
+    result, _unused, error = client.sub_clouds.list_sub_clouds(query_params={"pageSize": 500})
     if error:
-        module.fail_json(
-            msg=f"Error retrieving subclouds: {to_native(error)}"
-        )
+        module.fail_json(msg=f"Error retrieving subclouds: {to_native(error)}")
     subclouds_list = [s.as_dict() for s in result] if result else []
 
     if subcloud_id is not None:
@@ -140,9 +136,7 @@ def core(module):
             None,
         )
         if matched is None:
-            module.fail_json(
-                msg=f"Subcloud with ID {subcloud_id} not found."
-            )
+            module.fail_json(msg=f"Subcloud with ID {subcloud_id} not found.")
         subclouds_out = [matched]
     elif subcloud_name:
         matched = next(
@@ -150,9 +144,7 @@ def core(module):
             None,
         )
         if matched is None:
-            module.fail_json(
-                msg=f"Subcloud with name '{subcloud_name}' not found."
-            )
+            module.fail_json(msg=f"Subcloud with name '{subcloud_name}' not found.")
         subclouds_out = [matched]
     else:
         subclouds_out = subclouds_list

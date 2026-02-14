@@ -103,13 +103,8 @@ def core(module):
 
     # If specific status provided, check if it matches the current activation status
     if activation_status:
-        if (
-            current_activation_status
-            and current_activation_status.get("status") == activation_status
-        ):
-            module.exit_json(
-                changed=False, data=current_activation_status, status_matches=True
-            )
+        if current_activation_status and current_activation_status.get("status") == activation_status:
+            module.exit_json(changed=False, data=current_activation_status, status_matches=True)
         else:
             module.exit_json(
                 changed=False,
@@ -121,9 +116,7 @@ def core(module):
                 ),
             )
     else:
-        module.exit_json(
-            changed=False, current_activation_status=current_activation_status
-        )
+        module.exit_json(changed=False, current_activation_status=current_activation_status)
 
 
 def main():

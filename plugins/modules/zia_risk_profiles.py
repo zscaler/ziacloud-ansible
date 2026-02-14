@@ -359,9 +359,7 @@ def core(module):
     if profile_id:
         result, _unused, error = client.risk_profiles.get_risk_profile(profile_id)
         if error:
-            module.fail_json(
-                msg=f"Error fetching profile with id {profile_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching profile with id {profile_id}: {to_native(error)}")
         existing_profile = result.as_dict()
     else:
         result, _unused, error = client.risk_profiles.list_risk_profiles()
@@ -375,9 +373,7 @@ def core(module):
                     break
 
     normalized_desired = normalize_profile(risk_profile_params)
-    normalized_existing = (
-        normalize_profile(existing_profile) if existing_profile else {}
-    )
+    normalized_existing = normalize_profile(existing_profile) if existing_profile else {}
 
     unordered_fields = [
         "risk_index",
@@ -391,22 +387,14 @@ def core(module):
         current_value = normalized_existing.get(key)
 
         # Ignore order for specific list fields
-        if (
-            key in unordered_fields
-            and isinstance(value, list)
-            and isinstance(current_value, list)
-        ):
+        if key in unordered_fields and isinstance(value, list) and isinstance(current_value, list):
             if set(map(str, value)) != set(map(str, current_value)):
                 differences_detected = True
-                module.warn(
-                    f"Difference detected in {key}. Current: {current_value}, Desired: {value}"
-                )
+                module.warn(f"Difference detected in {key}. Current: {current_value}, Desired: {value}")
         else:
             if current_value != value:
                 differences_detected = True
-                module.warn(
-                    f"Difference detected in {key}. Current: {current_value}, Desired: {value}"
-                )
+                module.warn(f"Difference detected in {key}. Current: {current_value}, Desired: {value}")
 
     if module.check_mode:
         if state == "present" and (existing_profile is None or differences_detected):
@@ -421,77 +409,43 @@ def core(module):
             if differences_detected:
                 profile_id_to_update = existing_profile.get("id")
                 if not profile_id_to_update:
-                    module.fail_json(
-                        msg="Cannot update profile: ID is missing from the existing resource."
-                    )
+                    module.fail_json(msg="Cannot update profile: ID is missing from the existing resource.")
 
-                updated_profile, _unused, error = (
-                    client.risk_profiles.update_risk_profile(
-                        profile_id=profile_id_to_update,
-                        profile_name=risk_profile_params.get("profile_name"),
-                        profile_type=risk_profile_params.get("profile_type"),
-                        risk_index=risk_profile_params.get("risk_index"),
-                        status=risk_profile_params.get("status"),
-                        exclude_certificates=risk_profile_params.get(
-                            "exclude_certificates"
-                        ),
-                        certifications=risk_profile_params.get("certifications"),
-                        poor_items_of_service=risk_profile_params.get(
-                            "poor_items_of_service"
-                        ),
-                        admin_audit_logs=risk_profile_params.get("admin_audit_logs"),
-                        data_breach=risk_profile_params.get("data_breach"),
-                        source_ip_restrictions=risk_profile_params.get(
-                            "source_ip_restrictions"
-                        ),
-                        mfa_support=risk_profile_params.get("mfa_support"),
-                        ssl_pinned=risk_profile_params.get("ssl_pinned"),
-                        http_security_headers=risk_profile_params.get(
-                            "http_security_headers"
-                        ),
-                        evasive=risk_profile_params.get("evasive"),
-                        dns_caa_policy=risk_profile_params.get("dns_caa_policy"),
-                        weak_cipher_support=risk_profile_params.get(
-                            "weak_cipher_support"
-                        ),
-                        password_strength=risk_profile_params.get("password_strength"),
-                        ssl_cert_validity=risk_profile_params.get("ssl_cert_validity"),
-                        vulnerability=risk_profile_params.get("vulnerability"),
-                        malware_scanning_for_content=risk_profile_params.get(
-                            "malware_scanning_for_content"
-                        ),
-                        file_sharing=risk_profile_params.get("file_sharing"),
-                        ssl_cert_key_size=risk_profile_params.get("ssl_cert_key_size"),
-                        vulnerable_to_heart_bleed=risk_profile_params.get(
-                            "vulnerable_to_heart_bleed"
-                        ),
-                        vulnerable_to_log_jam=risk_profile_params.get(
-                            "vulnerable_to_log_jam"
-                        ),
-                        vulnerable_to_poodle=risk_profile_params.get(
-                            "vulnerable_to_poodle"
-                        ),
-                        vulnerability_disclosure=risk_profile_params.get(
-                            "vulnerability_disclosure"
-                        ),
-                        support_for_waf=risk_profile_params.get("support_for_waf"),
-                        remote_screen_sharing=risk_profile_params.get(
-                            "remote_screen_sharing"
-                        ),
-                        sender_policy_framework=risk_profile_params.get(
-                            "sender_policy_framework"
-                        ),
-                        domain_keys_identified_mail=risk_profile_params.get(
-                            "domain_keys_identified_mail"
-                        ),
-                        domain_based_message_auth=risk_profile_params.get(
-                            "domain_based_message_auth"
-                        ),
-                        data_encryption_in_transit=risk_profile_params.get(
-                            "data_encryption_in_transit"
-                        ),
-                        custom_tags=risk_profile_params.get("custom_tags"),
-                    )
+                updated_profile, _unused, error = client.risk_profiles.update_risk_profile(
+                    profile_id=profile_id_to_update,
+                    profile_name=risk_profile_params.get("profile_name"),
+                    profile_type=risk_profile_params.get("profile_type"),
+                    risk_index=risk_profile_params.get("risk_index"),
+                    status=risk_profile_params.get("status"),
+                    exclude_certificates=risk_profile_params.get("exclude_certificates"),
+                    certifications=risk_profile_params.get("certifications"),
+                    poor_items_of_service=risk_profile_params.get("poor_items_of_service"),
+                    admin_audit_logs=risk_profile_params.get("admin_audit_logs"),
+                    data_breach=risk_profile_params.get("data_breach"),
+                    source_ip_restrictions=risk_profile_params.get("source_ip_restrictions"),
+                    mfa_support=risk_profile_params.get("mfa_support"),
+                    ssl_pinned=risk_profile_params.get("ssl_pinned"),
+                    http_security_headers=risk_profile_params.get("http_security_headers"),
+                    evasive=risk_profile_params.get("evasive"),
+                    dns_caa_policy=risk_profile_params.get("dns_caa_policy"),
+                    weak_cipher_support=risk_profile_params.get("weak_cipher_support"),
+                    password_strength=risk_profile_params.get("password_strength"),
+                    ssl_cert_validity=risk_profile_params.get("ssl_cert_validity"),
+                    vulnerability=risk_profile_params.get("vulnerability"),
+                    malware_scanning_for_content=risk_profile_params.get("malware_scanning_for_content"),
+                    file_sharing=risk_profile_params.get("file_sharing"),
+                    ssl_cert_key_size=risk_profile_params.get("ssl_cert_key_size"),
+                    vulnerable_to_heart_bleed=risk_profile_params.get("vulnerable_to_heart_bleed"),
+                    vulnerable_to_log_jam=risk_profile_params.get("vulnerable_to_log_jam"),
+                    vulnerable_to_poodle=risk_profile_params.get("vulnerable_to_poodle"),
+                    vulnerability_disclosure=risk_profile_params.get("vulnerability_disclosure"),
+                    support_for_waf=risk_profile_params.get("support_for_waf"),
+                    remote_screen_sharing=risk_profile_params.get("remote_screen_sharing"),
+                    sender_policy_framework=risk_profile_params.get("sender_policy_framework"),
+                    domain_keys_identified_mail=risk_profile_params.get("domain_keys_identified_mail"),
+                    domain_based_message_auth=risk_profile_params.get("domain_based_message_auth"),
+                    data_encryption_in_transit=risk_profile_params.get("data_encryption_in_transit"),
+                    custom_tags=risk_profile_params.get("custom_tags"),
                 )
 
                 if error:
@@ -509,9 +463,7 @@ def core(module):
                 poor_items_of_service=risk_profile_params.get("poor_items_of_service"),
                 admin_audit_logs=risk_profile_params.get("admin_audit_logs"),
                 data_breach=risk_profile_params.get("data_breach"),
-                source_ip_restrictions=risk_profile_params.get(
-                    "source_ip_restrictions"
-                ),
+                source_ip_restrictions=risk_profile_params.get("source_ip_restrictions"),
                 mfa_support=risk_profile_params.get("mfa_support"),
                 ssl_pinned=risk_profile_params.get("ssl_pinned"),
                 http_security_headers=risk_profile_params.get("http_security_headers"),
@@ -521,33 +473,19 @@ def core(module):
                 password_strength=risk_profile_params.get("password_strength"),
                 ssl_cert_validity=risk_profile_params.get("ssl_cert_validity"),
                 vulnerability=risk_profile_params.get("vulnerability"),
-                malware_scanning_for_content=risk_profile_params.get(
-                    "malware_scanning_for_content"
-                ),
+                malware_scanning_for_content=risk_profile_params.get("malware_scanning_for_content"),
                 file_sharing=risk_profile_params.get("file_sharing"),
                 ssl_cert_key_size=risk_profile_params.get("ssl_cert_key_size"),
-                vulnerable_to_heart_bleed=risk_profile_params.get(
-                    "vulnerable_to_heart_bleed"
-                ),
+                vulnerable_to_heart_bleed=risk_profile_params.get("vulnerable_to_heart_bleed"),
                 vulnerable_to_log_jam=risk_profile_params.get("vulnerable_to_log_jam"),
                 vulnerable_to_poodle=risk_profile_params.get("vulnerable_to_poodle"),
-                vulnerability_disclosure=risk_profile_params.get(
-                    "vulnerability_disclosure"
-                ),
+                vulnerability_disclosure=risk_profile_params.get("vulnerability_disclosure"),
                 support_for_waf=risk_profile_params.get("support_for_waf"),
                 remote_screen_sharing=risk_profile_params.get("remote_screen_sharing"),
-                sender_policy_framework=risk_profile_params.get(
-                    "sender_policy_framework"
-                ),
-                domain_keys_identified_mail=risk_profile_params.get(
-                    "domain_keys_identified_mail"
-                ),
-                domain_based_message_auth=risk_profile_params.get(
-                    "domain_based_message_auth"
-                ),
-                data_encryption_in_transit=risk_profile_params.get(
-                    "data_encryption_in_transit"
-                ),
+                sender_policy_framework=risk_profile_params.get("sender_policy_framework"),
+                domain_keys_identified_mail=risk_profile_params.get("domain_keys_identified_mail"),
+                domain_based_message_auth=risk_profile_params.get("domain_based_message_auth"),
+                data_encryption_in_transit=risk_profile_params.get("data_encryption_in_transit"),
                 custom_tags=risk_profile_params.get("custom_tags"),
             )
             if error:
@@ -558,13 +496,9 @@ def core(module):
         if existing_profile:
             profile_id_to_delete = existing_profile.get("id")
             if not profile_id_to_delete:
-                module.fail_json(
-                    msg="Cannot delete profile: ID is missing from the existing resource."
-                )
+                module.fail_json(msg="Cannot delete profile: ID is missing from the existing resource.")
 
-            _unused, _unused, error = client.risk_profiles.delete_risk_profile(
-                profile_id_to_delete
-            )
+            _unused, _unused, error = client.risk_profiles.delete_risk_profile(profile_id_to_delete)
             if error:
                 module.fail_json(msg=f"Error deleting profile: {to_native(error)}")
             module.exit_json(changed=True, data=existing_profile)
@@ -581,9 +515,7 @@ def main():
         dict(
             id=dict(type="int", required=False),
             profile_name=dict(type="str", required=True),
-            profile_type=dict(
-                type="str", required=False, choices=["CLOUD_APPLICATIONS"]
-            ),
+            profile_type=dict(type="str", required=False, choices=["CLOUD_APPLICATIONS"]),
             risk_index=dict(type="list", elements="int", required=False),
             status=dict(
                 type="str",
@@ -635,54 +567,26 @@ def main():
                     "GAAP",
                 ],
             ),
-            poor_items_of_service=dict(
-                type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]
-            ),
-            admin_audit_logs=dict(
-                type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]
-            ),
-            data_breach=dict(
-                type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]
-            ),
-            source_ip_restrictions=dict(
-                type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]
-            ),
-            mfa_support=dict(
-                type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]
-            ),
-            ssl_pinned=dict(
-                type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]
-            ),
-            http_security_headers=dict(
-                type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]
-            ),
-            evasive=dict(
-                type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]
-            ),
-            dns_caa_policy=dict(
-                type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]
-            ),
-            weak_cipher_support=dict(
-                type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]
-            ),
+            poor_items_of_service=dict(type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]),
+            admin_audit_logs=dict(type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]),
+            data_breach=dict(type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]),
+            source_ip_restrictions=dict(type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]),
+            mfa_support=dict(type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]),
+            ssl_pinned=dict(type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]),
+            http_security_headers=dict(type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]),
+            evasive=dict(type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]),
+            dns_caa_policy=dict(type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]),
+            weak_cipher_support=dict(type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]),
             password_strength=dict(
                 type="str",
                 required=False,
                 no_log=False,
                 choices=["ANY", "GOOD", "POOR", "UN_KNOWN"],
             ),
-            ssl_cert_validity=dict(
-                type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]
-            ),
-            vulnerability=dict(
-                type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]
-            ),
-            malware_scanning_for_content=dict(
-                type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]
-            ),
-            file_sharing=dict(
-                type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]
-            ),
+            ssl_cert_validity=dict(type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]),
+            vulnerability=dict(type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]),
+            malware_scanning_for_content=dict(type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]),
+            file_sharing=dict(type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]),
             ssl_cert_key_size=dict(
                 type="str",
                 required=False,
@@ -698,33 +602,15 @@ def main():
                     "BITS_8192",
                 ],
             ),
-            vulnerable_to_heart_bleed=dict(
-                type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]
-            ),
-            vulnerable_to_log_jam=dict(
-                type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]
-            ),
-            vulnerable_to_poodle=dict(
-                type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]
-            ),
-            vulnerability_disclosure=dict(
-                type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]
-            ),
-            support_for_waf=dict(
-                type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]
-            ),
-            remote_screen_sharing=dict(
-                type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]
-            ),
-            sender_policy_framework=dict(
-                type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]
-            ),
-            domain_keys_identified_mail=dict(
-                type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]
-            ),
-            domain_based_message_auth=dict(
-                type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]
-            ),
+            vulnerable_to_heart_bleed=dict(type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]),
+            vulnerable_to_log_jam=dict(type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]),
+            vulnerable_to_poodle=dict(type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]),
+            vulnerability_disclosure=dict(type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]),
+            support_for_waf=dict(type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]),
+            remote_screen_sharing=dict(type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]),
+            sender_policy_framework=dict(type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]),
+            domain_keys_identified_mail=dict(type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]),
+            domain_based_message_auth=dict(type="str", required=False, choices=["ANY", "YES", "NO", "UN_KNOWN"]),
             data_encryption_in_transit=dict(
                 type="list",
                 elements="str",

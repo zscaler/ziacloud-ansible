@@ -188,14 +188,10 @@ def core(module):
     if profile_id:
         result, _unused, error = client.dlp_resources.get_dlp_idm_profiles(profile_id)
         if error:
-            module.fail_json(
-                msg=f"Error retrieving IDM profile ID {profile_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error retrieving IDM profile ID {profile_id}: {to_native(error)}")
         idm_profiles = [result.as_dict()]
     elif name:
-        result, _unused, error = client.dlp_resources.list_dlp_idm_profiles(
-            query_params={"search": name}
-        )
+        result, _unused, error = client.dlp_resources.list_dlp_idm_profiles(query_params={"search": name})
         if error:
             module.fail_json(msg=f"Error searching IDM profiles: {to_native(error)}")
         matching = [p.as_dict() for p in result if p.name == name]

@@ -202,9 +202,7 @@ def core(module):
     app_type = module.params.get("app_type")
     app = module.params.get("app")
     scan_config_tenants_only = module.params.get("scan_config_tenants_only")
-    include_bucket_ready_s3_tenants = module.params.get(
-        "include_bucket_ready_s3_tenants"
-    )
+    include_bucket_ready_s3_tenants = module.params.get("include_bucket_ready_s3_tenants")
     filter_by_feature = module.params.get("filter_by_feature")
 
     query_params = {}
@@ -228,13 +226,9 @@ def core(module):
         query_params["filterByFeature"] = filter_by_feature
 
     client = ZIAClientHelper(module)
-    result, _unused, error = client.saas_security_api.list_casb_tenant_lite(
-        query_params=query_params if query_params else None
-    )
+    result, _unused, error = client.saas_security_api.list_casb_tenant_lite(query_params=query_params if query_params else None)
     if error:
-        module.fail_json(
-            msg=f"Error retrieving CASB tenants: {to_native(error)}"
-        )
+        module.fail_json(msg=f"Error retrieving CASB tenants: {to_native(error)}")
     tenants_list = [t.as_dict() for t in result] if result else []
 
     matched = None
@@ -250,10 +244,7 @@ def core(module):
 
     if tenant_id is not None or tenant_name:
         if matched is None:
-            module.fail_json(
-                msg=f"CASB tenant with name '{tenant_name}' or id '{tenant_id}' not found. "
-                "Omit tenant_id and tenant_name to list all tenants."
-            )
+            module.fail_json(msg=f"CASB tenant with name '{tenant_name}' or id '{tenant_id}' not found. " "Omit tenant_id and tenant_name to list all tenants.")
         tenants_out = [matched]
     else:
         tenants_out = tenants_list

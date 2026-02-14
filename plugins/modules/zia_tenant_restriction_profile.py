@@ -219,6 +219,16 @@ def normalize_profile(profile):
     }
 
 
+def _get_or_existing(params, existing, key, default):
+    """Get value from params or fall back to existing/direct default."""
+    val = params.get(key)
+    if val is not None:
+        return val
+    if existing:
+        return existing.get(key, default)
+    return default
+
+
 def build_profile_payload(params, existing=None):
     """Build payload for add/update. Merge with existing for update."""
     payload = {
@@ -227,14 +237,14 @@ def build_profile_payload(params, existing=None):
         "app_type": params.get("app_type") or "",
         "item_type_primary": params.get("item_type_primary") or "",
         "item_type_secondary": params.get("item_type_secondary") or "",
-        "restrict_personal_o365_domains": params.get("restrict_personal_o365_domains") if params.get("restrict_personal_o365_domains") is not None else (existing.get("restrict_personal_o365_domains") if existing else False),
-        "allow_google_consumers": params.get("allow_google_consumers") if params.get("allow_google_consumers") is not None else (existing.get("allow_google_consumers") if existing else False),
-        "ms_login_services_tr_v2": params.get("ms_login_services_tr_v2") if params.get("ms_login_services_tr_v2") is not None else (existing.get("ms_login_services_tr_v2") if existing else False),
-        "allow_google_visitors": params.get("allow_google_visitors") if params.get("allow_google_visitors") is not None else (existing.get("allow_google_visitors") if existing else False),
-        "allow_gcp_cloud_storage_read": params.get("allow_gcp_cloud_storage_read") if params.get("allow_gcp_cloud_storage_read") is not None else (existing.get("allow_gcp_cloud_storage_read") if existing else False),
-        "item_data_primary": params.get("item_data_primary") if params.get("item_data_primary") is not None else (existing.get("item_data_primary") if existing else []),
-        "item_data_secondary": params.get("item_data_secondary") if params.get("item_data_secondary") is not None else (existing.get("item_data_secondary") if existing else []),
-        "item_value": params.get("item_value") if params.get("item_value") is not None else (existing.get("item_value") if existing else []),
+        "restrict_personal_o365_domains": _get_or_existing(params, existing, "restrict_personal_o365_domains", False),
+        "allow_google_consumers": _get_or_existing(params, existing, "allow_google_consumers", False),
+        "ms_login_services_tr_v2": _get_or_existing(params, existing, "ms_login_services_tr_v2", False),
+        "allow_google_visitors": _get_or_existing(params, existing, "allow_google_visitors", False),
+        "allow_gcp_cloud_storage_read": _get_or_existing(params, existing, "allow_gcp_cloud_storage_read", False),
+        "item_data_primary": _get_or_existing(params, existing, "item_data_primary", []),
+        "item_data_secondary": _get_or_existing(params, existing, "item_data_secondary", []),
+        "item_value": _get_or_existing(params, existing, "item_value", []),
     }
     if existing and "id" in existing:
         payload["id"] = existing["id"]
@@ -270,22 +280,14 @@ def core(module):
 
     existing_profile = None
     if profile_id is not None:
-        result, _unused, error = client.tenancy_restriction_profile.get_restriction_profile(
-            profile_id
-        )
+        result, _unused, error = client.tenancy_restriction_profile.get_restriction_profile(profile_id)
         if error:
-            module.fail_json(
-                msg=f"Error fetching tenant restriction profile with id {profile_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching tenant restriction profile with id {profile_id}: {to_native(error)}")
         existing_profile = result.as_dict()
     else:
-        result, _unused, error = client.tenancy_restriction_profile.list_restriction_profile(
-            query_params={"search": profile_name} if profile_name else None
-        )
+        result, _unused, error = client.tenancy_restriction_profile.list_restriction_profile(query_params={"search": profile_name} if profile_name else None)
         if error:
-            module.fail_json(
-                msg=f"Error listing tenant restriction profiles: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error listing tenant restriction profiles: {to_native(error)}")
         profiles_list = [p.as_dict() for p in result] if result else []
         if profile_name:
             for p in profiles_list:
@@ -313,25 +315,17 @@ def core(module):
                 if not id_to_update:
                     module.fail_json(msg="Cannot update: ID is missing from the existing profile.")
                 update_params = to_api_payload({k: v for k, v in desired.items() if k != "id"})
-                updated, _unused, error = client.tenancy_restriction_profile.update_restriction_profile(
-                    id_to_update, **update_params
-                )
+                updated, _unused, error = client.tenancy_restriction_profile.update_restriction_profile(id_to_update, **update_params)
                 if error:
-                    module.fail_json(
-                        msg=f"Error updating tenant restriction profile: {to_native(error)}"
-                    )
+                    module.fail_json(msg=f"Error updating tenant restriction profile: {to_native(error)}")
                 module.exit_json(changed=True, data=updated.as_dict())
             else:
                 module.exit_json(changed=False, data=existing_profile)
         else:
             add_params = to_api_payload({k: v for k, v in desired.items() if k != "id"})
-            new_profile, _unused, error = client.tenancy_restriction_profile.add_restriction_profile(
-                **add_params
-            )
+            new_profile, _unused, error = client.tenancy_restriction_profile.add_restriction_profile(**add_params)
             if error:
-                module.fail_json(
-                    msg=f"Error creating tenant restriction profile: {to_native(error)}"
-                )
+                module.fail_json(msg=f"Error creating tenant restriction profile: {to_native(error)}")
             module.exit_json(changed=True, data=new_profile.as_dict())
 
     elif state == "absent":
@@ -339,13 +333,9 @@ def core(module):
             id_to_delete = existing_profile.get("id")
             if not id_to_delete:
                 module.fail_json(msg="Cannot delete: ID is missing from the existing profile.")
-            _unused, _unused, error = client.tenancy_restriction_profile.delete_restriction_profile(
-                id_to_delete
-            )
+            _unused, _unused, error = client.tenancy_restriction_profile.delete_restriction_profile(id_to_delete)
             if error:
-                module.fail_json(
-                    msg=f"Error deleting tenant restriction profile: {to_native(error)}"
-                )
+                module.fail_json(msg=f"Error deleting tenant restriction profile: {to_native(error)}")
             module.exit_json(changed=True, data=existing_profile)
         else:
             module.exit_json(changed=False, data={})

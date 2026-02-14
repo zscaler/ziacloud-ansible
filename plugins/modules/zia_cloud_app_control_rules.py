@@ -349,9 +349,7 @@ def validate_and_convert_time_fields(rule):
             "validity_time_zone_id",
         ]:
             if not rule.get(field):
-                raise ValueError(
-                    f"'{field}' must be set when 'enforce_time_validity' is True"
-                )
+                raise ValueError(f"'{field}' must be set when 'enforce_time_validity' is True")
 
         timezone_id = rule["validity_time_zone_id"]
         if timezone_id not in pytz.all_timezones:
@@ -374,9 +372,7 @@ def validate_additional_fields(rule):
     size_quota_mb = rule.get("size_quota")
     if size_quota_mb:
         if size_quota_mb < 10 or size_quota_mb > 100000:
-            raise ValueError(
-                "size_quota must be within the range of 10 MB to 100000 MB"
-            )
+            raise ValueError("size_quota must be within the range of 10 MB to 100000 MB")
         rule["size_quota"] = size_quota_mb * 1024
 
 
@@ -387,11 +383,7 @@ def normalize_rule(rule):
     normalized = rule.copy()
     computed_values = ["profile_seq"]
     for attr in computed_values:
-        if (
-            "cbi_profile" in normalized
-            and isinstance(normalized["cbi_profile"], dict)
-            and attr in normalized["cbi_profile"]
-        ):
+        if "cbi_profile" in normalized and isinstance(normalized["cbi_profile"], dict) and attr in normalized["cbi_profile"]:
             normalized["cbi_profile"].pop(attr, None)
 
     return normalized
@@ -466,13 +458,9 @@ def core(module):
 
     existing_rule = None
     if rule_id is not None:
-        result, _unused, error = client.cloudappcontrol.get_rule(
-            rule_type=rule_type, rule_id=rule_id
-        )
+        result, _unused, error = client.cloudappcontrol.get_rule(rule_type=rule_type, rule_id=rule_id)
         if error:
-            module.fail_json(
-                msg=f"Error fetching rule with id {rule_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching rule with id {rule_id}: {to_native(error)}")
         if result:
             existing_rule = result.as_dict()
     else:
@@ -539,17 +527,13 @@ def core(module):
                 current_value = 0
 
         if isinstance(desired_value, list) and isinstance(current_value, list):
-            if all(isinstance(x, int) for x in desired_value) and all(
-                isinstance(x, int) for x in current_value
-            ):
+            if all(isinstance(x, int) for x in desired_value) and all(isinstance(x, int) for x in current_value):
                 desired_value = sorted(desired_value)
                 current_value = sorted(current_value)
 
         if current_value != desired_value:
             differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
-            )
+            module.warn(f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}")
 
     if module.check_mode:
         if state == "present" and (existing_rule is None or differences_detected):
@@ -564,9 +548,7 @@ def core(module):
             if differences_detected:
                 rule_id_to_update = existing_rule.get("id")
                 if not rule_id_to_update:
-                    module.fail_json(
-                        msg="Cannot update rule: ID is missing from the existing resource."
-                    )
+                    module.fail_json(msg="Cannot update rule: ID is missing from the existing resource.")
 
                 update_data = deleteNone(
                     {
@@ -587,9 +569,7 @@ def core(module):
                         "rank": desired_rule.get("rank"),
                         "applications": desired_rule.get("applications"),
                         "tenancy_profile_ids": desired_rule.get("tenancy_profile_ids"),
-                        "cloud_app_risk_profile": desired_rule.get(
-                            "cloud_app_risk_profile"
-                        ),
+                        "cloud_app_risk_profile": desired_rule.get("cloud_app_risk_profile"),
                         "cloud_app_instances": desired_rule.get("cloud_app_instances"),
                         "cascading_enabled": desired_rule.get("cascading_enabled"),
                         "time_quota": desired_rule.get("time_quota"),
@@ -598,24 +578,16 @@ def core(module):
                         "labels": desired_rule.get("labels"),
                         "validity_start_time": desired_rule.get("validity_start_time"),
                         "validity_end_time": desired_rule.get("validity_end_time"),
-                        "validity_time_zone_id": desired_rule.get(
-                            "validity_time_zone_id"
-                        ),
-                        "enforce_time_validity": desired_rule.get(
-                            "enforce_time_validity"
-                        ),
+                        "validity_time_zone_id": desired_rule.get("validity_time_zone_id"),
+                        "enforce_time_validity": desired_rule.get("enforce_time_validity"),
                         "user_agent_types": desired_rule.get("user_agent_types"),
-                        "user_risk_score_levels": desired_rule.get(
-                            "user_risk_score_levels"
-                        ),
+                        "user_risk_score_levels": desired_rule.get("user_risk_score_levels"),
                         "device_trust_levels": desired_rule.get("device_trust_levels"),
                         "cbi_profile": desired_rule.get("cbi_profile"),
                     }
                 )
                 module.warn("Payload Update for SDK: {}".format(update_data))
-                updated_rule, _unused, error = client.cloudappcontrol.update_rule(
-                    rule_type, **update_data
-                )
+                updated_rule, _unused, error = client.cloudappcontrol.update_rule(rule_type, **update_data)
                 if error:
                     module.fail_json(msg=f"Error updating rule: {to_native(error)}")
                 module.exit_json(changed=True, data=updated_rule.as_dict())
@@ -640,9 +612,7 @@ def core(module):
                     "rank": desired_rule.get("rank"),
                     "applications": desired_rule.get("applications"),
                     "tenancy_profile_ids": desired_rule.get("tenancy_profile_ids"),
-                    "cloud_app_risk_profile": desired_rule.get(
-                        "cloud_app_risk_profile"
-                    ),
+                    "cloud_app_risk_profile": desired_rule.get("cloud_app_risk_profile"),
                     "cloud_app_instances": desired_rule.get("cloud_app_instances"),
                     "cascading_enabled": desired_rule.get("cascading_enabled"),
                     "time_quota": desired_rule.get("time_quota"),
@@ -654,17 +624,13 @@ def core(module):
                     "validity_time_zone_id": desired_rule.get("validity_time_zone_id"),
                     "enforce_time_validity": desired_rule.get("enforce_time_validity"),
                     "user_agent_types": desired_rule.get("user_agent_types"),
-                    "user_risk_score_levels": desired_rule.get(
-                        "user_risk_score_levels"
-                    ),
+                    "user_risk_score_levels": desired_rule.get("user_risk_score_levels"),
                     "device_trust_levels": desired_rule.get("device_trust_levels"),
                     "cbi_profile": desired_rule.get("cbi_profile"),
                 }
             )
             module.warn("Payload Update for SDK: {}".format(create_data))
-            new_rule, _unused, error = client.cloudappcontrol.add_rule(
-                rule_type, **create_data
-            )
+            new_rule, _unused, error = client.cloudappcontrol.add_rule(rule_type, **create_data)
             if error:
                 module.fail_json(msg=f"Error creating rule: {to_native(error)}")
             module.exit_json(changed=True, data=new_rule.as_dict())
@@ -673,13 +639,9 @@ def core(module):
         if existing_rule:
             rule_id_to_delete = existing_rule.get("id")
             if not rule_id_to_delete:
-                module.fail_json(
-                    msg="Cannot delete rule: ID is missing from the existing resource."
-                )
+                module.fail_json(msg="Cannot delete rule: ID is missing from the existing resource.")
 
-            _unused, _unused, error = client.cloudappcontrol.delete_rule(
-                rule_type, rule_id=rule_id_to_delete
-            )
+            _unused, _unused, error = client.cloudappcontrol.delete_rule(rule_type, rule_id=rule_id_to_delete)
             if error:
                 module.fail_json(msg=f"Error deleting rule: {to_native(error)}")
             module.exit_json(changed=True, data=existing_rule)

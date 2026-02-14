@@ -188,9 +188,7 @@ def core(module):
     if category_id is not None:
         category_obj, _unused, error = client.url_categories.get_category(category_id)
         if error or category_obj is None:
-            module.fail_json(
-                msg=f"Failed to retrieve URL category with ID '{category_id}': {to_native(error)}"
-            )
+            module.fail_json(msg=f"Failed to retrieve URL category with ID '{category_id}': {to_native(error)}")
         categories = [category_obj.as_dict()]
     else:
         query_params = {}
@@ -203,9 +201,7 @@ def core(module):
         if include_keyword_counts is not None:
             query_params["include_only_url_keyword_counts"] = include_keyword_counts
 
-        result, _unused, error = client.url_categories.list_categories(
-            query_params=query_params
-        )
+        result, _unused, error = client.url_categories.list_categories(query_params=query_params)
         if error:
             module.fail_json(msg=f"Error retrieving URL categories: {to_native(error)}")
 

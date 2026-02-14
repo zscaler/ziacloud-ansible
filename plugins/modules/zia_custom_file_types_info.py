@@ -97,23 +97,15 @@ def core(module):
     client = ZIAClientHelper(module)
 
     if file_id is not None:
-        result, _unused, error = client.custom_file_types.get_custom_file_tytpe(
-            file_id=file_id
-        )
+        result, _unused, error = client.custom_file_types.get_custom_file_tytpe(file_id=file_id)
         if error:
-            module.fail_json(
-                msg=f"Failed to retrieve custom file type with ID '{file_id}': {to_native(error)}"
-            )
+            module.fail_json(msg=f"Failed to retrieve custom file type with ID '{file_id}': {to_native(error)}")
         file_types_out = [result.as_dict()]
     else:
         query_params = {"search": file_name} if file_name else {}
-        result, _unused, error = client.custom_file_types.list_custom_file_types(
-            query_params=query_params if query_params else None
-        )
+        result, _unused, error = client.custom_file_types.list_custom_file_types(query_params=query_params if query_params else None)
         if error:
-            module.fail_json(
-                msg=f"Error retrieving custom file types: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error retrieving custom file types: {to_native(error)}")
         file_types_list = [f.as_dict() for f in result] if result else []
 
         if file_name:
@@ -122,9 +114,7 @@ def core(module):
                 None,
             )
             if matched is None:
-                module.fail_json(
-                    msg=f"Custom file type with name '{file_name}' not found."
-                )
+                module.fail_json(msg=f"Custom file type with name '{file_name}' not found.")
             file_types_out = [matched]
         else:
             file_types_out = file_types_list

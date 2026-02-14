@@ -134,29 +134,20 @@ def core(module):
         module.fail_json(msg="cloud_apps is required and must be a non-empty list.")
 
     client = ZIAClientHelper(module)
-    actions, _unused, error = client.cloudappcontrol.list_available_actions(
-        rule_type, cloud_apps
-    )
+    actions, _unused, error = client.cloudappcontrol.list_available_actions(rule_type, cloud_apps)
     if error:
-        module.fail_json(
-            msg=f"Error retrieving available actions: {to_native(error)}"
-        )
+        module.fail_json(msg=f"Error retrieving available actions: {to_native(error)}")
 
     actions = list(actions) if actions else []
 
     # Separate ISOLATE actions from non-ISOLATE actions
-    actions_without_isolate = [
-        a for a in actions if not a.startswith("ISOLATE_")
-    ]
+    actions_without_isolate = [a for a in actions if not a.startswith("ISOLATE_")]
     isolate_actions = [a for a in actions if a.startswith("ISOLATE_")]
 
     # Filter by action_prefixes if specified
     filtered_actions = []
     if action_prefixes:
-        prefixes = [
-            p if p.endswith("_") else p + "_"
-            for p in action_prefixes
-        ]
+        prefixes = [p if p.endswith("_") else p + "_" for p in action_prefixes]
         for action in actions:
             for prefix in prefixes:
                 if action.startswith(prefix):

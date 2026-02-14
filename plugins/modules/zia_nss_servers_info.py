@@ -103,18 +103,14 @@ def core(module):
     if nss_id is not None:
         nss_obj, _unused, error = client.nss_servers.get_nss_server(nss_id)
         if error or nss_obj is None:
-            module.fail_json(
-                msg=f"Failed to retrieve NSS Server with ID '{nss_id}': {to_native(error)}"
-            )
+            module.fail_json(msg=f"Failed to retrieve NSS Server with ID '{nss_id}': {to_native(error)}")
         servers = [nss_obj.as_dict()]
     else:
         query_params = {}
         if nss_name:
             query_params["search"] = nss_name
 
-        result, _unused, error = client.nss_servers.list_nss_servers(
-            query_params=query_params
-        )
+        result, _unused, error = client.nss_servers.list_nss_servers(query_params=query_params)
         if error:
             module.fail_json(msg=f"Error retrieving NSS Servers: {to_native(error)}")
 
@@ -124,9 +120,7 @@ def core(module):
             matched = next((g for g in nss_list if g.get("name") == nss_name), None)
             if not matched:
                 available = [g.get("name") for g in nss_list]
-                module.fail_json(
-                    msg=f"NSS Server with name '{nss_name}' not found. Available servers: {available}"
-                )
+                module.fail_json(msg=f"NSS Server with name '{nss_name}' not found. Available servers: {available}")
             servers = [matched]
         else:
             servers = nss_list

@@ -292,9 +292,7 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 def core(module):
     client = ZIAClientHelper(module)
 
-    settings, _unused, error = (
-        client.mobile_threat_settings.get_mobile_advanced_settings()
-    )
+    settings, _unused, error = client.mobile_threat_settings.get_mobile_advanced_settings()
     if error:
         module.fail_json(msg=f"Error fetching advanced settings: {to_native(error)}")
 

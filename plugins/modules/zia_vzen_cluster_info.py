@@ -137,21 +137,15 @@ def core(module):
     if cluster_id is not None:
         result, _unused, error = client.vzen_clusters.get_vzen_cluster(cluster_id)
         if error:
-            module.fail_json(
-                msg=f"Failed to retrieve VZEN cluster with ID '{cluster_id}': {to_native(error)}"
-            )
+            module.fail_json(msg=f"Failed to retrieve VZEN cluster with ID '{cluster_id}': {to_native(error)}")
         clusters_out = [result.as_dict()]
     else:
         query_params = {}
         if cluster_name:
             query_params["search"] = cluster_name
-        result, _unused, error = client.vzen_clusters.list_vzen_clusters(
-            query_params=query_params if query_params else None
-        )
+        result, _unused, error = client.vzen_clusters.list_vzen_clusters(query_params=query_params if query_params else None)
         if error:
-            module.fail_json(
-                msg=f"Error retrieving VZEN clusters: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error retrieving VZEN clusters: {to_native(error)}")
         clusters_list = [c.as_dict() for c in result] if result else []
 
         if cluster_name:
@@ -160,9 +154,7 @@ def core(module):
                 None,
             )
             if matched is None:
-                module.fail_json(
-                    msg=f"VZEN cluster with name '{cluster_name}' not found."
-                )
+                module.fail_json(msg=f"VZEN cluster with name '{cluster_name}' not found.")
             clusters_out = [matched]
         else:
             clusters_out = clusters_list

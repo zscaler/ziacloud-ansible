@@ -143,22 +143,14 @@ def core(module):
     subscriptions = []
 
     if subscription_id is not None:
-        sub_obj, _unused, error = client.alert_subscriptions.get_alert_subscription(
-            subscription_id
-        )
+        sub_obj, _unused, error = client.alert_subscriptions.get_alert_subscription(subscription_id)
         if error or sub_obj is None:
-            module.fail_json(
-                msg=f"Failed to retrieve alert subscription with ID '{subscription_id}': {to_native(error)}"
-            )
+            module.fail_json(msg=f"Failed to retrieve alert subscription with ID '{subscription_id}': {to_native(error)}")
         subscriptions = [sub_obj.as_dict()]
     else:
-        result, _unused, error = (
-            client.alert_subscriptions.list_alert_subscriptions()
-        )
+        result, _unused, error = client.alert_subscriptions.list_alert_subscriptions()
         if error:
-            module.fail_json(
-                msg=f"Error retrieving alert subscriptions: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error retrieving alert subscriptions: {to_native(error)}")
 
         sub_list = [s.as_dict() for s in result] if result else []
 
@@ -169,9 +161,7 @@ def core(module):
             )
             if not matched:
                 available = [s.get("email") for s in sub_list]
-                module.fail_json(
-                    msg=f"Alert subscription with email '{subscription_email}' not found. Available emails: {available}"
-                )
+                module.fail_json(msg=f"Alert subscription with email '{subscription_email}' not found. Available emails: {available}")
             subscriptions = [matched]
         else:
             subscriptions = sub_list

@@ -129,22 +129,14 @@ def core(module):
 
     existing = None
     if file_id is not None:
-        result, _unused, error = client.custom_file_types.get_custom_file_tytpe(
-            file_id=file_id
-        )
+        result, _unused, error = client.custom_file_types.get_custom_file_tytpe(file_id=file_id)
         if error:
-            module.fail_json(
-                msg=f"Error fetching custom file type with id {file_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching custom file type with id {file_id}: {to_native(error)}")
         existing = result.as_dict()
     else:
-        result, _unused, error = client.custom_file_types.list_custom_file_types(
-            query_params={"search": file_name} if file_name else None
-        )
+        result, _unused, error = client.custom_file_types.list_custom_file_types(query_params={"search": file_name} if file_name else None)
         if error:
-            module.fail_json(
-                msg=f"Error listing custom file types: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error listing custom file types: {to_native(error)}")
         types_list = [f.as_dict() for f in result] if result else []
         if file_name:
             for f in types_list:
@@ -185,33 +177,23 @@ def core(module):
                     "description": desired["description"],
                     "extension": desired["extension"],
                 }
-                updated, _unused, error = client.custom_file_types.update_custom_file_type(
-                    id_to_update, **update_params
-                )
+                updated, _unused, error = client.custom_file_types.update_custom_file_type(id_to_update, **update_params)
                 if error:
-                    module.fail_json(
-                        msg=f"Error updating custom file type: {to_native(error)}"
-                    )
+                    module.fail_json(msg=f"Error updating custom file type: {to_native(error)}")
                 module.exit_json(changed=True, data=updated.as_dict())
             else:
                 module.exit_json(changed=False, data=existing)
         else:
             if not file_name and not extension:
-                module.fail_json(
-                    msg="At least one of 'name' or 'extension' is required for create."
-                )
+                module.fail_json(msg="At least one of 'name' or 'extension' is required for create.")
             add_params = {
                 "name": desired["name"] or desired["extension"],
                 "description": desired["description"],
                 "extension": desired["extension"],
             }
-            new_ft, _unused, error = client.custom_file_types.add_custom_file_type(
-                **add_params
-            )
+            new_ft, _unused, error = client.custom_file_types.add_custom_file_type(**add_params)
             if error:
-                module.fail_json(
-                    msg=f"Error creating custom file type: {to_native(error)}"
-                )
+                module.fail_json(msg=f"Error creating custom file type: {to_native(error)}")
             module.exit_json(changed=True, data=new_ft.as_dict())
 
     elif state == "absent":
@@ -219,13 +201,9 @@ def core(module):
             id_to_delete = existing.get("id")
             if not id_to_delete:
                 module.fail_json(msg="Cannot delete: ID is missing from the existing custom file type.")
-            _unused, _unused, error = client.custom_file_types.delete_custom_file_type(
-                id_to_delete
-            )
+            _unused, _unused, error = client.custom_file_types.delete_custom_file_type(id_to_delete)
             if error:
-                module.fail_json(
-                    msg=f"Error deleting custom file type: {to_native(error)}"
-                )
+                module.fail_json(msg=f"Error deleting custom file type: {to_native(error)}")
             module.exit_json(changed=True, data=existing)
         else:
             module.exit_json(changed=False, data={})

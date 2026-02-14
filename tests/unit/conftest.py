@@ -14,14 +14,10 @@ import pytest
 
 # Set up the ansible_collections namespace properly
 # The collection is at: /path/to/ansible_collections/zscaler/ziacloud
-COLLECTION_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "..")
-)
+COLLECTION_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
 # Go up to ansible_collections parent
-ANSIBLE_COLLECTIONS_PARENT = os.path.abspath(
-    os.path.join(COLLECTION_ROOT, "..", "..", "..")
-)
+ANSIBLE_COLLECTIONS_PARENT = os.path.abspath(os.path.join(COLLECTION_ROOT, "..", "..", ".."))
 
 # Add to sys.path if not already there
 if ANSIBLE_COLLECTIONS_PARENT not in sys.path:
@@ -47,7 +43,7 @@ def reset_module_args():
     global _original_load_params
 
     # Save original _load_params on first run
-    if _original_load_params is None and hasattr(basic, '_load_params'):
+    if _original_load_params is None and hasattr(basic, "_load_params"):
         _original_load_params = basic._load_params
 
     # Clear the old-style args

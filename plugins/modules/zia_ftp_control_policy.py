@@ -109,9 +109,7 @@ def core(module):
         "urls",
     ]
 
-    settings_data = {
-        k: module.params[k] for k in params if module.params.get(k) is not None
-    }
+    settings_data = {k: module.params[k] for k in params if module.params.get(k) is not None}
 
     current_settings, _unused, error = client.ftp_control_policy.get_ftp_settings()
     if error:
@@ -127,11 +125,7 @@ def core(module):
         desired = settings_data[key]
         current = current_dict.get(key)
 
-        if (
-            key in unordered_fields
-            and isinstance(desired, list)
-            and isinstance(current, list)
-        ):
+        if key in unordered_fields and isinstance(desired, list) and isinstance(current, list):
             if set(desired) != set(current):
                 drift = True
                 break
@@ -148,13 +142,9 @@ def core(module):
         module.exit_json(changed=drift, ftp_settings=current_dict)
 
     if drift:
-        updated, _unused, error = client.ftp_control_policy.update_ftp_settings(
-            **settings_data
-        )
+        updated, _unused, error = client.ftp_control_policy.update_ftp_settings(**settings_data)
         if error:
-            module.fail_json(
-                msg=f"Error updating ftp control settings: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error updating ftp control settings: {to_native(error)}")
         module.exit_json(changed=True, ftp_settings=updated.as_dict())
 
     module.exit_json(changed=False, ftp_settings=current_dict)

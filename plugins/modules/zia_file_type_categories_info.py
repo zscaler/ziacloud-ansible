@@ -121,13 +121,9 @@ def core(module):
     if exclude_custom_file_types is not None:
         query_params["exclude_custom_file_types"] = exclude_custom_file_types
 
-    result, _unused, error = client.file_type_control_rule.list_file_type_categories(
-        query_params=query_params if query_params else None
-    )
+    result, _unused, error = client.file_type_control_rule.list_file_type_categories(query_params=query_params if query_params else None)
     if error:
-        module.fail_json(
-            msg=f"Error retrieving file type categories: {to_native(error)}"
-        )
+        module.fail_json(msg=f"Error retrieving file type categories: {to_native(error)}")
 
     categories = [item.as_dict() for item in result] if result else []
 

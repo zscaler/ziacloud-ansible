@@ -4,21 +4,9 @@
 # MIT License
 
 from __future__ import absolute_import, division, print_function
-
-__metaclass__ = type
-
-import sys
-import os
-
-COLLECTION_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "..", "..", "..")
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
+    ZIAClientHelper,
 )
-if COLLECTION_ROOT not in sys.path:
-    sys.path.insert(0, COLLECTION_ROOT)
-
-import pytest
-from unittest.mock import MagicMock, patch
-
 from tests.unit.plugins.modules.common.utils import (
     set_module_args,
     AnsibleExitJson,
@@ -26,10 +14,18 @@ from tests.unit.plugins.modules.common.utils import (
     ModuleTestCase,
     DEFAULT_PROVIDER,
 )
+from unittest.mock import MagicMock, patch
+import pytest
 
-from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
-    ZIAClientHelper,
-)
+__metaclass__ = type
+
+import sys
+import os
+
+COLLECTION_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".."))
+if COLLECTION_ROOT not in sys.path:
+    sys.path.insert(0, COLLECTION_ROOT)
+
 
 REAL_ARGUMENT_SPEC = ZIAClientHelper.zia_argument_spec()
 
@@ -53,9 +49,7 @@ class TestZIAActivationStatusInfoModule(ModuleTestCase):
     @pytest.fixture
     def mock_client(self):
         """Create a mock ZIA client that preserves argument_spec"""
-        with patch(
-            "ansible_collections.zscaler.ziacloud.plugins.modules.zia_activation_status_info.ZIAClientHelper"
-        ) as mock_class:
+        with patch("ansible_collections.zscaler.ziacloud.plugins.modules.zia_activation_status_info.ZIAClientHelper") as mock_class:
             base_spec = REAL_ARGUMENT_SPEC.copy()
             base_spec.update(status=dict(type="str", required=False))
             mock_class.zia_argument_spec.return_value = base_spec

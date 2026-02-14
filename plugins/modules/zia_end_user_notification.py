@@ -297,18 +297,13 @@ def core(module):
     settings_data = {
         k: module.params.get(k)
         for k in params
-        if module.params.get(k) is not None
-        and not (
-            isinstance(module.params.get(k), str) and module.params.get(k).strip() == ""
-        )
+        if module.params.get(k) is not None and not (isinstance(module.params.get(k), str) and module.params.get(k).strip() == "")
     }
 
     # 1) Fetch current EUN settings from the SDK
     current_settings, _unused, error = client.end_user_notification.get_eun_settings()
     if error:
-        module.fail_json(
-            msg=f"Error fetching end user notification settings: {to_native(error)}"
-        )
+        module.fail_json(msg=f"Error fetching end user notification settings: {to_native(error)}")
 
     # 2) Convert both current/desired data to normalized dicts
     current_dict = normalize_eun_values(current_settings.as_dict())
@@ -330,9 +325,7 @@ def core(module):
     if drift:
         module.warn("🔎 Drift found in these keys:")
         for k in diff_keys:
-            module.warn(
-                f"  {k}: current={current_dict.get(k)}, desired={desired_dict.get(k)}"
-            )
+            module.warn(f"  {k}: current={current_dict.get(k)}, desired={desired_dict.get(k)}")
 
     # 4) Respect check_mode
     if module.check_mode:
@@ -352,13 +345,9 @@ def core(module):
 
         module.warn(f"🧼 Cleaned payload sent to SDK: {payload}")
 
-        updated, _unused, error = client.end_user_notification.update_eun_settings(
-            current_settings
-        )
+        updated, _unused, error = client.end_user_notification.update_eun_settings(current_settings)
         if error:
-            module.fail_json(
-                msg=f"Error updating end user notification settings: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error updating end user notification settings: {to_native(error)}")
 
         module.exit_json(changed=True, end_user_notifications=updated.as_dict())
     else:
@@ -386,9 +375,7 @@ def main():
             aup_custom_frequency=dict(type="int", required=False),
             aup_day_offset=dict(type="int", required=False),
             aup_message=dict(type="str", required=False),
-            notification_type=dict(
-                type="str", required=False, choices=["DEFAULT", "CUSTOM"]
-            ),
+            notification_type=dict(type="str", required=False, choices=["DEFAULT", "CUSTOM"]),
             display_reason=dict(type="bool", required=False),
             display_comp_name=dict(type="bool", required=False),
             display_comp_logo=dict(type="bool", required=False),

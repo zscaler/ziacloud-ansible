@@ -121,9 +121,7 @@ def core(module):
         # Get role by ID
         result, _unused, error = client.admin_roles.get_role(role_id)
         if error:
-            module.fail_json(
-                msg=f"Error fetching role with id {role_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching role with id {role_id}: {to_native(error)}")
         if result:
             roles = [result.as_dict()]
     else:
@@ -132,9 +130,7 @@ def core(module):
         if role_name:
             query_params["search"] = role_name
 
-        result, _unused, error = client.admin_roles.list_roles(
-            query_params=query_params
-        )
+        result, _unused, error = client.admin_roles.list_roles(query_params=query_params)
         if error:
             module.fail_json(msg=f"Error listing roles: {to_native(error)}")
 

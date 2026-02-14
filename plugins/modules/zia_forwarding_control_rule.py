@@ -399,9 +399,7 @@ def validate_forwarding_rule_constraints(module):
             missing_attrs = [attr for attr in required_attrs if not is_set(attr)]
             if missing_attrs:
                 missing_attrs_str = ", ".join(missing_attrs)
-                module.fail_json(
-                    msg=f"The {missing_attrs_str} are required for ZPA forwarding"
-                )
+                module.fail_json(msg=f"The {missing_attrs_str} are required for ZPA forwarding")
 
         elif forward_method == "DIRECT":
             prohibited_attrs = [
@@ -413,15 +411,11 @@ def validate_forwarding_rule_constraints(module):
             ]
             for attr in prohibited_attrs:
                 if is_set(attr):
-                    module.fail_json(
-                        msg=f"{attr} attribute cannot be set when type is 'FORWARDING' and forward_method is 'DIRECT'"
-                    )
+                    module.fail_json(msg=f"{attr} attribute cannot be set when type is 'FORWARDING' and forward_method is 'DIRECT'")
 
         elif forward_method == "PROXYCHAIN":
             if not is_set("proxy_gateway"):
-                module.fail_json(
-                    msg="Proxy gateway is mandatory for Proxy Chaining forwarding"
-                )
+                module.fail_json(msg="Proxy gateway is mandatory for Proxy Chaining forwarding")
             prohibited_attrs = [
                 "zpa_gateway",
                 "zpa_app_segments",
@@ -430,9 +424,7 @@ def validate_forwarding_rule_constraints(module):
             ]
             for attr in prohibited_attrs:
                 if is_set(attr):
-                    module.fail_json(
-                        msg=f"{attr} attribute cannot be set when type is 'FORWARDING' and forward_method is 'PROXYCHAIN'"
-                    )
+                    module.fail_json(msg=f"{attr} attribute cannot be set when type is 'FORWARDING' and forward_method is 'PROXYCHAIN'")
 
     return None
 
@@ -520,20 +512,11 @@ def core(module):
             if rule["zpa_app_segments"] is None:
                 rule["zpa_app_segments"] = []
             else:
-                rule["zpa_app_segments"] = [
-                    {"external_id": segment["external_id"], "name": segment["name"]}
-                    for segment in rule["zpa_app_segments"]
-                ]
+                rule["zpa_app_segments"] = [{"external_id": segment["external_id"], "name": segment["name"]} for segment in rule["zpa_app_segments"]]
         if rule.get("zpa_application_segments"):
-            rule["zpa_application_segments"] = [
-                {"id": segment["id"], "name": segment["name"]}
-                for segment in rule["zpa_application_segments"]
-            ]
+            rule["zpa_application_segments"] = [{"id": segment["id"], "name": segment["name"]} for segment in rule["zpa_application_segments"]]
         if rule.get("zpa_application_segment_groups"):
-            rule["zpa_application_segment_groups"] = [
-                {"id": segment["id"], "name": segment["name"]}
-                for segment in rule["zpa_application_segment_groups"]
-            ]
+            rule["zpa_application_segment_groups"] = [{"id": segment["id"], "name": segment["name"]} for segment in rule["zpa_application_segment_groups"]]
 
     preprocess_attributes(rule)
 
@@ -544,9 +527,7 @@ def core(module):
     if rule_id is not None:
         result, _unused, error = client.forwarding_control.get_rule(rule_id=rule_id)
         if error:
-            module.fail_json(
-                msg=f"Error fetching rule with id {rule_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching rule with id {rule_id}: {to_native(error)}")
         if result:
             existing_rule = result.as_dict()
     else:
@@ -560,17 +541,8 @@ def core(module):
                     break
 
     # Handle predefined/default rules
-    if (
-        state == "absent"
-        and existing_rule
-        and (
-            existing_rule.get("default_rule", False)
-            or existing_rule.get("predefined", False)
-        )
-    ):
-        module.exit_json(
-            changed=False, msg="Deletion of default or predefined rule is not allowed."
-        )
+    if state == "absent" and existing_rule and (existing_rule.get("default_rule", False) or existing_rule.get("predefined", False)):
+        module.exit_json(changed=False, msg="Deletion of default or predefined rule is not allowed.")
 
     # Normalize and compare existing and desired data
     desired_rule = normalize_rule(rule)
@@ -582,10 +554,7 @@ def core(module):
         for attr in params:
             if attr in processed and processed[attr] is not None:
                 if isinstance(processed[attr], list):
-                    if all(
-                        isinstance(item, dict) and "id" in item
-                        for item in processed[attr]
-                    ):
+                    if all(isinstance(item, dict) and "id" in item for item in processed[attr]):
                         processed[attr] = [item["id"] for item in processed[attr]]
                     else:
                         processed[attr] = sorted(processed[attr])
@@ -648,17 +617,13 @@ def core(module):
 
         # Sort lists of IDs for comparison
         if isinstance(desired_value, list) and isinstance(current_value, list):
-            if all(isinstance(x, int) for x in desired_value) and all(
-                isinstance(x, int) for x in current_value
-            ):
+            if all(isinstance(x, int) for x in desired_value) and all(isinstance(x, int) for x in current_value):
                 desired_value = sorted(desired_value)
                 current_value = sorted(current_value)
 
         if current_value != desired_value:
             differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
-            )
+            module.warn(f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}")
 
     if module.check_mode:
         if state == "present" and (existing_rule is None or differences_detected):
@@ -673,9 +638,7 @@ def core(module):
             if differences_detected:
                 rule_id_to_update = existing_rule.get("id")
                 if not rule_id_to_update:
-                    module.fail_json(
-                        msg="Cannot update rule: ID is missing from the existing resource."
-                    )
+                    module.fail_json(msg="Cannot update rule: ID is missing from the existing resource.")
 
                 update_rule = deleteNone(
                     {
@@ -696,9 +659,7 @@ def core(module):
                         "dest_ip_groups": desired_rule.get("dest_ip_groups"),
                         "nw_services": desired_rule.get("nw_services"),
                         "nw_service_groups": desired_rule.get("nw_service_groups"),
-                        "nw_application_groups": desired_rule.get(
-                            "nw_application_groups"
-                        ),
+                        "nw_application_groups": desired_rule.get("nw_application_groups"),
                         "app_service_groups": desired_rule.get("app_service_groups"),
                         "labels": desired_rule.get("labels"),
                         "locations": desired_rule.get("locations"),
@@ -712,19 +673,13 @@ def core(module):
                         "proxy_gateway": desired_rule.get("proxy_gateway"),
                         "zpa_gateway": desired_rule.get("zpa_gateway"),
                         "zpa_app_segments": desired_rule.get("zpa_app_segments"),
-                        "zpa_application_segments": desired_rule.get(
-                            "zpa_application_segments"
-                        ),
-                        "zpa_application_segment_groups": desired_rule.get(
-                            "zpa_application_segment_groups"
-                        ),
+                        "zpa_application_segments": desired_rule.get("zpa_application_segments"),
+                        "zpa_application_segment_groups": desired_rule.get("zpa_application_segment_groups"),
                     }
                 )
 
                 module.warn("Payload Update for SDK: {}".format(update_rule))
-                updated_rule, _unused, error = client.forwarding_control.update_rule(
-                    **update_rule
-                )
+                updated_rule, _unused, error = client.forwarding_control.update_rule(**update_rule)
                 if error:
                     module.fail_json(msg=f"Error updating rule: {to_native(error)}")
                 module.exit_json(changed=True, data=updated_rule.as_dict())
@@ -763,12 +718,8 @@ def core(module):
                     "proxy_gateway": desired_rule.get("proxy_gateway"),
                     "zpa_gateway": desired_rule.get("zpa_gateway"),
                     "zpa_app_segments": desired_rule.get("zpa_app_segments"),
-                    "zpa_application_segments": desired_rule.get(
-                        "zpa_application_segments"
-                    ),
-                    "zpa_application_segment_groups": desired_rule.get(
-                        "zpa_application_segment_groups"
-                    ),
+                    "zpa_application_segments": desired_rule.get("zpa_application_segments"),
+                    "zpa_application_segment_groups": desired_rule.get("zpa_application_segment_groups"),
                 }
             )
             module.warn("Payload for SDK: {}".format(create_rule))
@@ -781,13 +732,9 @@ def core(module):
         if existing_rule:
             rule_id_to_delete = existing_rule.get("id")
             if not rule_id_to_delete:
-                module.fail_json(
-                    msg="Cannot delete rule: ID is missing from the existing resource."
-                )
+                module.fail_json(msg="Cannot delete rule: ID is missing from the existing resource.")
 
-            _unused, _unused, error = client.forwarding_control.delete_rule(
-                rule_id=rule_id_to_delete
-            )
+            _unused, _unused, error = client.forwarding_control.delete_rule(rule_id=rule_id_to_delete)
             if error:
                 module.fail_json(msg=f"Error deleting rule: {to_native(error)}")
             module.exit_json(changed=True, data=existing_rule)

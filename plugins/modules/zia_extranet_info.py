@@ -163,18 +163,12 @@ def core(module):
     if extranet_id is not None:
         result, _unused, error = client.traffic_extranet.get_extranet(extranet_id)
         if error:
-            module.fail_json(
-                msg=f"Failed to retrieve extranet with ID '{extranet_id}': {to_native(error)}"
-            )
+            module.fail_json(msg=f"Failed to retrieve extranet with ID '{extranet_id}': {to_native(error)}")
         extranets_out = [result.as_dict()]
     else:
-        result, _unused, error = client.traffic_extranet.list_extranets(
-            query_params={"pageSize": 500}
-        )
+        result, _unused, error = client.traffic_extranet.list_extranets(query_params={"pageSize": 500})
         if error:
-            module.fail_json(
-                msg=f"Error retrieving extranets: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error retrieving extranets: {to_native(error)}")
         extranets_list = [e.as_dict() for e in result] if result else []
 
         if extranet_name:
@@ -185,9 +179,7 @@ def core(module):
                     matched = e
                     break
             if matched is None:
-                module.fail_json(
-                    msg=f"Extranet with name '{extranet_name}' not found."
-                )
+                module.fail_json(msg=f"Extranet with name '{extranet_name}' not found.")
             extranets_out = [matched]
         else:
             extranets_out = extranets_list

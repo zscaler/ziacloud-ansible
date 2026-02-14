@@ -135,9 +135,7 @@ def core(module):
     elif profile_name:
         profiles = [p for p in all_profiles if p.get("name") == profile_name]
         if not profiles:
-            module.fail_json(
-                msg=f"Isolation profile with name '{profile_name}' not found."
-            )
+            module.fail_json(msg=f"Isolation profile with name '{profile_name}' not found.")
     else:
         profiles = all_profiles
 

@@ -110,9 +110,7 @@ def core(module):
     state = module.params.get("state")
     client = ZIAClientHelper(module)
 
-    group_params = {
-        p: module.params.get(p) for p in ["id", "name", "description", "ip_addresses"]
-    }
+    group_params = {p: module.params.get(p) for p in ["id", "name", "description", "ip_addresses"]}
     group_id = group_params.get("id")
     group_name = group_params.get("name")
 
@@ -121,9 +119,7 @@ def core(module):
     if group_id:
         result, _unused, error = client.cloud_firewall.get_ip_source_group(group_id)
         if error:
-            module.fail_json(
-                msg=f"Error fetching ip source group with id {group_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching ip source group with id {group_id}: {to_native(error)}")
         existing_group = result.as_dict()
     else:
         result, _unused, error = client.cloud_firewall.list_ip_source_groups()
@@ -143,9 +139,7 @@ def core(module):
     for key, value in normalized_desired.items():
         if normalized_existing.get(key) != value:
             differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {normalized_existing.get(key)}, Desired: {value}"
-            )
+            module.warn(f"Difference detected in {key}. Current: {normalized_existing.get(key)}, Desired: {value}")
 
     if module.check_mode:
         if state == "present" and (existing_group is None or differences_detected):
@@ -160,17 +154,13 @@ def core(module):
             if differences_detected:
                 group_id_to_update = existing_group.get("id")
                 if not group_id_to_update:
-                    module.fail_json(
-                        msg="Cannot update group: ID is missing from the existing resource."
-                    )
+                    module.fail_json(msg="Cannot update group: ID is missing from the existing resource.")
 
-                update_group, _unused, error = (
-                    client.cloud_firewall.update_ip_source_group(
-                        group_id=group_id_to_update,
-                        name=group_params.get("name"),
-                        description=group_params.get("description"),
-                        ip_addresses=group_params.get("ip_addresses"),
-                    )
+                update_group, _unused, error = client.cloud_firewall.update_ip_source_group(
+                    group_id=group_id_to_update,
+                    name=group_params.get("name"),
+                    description=group_params.get("description"),
+                    ip_addresses=group_params.get("ip_addresses"),
                 )
                 if error:
                     module.fail_json(msg=f"Error updating group: {to_native(error)}")
@@ -191,13 +181,9 @@ def core(module):
         if existing_group:
             group_id_to_delete = existing_group.get("id")
             if not group_id_to_delete:
-                module.fail_json(
-                    msg="Cannot delete group: ID is missing from the existing resource."
-                )
+                module.fail_json(msg="Cannot delete group: ID is missing from the existing resource.")
 
-            _unused, _unused, error = client.cloud_firewall.delete_ip_source_group(
-                group_id_to_delete
-            )
+            _unused, _unused, error = client.cloud_firewall.delete_ip_source_group(group_id_to_delete)
             if error:
                 module.fail_json(msg=f"Error deleting group: {to_native(error)}")
             module.exit_json(changed=True, data=existing_group)

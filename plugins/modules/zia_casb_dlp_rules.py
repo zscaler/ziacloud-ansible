@@ -373,6 +373,42 @@ RULE_TYPE_CHOICES = [
     "OFLCASB_DLP_GENAI",
 ]
 
+ACTION_CHOICES = [
+    "OFLCASB_DLP_REPORT_INCIDENT",
+    "OFLCASB_DLP_SHARE_READ_ONLY",
+    "OFLCASB_DLP_EXTERNAL_SHARE_READ_ONLY",
+    "OFLCASB_DLP_INTERNAL_SHARE_READ_ONLY",
+    "OFLCASB_DLP_REMOVE_PUBLIC_LINK_SHARE",
+    "OFLCASB_DLP_REVOKE_SHARE",
+    "OFLCASB_DLP_REMOVE_EXTERNAL_SHARE",
+    "OFLCASB_DLP_REMOVE_INTERNAL_SHARE",
+    "OFLCASB_DLP_REMOVE_COLLABORATORS",
+    "OFLCASB_DLP_REMOVE_INTERNAL_LINK_SHARE",
+    "OFLCASB_DLP_REMOVE_DISCOVERABLE",
+    "OFLCASB_DLP_NOTIFY_END_USER",
+    "OFLCASB_DLP_APPLY_MIP_TAG",
+    "OFLCASB_DLP_APPLY_BOX_TAG",
+    "OFLCASB_DLP_MOVE_TO_RESTRICTED_FOLDER",
+    "OFLCASB_DLP_REMOVE",
+    "OFLCASB_DLP_QUARANTINE",
+    "OFLCASB_DLP_APPLY_EMAIL_TAG",
+    "OFLCASB_DLP_APPLY_GOOGLEDRIVE_LABEL",
+    "OFLCASB_DLP_REMOVE_EXT_COLLABORATORS",
+    "OFLCASB_DLP_QUARANTINE_TO_USER_ROOT_FOLDER",
+    "OFLCASB_DLP_APPLY_WATERMARK",
+    "OFLCASB_DLP_REMOVE_WATERMARK",
+    "OFLCASB_DLP_APPLY_HEADER",
+    "OFLCASB_DLP_APPLY_FOOTER",
+    "OFLCASB_DLP_APPLY_HEADER_FOOTER",
+    "OFLCASB_DLP_REMOVE_HEADER",
+    "OFLCASB_DLP_REMOVE_FOOTER",
+    "OFLCASB_DLP_REMOVE_HEADER_FOOTER",
+    "OFLCASB_DLP_BLOCK",
+    "OFLCASB_DLP_APPLY_ATLASSIAN_CLASSIFICATION_LABEL",
+    "OFLCASB_DLP_ALLOW",
+    "OFLCASB_DLP_REDACT",
+]
+
 # Attributes that are compared for idempotency (exclude computed/read-only)
 CASB_DLP_RULE_ATTRIBUTES = [
     "name",
@@ -568,18 +604,14 @@ def core(module):
     if rule_id is not None:
         result, response, error = client.casb_dlp_rules.get_rule(rule_id, rule_type)
         if error:
-            module.fail_json(
-                msg=f"Error fetching CASB DLP rule with id {rule_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching CASB DLP rule with id {rule_id}: {to_native(error)}")
         existing_rule = result.as_dict() if result else None
         if response and hasattr(response, "get_body"):
             raw_response_body = response.get_body()
     else:
         result, response, error = client.casb_dlp_rules.list_rules(rule_type)
         if error:
-            module.fail_json(
-                msg=f"Error listing CASB DLP rules: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error listing CASB DLP rules: {to_native(error)}")
         rules_list = [r.as_dict() for r in result] if result else []
         if rule_name:
             for i, r in enumerate(rules_list):
@@ -602,9 +634,7 @@ def core(module):
                 existing_rule.pop("cloud_app_tenants", None)
 
     normalized_desired = normalize_casb_rule(rule_params)
-    normalized_existing = (
-        normalize_casb_rule(existing_rule) if existing_rule else {}
-    )
+    normalized_existing = normalize_casb_rule(existing_rule) if existing_rule else {}
 
     differences_detected = False
     for key, value in normalized_desired.items():
@@ -612,20 +642,14 @@ def core(module):
         if key in ID_LIST_ATTRS:
             if _extract_ids(value) != _extract_ids(existing_val):
                 differences_detected = True
-                module.warn(
-                    f"Difference in {key}. Current: {existing_val}, Desired: {value}"
-                )
+                module.warn(f"Difference in {key}. Current: {existing_val}, Desired: {value}")
         elif key in ("domains", "collaboration_scope", "file_types", "components"):
             if _normalize_list(value) != _normalize_list(existing_val):
                 differences_detected = True
-                module.warn(
-                    f"Difference in {key}. Current: {existing_val}, Desired: {value}"
-                )
+                module.warn(f"Difference in {key}. Current: {existing_val}, Desired: {value}")
         elif existing_val != value:
             differences_detected = True
-            module.warn(
-                f"Difference in {key}. Current: {existing_val}, Desired: {value}"
-            )
+            module.warn(f"Difference in {key}. Current: {existing_val}, Desired: {value}")
 
     if module.check_mode:
         if state == "present" and (existing_rule is None or differences_detected):
@@ -640,18 +664,14 @@ def core(module):
             if differences_detected:
                 id_to_update = existing_rule.get("id")
                 if not id_to_update:
-                    module.fail_json(
-                        msg="Cannot update: ID is missing from the existing rule."
-                    )
+                    module.fail_json(msg="Cannot update: ID is missing from the existing rule.")
 
                 updated, _unused, error = client.casb_dlp_rules.update_rule(
                     id_to_update,
                     **rule_params,
                 )
                 if error:
-                    module.fail_json(
-                        msg=f"Error updating CASB DLP rule: {to_native(error)}"
-                    )
+                    module.fail_json(msg=f"Error updating CASB DLP rule: {to_native(error)}")
                 module.exit_json(changed=True, data=updated.as_dict())
             else:
                 module.exit_json(changed=False, data=existing_rule)
@@ -659,6 +679,7 @@ def core(module):
             new_rule, _unused, error = client.casb_dlp_rules.add_rule(**rule_params)
             if error:
                 import json
+
                 payload_preview = json.dumps(
                     {k: v for k, v in rule_params.items() if "password" not in k.lower() and "secret" not in k.lower()},
                     default=str,
@@ -675,18 +696,14 @@ def core(module):
         if existing_rule:
             id_to_delete = existing_rule.get("id")
             if not id_to_delete:
-                module.fail_json(
-                    msg="Cannot delete: ID is missing from the existing rule."
-                )
+                module.fail_json(msg="Cannot delete: ID is missing from the existing rule.")
 
             _unused, _unused, error = client.casb_dlp_rules.delete_rule(
                 id_to_delete,
                 rule_type,
             )
             if error:
-                module.fail_json(
-                    msg=f"Error deleting CASB DLP rule: {to_native(error)}"
-                )
+                module.fail_json(msg=f"Error deleting CASB DLP rule: {to_native(error)}")
             module.exit_json(changed=True, data=existing_rule)
         else:
             module.exit_json(changed=False, data={})
@@ -706,7 +723,7 @@ def main():
             order=dict(type="int", required=True),
             rank=dict(type="int", required=False),
             enabled=dict(type="bool", required=False),
-            action=dict(type="str", required=False),
+            action=dict(type="str", required=False, choices=ACTION_CHOICES),
             severity=dict(
                 type="str",
                 required=False,

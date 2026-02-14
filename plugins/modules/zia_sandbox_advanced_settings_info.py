@@ -107,32 +107,18 @@ def core(module):
     client = ZIAClientHelper(module)
 
     try:
-        behavioral_analysis_data, _unused, error1 = (
-            client.sandbox.get_behavioral_analysis()
-        )
+        behavioral_analysis_data, _unused, error1 = client.sandbox.get_behavioral_analysis()
         if error1:
-            module.fail_json(
-                msg=f"Error retrieving behavioral analysis: {to_native(error1)}"
-            )
+            module.fail_json(msg=f"Error retrieving behavioral analysis: {to_native(error1)}")
 
         file_hash_count_data, _unused, error2 = client.sandbox.get_file_hash_count()
         if error2:
-            module.fail_json(
-                msg=f"Error retrieving file hash count: {to_native(error2)}"
-            )
+            module.fail_json(msg=f"Error retrieving file hash count: {to_native(error2)}")
 
         module.exit_json(
             changed=False,
-            behavioral_analysis=(
-                behavioral_analysis_data.as_dict()
-                if hasattr(behavioral_analysis_data, "as_dict")
-                else behavioral_analysis_data
-            ),
-            file_hash_count=(
-                file_hash_count_data.as_dict()
-                if hasattr(file_hash_count_data, "as_dict")
-                else file_hash_count_data
-            ),
+            behavioral_analysis=(behavioral_analysis_data.as_dict() if hasattr(behavioral_analysis_data, "as_dict") else behavioral_analysis_data),
+            file_hash_count=(file_hash_count_data.as_dict() if hasattr(file_hash_count_data, "as_dict") else file_hash_count_data),
         )
 
     except Exception as e:

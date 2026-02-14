@@ -266,29 +266,19 @@ def core(module):
     node_id = module.params.get("id")
     node_name = module.params.get("name")
 
-    vzen_node_params = {
-        p: module.params.get(p)
-        for p in VZEN_NODE_ATTRIBUTES
-        if module.params.get(p) is not None
-    }
+    vzen_node_params = {p: module.params.get(p) for p in VZEN_NODE_ATTRIBUTES if module.params.get(p) is not None}
 
     existing_node = None
 
     if node_id:
         result, _unused, error = client.vzen_nodes.get_zen_node(node_id)
         if error:
-            module.fail_json(
-                msg=f"Error fetching Virtual Service Edge node with id {node_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching Virtual Service Edge node with id {node_id}: {to_native(error)}")
         existing_node = result.as_dict()
     else:
-        result, _unused, error = client.vzen_nodes.list_zen_nodes(
-            query_params={"search": node_name} if node_name else None
-        )
+        result, _unused, error = client.vzen_nodes.list_zen_nodes(query_params={"search": node_name} if node_name else None)
         if error:
-            module.fail_json(
-                msg=f"Error listing Virtual Service Edge nodes: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error listing Virtual Service Edge nodes: {to_native(error)}")
         nodes_list = [node.as_dict() for node in result]
         if node_name:
             for node in nodes_list:
@@ -303,9 +293,7 @@ def core(module):
     for key, value in normalized_desired.items():
         if normalized_existing.get(key) != value:
             differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {normalized_existing.get(key)}, Desired: {value}"
-            )
+            module.warn(f"Difference detected in {key}. Current: {normalized_existing.get(key)}, Desired: {value}")
 
     if module.check_mode:
         if state == "present" and (existing_node is None or differences_detected):
@@ -320,44 +308,32 @@ def core(module):
             if differences_detected:
                 node_id_to_update = existing_node.get("id")
                 if not node_id_to_update:
-                    module.fail_json(
-                        msg="Cannot update Virtual Service Edge node: ID is missing from the existing resource."
-                    )
+                    module.fail_json(msg="Cannot update Virtual Service Edge node: ID is missing from the existing resource.")
 
                 updated_node, _unused, error = client.vzen_nodes.update_zen_node(
                     node_id_to_update,
                     **vzen_node_params,
                 )
                 if error:
-                    module.fail_json(
-                        msg=f"Error updating Virtual Service Edge node: {to_native(error)}"
-                    )
+                    module.fail_json(msg=f"Error updating Virtual Service Edge node: {to_native(error)}")
                 module.exit_json(changed=True, data=updated_node.as_dict())
             else:
                 module.exit_json(changed=False, data=existing_node)
         else:
             new_node, _unused, error = client.vzen_nodes.add_zen_node(**vzen_node_params)
             if error:
-                module.fail_json(
-                    msg=f"Error adding Virtual Service Edge node: {to_native(error)}"
-                )
+                module.fail_json(msg=f"Error adding Virtual Service Edge node: {to_native(error)}")
             module.exit_json(changed=True, data=new_node.as_dict())
 
     elif state == "absent":
         if existing_node:
             node_id_to_delete = existing_node.get("id")
             if not node_id_to_delete:
-                module.fail_json(
-                    msg="Cannot delete Virtual Service Edge node: ID is missing from the existing resource."
-                )
+                module.fail_json(msg="Cannot delete Virtual Service Edge node: ID is missing from the existing resource.")
 
-            _unused, _unused, error = client.vzen_nodes.delete_zen_node(
-                node_id_to_delete
-            )
+            _unused, _unused, error = client.vzen_nodes.delete_zen_node(node_id_to_delete)
             if error:
-                module.fail_json(
-                    msg=f"Error deleting Virtual Service Edge node: {to_native(error)}"
-                )
+                module.fail_json(msg=f"Error deleting Virtual Service Edge node: {to_native(error)}")
             module.exit_json(changed=True, data=existing_node)
         else:
             module.exit_json(changed=False, data={})

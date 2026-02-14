@@ -126,7 +126,7 @@ options:
   smart_isolation_profile:
     description:
       - The browser isolation profile. Provide as a dict with C(id) key (UUID string).
-      - Example C({"id": "161d0907-0a57-4aab-98c2-eccbd651c448"}).
+      - Example a dict with C(id) key containing a UUID such as C(161d0907-0a57-4aab-98c2-eccbd651c448).
     required: false
     type: dict
   smart_isolation_groups:
@@ -318,11 +318,7 @@ def core(module):
     state = module.params.get("state")
     client = ZIAClientHelper(module)
 
-    policy_params = {
-        p: module.params.get(p)
-        for p in BROWSER_CONTROL_ATTRIBUTES
-        if module.params.get(p) is not None
-    }
+    policy_params = {p: module.params.get(p) for p in BROWSER_CONTROL_ATTRIBUTES if module.params.get(p) is not None}
 
     # Build smart_isolation_profile for SDK if provided
     if "smart_isolation_profile" in policy_params:
@@ -337,9 +333,7 @@ def core(module):
     # Always fetch current state (singleton)
     result, _unused, error = client.browser_control_settings.get_browser_control_settings()
     if error:
-        module.fail_json(
-            msg=f"Error retrieving Browser Control policy: {to_native(error)}"
-        )
+        module.fail_json(msg=f"Error retrieving Browser Control policy: {to_native(error)}")
 
     existing_policy = result.as_dict() if result and hasattr(result, "as_dict") else {}
 
@@ -360,14 +354,10 @@ def core(module):
         if key in ("smart_isolation_users", "smart_isolation_groups"):
             if _extract_ids_from_refs(value) != _extract_ids_from_refs(existing_val):
                 differences_detected = True
-                module.warn(
-                    f"Difference detected in {key}. Current: {existing_val}, Desired: {value}"
-                )
+                module.warn(f"Difference detected in {key}. Current: {existing_val}, Desired: {value}")
         elif existing_val != value:
             differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {existing_val}, Desired: {value}"
-            )
+            module.warn(f"Difference detected in {key}. Current: {existing_val}, Desired: {value}")
 
     if module.check_mode:
         module.exit_json(changed=differences_detected)
@@ -385,13 +375,9 @@ def core(module):
                 ids = _extract_ids_from_refs(update_params[key])
                 update_params[key] = [int(x) for x in ids] if ids else []
 
-        updated, _unused, error = client.browser_control_settings.update_browser_control_settings(
-            **update_params
-        )
+        updated, _unused, error = client.browser_control_settings.update_browser_control_settings(**update_params)
         if error:
-            module.fail_json(
-                msg=f"Error updating Browser Control policy: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error updating Browser Control policy: {to_native(error)}")
         data = updated.as_dict() if updated and hasattr(updated, "as_dict") else updated
         module.exit_json(changed=True, data=data)
     else:
@@ -407,11 +393,9 @@ def main():
                 required=False,
                 choices=PLUGIN_CHECK_FREQUENCY_CHOICES,
             ),
-            bypass_plugins=dict(type="list", elements="str", required=False),
-            bypass_applications=dict(type="list", elements="str", required=False),
-            blocked_internet_explorer_versions=dict(
-                type="list", elements="str", required=False
-            ),
+            bypass_plugins=dict(type="list", elements="str", required=False, no_log=True),
+            bypass_applications=dict(type="list", elements="str", required=False, no_log=True),
+            blocked_internet_explorer_versions=dict(type="list", elements="str", required=False),
             blocked_chrome_versions=dict(type="list", elements="str", required=False),
             blocked_firefox_versions=dict(type="list", elements="str", required=False),
             blocked_safari_versions=dict(type="list", elements="str", required=False),

@@ -232,12 +232,8 @@ def normalize_extranet(extranet):
     norm = {
         "name": extranet.get("name"),
         "description": extranet.get("description") or "",
-        "extranet_dns_list": _normalize_dns_list(
-            extranet.get("extranet_dns_list")
-        ),
-        "extranet_ip_pool_list": _normalize_ip_pool_list(
-            extranet.get("extranet_ip_pool_list")
-        ),
+        "extranet_dns_list": _normalize_dns_list(extranet.get("extranet_dns_list")),
+        "extranet_ip_pool_list": _normalize_ip_pool_list(extranet.get("extranet_ip_pool_list")),
     }
     return norm
 
@@ -262,22 +258,14 @@ def core(module):
     existing_extranet = None
 
     if extranet_id is not None:
-        result, _unused, error = client.traffic_extranet.get_extranet(
-            extranet_id
-        )
+        result, _unused, error = client.traffic_extranet.get_extranet(extranet_id)
         if error:
-            module.fail_json(
-                msg=f"Error fetching extranet with id {extranet_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching extranet with id {extranet_id}: {to_native(error)}")
         existing_extranet = result.as_dict()
     else:
-        result, _unused, error = client.traffic_extranet.list_extranets(
-            query_params={"pageSize": 500}
-        )
+        result, _unused, error = client.traffic_extranet.list_extranets(query_params={"pageSize": 500})
         if error:
-            module.fail_json(
-                msg=f"Error listing extranets: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error listing extranets: {to_native(error)}")
         extranets_list = [e.as_dict() for e in result] if result else []
         if extranet_name:
             for e in extranets_list:
@@ -286,9 +274,7 @@ def core(module):
                     break
 
     normalized_desired = normalize_extranet(desired)
-    normalized_existing = (
-        normalize_extranet(existing_extranet) if existing_extranet else {}
-    )
+    normalized_existing = normalize_extranet(existing_extranet) if existing_extranet else {}
 
     differences_detected = normalized_desired != normalized_existing
 
@@ -305,9 +291,7 @@ def core(module):
             if differences_detected:
                 id_to_update = existing_extranet.get("id")
                 if not id_to_update:
-                    module.fail_json(
-                        msg="Cannot update: ID is missing from the existing extranet."
-                    )
+                    module.fail_json(msg="Cannot update: ID is missing from the existing extranet.")
                 # Merge existing DNS/pool with user params to preserve IDs
                 existing_dns = existing_extranet.get("extranet_dns_list") or []
                 existing_pools = existing_extranet.get("extranet_ip_pool_list") or []
@@ -336,9 +320,7 @@ def core(module):
                     **update_params,
                 )
                 if error:
-                    module.fail_json(
-                        msg=f"Error updating extranet: {to_native(error)}"
-                    )
+                    module.fail_json(msg=f"Error updating extranet: {to_native(error)}")
                 module.exit_json(changed=True, data=updated.as_dict())
             else:
                 module.exit_json(changed=False, data=existing_extranet)
@@ -349,29 +331,19 @@ def core(module):
                 "extranet_dns_list": _build_dns_list(extranet_dns_list),
                 "extranet_ip_pool_list": _build_ip_pool_list(extranet_ip_pool_list),
             }
-            new_extranet, _unused, error = client.traffic_extranet.add_extranet(
-                **add_params
-            )
+            new_extranet, _unused, error = client.traffic_extranet.add_extranet(**add_params)
             if error:
-                module.fail_json(
-                    msg=f"Error adding extranet: {to_native(error)}"
-                )
+                module.fail_json(msg=f"Error adding extranet: {to_native(error)}")
             module.exit_json(changed=True, data=new_extranet.as_dict())
 
     elif state == "absent":
         if existing_extranet:
             id_to_delete = existing_extranet.get("id")
             if not id_to_delete:
-                module.fail_json(
-                    msg="Cannot delete: ID is missing from the existing extranet."
-                )
-            _unused, _unused, error = client.traffic_extranet.delete_extranet(
-                id_to_delete
-            )
+                module.fail_json(msg="Cannot delete: ID is missing from the existing extranet.")
+            _unused, _unused, error = client.traffic_extranet.delete_extranet(id_to_delete)
             if error:
-                module.fail_json(
-                    msg=f"Error deleting extranet: {to_native(error)}"
-                )
+                module.fail_json(msg=f"Error deleting extranet: {to_native(error)}")
             module.exit_json(changed=True, data=existing_extranet)
         else:
             module.exit_json(changed=False, data={})

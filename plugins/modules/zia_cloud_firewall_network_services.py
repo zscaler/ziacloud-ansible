@@ -285,9 +285,7 @@ def core(module):
     if service_id:
         result, _unused, error = client.cloud_firewall.get_network_service(service_id)
         if error:
-            module.fail_json(
-                msg=f"Error fetching service ID {service_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching service ID {service_id}: {to_native(error)}")
         existing = result.as_dict()
     elif service_name:
         result, _unused, error = client.cloud_firewall.list_network_services()
@@ -302,10 +300,7 @@ def core(module):
     normalized_desired = normalize_service(network_service)
     normalized_existing = normalize_service(existing)
 
-    differences_detected = any(
-        normalized_desired.get(k) != normalized_existing.get(k)
-        for k in normalized_desired
-    )
+    differences_detected = any(normalized_desired.get(k) != normalized_existing.get(k) for k in normalized_desired)
 
     if module.check_mode:
         if state == "present" and (not existing or differences_detected):
@@ -339,9 +334,7 @@ def core(module):
                     )
                 )
 
-                updated, _unused, error = client.cloud_firewall.update_network_service(
-                    **payload
-                )
+                updated, _unused, error = client.cloud_firewall.update_network_service(**payload)
                 if error:
                     module.fail_json(msg=f"Error updating service: {to_native(error)}")
                 module.exit_json(changed=True, data=updated.as_dict())
@@ -361,9 +354,7 @@ def core(module):
                 )
             )
 
-            created, _unused, error = client.cloud_firewall.add_network_service(
-                **payload
-            )
+            created, _unused, error = client.cloud_firewall.add_network_service(**payload)
             if error:
                 module.fail_json(msg=f"Error creating service: {to_native(error)}")
             module.exit_json(changed=True, data=created.as_dict())
@@ -376,9 +367,7 @@ def core(module):
                     changed=False,
                     msg=f"Skipping delete of protected type: {service_type}",
                 )
-            _unused, _unused, error = client.cloud_firewall.delete_network_service(
-                existing.get("id")
-            )
+            _unused, _unused, error = client.cloud_firewall.delete_network_service(existing.get("id"))
             if error:
                 module.fail_json(msg=f"Error deleting service: {to_native(error)}")
             module.exit_json(changed=True, data=existing, msg="Service deleted")

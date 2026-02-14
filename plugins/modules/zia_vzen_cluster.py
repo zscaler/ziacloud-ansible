@@ -202,19 +202,71 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 )
 
 VZEN_TYPE_CHOICES = [
-    "ANY", "NONE", "SME", "SMSM", "SMCA", "SMUI", "SMCDS", "SMDNSD", "SMAA",
-    "SMTP", "SMQTN", "VIP", "UIZ", "UIAE", "SITEREVIEW", "PAC", "S_RELAY",
-    "M_RELAY", "H_MON", "SMIKE", "NSS", "SMEZA", "SMLB", "SMFCCLT", "SMBA",
-    "SMBAC", "SMESXI", "SMBAUI", "VZEN", "ZSCMCLT", "SMDLP", "ZSQUERY", "ADP",
-    "SMCDSDLP", "SMSCIM", "ZSAPI", "ZSCMCDSSCLT", "LOCAL_MTS", "SVPN", "SMCASB",
-    "SMFALCONUI", "MOBILEAPP_REG", "SMRESTSVR", "FALCONCA", "MOBILEAPP_NF",
-    "ZIRSVR", "SMEDGEUI", "ALERTEVAL", "ALERTNOTIF", "SMPARTNERUI", "CQM",
-    "DATAKEEPER", "SMBAM", "ZWACLT",
+    "ANY",
+    "NONE",
+    "SME",
+    "SMSM",
+    "SMCA",
+    "SMUI",
+    "SMCDS",
+    "SMDNSD",
+    "SMAA",
+    "SMTP",
+    "SMQTN",
+    "VIP",
+    "UIZ",
+    "UIAE",
+    "SITEREVIEW",
+    "PAC",
+    "S_RELAY",
+    "M_RELAY",
+    "H_MON",
+    "SMIKE",
+    "NSS",
+    "SMEZA",
+    "SMLB",
+    "SMFCCLT",
+    "SMBA",
+    "SMBAC",
+    "SMESXI",
+    "SMBAUI",
+    "VZEN",
+    "ZSCMCLT",
+    "SMDLP",
+    "ZSQUERY",
+    "ADP",
+    "SMCDSDLP",
+    "SMSCIM",
+    "ZSAPI",
+    "ZSCMCDSSCLT",
+    "LOCAL_MTS",
+    "SVPN",
+    "SMCASB",
+    "SMFALCONUI",
+    "MOBILEAPP_REG",
+    "SMRESTSVR",
+    "FALCONCA",
+    "MOBILEAPP_NF",
+    "ZIRSVR",
+    "SMEDGEUI",
+    "ALERTEVAL",
+    "ALERTNOTIF",
+    "SMPARTNERUI",
+    "CQM",
+    "DATAKEEPER",
+    "SMBAM",
+    "ZWACLT",
 ]
 
 ATTRIBUTES = [
-    "name", "status", "type", "ip_sec_enabled", "ip_address", "subnet_mask",
-    "default_gateway", "virtual_zen_node_ids",
+    "name",
+    "status",
+    "type",
+    "ip_sec_enabled",
+    "ip_address",
+    "subnet_mask",
+    "default_gateway",
+    "virtual_zen_node_ids",
 ]
 
 
@@ -273,16 +325,12 @@ def core(module):
     if cluster_id is not None:
         result, _unused, error = client.vzen_clusters.get_vzen_cluster(cluster_id)
         if error:
-            module.fail_json(
-                msg=f"Error fetching VZEN cluster with id {cluster_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching VZEN cluster with id {cluster_id}: {to_native(error)}")
         existing = result.as_dict()
     else:
         result, _unused, error = client.vzen_clusters.list_vzen_clusters()
         if error:
-            module.fail_json(
-                msg=f"Error listing VZEN clusters: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error listing VZEN clusters: {to_native(error)}")
         clusters_list = [c.as_dict() for c in result] if result else []
         if cluster_name:
             for c in clusters_list:
@@ -318,9 +366,7 @@ def core(module):
             if differences_detected:
                 id_to_update = existing.get("id")
                 if not id_to_update:
-                    module.fail_json(
-                        msg="Cannot update: ID is missing from the existing cluster."
-                    )
+                    module.fail_json(msg="Cannot update: ID is missing from the existing cluster.")
                 merged = {
                     "name": existing.get("name"),
                     "status": existing.get("status"),
@@ -329,9 +375,7 @@ def core(module):
                     "ip_address": existing.get("ip_address"),
                     "subnet_mask": existing.get("subnet_mask"),
                     "default_gateway": existing.get("default_gateway"),
-                    "virtual_zen_node_ids": _extract_node_ids(
-                        existing.get("virtual_zen_nodes")
-                    ),
+                    "virtual_zen_node_ids": _extract_node_ids(existing.get("virtual_zen_nodes")),
                 }
                 user_params = _build_params(module)
                 for k, v in user_params.items():
@@ -343,36 +387,24 @@ def core(module):
                     **update_params,
                 )
                 if error:
-                    module.fail_json(
-                        msg=f"Error updating VZEN cluster: {to_native(error)}"
-                    )
+                    module.fail_json(msg=f"Error updating VZEN cluster: {to_native(error)}")
                 module.exit_json(changed=True, data=updated.as_dict())
             else:
                 module.exit_json(changed=False, data=existing)
         else:
-            new_cluster, _unused, error = client.vzen_clusters.add_vzen_cluster(
-                **params
-            )
+            new_cluster, _unused, error = client.vzen_clusters.add_vzen_cluster(**params)
             if error:
-                module.fail_json(
-                    msg=f"Error adding VZEN cluster: {to_native(error)}"
-                )
+                module.fail_json(msg=f"Error adding VZEN cluster: {to_native(error)}")
             module.exit_json(changed=True, data=new_cluster.as_dict())
 
     elif state == "absent":
         if existing:
             id_to_delete = existing.get("id")
             if not id_to_delete:
-                module.fail_json(
-                    msg="Cannot delete: ID is missing from the existing cluster."
-                )
-            _unused, _unused, error = client.vzen_clusters.delete_vzen_cluster(
-                id_to_delete
-            )
+                module.fail_json(msg="Cannot delete: ID is missing from the existing cluster.")
+            _unused, _unused, error = client.vzen_clusters.delete_vzen_cluster(id_to_delete)
             if error:
-                module.fail_json(
-                    msg=f"Error deleting VZEN cluster: {to_native(error)}"
-                )
+                module.fail_json(msg=f"Error deleting VZEN cluster: {to_native(error)}")
             module.exit_json(changed=True, data=existing)
         else:
             module.exit_json(changed=False, data={})
