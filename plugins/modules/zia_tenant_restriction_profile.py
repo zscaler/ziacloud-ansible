@@ -129,7 +129,7 @@ options:
 """
 
 EXAMPLES = r"""
-- name: Create a tenant restriction profile for Microsoft Login Services
+- name: Create a tenant restriction profile for Microsoft Login Services (v1)
   zscaler.ziacloud.zia_tenant_restriction_profile:
     provider: '{{ provider }}'
     name: "MS Profile 01"
@@ -143,7 +143,17 @@ EXAMPLES = r"""
       - "example.com"
       - "example.org"
     restrict_personal_o365_domains: false
+
+- name: Create a tenant restriction profile for Microsoft Login Services (v2)
+  zscaler.ziacloud.zia_tenant_restriction_profile:
+    provider: '{{ provider }}'
+    name: "SGIO-MSFT-CA_v2"
+    description: "MS Login Services v2 with tenant policy IDs"
+    app_type: "MSLOGINSERVICES"
     ms_login_services_tr_v2: true
+    item_type_primary: "TENANT_RESTRICTION_TENANT_POLICY_ID"
+    item_data_primary:
+      - "76b66e9c-201a-49dc-bb7e-e9d77604a4c2:quadsj"
 
 - name: Update a tenant restriction profile by ID
   zscaler.ziacloud.zia_tenant_restriction_profile:
@@ -231,6 +241,26 @@ def build_profile_payload(params, existing=None):
     return payload
 
 
+def to_api_payload(payload):
+    """
+    Strip empty values so API payload matches minimal format the v2 API accepts.
+    When ms_login_services_tr_v2 is True, the MS Login Services v2 API rejects
+    requests with empty/extra fields (itemTypeSecondary: "", itemDataSecondary: [],
+    restrictPersonalO365Domains: false, etc). Only strip when v2 is enabled.
+    """
+    if not payload.get("ms_login_services_tr_v2"):
+        return payload
+    omit_empty = (None, "", [])
+    result = {}
+    for k, v in payload.items():
+        if v in omit_empty:
+            continue
+        if isinstance(v, bool) and not v:
+            continue
+        result[k] = v
+    return result
+
+
 def core(module):
     state = module.params.get("state")
     profile_id = module.params.get("id")
@@ -282,7 +312,7 @@ def core(module):
                 id_to_update = existing_profile.get("id")
                 if not id_to_update:
                     module.fail_json(msg="Cannot update: ID is missing from the existing profile.")
-                update_params = {k: v for k, v in desired.items() if k != "id"}
+                update_params = to_api_payload({k: v for k, v in desired.items() if k != "id"})
                 updated, _unused, error = client.tenancy_restriction_profile.update_restriction_profile(
                     id_to_update, **update_params
                 )
@@ -294,7 +324,7 @@ def core(module):
             else:
                 module.exit_json(changed=False, data=existing_profile)
         else:
-            add_params = {k: v for k, v in desired.items() if k != "id"}
+            add_params = to_api_payload({k: v for k, v in desired.items() if k != "id"})
             new_profile, _unused, error = client.tenancy_restriction_profile.add_restriction_profile(
                 **add_params
             )

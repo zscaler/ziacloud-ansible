@@ -221,7 +221,14 @@ def core(module):
     if module.check_mode:
         if state == "present":
             if existing:
-                if start_epoch is not None or end_epoch is not None or (description and description != (_exclusion_to_dict(existing).get("description") or "")):
+                existing_dict = _exclusion_to_dict(existing)
+                use_start = start_epoch if start_epoch is not None else existing_dict.get("start_time")
+                use_end = end_epoch if end_epoch is not None else existing_dict.get("end_time")
+                use_desc = description if module.params.get("description") is not None else (existing_dict.get("description") or "")
+                cur_start = existing_dict.get("start_time")
+                cur_end = existing_dict.get("end_time")
+                cur_desc = existing_dict.get("description") or ""
+                if use_start != cur_start or use_end != cur_end or use_desc != cur_desc:
                     module.exit_json(changed=True)
             else:
                 module.exit_json(changed=True)
@@ -237,9 +244,15 @@ def core(module):
             use_desc = description if module.params.get("description") is not None else (existing_dict.get("description") or "")
             if use_start is None or use_end is None:
                 module.fail_json(msg="start_time and end_time are required for update.")
+            # Idempotency: only update if something changed
+            cur_start = existing_dict.get("start_time")
+            cur_end = existing_dict.get("end_time")
+            cur_desc = existing_dict.get("description") or ""
+            if (use_start == cur_start and use_end == cur_end and use_desc == cur_desc):
+                existing_out = existing.as_dict() if hasattr(existing, "as_dict") else existing
+                module.exit_json(changed=False, data=existing_out)
             updated, _unused, error = client.traffic_datacenters.update_dc_exclusion(
                 dcid,
-                dcid=dcid,
                 start_time=use_start,
                 end_time=use_end,
                 description=use_desc,

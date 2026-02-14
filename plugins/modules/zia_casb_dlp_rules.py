@@ -419,6 +419,18 @@ CASB_DLP_RULE_ATTRIBUTES = [
     "casb_tombstone_template",
 ]
 
+# API returns nested objects (e.g. cloudAppTenants); module uses simple ID lists (cloud_app_tenant_ids).
+# Map API response keys to module param keys for normalization/comparison.
+API_TO_MODULE_MAP = {
+    "cloud_app_tenants": "cloud_app_tenant_ids",
+    "object_types": "object_type_ids",
+    "included_domain_profiles": "included_domain_profile_ids",
+    "excluded_domain_profiles": "excluded_domain_profile_ids",
+    "criteria_domain_profiles": "criteria_domain_profile_ids",
+    "email_recipient_profiles": "email_recipient_profile_ids",
+    "entity_groups": "entity_group_ids",
+}
+
 # SDK uses different param names (e.g. cloud_app_tenant_ids -> cloudAppTenants via reformat)
 # The SDK transform_common_id_fields handles conversion, we pass snake_case
 ID_LIST_ATTRS = [
@@ -448,20 +460,34 @@ def _normalize_list(val):
 
 
 def _extract_ids(val):
-    """Extract IDs from list of refs (dicts with id) or return list of ints."""
+    """
+    Extract IDs from list of refs (dicts with id) or list of ints.
+    Skip dicts without 'id' (API may return partial objects like status/features_supported only).
+    Also check tenant_id / zscaler_app_tenant_id for CasbTenant-like objects.
+    """
     if val is None:
         return None
     if not isinstance(val, list):
         return val
     ids = []
     for item in val:
-        if isinstance(item, dict) and "id" in item:
-            ids.append(item["id"])
+        if isinstance(item, dict):
+            # Prefer explicit id; fallback to tenant_id / zscalerAppTenantId for CasbTenant refs
+            vid = item.get("id")
+            if vid is not None:
+                ids.append(int(vid))
+            else:
+                tid = item.get("tenant_id") or item.get("tenantId")
+                if tid is not None:
+                    ids.append(int(tid))
+                else:
+                    zid = item.get("zscaler_app_tenant_id") or item.get("zscalerAppTenantId")
+                    if zid is not None and isinstance(zid, (int, float)):
+                        ids.append(int(zid))
         elif isinstance(item, (int, float)):
             ids.append(int(item))
-        else:
-            ids.append(item)
-    return sorted([str(x) for x in ids])
+    ids = [x for x in ids if x is not None]
+    return sorted(ids)
 
 
 def _normalize_single_ref(val):
@@ -480,6 +506,10 @@ def normalize_casb_rule(rule):
     norm = rule.copy()
     norm.pop("id", None)
     norm.pop("last_modified_time", None)
+    # Map API response keys (nested objects) to module param keys (ID lists)
+    for api_key, module_key in API_TO_MODULE_MAP.items():
+        if api_key in norm:
+            norm[module_key] = _extract_ids(norm.pop(api_key))
     # Convert state to enabled for comparison
     if "state" in norm and norm["state"]:
         norm["enabled"] = norm["state"] == "ENABLED"
@@ -487,6 +517,7 @@ def normalize_casb_rule(rule):
     for key in ID_LIST_ATTRS:
         if key in norm:
             norm[key] = _extract_ids(norm[key])
+    # String lists: normalize for order-independent comparison (sorted)
     for key in ("domains", "collaboration_scope", "file_types", "components"):
         if key in norm:
             norm[key] = _normalize_list(norm[key])
@@ -514,6 +545,10 @@ def _build_rule_params(module):
                 params["enabled"] = val
             else:
                 params[attr] = val
+    # SDK requires enabled->state for add/update; API fails without it (500).
+    # Default to enabled=True when state=present and not explicitly set.
+    if module.params.get("state") == "present" and "enabled" not in params:
+        params["enabled"] = True
     return params
 
 
@@ -528,28 +563,43 @@ def core(module):
     rule_params = _build_rule_params(module)
 
     existing_rule = None
+    raw_response_body = None  # Raw API body for extracting IDs lost by SDK (e.g. cloudAppTenants)
 
     if rule_id is not None:
-        result, _unused, error = client.casb_dlp_rules.get_rule(rule_id, rule_type)
+        result, response, error = client.casb_dlp_rules.get_rule(rule_id, rule_type)
         if error:
             module.fail_json(
                 msg=f"Error fetching CASB DLP rule with id {rule_id}: {to_native(error)}"
             )
-        existing_rule = result.as_dict()
+        existing_rule = result.as_dict() if result else None
+        if response and hasattr(response, "get_body"):
+            raw_response_body = response.get_body()
     else:
-        result, _unused, error = client.casb_dlp_rules.list_rules(
-            query_params={"rule_type": rule_type}
-        )
+        result, response, error = client.casb_dlp_rules.list_rules(rule_type)
         if error:
             module.fail_json(
                 msg=f"Error listing CASB DLP rules: {to_native(error)}"
             )
         rules_list = [r.as_dict() for r in result] if result else []
         if rule_name:
-            for r in rules_list:
+            for i, r in enumerate(rules_list):
                 if r.get("name") == rule_name:
                     existing_rule = r
+                    # Get raw body for this rule from response (SDK loses id in CasbTenant)
+                    if response and hasattr(response, "get_results"):
+                        raw_items = response.get_results()
+                        if raw_items and i < len(raw_items):
+                            raw_response_body = raw_items[i]
                     break
+
+    # SDK CasbTenant model drops "id" from cloudAppTenants; use raw API body when available
+    if existing_rule and raw_response_body:
+        raw_tenants = raw_response_body.get("cloudAppTenants") or raw_response_body.get("cloud_app_tenants")
+        if raw_tenants:
+            extracted = _extract_ids(raw_tenants)
+            if extracted:
+                existing_rule["cloud_app_tenant_ids"] = extracted
+                existing_rule.pop("cloud_app_tenants", None)
 
     normalized_desired = normalize_casb_rule(rule_params)
     normalized_existing = (
@@ -608,8 +658,16 @@ def core(module):
         else:
             new_rule, _unused, error = client.casb_dlp_rules.add_rule(**rule_params)
             if error:
+                import json
+                payload_preview = json.dumps(
+                    {k: v for k, v in rule_params.items() if "password" not in k.lower() and "secret" not in k.lower()},
+                    default=str,
+                    indent=2,
+                )
                 module.fail_json(
-                    msg=f"Error adding CASB DLP rule: {to_native(error)}"
+                    msg=f"Error adding CASB DLP rule: {to_native(error)}",
+                    payload_sent=rule_params,
+                    payload_preview=payload_preview,
                 )
             module.exit_json(changed=True, data=new_rule.as_dict())
 
@@ -622,8 +680,8 @@ def core(module):
                 )
 
             _unused, _unused, error = client.casb_dlp_rules.delete_rule(
-                rule_type,
                 id_to_delete,
+                rule_type,
             )
             if error:
                 module.fail_json(

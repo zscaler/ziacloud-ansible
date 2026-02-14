@@ -20,11 +20,11 @@ This collection contains modules and plugins to assist in automating the configu
 ## Tested Ansible Versions
 
 This collection is tested with the most current Ansible releases. Ansible versions
-before 2.15 are **not supported**.
+before 2.16 are **not supported**.
 
 ## Python dependencies
 
-The minimum python version for this collection is python `3.9`.
+The minimum python version for this collection is python `3.10`.
 
 The Python module dependencies are not automatically handled by `ansible-galaxy`. To manually install these dependencies, you have the following options:
 
@@ -57,11 +57,10 @@ You can also include it in a `requirements.yml` file and install it via `ansible
 
 ## Zscaler OneAPI New Framework
 
-The ZIA Ansible Collection now offers support for [OneAPI](https://help.zscaler.com/oneapi/understanding-oneapi) OAuth2 authentication through [Zidentity](https://help.zscaler.com/zidentity/what-zidentity).
+The ZIA Ansible Collection supports two authentication methods:
 
-**NOTE** As of version v2.0.0, this Ansible Collection offers backwards compatibility to the Zscaler legacy API framework. This is the recommended authentication method for organizations whose tenants are still not migrated to [Zidentity](https://help.zscaler.com/zidentity/what-zidentity).
-
-**NOTE** Notice that OneAPI and Zidentity is not currently supported for the following clouds: `zscalergov` and `zscalerten`. Refer to the [Legacy API Framework](#legacy-api-framework) for more information on how authenticate to these environments
+- **OneAPI (default)**: OAuth2 authentication via [OneAPI](https://help.zscaler.com/oneapi/understanding-oneapi) and [Zidentity](https://help.zscaler.com/zidentity/what-zidentity). Use this when your tenant is migrated to Zidentity. Requires `client_id` + (`client_secret` or `private_key`) + `vanity_domain`.
+- **Legacy**: Username/password/API key authentication. Use this when your tenant is **not** yet migrated to Zidentity, or for clouds `zscalergov` and `zscalerten` (OneAPI is not supported there). Requires `use_legacy_client: true`, `username`, `password`, `api_key`, and `cloud`. See [Legacy API Framework](#legacy-api-framework).
 
 ## OneAPI - Using modules from the ziacloud Collection in your playbooks
 

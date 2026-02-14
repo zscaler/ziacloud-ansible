@@ -95,6 +95,7 @@ plugins/modules/zia_url_filtering_rules.py validate-modules:missing-gplv3-licens
 plugins/modules/zia_nss_servers.py validate-modules:missing-gplv3-license
 plugins/modules/zia_cloud_app_control_rules_info.py validate-modules:missing-gplv3-license
 plugins/modules/zia_file_type_control_rules_info.py validate-modules:missing-gplv3-license
+plugins/modules/zia_file_type_categories_info.py validate-modules:missing-gplv3-license
 plugins/modules/zia_cloud_firewall_network_application_info.py validate-modules:missing-gplv3-license
 plugins/modules/zia_end_user_notification_info.py validate-modules:missing-gplv3-license
 plugins/modules/zia_authentication_settings_info.py validate-modules:missing-gplv3-license
@@ -138,3 +139,4 @@ plugins/modules/zia_custom_file_types_info.py validate-modules:missing-gplv3-lic
 plugins/modules/zia_dc_exclusions.py validate-modules:missing-gplv3-license
 plugins/modules/zia_dc_exclusions_info.py validate-modules:missing-gplv3-license
 plugins/modules/zia_datacenters_info.py validate-modules:missing-gplv3-license
+plugins/modules/zia_workload_groups.py validate-modules:missing-gplv3-license

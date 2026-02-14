@@ -250,6 +250,24 @@ options:
     description: "If set to true, indicates that this is a default sub-location created by the Zscaler service to accommodate IPv6 addresses"
     type: bool
     required: false
+  sub_loc_scope_enabled:
+    description:
+      - "Indicates whether defining scopes is allowed for this sublocation."
+      - "Sublocation scopes are available only for the Workload traffic type sublocations whose parent locations are associated with Amazon Web Services (AWS) Cloud Connector groups."
+    type: bool
+    required: false
+  sub_loc_scope:
+    description:
+      - "Defines a scope for the sublocation from the available types to segregate workload traffic from a single sublocation to apply different Cloud Connector and ZIA security policies."
+      - "This field is only available for the Workload traffic type sublocations whose parent locations are associated with Amazon Web Services (AWS) Cloud Connector groups."
+    type: str
+    required: false
+    choices: ['VPC_ENDPOINT', 'VPC', 'NAMESPACE', 'ACCOUNT']
+  sub_loc_scope_values:
+    description: "Specifies values for the selected sublocation scope type."
+    type: list
+    elements: str
+    required: false
   description:
     description: "Additional notes or information regarding the location or sub-location. The description cannot exceed 1024 characters."
     type: str
@@ -348,6 +366,17 @@ EXAMPLES = r"""
       - id: "{{ vpn_credential_ip.data.id }}"
         type: "{{ vpn_credential_ip.data.type }}"
         ip_address: "{{ vpn_credential_ip.data.ip_address }}"
+
+# Create sub-location with sublocation scope (Workload traffic, AWS Cloud Connector)
+- name: Create sub-location with sublocation scope
+  zscaler.ziacloud.zia_location_management:
+    name: "AWS_VPC_Sublocation"
+    description: "Sublocation scoped by VPC for AWS Cloud Connector"
+    parent_id: "{{ parent_location_id }}"
+    sub_loc_scope: "VPC"
+    sub_loc_scope_values:
+      - "vpc-12345678"
+      - "vpc-87654321"
 """
 
 RETURN = """
@@ -462,6 +491,9 @@ def core(module):
         "longitude",
         "other_sub_location",
         "other6_sub_location",
+        "sub_loc_scope_enabled",
+        "sub_loc_scope",
+        "sub_loc_scope_values",
         "ipv6_enabled",
         "ipv6_dns64_prefix",
         "iot_discovery_enabled",
@@ -623,6 +655,13 @@ def core(module):
                         "other6_sub_location": desired_location.get(
                             "other6_sub_location"
                         ),
+                        "sub_loc_scope_enabled": desired_location.get(
+                            "sub_loc_scope_enabled"
+                        ),
+                        "sub_loc_scope": desired_location.get("sub_loc_scope"),
+                        "sub_loc_scope_values": desired_location.get(
+                            "sub_loc_scope_values"
+                        ),
                         "ipv6_enabled": desired_location.get("ipv6_enabled"),
                         "ipv6_dns64_prefix": desired_location.get("ipv6_dns64_prefix"),
                         "iot_discovery_enabled": desired_location.get(
@@ -692,6 +731,13 @@ def core(module):
                     "longitude": desired_location.get("longitude"),
                     "other_sub_location": desired_location.get("other_sub_location"),
                     "other6_sub_location": desired_location.get("other6_sub_location"),
+                    "sub_loc_scope_enabled": desired_location.get(
+                        "sub_loc_scope_enabled"
+                    ),
+                    "sub_loc_scope": desired_location.get("sub_loc_scope"),
+                    "sub_loc_scope_values": desired_location.get(
+                        "sub_loc_scope_values"
+                    ),
                     "ipv6_enabled": desired_location.get("ipv6_enabled"),
                     "ipv6_dns64_prefix": desired_location.get("ipv6_dns64_prefix"),
                     "iot_discovery_enabled": desired_location.get(
@@ -756,6 +802,13 @@ def main():
         ),
         other_sub_location=dict(type="bool", required=False),
         other6_sub_location=dict(type="bool", required=False),
+        sub_loc_scope_enabled=dict(type="bool", required=False),
+        sub_loc_scope=dict(
+            type="str",
+            required=False,
+            choices=["VPC_ENDPOINT", "VPC", "NAMESPACE", "ACCOUNT"],
+        ),
+        sub_loc_scope_values=dict(type="list", elements="str", required=False),
         ofw_enabled=dict(type="bool", required=False),
         ips_control=dict(type="bool", required=False),
         aup_enabled=dict(type="bool", required=False),

@@ -194,9 +194,7 @@ def core(module):
             )
         rules = [rule_obj.as_dict()]
     else:
-        result, _unused, error = client.casb_dlp_rules.list_rules(
-            query_params={"rule_type": rule_type}
-        )
+        result, _unused, error = client.casb_dlp_rules.list_rules(rule_type)
         if error:
             module.fail_json(
                 msg=f"Error retrieving CASB DLP rules: {to_native(error)}"

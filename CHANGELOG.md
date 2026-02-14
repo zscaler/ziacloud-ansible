@@ -1,5 +1,43 @@
 # Zscaler Internet Access (ZIA) Ansible Collection Changelog
 
+## v2.1.0 (February 16, 2026)
+
+### Notes
+
+- Python Versions: **v3.9, v3.10, v3.11**
+
+#### Enhancements
+
+[#105](https://github.com/zscaler/ziacloud-ansible/pull/105) - Added the following new resources:
+  - `zia_sub_cloud` and `zia_sub_cloud_info` - Manage Zscaler Sub-Clouds in ZIA
+  - `zia_extranet` and `zia_extranet_info` - Manage Extranet configurations in ZIA
+  - `zia_dc_exclusions` and `zia_dc_exclusions_info` - Manage Extranet configurations in ZIA
+  - `zia_tenant_restriction_profile` and `zia_tenant_restriction_profile_info`,
+  - `zia_workload_groups` and `zia_workload_groups_info` - Manages workload group for an organization. 
+  -  `zia_virtual_service_edge_node` and `zia_virtual_service_edge_node` - Retrieves the Virtual Service Edge Nodes (VZEN). This resource can be used to set the corresponding node when configuring the resource `zia_vzen_cluster`.
+  - `zia_vzen_cluster` and `zia_vzen_cluster_info` - Manage Virtual Service Edge cluster
+  - `zia_custom_file_types` and `zia_custom_file_types_info`
+  - `zia_casb_dlp_rules` and   - `zia_casb_dlp_rules_info` - SaaS Security API (Casb DLP Rules)
+  - `zia_casb_malware_rules` and   - `zia_casb_malware_rules_info` - SaaS Security API (Casb Malware Rules)
+  - `file_type_categories_info` - This resource can be referenced within the `zia_dlp_web_rules` in the attribute `file_type_categories`
+  - `zia_cloud_app_control_rule_actions_info` - Get available Cloud App Control rule actions by rule type
+  - `zia_browser_control_policy` and `zia_browser_control_policy_info` - Browser Control Policy
+  - `zia_casb_tombstone_template_info` - SaaS Security API (Casb Quarantine Tombstone Template)
+  - `zia_casb_email_label_info` - SaaS Security API (Casb Quarantine Tombstone Template)
+  - `zia_casb_tenant_info` - SaaS Security API (Casb Tenant)
+
+[#105](https://github.com/zscaler/ziacloud-ansible/pull/105) - Added new attributes to ZIA:
+  - `zia_firewall_ips_rule`: `is_eun_enabled`, and `eun_template_id`
+  - `zia_firewall_dns_rule`: `is_web_eun_enabled` and `default_dns_rule_name_used`
+  - `zia_location_management`: `sub_loc_scope_enabled`, `sub_loc_scope`, `sub_loc_scope_values`, `sub_loc_acc_ids`
+  - `zia_dlp_web_rules`: `eun_template_id`
+
+[#105](https://github.com/zscaler/ziacloud-ansible/pull/105) - Added unit tests for new and existing modules.
+
+### Bug Fixes
+
+[#105](https://github.com/zscaler/ziacloud-ansible/pull/105) - Improved `zia_client` to support authentication via both OneAPI and legacy methods.
+
 ## v2.0.7 (July 25, 2025)
 
 ### Notes

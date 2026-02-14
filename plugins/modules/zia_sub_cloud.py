@@ -229,32 +229,34 @@ def core(module):
         module.fail_json(
             msg=f"Error listing subclouds: {to_native(error)}"
         )
-    subclouds_list = [s.as_dict() for s in result] if result else []
-    existing = next(
-        (s for s in subclouds_list if s.get("id") == cloud_id),
+    subclouds_raw = list(result or [])
+    existing_raw = next(
+        (s for s in subclouds_raw if getattr(s, "id", None) == cloud_id),
         None,
     )
 
-    if existing is None:
+    if existing_raw is None:
         module.fail_json(
             msg=f"Subcloud with cloud_id {cloud_id} not found. Use zia_sub_cloud_info to list available subclouds."
         )
 
+    existing = existing_raw.as_dict()
+
     desired_exclusions = _build_exclusions(exclusions)
-    existing_exclusions = existing.get("exclusions") or []
+    # Use raw exclusion objects to get datacenter (dropped by Exclusions.request_format in as_dict)
+    existing_exclusions_raw = getattr(existing_raw, "exclusions", None) or []
     existing_list = []
-    for e in existing_exclusions:
-        ed = e if isinstance(e, dict) else (e.as_dict() if hasattr(e, "as_dict") else {})
-        dc = ed.get("datacenter")
+    for e in existing_exclusions_raw:
         dc_id = None
-        if isinstance(dc, dict):
-            dc_id = dc.get("id")
-        elif dc is not None and hasattr(dc, "as_dict"):
-            dc_id = dc.as_dict().get("id")
+        dc = getattr(e, "datacenter", None)
+        if dc is not None:
+            dc_id = getattr(dc, "id", None)
+        country = getattr(e, "country", None) or ""
+        end_time = getattr(e, "end_time", None)
         existing_list.append({
-            "country": ed.get("country") or "",
+            "country": country,
             "datacenter_id": dc_id,
-            "end_time": ed.get("end_time"),
+            "end_time": end_time,
         })
     desired_list = [
         _normalize_exclusion_from_user(exc)

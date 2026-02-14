@@ -161,17 +161,15 @@ EXAMPLES = r"""
 - name: Create a Virtual Service Edge node with cluster deployment
   zscaler.ziacloud.zia_virtual_service_edge_node:
     provider: '{{ provider }}'
-    name: "VZEN-Cluster-01"
     status: ENABLED
     ip_address: "10.0.0.100"
     subnet_mask: "255.255.255.0"
     default_gateway: "10.0.0.1"
-    type: "SMLB"
+    type: "VZEN"
     deployment_mode: CLUSTER
     load_balancer_ip_address: "10.0.0.50"
-    cluster_name: "VZEN-Cluster"
     vzen_sku_type: LARGE
-    ip_sec_enabled: true
+    ip_sec_enabled: false
 
 - name: Update an existing Virtual Service Edge node by ID
   zscaler.ziacloud.zia_virtual_service_edge_node:
