@@ -230,16 +230,12 @@ def core(module):
         if key in ["zpa_server_group"]:
             if not compare_nested_structures(current_value, value):
                 differences_detected = True
-                module.warn(
-                    f"Difference detected in {key}. Current: {current_value}, Desired: {value}"
-                )
+                module.warn(f"Difference detected in {key}. Current: {current_value}, Desired: {value}")
 
         # Regular comparison for other fields
         elif key not in fields_to_exclude and current_value != value:
             differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {current_value}, Desired: {value}"
-            )
+            module.warn(f"Difference detected in {key}. Current: {current_value}, Desired: {value}")
 
     if module.check_mode:
         if state == "present" and (existing_gateway is None or differences_detected):
@@ -268,18 +264,12 @@ def core(module):
                         zpa_app_segments=existing_gateway.get("zpa_app_segments"),
                     )
                 )
-                updated_gateway, _unused, error = client.zpa_gateway.update_gateway(
-                    **update_gateway
-                )
+                updated_gateway, _unused, error = client.zpa_gateway.update_gateway(**update_gateway)
                 if error or updated_gateway is None:
-                    module.fail_json(
-                        msg=f"Failed to update gateway: {to_native(error)}"
-                    )
+                    module.fail_json(msg=f"Failed to update gateway: {to_native(error)}")
                 module.exit_json(changed=True, data=updated_gateway.as_dict())
             else:
-                module.exit_json(
-                    changed=False, data=existing_gateway, msg="No changes detected."
-                )
+                module.exit_json(changed=False, data=existing_gateway, msg="No changes detected.")
         else:
             module.warn("Creating new rule as no existing rule found")
             create_gateway = deleteNone(
@@ -292,21 +282,13 @@ def core(module):
                 )
             )
             module.warn("Payload for SDK: {}".format(create_gateway))
-            new_gateway, _unused, error = client.zpa_gateway.add_gateway(
-                **create_gateway
-            )
+            new_gateway, _unused, error = client.zpa_gateway.add_gateway(**create_gateway)
             if error or new_gateway is None:
                 module.fail_json(msg=f"Failed to create gateway: {to_native(error)}")
             module.exit_json(changed=True, data=new_gateway.as_dict())
 
-    elif (
-        state == "absent"
-        and existing_gateway is not None
-        and existing_gateway.get("id") is not None
-    ):
-        _unused, _unused, error = client.zpa_gateway.delete_gateway(
-            existing_gateway.get("id")
-        )
+    elif state == "absent" and existing_gateway is not None and existing_gateway.get("id") is not None:
+        _unused, _unused, error = client.zpa_gateway.delete_gateway(existing_gateway.get("id"))
         if error:
             module.fail_json(msg=f"Failed to delete gateway: {to_native(error)}")
         module.exit_json(changed=True, data=existing_gateway)

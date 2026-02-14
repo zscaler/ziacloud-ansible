@@ -107,9 +107,7 @@ def core(module):
     state = module.params.get("state")
     client = ZIAClientHelper(module)
 
-    rule_nss_params = {
-        p: module.params.get(p) for p in ["id", "name", "status", "type"]
-    }
+    rule_nss_params = {p: module.params.get(p) for p in ["id", "name", "status", "type"]}
     nss_id = rule_nss_params.get("id")
     nss_name = rule_nss_params.get("name")
 
@@ -118,9 +116,7 @@ def core(module):
     if nss_id:
         result, _unused, error = client.nss_servers.get_nss_server(nss_id)
         if error:
-            module.fail_json(
-                msg=f"Error fetching nss server with id {nss_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching nss server with id {nss_id}: {to_native(error)}")
         existing_nss_server = result.as_dict()
     else:
         result, _unused, error = client.nss_servers.list_nss_servers()
@@ -134,17 +130,13 @@ def core(module):
                     break
 
     normalized_desired = normalize_nss_server(rule_nss_params)
-    normalized_existing = (
-        normalize_nss_server(existing_nss_server) if existing_nss_server else {}
-    )
+    normalized_existing = normalize_nss_server(existing_nss_server) if existing_nss_server else {}
 
     differences_detected = False
     for key, value in normalized_desired.items():
         if normalized_existing.get(key) != value:
             differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {normalized_existing.get(key)}, Desired: {value}"
-            )
+            module.warn(f"Difference detected in {key}. Current: {normalized_existing.get(key)}, Desired: {value}")
 
     if module.check_mode:
         if state == "present" and (existing_nss_server is None or differences_detected):
@@ -159,22 +151,16 @@ def core(module):
             if differences_detected:
                 nss_id_to_update = existing_nss_server.get("id")
                 if not nss_id_to_update:
-                    module.fail_json(
-                        msg="Cannot update nss server: ID is missing from the existing resource."
-                    )
+                    module.fail_json(msg="Cannot update nss server: ID is missing from the existing resource.")
 
-                updated_nss_server, _unused, error = (
-                    client.nss_servers.update_nss_server(
-                        nss_id=nss_id_to_update,
-                        name=rule_nss_params.get("name"),
-                        status=rule_nss_params.get("status"),
-                        type=rule_nss_params.get("type"),
-                    )
+                updated_nss_server, _unused, error = client.nss_servers.update_nss_server(
+                    nss_id=nss_id_to_update,
+                    name=rule_nss_params.get("name"),
+                    status=rule_nss_params.get("status"),
+                    type=rule_nss_params.get("type"),
                 )
                 if error:
-                    module.fail_json(
-                        msg=f"Error updating nss server: {to_native(error)}"
-                    )
+                    module.fail_json(msg=f"Error updating nss server: {to_native(error)}")
                 module.exit_json(changed=True, data=updated_nss_server.as_dict())
             else:
                 module.exit_json(changed=False, data=existing_nss_server)
@@ -192,13 +178,9 @@ def core(module):
         if existing_nss_server:
             nss_id_to_delete = existing_nss_server.get("id")
             if not nss_id_to_delete:
-                module.fail_json(
-                    msg="Cannot delete nss server: ID is missing from the existing resource."
-                )
+                module.fail_json(msg="Cannot delete nss server: ID is missing from the existing resource.")
 
-            _unused, _unused, error = client.nss_servers.delete_nss_server(
-                nss_id_to_delete
-            )
+            _unused, _unused, error = client.nss_servers.delete_nss_server(nss_id_to_delete)
             if error:
                 module.fail_json(msg=f"Error deleting nss server: {to_native(error)}")
             module.exit_json(changed=True, data=existing_nss_server)

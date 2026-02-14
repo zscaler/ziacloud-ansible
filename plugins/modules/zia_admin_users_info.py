@@ -129,9 +129,7 @@ def core(module):
     if user_id:
         result, _unused, error = client.admin_users.get_admin_user(user_id)
         if error:
-            module.fail_json(
-                msg=f"Error fetching user with id {user_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching user with id {user_id}: {to_native(error)}")
         if result:
             users = [result.as_dict()]
     else:
@@ -147,9 +145,7 @@ def core(module):
         if include_admin_users is not None:
             query_params["include_admin_users"] = include_admin_users
 
-        result, _unused, error = client.admin_users.list_admin_users(
-            query_params=query_params
-        )
+        result, _unused, error = client.admin_users.list_admin_users(query_params=query_params)
         if error:
             module.fail_json(msg=f"Error listing users: {to_native(error)}")
 

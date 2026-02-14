@@ -125,13 +125,9 @@ def core(module):
     ]
 
     # Build the desired settings dict from user input
-    settings_data = {
-        k: module.params[k] for k in params if module.params.get(k) is not None
-    }
+    settings_data = {k: module.params[k] for k in params if module.params.get(k) is not None}
 
-    current_settings, _unused, error = (
-        client.mobile_threat_settings.get_mobile_advanced_settings()
-    )
+    current_settings, _unused, error = client.mobile_threat_settings.get_mobile_advanced_settings()
     if error:
         module.fail_json(msg=f"Error fetching malware settings: {to_native(error)}")
 
@@ -147,15 +143,9 @@ def core(module):
         module.exit_json(changed=drift, malware_settings=current_dict)
 
     if drift:
-        updated, _unused, error = (
-            client.mobile_threat_settings.update_mobile_advanced_settings(
-                **settings_data
-            )
-        )
+        updated, _unused, error = client.mobile_threat_settings.update_mobile_advanced_settings(**settings_data)
         if error:
-            module.fail_json(
-                msg=f"Error updating mobile advanced threat settings: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error updating mobile advanced threat settings: {to_native(error)}")
         module.exit_json(changed=True, malware_settings=updated.as_dict())
 
     module.exit_json(changed=False, malware_settings=current_dict)
@@ -166,18 +156,12 @@ def main():
     argument_spec.update(
         block_apps_with_malicious_activity=dict(type="bool", required=False),
         block_apps_with_known_vulnerabilities=dict(type="bool", required=False),
-        block_apps_sending_unencrypted_user_credentials=dict(
-            type="bool", required=False
-        ),
+        block_apps_sending_unencrypted_user_credentials=dict(type="bool", required=False),
         block_apps_sending_location_info=dict(type="bool", required=False),
-        block_apps_sending_personally_identifiable_info=dict(
-            type="bool", required=False
-        ),
+        block_apps_sending_personally_identifiable_info=dict(type="bool", required=False),
         block_apps_sending_device_identifier=dict(type="bool", required=False),
         block_apps_communicating_with_ad_websites=dict(type="bool", required=False),
-        block_apps_communicating_with_remote_unknown_servers=dict(
-            type="bool", required=False
-        ),
+        block_apps_communicating_with_remote_unknown_servers=dict(type="bool", required=False),
         state=dict(type="str", choices=["present"], default="present"),
     )
 

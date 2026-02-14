@@ -112,9 +112,7 @@ def core(module):
     if limit is not None:
         query_params["limit"] = limit
 
-    result, _unused, error = client.gre_tunnel.list_gre_ranges(
-        query_params=query_params if query_params else None
-    )
+    result, _unused, error = client.gre_tunnel.list_gre_ranges(query_params=query_params if query_params else None)
     if error:
         module.fail_json(msg=f"Error retrieving GRE ranges: {to_native(error)}")
 

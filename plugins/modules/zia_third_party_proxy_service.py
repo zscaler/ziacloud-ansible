@@ -159,9 +159,7 @@ def core(module):
     if proxy_id:
         result, _unused, error = client.proxies.get_proxy(proxy_id)
         if error:
-            module.fail_json(
-                msg=f"Error fetching proxy with id {proxy_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching proxy with id {proxy_id}: {to_native(error)}")
         existing_proxy = result.as_dict()
     else:
         result, _unused, error = client.proxies.list_proxies()
@@ -181,9 +179,7 @@ def core(module):
     for key, value in normalized_desired.items():
         if normalized_existing.get(key) != value:
             differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {normalized_existing.get(key)}, Desired: {value}"
-            )
+            module.warn(f"Difference detected in {key}. Current: {normalized_existing.get(key)}, Desired: {value}")
 
     if module.check_mode:
         if state == "present" and (existing_proxy is None or differences_detected):
@@ -198,9 +194,7 @@ def core(module):
             if differences_detected:
                 proxy_id_to_update = existing_proxy.get("id")
                 if not proxy_id_to_update:
-                    module.fail_json(
-                        msg="Cannot update proxy: ID is missing from the existing resource."
-                    )
+                    module.fail_json(msg="Cannot update proxy: ID is missing from the existing resource.")
 
                 updated_proxy, _unused, error = client.proxies.update_proxy(
                     proxy_id=proxy_id_to_update,
@@ -210,9 +204,7 @@ def core(module):
                     address=proxy_params.get("address"),
                     port=proxy_params.get("port"),
                     insert_xau_header=proxy_params.get("insert_xau_header"),
-                    base64_encode_xau_header=proxy_params.get(
-                        "base64_encode_xau_header"
-                    ),
+                    base64_encode_xau_header=proxy_params.get("base64_encode_xau_header"),
                     cert=proxy_params.get("cert"),
                 )
                 if error:
@@ -239,9 +231,7 @@ def core(module):
         if existing_proxy:
             proxy_id_to_delete = existing_proxy.get("id")
             if not proxy_id_to_delete:
-                module.fail_json(
-                    msg="Cannot delete proxy: ID is missing from the existing resource."
-                )
+                module.fail_json(msg="Cannot delete proxy: ID is missing from the existing resource.")
 
             _unused, _unused, error = client.proxies.delete_proxy(proxy_id_to_delete)
             if error:
@@ -261,9 +251,7 @@ def main():
             id=dict(type="int", required=False),
             name=dict(type="str", required=True),
             description=dict(type="str", required=False),
-            type=dict(
-                type="str", required=False, choices=["PROXYCHAIN", "ZIA", "ECSELF"]
-            ),
+            type=dict(type="str", required=False, choices=["PROXYCHAIN", "ZIA", "ECSELF"]),
             address=dict(type="str", required=False),
             port=dict(type="int", required=False),
             insert_xau_header=dict(type="bool", required=False),

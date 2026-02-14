@@ -216,17 +216,11 @@ def core(module):
     ]
 
     # Filter only explicitly set values
-    settings_data = {
-        k: module.params.get(k) for k in params if module.params.get(k) is not None
-    }
+    settings_data = {k: module.params.get(k) for k in params if module.params.get(k) is not None}
 
-    current_settings, _unused, error = (
-        client.authentication_settings.get_authentication_settings()
-    )
+    current_settings, _unused, error = client.authentication_settings.get_authentication_settings()
     if error:
-        module.fail_json(
-            msg=f"Error fetching authentication settings: {to_native(error)}"
-        )
+        module.fail_json(msg=f"Error fetching authentication settings: {to_native(error)}")
 
     # Extract raw config from SDK and convert keys to snake_case
     raw_response = getattr(current_settings, "_raw_config", {})
@@ -247,15 +241,9 @@ def core(module):
         for k, v in settings_data.items():
             setattr(current_settings, k, v)
 
-        updated, _unused, error = (
-            client.authentication_settings.update_authentication_settings(
-                current_settings
-            )
-        )
+        updated, _unused, error = client.authentication_settings.update_authentication_settings(current_settings)
         if error:
-            module.fail_json(
-                msg=f"Error updating authentication settings: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error updating authentication settings: {to_native(error)}")
 
         module.exit_json(changed=True, auth_settings=updated.as_dict())
 
@@ -298,9 +286,7 @@ def main():
             ],
         ),
         auth_custom_frequency=dict(type="int", required=False),
-        password_strength=dict(
-            type="str", required=False, choices=["NONE", "MEDIUM", "STRONG"]
-        ),
+        password_strength=dict(type="str", required=False, choices=["NONE", "MEDIUM", "STRONG"]),
         password_expiry=dict(
             type="str",
             required=False,

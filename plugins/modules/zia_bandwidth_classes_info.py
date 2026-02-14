@@ -121,22 +121,16 @@ def core(module):
     if class_id is not None:
         class_obj, _unused, error = client.bandwidth_classes.get_class(class_id)
         if error or class_obj is None:
-            module.fail_json(
-                msg=f"Failed to retrieve Bandwidth Class with ID '{class_id}': {to_native(error)}"
-            )
+            module.fail_json(msg=f"Failed to retrieve Bandwidth Class with ID '{class_id}': {to_native(error)}")
         classes = [class_obj.as_dict()]
     else:
         query_params = {}
         if class_name:
             query_params["search"] = class_name
 
-        result, _unused, error = client.bandwidth_classes.list_classes(
-            query_params=query_params
-        )
+        result, _unused, error = client.bandwidth_classes.list_classes(query_params=query_params)
         if error:
-            module.fail_json(
-                msg=f"Error retrieving Bandwidth Classes: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error retrieving Bandwidth Classes: {to_native(error)}")
 
         class_list = [g.as_dict() for g in result] if result else []
 
@@ -144,9 +138,7 @@ def core(module):
             matched = next((g for g in class_list if g.get("name") == class_name), None)
             if not matched:
                 available = [g.get("name") for g in class_list]
-                module.fail_json(
-                    msg=f"Bandwidth Class with name '{class_name}' not found. Available classes: {available}"
-                )
+                module.fail_json(msg=f"Bandwidth Class with name '{class_name}' not found. Available classes: {available}")
             classes = [matched]
         else:
             classes = class_list

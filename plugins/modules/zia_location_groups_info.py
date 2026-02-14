@@ -169,34 +169,24 @@ def core(module):
     if group_id is not None:
         location_obj, _unused, error = client.locations.get_location_group(group_id)
         if error or location_obj is None:
-            module.fail_json(
-                msg=f"Failed to retrieve location group with ID '{group_id}': {to_native(error)}"
-            )
+            module.fail_json(msg=f"Failed to retrieve location group with ID '{group_id}': {to_native(error)}")
         locations = [location_obj.as_dict()]
     else:
         # Implicit search support
         if group_name:
             query_params["search"] = group_name
 
-        result, _unused, error = client.locations.list_location_groups(
-            query_params=query_params
-        )
+        result, _unused, error = client.locations.list_location_groups(query_params=query_params)
         if error:
-            module.fail_json(
-                msg=f"Error retrieving location groups: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error retrieving location groups: {to_native(error)}")
 
         location_list = [l.as_dict() for l in result] if result else []
 
         if group_name:
-            matched = next(
-                (l for l in location_list if l.get("name") == group_name), None
-            )
+            matched = next((l for l in location_list if l.get("name") == group_name), None)
             if not matched:
                 available = [l.get("name") for l in location_list]
-                module.fail_json(
-                    msg=f"Location group named '{group_name}' not found. Available: {available}"
-                )
+                module.fail_json(msg=f"Location group named '{group_name}' not found. Available: {available}")
             locations = [matched]
         else:
             locations = location_list

@@ -147,9 +147,7 @@ def core(module):
 
     mode = module.params.get("mode")
     if mode not in ["app_policy", "ssl_policy"]:
-        module.fail_json(
-            msg="Parameter 'mode' must be either 'app_policy' or 'ssl_policy'"
-        )
+        module.fail_json(msg="Parameter 'mode' must be either 'app_policy' or 'ssl_policy'")
 
     app_name = module.params.get("app_name")
     query_params = {}
@@ -163,28 +161,20 @@ def core(module):
     if app_name:
         query_params["search"] = app_name  # Used by ZIA API
 
-    list_fn = (
-        client.cloud_applications.list_cloud_app_policy
-        if mode == "app_policy"
-        else client.cloud_applications.list_cloud_app_ssl_policy
-    )
+    list_fn = client.cloud_applications.list_cloud_app_policy if mode == "app_policy" else client.cloud_applications.list_cloud_app_ssl_policy
 
     try:
         results, err = collect_all_items(list_fn, query_params=query_params)
         if err:
             module.fail_json(msg=f"Error retrieving applications: {to_native(err)}")
 
-        all_apps = [
-            app.as_dict() if hasattr(app, "as_dict") else app for app in results
-        ]
+        all_apps = [app.as_dict() if hasattr(app, "as_dict") else app for app in results]
 
         if app_name:
             matched = next((a for a in all_apps if a.get("app_name") == app_name), None)
             if not matched:
                 available = [a.get("app_name") for a in all_apps]
-                module.fail_json(
-                    msg=f"Cloud application with name '{app_name}' not found. Available: {available}"
-                )
+                module.fail_json(msg=f"Cloud application with name '{app_name}' not found. Available: {available}")
             all_apps = [matched]
 
         module.exit_json(changed=False, applications=all_apps)

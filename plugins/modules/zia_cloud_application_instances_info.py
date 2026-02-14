@@ -188,13 +188,9 @@ def core(module):
     instances = []
 
     if instance_id is not None:
-        instance_obj, _unused, error = (
-            client.cloud_app_instances.get_cloud_app_instances(instance_id)
-        )
+        instance_obj, _unused, error = client.cloud_app_instances.get_cloud_app_instances(instance_id)
         if error or instance_obj is None:
-            module.fail_json(
-                msg=f"Failed to retrieve cloud application instance with ID '{instance_id}': {to_native(error)}"
-            )
+            module.fail_json(msg=f"Failed to retrieve cloud application instance with ID '{instance_id}': {to_native(error)}")
         instances = [instance_obj.as_dict()]
     else:
         query_params = {}
@@ -203,13 +199,9 @@ def core(module):
         if instance_type:
             query_params["instanceType"] = instance_type
 
-        result, _unused, error = client.cloud_app_instances.list_cloud_app_instances(
-            query_params=query_params
-        )
+        result, _unused, error = client.cloud_app_instances.list_cloud_app_instances(query_params=query_params)
         if error:
-            module.fail_json(
-                msg=f"Error retrieving cloud application instances: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error retrieving cloud application instances: {to_native(error)}")
 
         instances = [r.as_dict() for r in result] if result else []
 

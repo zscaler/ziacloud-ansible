@@ -144,9 +144,7 @@ def core(module):
 
     auth, _unused, error = client.authentication_settings.get_authentication_settings()
     if error:
-        module.fail_json(
-            msg=f"Error fetching authentication settings: {to_native(error)}"
-        )
+        module.fail_json(msg=f"Error fetching authentication settings: {to_native(error)}")
 
     module.exit_json(changed=False, auth=auth.as_dict())
 

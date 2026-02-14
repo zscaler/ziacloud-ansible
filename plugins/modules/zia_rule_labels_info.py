@@ -148,18 +148,14 @@ def core(module):
     if label_id is not None:
         label_obj, _unused, error = client.rule_labels.get_label(label_id)
         if error or label_obj is None:
-            module.fail_json(
-                msg=f"Failed to retrieve Rule Label with ID '{label_id}': {to_native(error)}"
-            )
+            module.fail_json(msg=f"Failed to retrieve Rule Label with ID '{label_id}': {to_native(error)}")
         labels = [label_obj.as_dict()]
     else:
         query_params = {}
         if label_name:
             query_params["search"] = label_name
 
-        result, _unused, error = client.rule_labels.list_labels(
-            query_params=query_params
-        )
+        result, _unused, error = client.rule_labels.list_labels(query_params=query_params)
         if error:
             module.fail_json(msg=f"Error retrieving Rule Labels: {to_native(error)}")
 
@@ -169,9 +165,7 @@ def core(module):
             matched = next((g for g in label_list if g.get("name") == label_name), None)
             if not matched:
                 available = [g.get("name") for g in label_list]
-                module.fail_json(
-                    msg=f"Rule Label with name '{label_name}' not found. Available labels: {available}"
-                )
+                module.fail_json(msg=f"Rule Label with name '{label_name}' not found. Available labels: {available}")
             labels = [matched]
         else:
             labels = label_list

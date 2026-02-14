@@ -102,27 +102,19 @@ def core(module):
     state = module.params.get("state")
     client = ZIAClientHelper(module)
 
-    service_group = {
-        p: module.params.get(p) for p in ["id", "name", "description", "service_ids"]
-    }
+    service_group = {p: module.params.get(p) for p in ["id", "name", "description", "service_ids"]}
     group_id = service_group.get("id")
     group_name = service_group.get("name")
 
     existing_group = None
 
     if group_id:
-        result, _unused, error = client.cloud_firewall.get_network_svc_group(
-            group_id=group_id
-        )
+        result, _unused, error = client.cloud_firewall.get_network_svc_group(group_id=group_id)
         if error:
-            module.fail_json(
-                msg=f"Error retrieving service group by ID {group_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error retrieving service group by ID {group_id}: {to_native(error)}")
         existing_group = result.as_dict()
         if "services" in existing_group:
-            existing_group["service_ids"] = sorted(
-                [svc["id"] for svc in existing_group["services"]]
-            )
+            existing_group["service_ids"] = sorted([svc["id"] for svc in existing_group["services"]])
     elif group_name:
         result, _unused, error = client.cloud_firewall.list_network_svc_groups()
         if error:
@@ -132,19 +124,13 @@ def core(module):
             if group_dict.get("name") == group_name:
                 existing_group = group_dict
                 if "services" in existing_group:
-                    existing_group["service_ids"] = sorted(
-                        [svc["id"] for svc in existing_group["services"]]
-                    )
+                    existing_group["service_ids"] = sorted([svc["id"] for svc in existing_group["services"]])
                 break
 
     normalized_desired = normalize_svc_group(service_group)
     normalized_existing = normalize_svc_group(existing_group) if existing_group else {}
 
-    differences_detected = any(
-        normalized_desired[k] != normalized_existing.get(k)
-        for k in normalized_desired
-        if k != "id"
-    )
+    differences_detected = any(normalized_desired[k] != normalized_existing.get(k) for k in normalized_desired if k != "id")
 
     if module.check_mode:
         if state == "present" and (existing_group is None or differences_detected):
@@ -174,13 +160,9 @@ def core(module):
                     )
                 )
 
-                updated_group, _unused, error = (
-                    client.cloud_firewall.update_network_svc_group(**payload)
-                )
+                updated_group, _unused, error = client.cloud_firewall.update_network_svc_group(**payload)
                 if error:
-                    module.fail_json(
-                        msg=f"Error updating service group: {to_native(error)}"
-                    )
+                    module.fail_json(msg=f"Error updating service group: {to_native(error)}")
                 module.exit_json(changed=True, data=updated_group.as_dict())
             else:
                 module.exit_json(changed=False, data=existing_group)
@@ -193,13 +175,9 @@ def core(module):
                 )
             )
 
-            created_group, _unused, error = client.cloud_firewall.add_network_svc_group(
-                **payload
-            )
+            created_group, _unused, error = client.cloud_firewall.add_network_svc_group(**payload)
             if error:
-                module.fail_json(
-                    msg=f"Error creating service group: {to_native(error)}"
-                )
+                module.fail_json(msg=f"Error creating service group: {to_native(error)}")
             module.exit_json(changed=True, data=created_group.as_dict())
 
     elif state == "absent":
@@ -208,13 +186,9 @@ def core(module):
             if not group_id_to_delete:
                 module.fail_json(msg="Cannot delete service group: ID is missing.")
 
-            _unused, _unused, error = client.cloud_firewall.delete_network_svc_group(
-                group_id=group_id_to_delete
-            )
+            _unused, _unused, error = client.cloud_firewall.delete_network_svc_group(group_id=group_id_to_delete)
             if error:
-                module.fail_json(
-                    msg=f"Error deleting service group: {to_native(error)}"
-                )
+                module.fail_json(msg=f"Error deleting service group: {to_native(error)}")
             module.exit_json(changed=True, data=existing_group)
         else:
             module.exit_json(changed=False, data={})

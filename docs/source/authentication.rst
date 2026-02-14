@@ -8,17 +8,24 @@ Authentication
 
 This guide covers the authentication methods available for the ZIA Ansible Collection modules.
 
+Choosing Your Authentication Method
+-----------------------------------
+
+The collection supports two mutually exclusive modes:
+
+* **OneAPI (default)** – Use when your tenant is migrated to (`Zidentity <https://help.zscaler.com/zidentity/what-zidentity>`_). Requires ``client_id`` plus either ``client_secret`` or ``private_key``, and ``vanity_domain``. The ``cloud`` parameter is optional (omit for production; use ``beta`` for beta).
+
+* **Legacy** – Use when your tenant is **not** on Zidentity, or for ``zscalergov`` and ``zscalerten`` clouds (OneAPI is not supported there). Requires ``use_legacy_client: true`` plus ``username``, ``password``, ``api_key``, and ``cloud``. The ``cloud`` parameter is required; use one of: zscaler, zscloud, zscalerbeta, zspreview, zscalerone, zscalertwo, zscalerthree, zscalergov, zscalerten.
+
 =============================
 Zscaler OneAPI New Framework
 =============================
 
-The ZIA Ansible Collection now offers support for (`OneAPI <https://help.zscaler.com/oneapi/understanding-oneapi>`_) OAuth2 authentication through (`Zidentity <https://help.zscaler.com/zidentity/what-zidentity>`_)
+The ZIA Ansible Collection offers (`OneAPI <https://help.zscaler.com/oneapi/understanding-oneapi>`_) OAuth2 authentication through (`Zidentity <https://help.zscaler.com/zidentity/what-zidentity>`_).
 
-* NOTE: As of version v2.0.0, this Ansible Collection offers backwards compatibility to the Zscaler legacy API framework. This is the recommended authentication method for organizations whose tenants are still not migrated to (`Zidentity <https://help.zscaler.com/zidentity/what-zidentity>`_)
+* NOTE: OneAPI is not supported for ``zscalergov`` and ``zscalerten``. Use the Legacy API Framework for those clouds. See `Legacy API Authentication`_ below.
 
-* NOTE: Notice that OneAPI and Zidentity is not currently supported for the following clouds: `zscalergov` and `zscalerten`. Refer to the Legacy API Framework for more information on how authenticate to these environments
-
-* NOTE: The authentication parameter `cloud` or `ZSCALER_CLOUD` are optional, and only required when authenticating to a non-production environment i.e `beta`
+* NOTE: For OneAPI: The ``cloud`` parameter or ``ZSCALER_CLOUD`` env var is optional. Omit for production. Set to ``beta`` only when authenticating to the beta environment. Legacy cloud names (zscalerone, zscalertwo, etc.) must not be used with OneAPI—they would break the API URL.
 
 Client Secret Authentication
 -----------------------------
@@ -208,7 +215,9 @@ Private Key Authentication
 Legacy API Authentication
 =============================
 
-The ZIA Ansible Collection supports the following environments:
+Use Legacy authentication when your tenant is not on Zidentity, or for ``zscalergov`` and ``zscalerten`` clouds. You must set ``use_legacy_client: true`` (or ``ZSCALER_USE_LEGACY_CLIENT=true``) and provide ``username``, ``password``, ``api_key``, and ``cloud``. The ``cloud`` parameter is required.
+
+The ZIA Ansible Collection supports the following cloud environments for Legacy:
 
 * zscaler
 * zscalerone

@@ -133,9 +133,7 @@ def core(module):
     if include_pseudo_groups is not None:
         query_params["include_pseudo_groups"] = include_pseudo_groups
 
-    groups, _unused, error = client.device_management.list_device_groups(
-        query_params=query_params
-    )
+    groups, _unused, error = client.device_management.list_device_groups(query_params=query_params)
     if error:
         module.fail_json(msg=f"Error retrieving device groups: {to_native(error)}")
 
@@ -145,9 +143,7 @@ def core(module):
         matched = next((g for g in all_groups if g.get("name") == group_name), None)
         if not matched:
             available = [g.get("name") for g in all_groups]
-            module.fail_json(
-                msg=f"Group with name '{group_name}' not found. Available groups: {available}"
-            )
+            module.fail_json(msg=f"Group with name '{group_name}' not found. Available groups: {available}")
         all_groups = [matched]
 
     module.exit_json(changed=False, groups=all_groups)

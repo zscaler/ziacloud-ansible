@@ -10,7 +10,7 @@ is a collection of modules that automate configuration and operational tasks on 
 This collection is part of the broader initiative to bring Ansible Automation to Zscaler Zero Trust Platform through the offering
 **Red Hat® Ansible Certified Content**.
 
-Version: 2.0.7
+Version: 2.1.0
 
 Red Hat Ansible Certified Content for Zscaler
 =============================================
@@ -39,9 +39,6 @@ Features
 The **Zscaler Internet Access Collection**, includes
 `modules`_ and ansible-doc to automate tasks on the Zscaler platform.
 
-Sample playbooks are available in our `samples repository`_
-contributed by the **Zscaler's Technology Alliances** team.
-
 .. toctree::
    :maxdepth: 1
    :hidden:
@@ -50,6 +47,7 @@ contributed by the **Zscaler's Technology Alliances** team.
    requirements
    installation
    authentication
+   activation_overview
    examples
    modules
    common_return_values
@@ -87,9 +85,6 @@ Author Information
    https://zscaler.github.io/ziacloud-ansible/index.html
 .. _modules:
    https://zscaler.github.io/ziacloud-ansible/modules.html
-.. _samples repository:
-   https://github.com/zscaler/ziacloud-playbooks/blob/master/README.md
-
 
 Development Leads
 -----------------

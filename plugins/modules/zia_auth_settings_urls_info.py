@@ -76,9 +76,7 @@ def core(module):
 
     auth, _unused, error = client.authentication_settings.get_exempted_urls()
     if error:
-        module.fail_json(
-            msg=f"Error fetching authentication exempted urls: {to_native(error)}"
-        )
+        module.fail_json(msg=f"Error fetching authentication exempted urls: {to_native(error)}")
 
     module.exit_json(changed=False, auth=auth)
 

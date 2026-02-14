@@ -303,32 +303,24 @@ def core(module):
     if profile_id is not None:
         profile_obj, _unused, error = client.risk_profiles.get_risk_profile(profile_id)
         if error or profile_obj is None:
-            module.fail_json(
-                msg=f"Failed to retrieve Risk Profile with ID '{profile_id}': {to_native(error)}"
-            )
+            module.fail_json(msg=f"Failed to retrieve Risk Profile with ID '{profile_id}': {to_native(error)}")
         profiles = [profile_obj.as_dict()]
     else:
         query_params = {}
         if profile_name:
             query_params["search"] = profile_name
 
-        result, _unused, error = client.risk_profiles.list_risk_profiles(
-            query_params=query_params
-        )
+        result, _unused, error = client.risk_profiles.list_risk_profiles(query_params=query_params)
         if error:
             module.fail_json(msg=f"Error retrieving Risk Profiles: {to_native(error)}")
 
         profile_list = [g.as_dict() for g in result] if result else []
 
         if profile_name:
-            matched = next(
-                (g for g in profile_list if g.get("profile_name") == profile_name), None
-            )
+            matched = next((g for g in profile_list if g.get("profile_name") == profile_name), None)
             if not matched:
                 available = [g.get("profile_name") for g in profile_list]
-                module.fail_json(
-                    msg=f"Risk Profile with name '{profile_name}' not found. Available profiles: {available}"
-                )
+                module.fail_json(msg=f"Risk Profile with name '{profile_name}' not found. Available profiles: {available}")
             profiles = [matched]
         else:
             profiles = profile_list

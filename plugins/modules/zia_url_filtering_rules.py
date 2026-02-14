@@ -408,9 +408,7 @@ def validate_and_convert_time_fields(rule):
             "validity_time_zone_id",
         ]:
             if not rule.get(field):
-                raise ValueError(
-                    f"'{field}' must be set when 'enforce_time_validity' is True"
-                )
+                raise ValueError(f"'{field}' must be set when 'enforce_time_validity' is True")
 
         timezone_id = rule["validity_time_zone_id"]
         if timezone_id not in pytz.all_timezones:
@@ -432,11 +430,7 @@ def normalize_rule(rule):
     normalized = rule.copy()
     computed_values = ["profile_seq"]
     for attr in computed_values:
-        if (
-            "cbi_profile" in normalized
-            and isinstance(normalized["cbi_profile"], dict)
-            and attr in normalized["cbi_profile"]
-        ):
+        if "cbi_profile" in normalized and isinstance(normalized["cbi_profile"], dict) and attr in normalized["cbi_profile"]:
             normalized["cbi_profile"].pop(attr, None)
 
     return normalized
@@ -524,15 +518,11 @@ def core(module):
         module.debug(f"Fetching existing rule with ID: {rule_id}")
         result, _unused, error = client.url_filtering.get_rule(rule_id=rule_id)
         if error:
-            module.fail_json(
-                msg=f"Error fetching rule with id {rule_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching rule with id {rule_id}: {to_native(error)}")
         if result:
             existing_rule = result.as_dict()
             module.warn(f"Raw existing rule keys: {existing_rule.keys()}")
-            module.warn(
-                f"user_agent_types from API: {existing_rule.get('user_agent_types')}"
-            )
+            module.warn(f"user_agent_types from API: {existing_rule.get('user_agent_types')}")
     else:
         module.debug(f"Listing rules to find by name: {rule_name}")
         result, _unused, error = client.url_filtering.list_rules()
@@ -625,14 +615,10 @@ def core(module):
                 # For order-agnostic attributes, compare sets instead of sorted lists
                 if set(desired_value) != set(current_value):
                     differences_detected = True
-                    module.warn(
-                        f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
-                    )
+                    module.warn(f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}")
             else:
                 # For other list attributes, maintain original comparison logic
-                if all(isinstance(x, int) for x in desired_value) and all(
-                    isinstance(x, int) for x in current_value
-                ):
+                if all(isinstance(x, int) for x in desired_value) and all(isinstance(x, int) for x in current_value):
                     desired_value = sorted(desired_value)
                     current_value = sorted(current_value)
                 if current_value != desired_value:
@@ -671,9 +657,7 @@ def core(module):
             if differences_detected:
                 rule_id_to_update = existing_rule.get("id")
                 if not rule_id_to_update:
-                    module.fail_json(
-                        msg="Cannot update rule: ID is missing from the existing resource."
-                    )
+                    module.fail_json(msg="Cannot update rule: ID is missing from the existing resource.")
 
                 update_data = deleteNone(
                     {
@@ -702,17 +686,11 @@ def core(module):
                         "device_trust_levels": desired_rule.get("device_trust_levels"),
                         "device_groups": desired_rule.get("device_groups"),
                         "devices": desired_rule.get("devices"),
-                        "user_risk_score_levels": desired_rule.get(
-                            "user_risk_score_levels"
-                        ),
+                        "user_risk_score_levels": desired_rule.get("user_risk_score_levels"),
                         "validity_start_time": desired_rule.get("validity_start_time"),
                         "validity_end_time": desired_rule.get("validity_end_time"),
-                        "validity_time_zone_id": desired_rule.get(
-                            "validity_time_zone_id"
-                        ),
-                        "end_user_notification_url": desired_rule.get(
-                            "end_user_notification_url"
-                        ),
+                        "validity_time_zone_id": desired_rule.get("validity_time_zone_id"),
+                        "end_user_notification_url": desired_rule.get("end_user_notification_url"),
                         "cipa_rule": desired_rule.get("cipa_rule"),
                         "cbi_profile": desired_rule.get("cbi_profile"),
                         "workload_groups": desired_rule.get("workload_groups"),
@@ -724,14 +702,10 @@ def core(module):
                 if "block_override" in desired_rule:
                     update_data["block_override"] = desired_rule["block_override"]
                 if "enforce_time_validity" in desired_rule:
-                    update_data["enforce_time_validity"] = desired_rule[
-                        "enforce_time_validity"
-                    ]
+                    update_data["enforce_time_validity"] = desired_rule["enforce_time_validity"]
 
                 module.warn("Payload Update for SDK: {}".format(update_data))
-                updated_rule, _unused, error = client.url_filtering.update_rule(
-                    **update_data
-                )
+                updated_rule, _unused, error = client.url_filtering.update_rule(**update_data)
                 if error:
                     module.fail_json(msg=f"Error updating rule: {to_native(error)}")
                 module.exit_json(changed=True, data=updated_rule.as_dict())
@@ -766,15 +740,11 @@ def core(module):
                     "device_trust_levels": desired_rule.get("device_trust_levels"),
                     "device_groups": desired_rule.get("device_groups"),
                     "devices": desired_rule.get("devices"),
-                    "user_risk_score_levels": desired_rule.get(
-                        "user_risk_score_levels"
-                    ),
+                    "user_risk_score_levels": desired_rule.get("user_risk_score_levels"),
                     "validity_start_time": desired_rule.get("validity_start_time"),
                     "validity_end_time": desired_rule.get("validity_end_time"),
                     "validity_time_zone_id": desired_rule.get("validity_time_zone_id"),
-                    "end_user_notification_url": desired_rule.get(
-                        "end_user_notification_url"
-                    ),
+                    "end_user_notification_url": desired_rule.get("end_user_notification_url"),
                     "cipa_rule": desired_rule.get("cipa_rule"),
                     "cbi_profile": desired_rule.get("cbi_profile"),
                     "workload_groups": desired_rule.get("workload_groups"),
@@ -786,9 +756,7 @@ def core(module):
             if "block_override" in desired_rule:
                 create_data["block_override"] = desired_rule["block_override"]
             if "enforce_time_validity" in desired_rule:
-                create_data["enforce_time_validity"] = desired_rule[
-                    "enforce_time_validity"
-                ]
+                create_data["enforce_time_validity"] = desired_rule["enforce_time_validity"]
 
             module.warn("Payload for SDK: {}".format(create_data))
             new_rule, _unused, error = client.url_filtering.add_rule(**create_data)
@@ -800,14 +768,10 @@ def core(module):
         if existing_rule:
             rule_id_to_delete = existing_rule.get("id")
             if not rule_id_to_delete:
-                module.fail_json(
-                    msg="Cannot delete rule: ID is missing from the existing resource."
-                )
+                module.fail_json(msg="Cannot delete rule: ID is missing from the existing resource.")
 
             module.debug(f"About to delete rule with ID: {rule_id_to_delete}")
-            _unused, _unused, error = client.url_filtering.delete_rule(
-                rule_id=rule_id_to_delete
-            )
+            _unused, _unused, error = client.url_filtering.delete_rule(rule_id=rule_id_to_delete)
             if error:
                 module.fail_json(msg=f"Error deleting rule: {to_native(error)}")
             module.debug(f"Successfully deleted rule with ID: {rule_id_to_delete}")

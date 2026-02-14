@@ -100,13 +100,9 @@ def core(module):
         if urls_to_add:
             changed = True
             if not module.check_mode:
-                updated, _unused, error = (
-                    client.authentication_settings.add_urls_to_exempt_list(urls_to_add)
-                )
+                updated, _unused, error = client.authentication_settings.add_urls_to_exempt_list(urls_to_add)
                 if error:
-                    module.fail_json(
-                        msg=f"Failed to add URLs to exempt list: {to_native(error)}"
-                    )
+                    module.fail_json(msg=f"Failed to add URLs to exempt list: {to_native(error)}")
                 module.exit_json(changed=True, exempted_urls=updated)
         module.exit_json(changed=changed, exempted_urls=current_normalized)
 
@@ -115,15 +111,9 @@ def core(module):
         if urls_to_remove:
             changed = True
             if not module.check_mode:
-                updated, _unused, error = (
-                    client.authentication_settings.delete_urls_from_exempt_list(
-                        urls_to_remove
-                    )
-                )
+                updated, _unused, error = client.authentication_settings.delete_urls_from_exempt_list(urls_to_remove)
                 if error:
-                    module.fail_json(
-                        msg=f"Failed to remove URLs from exempt list: {to_native(error)}"
-                    )
+                    module.fail_json(msg=f"Failed to remove URLs from exempt list: {to_native(error)}")
                 module.exit_json(changed=True, exempted_urls=updated)
         module.exit_json(changed=changed, exempted_urls=current_normalized)
 

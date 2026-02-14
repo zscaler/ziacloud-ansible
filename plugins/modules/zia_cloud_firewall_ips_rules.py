@@ -220,6 +220,16 @@ options:
         description: The name of the Application Segment
         type: str
         required: true
+  eun_template_id:
+    description:
+      - The EUN template ID associated with the rule
+    required: false
+    type: int
+  is_eun_enabled:
+    description:
+      - If set to true, Web EUN is enabled for the rule
+    required: false
+    type: bool
 """
 
 EXAMPLES = r"""
@@ -308,13 +318,11 @@ def core(module):
         "threat_categories",
         "res_categories",
         "zpa_app_segments",
+        "eun_template_id",
+        "is_eun_enabled",
     ]
 
-    rule = {
-        param: module.params.get(param)
-        for param in params
-        if module.params.get(param) is not None
-    }
+    rule = {param: module.params.get(param) for param in params if module.params.get(param) is not None}
 
     # Validate and format country codes
     source_countries = rule.get("source_countries")
@@ -324,9 +332,7 @@ def core(module):
             if validate_iso3166_alpha2(country_code):
                 validated_source_countries.append(f"COUNTRY_{country_code}")
             else:
-                module.fail_json(
-                    msg=f"Invalid source country code '{country_code}'. Must be ISO3166 Alpha2."
-                )
+                module.fail_json(msg=f"Invalid source country code '{country_code}'. Must be ISO3166 Alpha2.")
         rule["source_countries"] = validated_source_countries
 
     dest_countries = rule.get("dest_countries")
@@ -336,9 +342,7 @@ def core(module):
             if validate_iso3166_alpha2(country_code):
                 validated_dest_countries.append(f"COUNTRY_{country_code}")
             else:
-                module.fail_json(
-                    msg=f"Invalid destination country code '{country_code}'. Must be ISO3166 Alpha2."
-                )
+                module.fail_json(msg=f"Invalid destination country code '{country_code}'. Must be ISO3166 Alpha2.")
         rule["dest_countries"] = validated_dest_countries
 
     rule_id = rule.get("id")
@@ -348,9 +352,7 @@ def core(module):
     if rule_id is not None:
         result, _unused, error = client.cloud_firewall_ips.get_rule(rule_id=rule_id)
         if error:
-            module.fail_json(
-                msg=f"Error fetching rule with id {rule_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching rule with id {rule_id}: {to_native(error)}")
         if result:
             existing_rule = result.as_dict()
     else:
@@ -364,17 +366,8 @@ def core(module):
                     break
 
     # Handle predefined/default rules
-    if (
-        state == "absent"
-        and existing_rule
-        and (
-            existing_rule.get("default_rule", False)
-            or existing_rule.get("predefined", False)
-        )
-    ):
-        module.exit_json(
-            changed=False, msg="Deletion of default or predefined rule is not allowed."
-        )
+    if state == "absent" and existing_rule and (existing_rule.get("default_rule", False) or existing_rule.get("predefined", False)):
+        module.exit_json(changed=False, msg="Deletion of default or predefined rule is not allowed.")
 
     # Normalize and compare rules
     desired_rule = normalize_rule(rule)
@@ -386,10 +379,7 @@ def core(module):
         for attr in params:
             if attr in processed and processed[attr] is not None:
                 if isinstance(processed[attr], list):
-                    if all(
-                        isinstance(item, dict) and "id" in item
-                        for item in processed[attr]
-                    ):
+                    if all(isinstance(item, dict) and "id" in item for item in processed[attr]):
                         processed[attr] = [item["id"] for item in processed[attr]]
                     else:
                         processed[attr] = sorted(processed[attr])
@@ -445,25 +435,16 @@ def core(module):
 
         # Sort lists of IDs for comparison
         if isinstance(desired_value, list) and isinstance(current_value, list):
-            if all(isinstance(x, int) for x in desired_value) and all(
-                isinstance(x, int) for x in current_value
-            ):
+            if all(isinstance(x, int) for x in desired_value) and all(isinstance(x, int) for x in current_value):
                 desired_value = sorted(desired_value)
                 current_value = sorted(current_value)
 
         if current_value != desired_value:
             differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
-            )
+            module.warn(f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}")
 
     if module.check_mode:
-        module.exit_json(
-            changed=bool(
-                (state == "present" and (not existing_rule or differences_detected))
-                or (state == "absent" and existing_rule)
-            )
-        )
+        module.exit_json(changed=bool((state == "present" and (not existing_rule or differences_detected)) or (state == "absent" and existing_rule)))
 
     if state == "present":
         if existing_rule:
@@ -496,12 +477,12 @@ def core(module):
                         "src_ip_groups": desired_rule.get("src_ip_groups"),
                         "zpa_app_segments": desired_rule.get("zpa_app_segments"),
                         "threat_categories": desired_rule.get("threat_categories"),
+                        "eun_template_id": desired_rule.get("eun_template_id"),
+                        "is_eun_enabled": desired_rule.get("is_eun_enabled"),
                     }
                 )
                 module.warn("Payload Update for SDK: {}".format(update_data))
-                updated_rule, _unused, error = client.cloud_firewall_ips.update_rule(
-                    **update_data
-                )
+                updated_rule, _unused, error = client.cloud_firewall_ips.update_rule(**update_data)
                 if error:
                     module.fail_json(msg=f"Error updating rule: {to_native(error)}")
                 module.exit_json(changed=True, data=updated_rule.as_dict())
@@ -535,6 +516,8 @@ def core(module):
                     "src_ip_groups": desired_rule.get("src_ip_groups"),
                     "zpa_app_segments": desired_rule.get("zpa_app_segments"),
                     "threat_categories": desired_rule.get("threat_categories"),
+                    "eun_template_id": desired_rule.get("eun_template_id"),
+                    "is_eun_enabled": desired_rule.get("is_eun_enabled"),
                 }
             )
             module.warn("Payload Update for SDK: {}".format(create_data))
@@ -545,9 +528,7 @@ def core(module):
 
     elif state == "absent":
         if existing_rule:
-            _unused, _unused, error = client.cloud_firewall_ips.delete_rule(
-                rule_id=existing_rule.get("id")
-            )
+            _unused, _unused, error = client.cloud_firewall_ips.delete_rule(rule_id=existing_rule.get("id"))
             if error:
                 module.fail_json(msg=f"Error deleting rule: {to_native(error)}")
             module.exit_json(changed=True, data=existing_rule)
@@ -605,6 +586,8 @@ def main():
         res_categories=dict(type="list", elements="str", required=False),
         enable_full_logging=dict(type="bool", default=False, required=False),
         capture_pcap=dict(type="bool", required=False),
+        eun_template_id=dict(type="int", required=False),
+        is_eun_enabled=dict(type="bool", required=False),
         action=dict(
             type="str",
             required=False,

@@ -141,13 +141,9 @@ def core(module):
 
     if group_id is not None:
         # Unpack the tuple returned by the SDK method
-        group_obj, _unused, error = client.cloud_firewall.get_ip_destination_group(
-            group_id
-        )
+        group_obj, _unused, error = client.cloud_firewall.get_ip_destination_group(group_id)
         if error or group_obj is None:
-            module.fail_json(
-                msg=f"Failed to retrieve destination IP group with ID '{group_id}': {to_native(error)}"
-            )
+            module.fail_json(msg=f"Failed to retrieve destination IP group with ID '{group_id}': {to_native(error)}")
         groups = [group_obj.as_dict()]
     else:
         # Prepare query parameters
@@ -155,13 +151,9 @@ def core(module):
         if exclude_type:
             query_params["exclude_type"] = exclude_type
 
-        result, _unused, error = client.cloud_firewall.list_ip_destination_groups(
-            query_params=query_params
-        )
+        result, _unused, error = client.cloud_firewall.list_ip_destination_groups(query_params=query_params)
         if error:
-            module.fail_json(
-                msg=f"Error retrieving IP destination groups: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error retrieving IP destination groups: {to_native(error)}")
 
         groups = [g.as_dict() for g in result] if result else []
 
@@ -169,9 +161,7 @@ def core(module):
             matched = next((g for g in groups if g.get("name") == group_name), None)
             if not matched:
                 available = [g.get("name") for g in groups]
-                module.fail_json(
-                    msg=f"Group with name '{group_name}' not found. Available groups: {available}"
-                )
+                module.fail_json(msg=f"Group with name '{group_name}' not found. Available groups: {available}")
             groups = [matched]
 
     module.exit_json(changed=False, groups=groups)

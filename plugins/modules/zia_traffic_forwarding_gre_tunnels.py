@@ -187,30 +187,16 @@ def core(module):
         gre_tunnel["source_ip"] = gre_tunnel.pop("sourceIp")
 
     # Handle fallback IP range logic
-    if gre_tunnel.get("ip_unnumbered") is False and not gre_tunnel.get(
-        "internal_ip_range"
-    ):
-        available_ranges, _unused, error = client.gre_tunnel.list_gre_ranges(
-            query_params={"limit": 1}
-        )
+    if gre_tunnel.get("ip_unnumbered") is False and not gre_tunnel.get("internal_ip_range"):
+        available_ranges, _unused, error = client.gre_tunnel.list_gre_ranges(query_params={"limit": 1})
         if error:
             module.fail_json(msg=f"Error fetching GRE ranges: {to_native(error)}")
         if available_ranges:
             first_range = available_ranges[0]
-            start_ip = (
-                first_range.get("start_ip_address")
-                or first_range.get("startIpAddress")
-                or first_range.get("startIPAddress")
-            )
-            end_ip = (
-                first_range.get("end_ip_address")
-                or first_range.get("endIpAddress")
-                or first_range.get("endIPAddress")
-            )
+            start_ip = first_range.get("start_ip_address") or first_range.get("startIpAddress") or first_range.get("startIPAddress")
+            end_ip = first_range.get("end_ip_address") or first_range.get("endIpAddress") or first_range.get("endIPAddress")
             if not start_ip or not end_ip:
-                module.fail_json(
-                    msg="Missing expected IP fields (start/end IP) in GRE range response."
-                )
+                module.fail_json(msg="Missing expected IP fields (start/end IP) in GRE range response.")
 
             gre_tunnel["internal_ip_range"] = f"{start_ip}-{end_ip}"
 
@@ -235,13 +221,9 @@ def core(module):
                 break
 
     desired_gre = normalize_gre_tunnel(gre_tunnel)
-    current_gre = (
-        normalize_gre_tunnel(existing_gre_tunnel) if existing_gre_tunnel else {}
-    )
+    current_gre = normalize_gre_tunnel(existing_gre_tunnel) if existing_gre_tunnel else {}
 
-    differences_detected = any(
-        current_gre.get(k) != desired_gre.get(k) for k in desired_gre if k != "id"
-    )
+    differences_detected = any(current_gre.get(k) != desired_gre.get(k) for k in desired_gre if k != "id")
 
     if module.check_mode:
         if state == "present" and (existing_gre_tunnel is None or differences_detected):
@@ -279,18 +261,12 @@ def core(module):
                 # if "internal_ip_range" in update_gre:
                 #     update_gre["internalIPRange"] = update_gre.pop("internal_ip_range")
 
-                result, _unused, error = client.gre_tunnel.update_gre_tunnel(
-                    **update_gre
-                )
+                result, _unused, error = client.gre_tunnel.update_gre_tunnel(**update_gre)
                 if error or not result:
-                    module.fail_json(
-                        msg=f"Failed to update GRE tunnel: {to_native(error)}"
-                    )
+                    module.fail_json(msg=f"Failed to update GRE tunnel: {to_native(error)}")
                 module.exit_json(changed=True, data=result.as_dict())
             else:
-                module.exit_json(
-                    changed=False, data=existing_gre_tunnel, msg="No changes detected."
-                )
+                module.exit_json(changed=False, data=existing_gre_tunnel, msg="No changes detected.")
         else:
             create_tunnel = deleteNone(
                 {
@@ -319,9 +295,7 @@ def core(module):
             module.exit_json(changed=True, data=result.as_dict())
 
     elif state == "absent" and existing_gre_tunnel and tunnel_id:
-        _unused, _unused, error = client.gre_tunnel.delete_gre_tunnel(
-            tunnel_id=tunnel_id
-        )
+        _unused, _unused, error = client.gre_tunnel.delete_gre_tunnel(tunnel_id=tunnel_id)
         if error:
             module.fail_json(msg=f"Failed to delete GRE tunnel: {to_native(error)}")
         module.exit_json(changed=True, data=existing_gre_tunnel)

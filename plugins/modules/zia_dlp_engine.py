@@ -122,12 +122,8 @@ def core(module):
     if engine_id:
         result = client.dlp_engine.get_dlp_engines(engine_id)
         if result[2]:  # Error check
-            module.fail_json(
-                msg=f"Error fetching DLP engine ID {engine_id}: {to_native(result[2])}"
-            )
-        existing_engine = (
-            result[0].as_dict() if result[0] else None
-        )  # Changed to_dict() to as_dict()
+            module.fail_json(msg=f"Error fetching DLP engine ID {engine_id}: {to_native(result[2])}")
+        existing_engine = result[0].as_dict() if result[0] else None  # Changed to_dict() to as_dict()
     else:
         result = client.dlp_engine.list_dlp_engines()
         if result[2]:  # Error check
@@ -146,9 +142,7 @@ def core(module):
     for key, value in desired.items():
         if current.get(key) != value:
             differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {current.get(key)}, Desired: {value}"
-            )
+            module.warn(f"Difference detected in {key}. Current: {current.get(key)}, Desired: {value}")
 
     if module.check_mode:
         if state == "present" and (existing_engine is None or differences_detected):
@@ -173,12 +167,8 @@ def core(module):
                 module.warn("Payload Update for SDK: {}".format(update_data))
                 updated = client.dlp_engine.update_dlp_engine(**update_data)
                 if updated[2]:
-                    module.fail_json(
-                        msg=f"Error updating DLP engine: {to_native(updated[2])}"
-                    )
-                module.exit_json(
-                    changed=True, data=updated[0].as_dict()
-                )  # Changed to_dict() to as_dict()
+                    module.fail_json(msg=f"Error updating DLP engine: {to_native(updated[2])}")
+                module.exit_json(changed=True, data=updated[0].as_dict())  # Changed to_dict() to as_dict()
             else:
                 module.exit_json(changed=False, data=existing_engine)
         else:
@@ -193,21 +183,13 @@ def core(module):
             module.warn("Payload Update for SDK: {}".format(create_data))
             created = client.dlp_engine.add_dlp_engine(**create_data)
             if created[2]:
-                module.fail_json(
-                    msg=f"Error creating DLP engine: {to_native(created[2])}"
-                )
-            module.exit_json(
-                changed=True, data=created[0].as_dict()
-            )  # Changed to_dict() to as_dict()
+                module.fail_json(msg=f"Error creating DLP engine: {to_native(created[2])}")
+            module.exit_json(changed=True, data=created[0].as_dict())  # Changed to_dict() to as_dict()
     elif state == "absent":
         if existing_engine:
-            deleted = client.dlp_engine.delete_dlp_engine(
-                engine_id=existing_engine["id"]
-            )
+            deleted = client.dlp_engine.delete_dlp_engine(engine_id=existing_engine["id"])
             if deleted[2]:
-                module.fail_json(
-                    msg=f"Error deleting DLP engine: {to_native(deleted[2])}"
-                )
+                module.fail_json(msg=f"Error deleting DLP engine: {to_native(deleted[2])}")
             module.exit_json(changed=True, data=existing_engine)
         module.exit_json(changed=False, data={})
 

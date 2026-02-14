@@ -115,36 +115,24 @@ def core(module):
     if department_id is not None:
         result, _unused, error = client.user_management.get_department(department_id)
         if error or result is None:
-            module.fail_json(
-                msg=f"Failed to retrieve Department with ID '{department_id}': {to_native(error)}"
-            )
+            module.fail_json(msg=f"Failed to retrieve Department with ID '{department_id}': {to_native(error)}")
         departments = [result.as_dict()]
     else:
         query_params = {}
         if department_name:
             query_params["search"] = department_name
 
-        result, err = collect_all_items(
-            client.user_management.list_departments, query_params
-        )
+        result, err = collect_all_items(client.user_management.list_departments, query_params)
         if err:
             module.fail_json(msg=f"Error retrieving Departments: {to_native(err)}")
 
-        department_list = (
-            [d.as_dict() if hasattr(d, "as_dict") else d for d in result]
-            if result
-            else []
-        )
+        department_list = [d.as_dict() if hasattr(d, "as_dict") else d for d in result] if result else []
 
         if department_name:
-            matched = next(
-                (d for d in department_list if d.get("name") == department_name), None
-            )
+            matched = next((d for d in department_list if d.get("name") == department_name), None)
             if not matched:
                 available = [d.get("name") for d in department_list]
-                module.fail_json(
-                    msg=f"Department with name '{department_name}' not found. Available departments: {available}"
-                )
+                module.fail_json(msg=f"Department with name '{department_name}' not found. Available departments: {available}")
             departments = [matched]
         else:
             departments = department_list

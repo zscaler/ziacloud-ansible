@@ -250,6 +250,27 @@ options:
     description: "If set to true, indicates that this is a default sub-location created by the Zscaler service to accommodate IPv6 addresses"
     type: bool
     required: false
+  sub_loc_scope_enabled:
+    description:
+      - "Indicates whether defining scopes is allowed for this sublocation."
+      - "Sublocation scopes are available only for the Workload traffic type sublocations whose parent"
+      - "locations are associated with Amazon Web Services (AWS) Cloud Connector groups."
+    type: bool
+    required: false
+  sub_loc_scope:
+    description:
+      - "Defines a scope for the sublocation from the available types to segregate workload traffic"
+      - "from a single sublocation to apply different Cloud Connector and ZIA security policies."
+      - "This field is only available for the Workload traffic type sublocations whose parent"
+      - "locations are associated with Amazon Web Services (AWS) Cloud Connector groups."
+    type: str
+    required: false
+    choices: ['VPC_ENDPOINT', 'VPC', 'NAMESPACE', 'ACCOUNT']
+  sub_loc_scope_values:
+    description: "Specifies values for the selected sublocation scope type."
+    type: list
+    elements: str
+    required: false
   description:
     description: "Additional notes or information regarding the location or sub-location. The description cannot exceed 1024 characters."
     type: str
@@ -348,6 +369,17 @@ EXAMPLES = r"""
       - id: "{{ vpn_credential_ip.data.id }}"
         type: "{{ vpn_credential_ip.data.type }}"
         ip_address: "{{ vpn_credential_ip.data.ip_address }}"
+
+# Create sub-location with sublocation scope (Workload traffic, AWS Cloud Connector)
+- name: Create sub-location with sublocation scope
+  zscaler.ziacloud.zia_location_management:
+    name: "AWS_VPC_Sublocation"
+    description: "Sublocation scoped by VPC for AWS Cloud Connector"
+    parent_id: "{{ parent_location_id }}"
+    sub_loc_scope: "VPC"
+    sub_loc_scope_values:
+      - "vpc-12345678"
+      - "vpc-87654321"
 """
 
 RETURN = """
@@ -414,9 +446,7 @@ def normalize_vpn_credentials(vpn_creds):
     return [
         {
             "id": cred["id"],
-            "type": cred[
-                "type"
-            ].upper(),  # Normalize to uppercase for consistent comparison
+            "type": cred["type"].upper(),  # Normalize to uppercase for consistent comparison
         }
         for cred in vpn_creds
         if cred.get("id") and cred.get("type")
@@ -462,6 +492,9 @@ def core(module):
         "longitude",
         "other_sub_location",
         "other6_sub_location",
+        "sub_loc_scope_enabled",
+        "sub_loc_scope",
+        "sub_loc_scope_values",
         "ipv6_enabled",
         "ipv6_dns64_prefix",
         "iot_discovery_enabled",
@@ -472,9 +505,7 @@ def core(module):
     location_mgmt = {param: module.params.get(param) for param in params}
 
     # Normalize the VPN creds from user input
-    location_mgmt["vpn_credentials"] = normalize_vpn_credentials(
-        module.params.get("vpn_credentials", [])
-    )
+    location_mgmt["vpn_credentials"] = normalize_vpn_credentials(module.params.get("vpn_credentials", []))
 
     validate_location_mgmt(location_mgmt)
 
@@ -485,26 +516,31 @@ def core(module):
     if location_id is not None:
         result, _unused, error = client.locations.get_location(location_id=location_id)
         if error:
-            module.fail_json(
-                msg=f"Error fetching location with id {location_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching location with id {location_id}: {to_native(error)}")
         if result:
             existing_location = result.as_dict()
     else:
-        result, _unused, error = client.locations.list_locations()
+        # Use search to find locations including sublocations by name (fixes idempotency for sublocations)
+        query_params = {"search": location_name} if location_name else {}
+        result, _unused, error = client.locations.list_locations(query_params=query_params)
         if error:
             module.fail_json(msg=f"Error listing locations: {to_native(error)}")
         if result:
+            parent_id = location_mgmt.get("parent_id")
             for location_ in result:
-                if location_.name == location_name:
-                    existing_location = location_.as_dict()
-                    break
+                if location_.name != location_name:
+                    continue
+                loc_dict = location_.as_dict()
+                # For sublocations, also match parent_id to avoid confusing with same-named parent
+                if parent_id is not None and parent_id != 0:
+                    if loc_dict.get("parent_id") != parent_id:
+                        continue
+                existing_location = loc_dict
+                break
 
     # Normalize server's current location data and local "desired" data
     desired_location = normalize_location(location_mgmt)
-    current_location = (
-        normalize_location(existing_location) if existing_location else {}
-    )
+    current_location = normalize_location(existing_location) if existing_location else {}
 
     # Compare differences
     differences_detected = False
@@ -517,12 +553,8 @@ def core(module):
         # If it's vpn_credentials, compare the normalized lists only
         if key == "vpn_credentials":
             # Simplify comparison - only check id and type match
-            current_ids_types = {
-                (c["id"], c["type"].upper()) for c in (current_value or [])
-            }
-            desired_ids_types = {
-                (c["id"], c["type"].upper()) for c in (desired_value or [])
-            }
+            current_ids_types = {(c["id"], c["type"].upper()) for c in (current_value or [])}
+            desired_ids_types = {(c["id"], c["type"].upper()) for c in (desired_value or [])}
 
             if current_ids_types != desired_ids_types:
                 differences_detected = True
@@ -541,11 +573,7 @@ def core(module):
                     "current": current_value,
                     "desired": desired_value,
                 }
-                module.warn(
-                    f"Difference detected in {key}. "
-                    f"Current: {current_value}, "
-                    f"Desired: {desired_value}"
-                )
+                module.warn(f"Difference detected in {key}. " f"Current: {current_value}, " f"Desired: {desired_value}")
 
     if module.check_mode:
         if state == "present" and (existing_location is None or differences_detected):
@@ -572,64 +600,39 @@ def core(module):
                         "ip_addresses": desired_location.get("ip_addresses"),
                         "auth_required": desired_location.get("auth_required"),
                         "ssl_scan_enabled": desired_location.get("ssl_scan_enabled"),
-                        "idle_time_in_minutes": desired_location.get(
-                            "idle_time_in_minutes"
-                        ),
+                        "idle_time_in_minutes": desired_location.get("idle_time_in_minutes"),
                         "display_time_unit": desired_location.get("display_time_unit"),
                         "surrogate_ip": desired_location.get("surrogate_ip"),
-                        "surrogate_ip_enforced_for_known_browsers": desired_location.get(
-                            "surrogate_ip_enforced_for_known_browsers"
-                        ),
-                        "surrogate_refresh_time_in_minutes": desired_location.get(
-                            "surrogate_refresh_time_in_minutes"
-                        ),
-                        "surrogate_refresh_time_unit": desired_location.get(
-                            "surrogate_refresh_time_unit"
-                        ),
+                        "surrogate_ip_enforced_for_known_browsers": desired_location.get("surrogate_ip_enforced_for_known_browsers"),
+                        "surrogate_refresh_time_in_minutes": desired_location.get("surrogate_refresh_time_in_minutes"),
+                        "surrogate_refresh_time_unit": desired_location.get("surrogate_refresh_time_unit"),
                         "ofw_enabled": desired_location.get("ofw_enabled"),
                         "ips_control": desired_location.get("ips_control"),
                         "aup_enabled": desired_location.get("aup_enabled"),
-                        "xff_forward_enabled": desired_location.get(
-                            "xff_forward_enabled"
-                        ),
+                        "xff_forward_enabled": desired_location.get("xff_forward_enabled"),
                         "caution_enabled": desired_location.get("caution_enabled"),
-                        "aup_block_internet_until_accepted": desired_location.get(
-                            "aup_block_internet_until_accepted"
-                        ),
-                        "aup_force_ssl_inspection": desired_location.get(
-                            "aup_force_ssl_inspection"
-                        ),
-                        "aup_timeout_in_days": desired_location.get(
-                            "aup_timeout_in_days"
-                        ),
+                        "aup_block_internet_until_accepted": desired_location.get("aup_block_internet_until_accepted"),
+                        "aup_force_ssl_inspection": desired_location.get("aup_force_ssl_inspection"),
+                        "aup_timeout_in_days": desired_location.get("aup_timeout_in_days"),
                         "profile": desired_location.get("profile"),
                         "geo_override": desired_location.get("geo_override"),
                         "latitude": desired_location.get("latitude"),
                         "longitude": desired_location.get("longitude"),
-                        "other_sub_location": desired_location.get(
-                            "other_sub_location"
-                        ),
-                        "other6_sub_location": desired_location.get(
-                            "other6_sub_location"
-                        ),
+                        "other_sub_location": desired_location.get("other_sub_location"),
+                        "other6_sub_location": desired_location.get("other6_sub_location"),
+                        "sub_loc_scope_enabled": desired_location.get("sub_loc_scope_enabled"),
+                        "sub_loc_scope": desired_location.get("sub_loc_scope"),
+                        "sub_loc_scope_values": desired_location.get("sub_loc_scope_values"),
                         "ipv6_enabled": desired_location.get("ipv6_enabled"),
                         "ipv6_dns64_prefix": desired_location.get("ipv6_dns64_prefix"),
-                        "iot_discovery_enabled": desired_location.get(
-                            "iot_discovery_enabled"
-                        ),
-                        "iot_enforce_policy_set": desired_location.get(
-                            "iot_enforce_policy_set"
-                        ),
+                        "iot_discovery_enabled": desired_location.get("iot_discovery_enabled"),
+                        "iot_enforce_policy_set": desired_location.get("iot_enforce_policy_set"),
                         "vpn_credentials": desired_location.get("vpn_credentials"),
                     }
                 )
                 module.warn("Payload Update for SDK: {}".format(update_location))
-                module.warn(
-                    "🚨 FINAL PAYLOAD: " + json.dumps(update_location, indent=2)
-                )
-                updated_location, _unused, error = client.locations.update_location(
-                    **update_location
-                )
+                module.warn("🚨 FINAL PAYLOAD: " + json.dumps(update_location, indent=2))
+                updated_location, _unused, error = client.locations.update_location(**update_location)
                 if error:
                     module.fail_json(msg=f"Error updating location: {to_native(error)}")
                 module.exit_json(changed=True, data=updated_location.as_dict())
@@ -649,31 +652,19 @@ def core(module):
                     "ip_addresses": desired_location.get("ip_addresses"),
                     "auth_required": desired_location.get("auth_required"),
                     "ssl_scan_enabled": desired_location.get("ssl_scan_enabled"),
-                    "idle_time_in_minutes": desired_location.get(
-                        "idle_time_in_minutes"
-                    ),
+                    "idle_time_in_minutes": desired_location.get("idle_time_in_minutes"),
                     "display_time_unit": desired_location.get("display_time_unit"),
                     "surrogate_ip": desired_location.get("surrogate_ip"),
-                    "surrogate_ip_enforced_for_known_browsers": desired_location.get(
-                        "surrogate_ip_enforced_for_known_browsers"
-                    ),
-                    "surrogate_refresh_time_in_minutes": desired_location.get(
-                        "surrogate_refresh_time_in_minutes"
-                    ),
-                    "surrogate_refresh_time_unit": desired_location.get(
-                        "surrogate_refresh_time_unit"
-                    ),
+                    "surrogate_ip_enforced_for_known_browsers": desired_location.get("surrogate_ip_enforced_for_known_browsers"),
+                    "surrogate_refresh_time_in_minutes": desired_location.get("surrogate_refresh_time_in_minutes"),
+                    "surrogate_refresh_time_unit": desired_location.get("surrogate_refresh_time_unit"),
                     "ofw_enabled": desired_location.get("ofw_enabled"),
                     "ips_control": desired_location.get("ips_control"),
                     "aup_enabled": desired_location.get("aup_enabled"),
                     "xff_forward_enabled": desired_location.get("xff_forward_enabled"),
                     "caution_enabled": desired_location.get("caution_enabled"),
-                    "aup_block_internet_until_accepted": desired_location.get(
-                        "aup_block_internet_until_accepted"
-                    ),
-                    "aup_force_ssl_inspection": desired_location.get(
-                        "aup_force_ssl_inspection"
-                    ),
+                    "aup_block_internet_until_accepted": desired_location.get("aup_block_internet_until_accepted"),
+                    "aup_force_ssl_inspection": desired_location.get("aup_force_ssl_inspection"),
                     "aup_timeout_in_days": desired_location.get("aup_timeout_in_days"),
                     "profile": desired_location.get("profile"),
                     "geo_override": desired_location.get("geo_override"),
@@ -681,30 +672,25 @@ def core(module):
                     "longitude": desired_location.get("longitude"),
                     "other_sub_location": desired_location.get("other_sub_location"),
                     "other6_sub_location": desired_location.get("other6_sub_location"),
+                    "sub_loc_scope_enabled": desired_location.get("sub_loc_scope_enabled"),
+                    "sub_loc_scope": desired_location.get("sub_loc_scope"),
+                    "sub_loc_scope_values": desired_location.get("sub_loc_scope_values"),
                     "ipv6_enabled": desired_location.get("ipv6_enabled"),
                     "ipv6_dns64_prefix": desired_location.get("ipv6_dns64_prefix"),
-                    "iot_discovery_enabled": desired_location.get(
-                        "iot_discovery_enabled"
-                    ),
-                    "iot_enforce_policy_set": desired_location.get(
-                        "iot_enforce_policy_set"
-                    ),
+                    "iot_discovery_enabled": desired_location.get("iot_discovery_enabled"),
+                    "iot_enforce_policy_set": desired_location.get("iot_enforce_policy_set"),
                     "vpn_credentials": desired_location.get("vpn_credentials"),
                 }
             )
             module.warn("Payload Update for SDK: {}".format(create_location))
-            new_location, _unused, error = client.locations.add_location(
-                **create_location
-            )
+            new_location, _unused, error = client.locations.add_location(**create_location)
             if error:
                 module.fail_json(msg=f"Error creating location: {to_native(error)}")
             module.exit_json(changed=True, data=new_location.as_dict())
 
     elif state == "absent":
         if existing_location:
-            _unused, _unused, error = client.locations.delete_location(
-                location_id=existing_location.get("id")
-            )
+            _unused, _unused, error = client.locations.delete_location(location_id=existing_location.get("id"))
             if error:
                 module.fail_json(msg=f"Error deleting location: {to_native(error)}")
             module.exit_json(changed=True, data=existing_location)
@@ -735,16 +721,19 @@ def main():
         xff_forward_enabled=dict(type="bool", required=False),
         surrogate_ip=dict(type="bool", required=False),
         idle_time_in_minutes=dict(type="int", required=False),
-        display_time_unit=dict(
-            type="str", required=False, choices=["MINUTE", "HOUR", "DAY"]
-        ),
+        display_time_unit=dict(type="str", required=False, choices=["MINUTE", "HOUR", "DAY"]),
         surrogate_ip_enforced_for_known_browsers=dict(type="bool", required=False),
         surrogate_refresh_time_in_minutes=dict(type="int", required=False),
-        surrogate_refresh_time_unit=dict(
-            type="str", required=False, choices=["MINUTE", "HOUR", "DAY"]
-        ),
+        surrogate_refresh_time_unit=dict(type="str", required=False, choices=["MINUTE", "HOUR", "DAY"]),
         other_sub_location=dict(type="bool", required=False),
         other6_sub_location=dict(type="bool", required=False),
+        sub_loc_scope_enabled=dict(type="bool", required=False),
+        sub_loc_scope=dict(
+            type="str",
+            required=False,
+            choices=["VPC_ENDPOINT", "VPC", "NAMESPACE", "ACCOUNT"],
+        ),
+        sub_loc_scope_values=dict(type="list", elements="str", required=False),
         ofw_enabled=dict(type="bool", required=False),
         ips_control=dict(type="bool", required=False),
         aup_enabled=dict(type="bool", required=False),

@@ -161,9 +161,7 @@ def core(module):
 
     matched = None
     if group_id is not None:
-        matched = next(
-            (g for g in all_groups if str(g.get("id")) == str(group_id)), None
-        )
+        matched = next((g for g in all_groups if str(g.get("id")) == str(group_id)), None)
         if not matched:
             module.fail_json(msg=f"No workload group found with ID '{group_id}'")
     elif group_name is not None:

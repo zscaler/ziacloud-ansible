@@ -384,9 +384,7 @@ def core(module):
             if validate_iso3166_alpha2(country_code):
                 validated_source_countries.append(f"COUNTRY_{country_code}")
             else:
-                module.fail_json(
-                    msg=f"Invalid source country code '{country_code}'. Must be ISO3166 Alpha2."
-                )
+                module.fail_json(msg=f"Invalid source country code '{country_code}'. Must be ISO3166 Alpha2.")
         rule["source_countries"] = validated_source_countries
 
     dest_countries = rule.get("dest_countries")
@@ -396,16 +394,12 @@ def core(module):
             if validate_iso3166_alpha2(country_code):
                 validated_dest_countries.append(f"COUNTRY_{country_code}")
             else:
-                module.fail_json(
-                    msg=f"Invalid destination country code '{country_code}'. Must be ISO3166 Alpha2."
-                )
+                module.fail_json(msg=f"Invalid destination country code '{country_code}'. Must be ISO3166 Alpha2.")
         rule["dest_countries"] = validated_dest_countries
 
     # Validate exclude_src_countries
     if rule.get("exclude_src_countries") and not rule.get("source_countries"):
-        module.fail_json(
-            msg="When 'exclude_src_countries' is True, 'source_countries' must be specified."
-        )
+        module.fail_json(msg="When 'exclude_src_countries' is True, 'source_countries' must be specified.")
 
     rule_id = rule.get("id")
     rule_name = rule.get("name")
@@ -414,9 +408,7 @@ def core(module):
     if rule_id is not None:
         result, _unused, error = client.cloud_firewall_rules.get_rule(rule_id=rule_id)
         if error:
-            module.fail_json(
-                msg=f"Error fetching rule with id {rule_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching rule with id {rule_id}: {to_native(error)}")
         if result:
             existing_rule = result.as_dict()
     else:
@@ -430,17 +422,8 @@ def core(module):
                     break
 
     # Handle predefined/default rules
-    if (
-        state == "absent"
-        and existing_rule
-        and (
-            existing_rule.get("default_rule", False)
-            or existing_rule.get("predefined", False)
-        )
-    ):
-        module.exit_json(
-            changed=False, msg="Deletion of default or predefined rule is not allowed."
-        )
+    if state == "absent" and existing_rule and (existing_rule.get("default_rule", False) or existing_rule.get("predefined", False)):
+        module.exit_json(changed=False, msg="Deletion of default or predefined rule is not allowed.")
 
     # Normalize and compare rules
     desired_rule = normalize_rule(rule)
@@ -452,10 +435,7 @@ def core(module):
         for attr in params:
             if attr in processed and processed[attr] is not None:
                 if isinstance(processed[attr], list):
-                    if all(
-                        isinstance(item, dict) and "id" in item
-                        for item in processed[attr]
-                    ):
+                    if all(isinstance(item, dict) and "id" in item for item in processed[attr]):
                         processed[attr] = [item["id"] for item in processed[attr]]
                     else:
                         processed[attr] = sorted(processed[attr])
@@ -517,33 +497,21 @@ def core(module):
                 current_value = []
 
         # Skip exclude_src_countries if not specified
-        if (
-            key == "exclude_src_countries"
-            and module.params.get("exclude_src_countries") is None
-        ):
+        if key == "exclude_src_countries" and module.params.get("exclude_src_countries") is None:
             continue
 
         # Sort lists of IDs for comparison
         if isinstance(desired_value, list) and isinstance(current_value, list):
-            if all(isinstance(x, int) for x in desired_value) and all(
-                isinstance(x, int) for x in current_value
-            ):
+            if all(isinstance(x, int) for x in desired_value) and all(isinstance(x, int) for x in current_value):
                 desired_value = sorted(desired_value)
                 current_value = sorted(current_value)
 
         if current_value != desired_value:
             differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
-            )
+            module.warn(f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}")
 
     if module.check_mode:
-        module.exit_json(
-            changed=bool(
-                (state == "present" and (not existing_rule or differences_detected))
-                or (state == "absent" and existing_rule)
-            )
-        )
+        module.exit_json(changed=bool((state == "present" and (not existing_rule or differences_detected)) or (state == "absent" and existing_rule)))
 
     if state == "present":
         if existing_rule:
@@ -563,9 +531,7 @@ def core(module):
                         "dest_ip_categories": desired_rule.get("dest_ip_categories"),
                         "dest_countries": desired_rule.get("dest_countries"),
                         "source_countries": desired_rule.get("source_countries"),
-                        "exclude_src_countries": desired_rule.get(
-                            "exclude_src_countries"
-                        ),
+                        "exclude_src_countries": desired_rule.get("exclude_src_countries"),
                         "device_trust_levels": desired_rule.get("device_trust_levels"),
                         "device_groups": desired_rule.get("device_groups"),
                         "devices": desired_rule.get("devices"),
@@ -573,9 +539,7 @@ def core(module):
                         "dest_ip_groups": desired_rule.get("dest_ip_groups"),
                         "nw_services": desired_rule.get("nw_services"),
                         "nw_service_groups": desired_rule.get("nw_service_groups"),
-                        "nw_application_groups": desired_rule.get(
-                            "nw_application_groups"
-                        ),
+                        "nw_application_groups": desired_rule.get("nw_application_groups"),
                         "app_services": desired_rule.get("app_services"),
                         "app_service_groups": desired_rule.get("app_service_groups"),
                         "labels": desired_rule.get("labels"),
@@ -590,9 +554,7 @@ def core(module):
                     }
                 )
 
-                updated_rule, _unused, error = client.cloud_firewall_rules.update_rule(
-                    **update_data
-                )
+                updated_rule, _unused, error = client.cloud_firewall_rules.update_rule(**update_data)
                 if error:
                     module.fail_json(msg=f"Error updating rule: {to_native(error)}")
                 module.exit_json(changed=True, data=updated_rule.as_dict())
@@ -638,18 +600,14 @@ def core(module):
                 }
             )
 
-            new_rule, _unused, error = client.cloud_firewall_rules.add_rule(
-                **create_data
-            )
+            new_rule, _unused, error = client.cloud_firewall_rules.add_rule(**create_data)
             if error:
                 module.fail_json(msg=f"Error creating rule: {to_native(error)}")
             module.exit_json(changed=True, data=new_rule.as_dict())
 
     elif state == "absent":
         if existing_rule:
-            _unused, _unused, error = client.cloud_firewall_rules.delete_rule(
-                rule_id=existing_rule.get("id")
-            )
+            _unused, _unused, error = client.cloud_firewall_rules.delete_rule(rule_id=existing_rule.get("id"))
             if error:
                 module.fail_json(msg=f"Error deleting rule: {to_native(error)}")
             module.exit_json(changed=True, data=existing_rule)

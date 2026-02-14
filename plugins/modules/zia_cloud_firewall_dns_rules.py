@@ -327,7 +327,18 @@ options:
         description: Name of the ZPA IP group.
         type: str
         required: false
+  is_web_eun_enabled:
+    description:
+      - If set to true, Web EUN is enabled for the rule
+    required: false
+    type: bool
+  is_default_rule_name:
+    description:
+      - If set to true, the default DNS rule name is used for the rule
+    required: false
+    type: bool
 """
+
 
 EXAMPLES = r"""
 - name: Create/update  Firewall DNS rule
@@ -381,29 +392,19 @@ def normalize_rule(rule):
     return normalized
 
 
-def validate_action_requirements(
-    module, action, dns_gateway, redirect_ip, block_response_code
-):
+def validate_action_requirements(module, action, dns_gateway, redirect_ip, block_response_code):
     if action in ["ALLOW", "BLOCK", "BLOCK_WITH_RESPONSE", "REDIR_RES"]:
         if dns_gateway:
-            module.fail_json(
-                msg=f"The action '{action}' is not compatible with 'dns_gateway'. This attribute should only be set with REDIR_REQ_* actions."
-            )
+            module.fail_json(msg=f"The action '{action}' is not compatible with 'dns_gateway'. This attribute should only be set with REDIR_REQ_* actions.")
 
     if action == "REDIR_RES" and not redirect_ip:
-        module.fail_json(
-            msg="When 'action' is set to 'REDIR_RES', the 'redirect_ip' must be provided."
-        )
+        module.fail_json(msg="When 'action' is set to 'REDIR_RES', the 'redirect_ip' must be provided.")
 
     if action == "BLOCK_WITH_RESPONSE" and not block_response_code:
-        module.fail_json(
-            msg="When 'action' is set to 'BLOCK_WITH_RESPONSE', the 'block_response_code' must be provided."
-        )
+        module.fail_json(msg="When 'action' is set to 'BLOCK_WITH_RESPONSE', the 'block_response_code' must be provided.")
 
     if action == "REDIR_REQ_KEEP_SENDER" and not dns_gateway:
-        module.fail_json(
-            msg="When 'action' is set to 'REDIR_REQ_KEEP_SENDER', the 'dns_gateway' must be provided."
-        )
+        module.fail_json(msg="When 'action' is set to 'REDIR_REQ_KEEP_SENDER', the 'dns_gateway' must be provided.")
 
 
 def core(module):
@@ -445,13 +446,11 @@ def core(module):
         "labels",
         "res_categories",
         "edns_ecs_object",
+        "is_web_eun_enabled",
+        "is_default_rule_name",
     ]
 
-    rule = {
-        param: module.params.get(param)
-        for param in params
-        if module.params.get(param) is not None
-    }
+    rule = {param: module.params.get(param) for param in params if module.params.get(param) is not None}
 
     # Validate and format country codes
     source_countries = rule.get("source_countries")
@@ -515,9 +514,7 @@ def core(module):
     if rule_id is not None:
         result, _unused, error = client.cloud_firewall_dns.get_rule(rule_id=rule_id)
         if error:
-            module.fail_json(
-                msg=f"Error fetching rule with id {rule_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching rule with id {rule_id}: {to_native(error)}")
         if result:
             existing_rule = result.as_dict()
     else:
@@ -531,17 +528,8 @@ def core(module):
                     break
 
     # Handle predefined/default rules
-    if (
-        state == "absent"
-        and existing_rule
-        and (
-            existing_rule.get("default_rule", False)
-            or existing_rule.get("predefined", False)
-        )
-    ):
-        module.exit_json(
-            changed=False, msg="Deletion of default or predefined rule is not allowed."
-        )
+    if state == "absent" and existing_rule and (existing_rule.get("default_rule", False) or existing_rule.get("predefined", False)):
+        module.exit_json(changed=False, msg="Deletion of default or predefined rule is not allowed.")
 
     # Normalize and compare rules
     desired_rule = normalize_rule(rule)
@@ -556,10 +544,7 @@ def core(module):
                 if isinstance(processed[attr], dict) and "id" in processed[attr]:
                     processed[attr] = {"id": processed[attr]["id"]}
                 elif isinstance(processed[attr], list):
-                    if all(
-                        isinstance(item, dict) and "id" in item
-                        for item in processed[attr]
-                    ):
+                    if all(isinstance(item, dict) and "id" in item for item in processed[attr]):
                         processed[attr] = [item["id"] for item in processed[attr]]
                     else:
                         processed[attr] = sorted(processed[attr])
@@ -620,25 +605,16 @@ def core(module):
 
         # Sort lists of IDs for comparison
         if isinstance(desired_value, list) and isinstance(current_value, list):
-            if all(isinstance(x, int) for x in desired_value) and all(
-                isinstance(x, int) for x in current_value
-            ):
+            if all(isinstance(x, int) for x in desired_value) and all(isinstance(x, int) for x in current_value):
                 desired_value = sorted(desired_value)
                 current_value = sorted(current_value)
 
         if current_value != desired_value:
             differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
-            )
+            module.warn(f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}")
 
     if module.check_mode:
-        module.exit_json(
-            changed=bool(
-                (state == "present" and (not existing_rule or differences_detected))
-                or (state == "absent" and existing_rule)
-            )
-        )
+        module.exit_json(changed=bool((state == "present" and (not existing_rule or differences_detected)) or (state == "absent" and existing_rule)))
 
     if state == "present":
         if existing_rule:
@@ -676,17 +652,15 @@ def core(module):
                         "applications": desired_rule.get("applications"),
                         "application_groups": desired_rule.get("application_groups"),
                         "protocols": desired_rule.get("protocols"),
-                        "dns_rule_request_types": desired_rule.get(
-                            "dns_rule_request_types"
-                        ),
+                        "dns_rule_request_types": desired_rule.get("dns_rule_request_types"),
+                        "is_web_eun_enabled": desired_rule.get("is_web_eun_enabled"),
+                        "is_default_rule_name": desired_rule.get("is_default_rule_name"),
                         "redirect_ip": desired_rule.get("redirect_ip"),
                         "block_response_code": desired_rule.get("block_response_code"),
                     }
                 )
                 module.warn("Payload Update for SDK: {}".format(update_data))
-                updated_rule, _unused, error = client.cloud_firewall_dns.update_rule(
-                    **update_data
-                )
+                updated_rule, _unused, error = client.cloud_firewall_dns.update_rule(**update_data)
                 if error:
                     module.fail_json(msg=f"Error updating rule: {to_native(error)}")
                 module.exit_json(changed=True, data=updated_rule.as_dict())
@@ -725,9 +699,9 @@ def core(module):
                     "applications": desired_rule.get("applications"),
                     "application_groups": desired_rule.get("application_groups"),
                     "protocols": desired_rule.get("protocols"),
-                    "dns_rule_request_types": desired_rule.get(
-                        "dns_rule_request_types"
-                    ),
+                    "dns_rule_request_types": desired_rule.get("dns_rule_request_types"),
+                    "is_web_eun_enabled": desired_rule.get("is_web_eun_enabled"),
+                    "is_default_rule_name": desired_rule.get("is_default_rule_name"),
                     "redirect_ip": desired_rule.get("redirect_ip"),
                     "block_response_code": desired_rule.get("block_response_code"),
                 }
@@ -740,9 +714,7 @@ def core(module):
 
     elif state == "absent":
         if existing_rule:
-            _unused, _unused, error = client.cloud_firewall_dns.delete_rule(
-                rule_id=existing_rule.get("id")
-            )
+            _unused, _unused, error = client.cloud_firewall_dns.delete_rule(rule_id=existing_rule.get("id"))
             if error:
                 module.fail_json(msg=f"Error deleting rule: {to_native(error)}")
             module.exit_json(changed=True, data=existing_rule)
@@ -856,6 +828,8 @@ def main():
         source_countries=dict(type="list", elements="str", required=False),
         res_categories=dict(type="list", elements="str", required=False),
         capture_pcap=dict(type="bool", required=False),
+        is_web_eun_enabled=dict(type="bool", required=False),
+        is_default_rule_name=dict(type="bool", required=False),
         block_response_code=dict(
             type="str",
             required=False,

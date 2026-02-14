@@ -226,16 +226,12 @@ def core(module):
     if rule_id is not None:
         rules_obj, _unused, error = client.sandbox_rules.get_rule(rule_id)
         if error or rules_obj is None:
-            module.fail_json(
-                msg=f"Failed to retrieve Sandbox Rule with ID '{rule_id}': {to_native(error)}"
-            )
+            module.fail_json(msg=f"Failed to retrieve Sandbox Rule with ID '{rule_id}': {to_native(error)}")
         rules = [rules_obj.as_dict()]
     else:
         result, _unused, error = client.sandbox_rules.list_rules()
         if error:
-            module.fail_json(
-                msg=f"Error retrieving Sandbox Rule Rules: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error retrieving Sandbox Rule Rules: {to_native(error)}")
 
         rule_list = [i.as_dict() for i in result] if result else []
 
@@ -243,9 +239,7 @@ def core(module):
             matched = next((i for i in rule_list if i.get("name") == rule_name), None)
             if not matched:
                 available = [i.get("name") for i in rule_list]
-                module.fail_json(
-                    msg=f"Sandbox Rule named '{rule_name}' not found. Available: {available}"
-                )
+                module.fail_json(msg=f"Sandbox Rule named '{rule_name}' not found. Available: {available}")
             rules = [matched]
         else:
             rules = rule_list

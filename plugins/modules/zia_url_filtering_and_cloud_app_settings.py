@@ -255,10 +255,7 @@ def core(module):
     settings_data = {
         k: module.params.get(k)
         for k in params
-        if module.params.get(k) is not None
-        and not (
-            isinstance(module.params.get(k), str) and module.params.get(k).strip() == ""
-        )
+        if module.params.get(k) is not None and not (isinstance(module.params.get(k), str) and module.params.get(k).strip() == "")
     }
 
     # 1) Fetch current EUN settings from the SDK
@@ -286,9 +283,7 @@ def core(module):
     if drift:
         module.warn("🔎 Drift found in these keys:")
         for k in diff_keys:
-            module.warn(
-                f"  {k}: current={current_dict.get(k)}, desired={desired_dict.get(k)}"
-            )
+            module.warn(f"  {k}: current={current_dict.get(k)}, desired={desired_dict.get(k)}")
 
     # 4) Respect check_mode
     if module.check_mode:
@@ -297,9 +292,7 @@ def core(module):
     # 5) If drift, update the resource
     if drift:
         module.warn(f"🧼 Cleaned payload sent to SDK: {desired_dict}")
-        updated, _unused, error = client.url_filtering.update_url_and_app_settings(
-            **desired_dict
-        )
+        updated, _unused, error = client.url_filtering.update_url_and_app_settings(**desired_dict)
         if error:
             module.fail_json(msg=f"Error url and app settings: {to_native(error)}")
 

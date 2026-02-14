@@ -163,22 +163,16 @@ def core(module):
     if dict_id is not None:
         dict_obj, _unused, error = client.dlp_dictionary.get_dict(dict_id)
         if error or dict_obj is None:
-            module.fail_json(
-                msg=f"Failed to retrieve DLP Dictionary with ID '{dict_id}': {to_native(error)}"
-            )
+            module.fail_json(msg=f"Failed to retrieve DLP Dictionary with ID '{dict_id}': {to_native(error)}")
         dictionaries = [dict_obj.as_dict()]
     else:
         query_params = {}
         if dict_name:
             query_params["search"] = dict_name
 
-        result, _unused, error = client.dlp_dictionary.list_dicts(
-            query_params=query_params
-        )
+        result, _unused, error = client.dlp_dictionary.list_dicts(query_params=query_params)
         if error:
-            module.fail_json(
-                msg=f"Error retrieving DLP Dictionaries: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error retrieving DLP Dictionaries: {to_native(error)}")
 
         dict_list = [d.as_dict() for d in result] if result else []
 
@@ -186,9 +180,7 @@ def core(module):
             matched = next((d for d in dict_list if d.get("name") == dict_name), None)
             if not matched:
                 available = [d.get("name") for d in dict_list]
-                module.fail_json(
-                    msg=f"DLP Dictionary named '{dict_name}' not found. Available: {available}"
-                )
+                module.fail_json(msg=f"DLP Dictionary named '{dict_name}' not found. Available: {available}")
             dictionaries = [matched]
         else:
             dictionaries = dict_list

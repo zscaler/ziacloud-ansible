@@ -290,11 +290,7 @@ def core(module):
         "res_categories",
     ]
 
-    rule = {
-        param: module.params.get(param)
-        for param in params
-        if module.params.get(param) is not None
-    }
+    rule = {param: module.params.get(param) for param in params if module.params.get(param) is not None}
 
     # Validate and format country codes
     dest_countries = rule.get("dest_countries")
@@ -304,9 +300,7 @@ def core(module):
             if validate_iso3166_alpha2(country_code):
                 validated_dest_countries.append(f"COUNTRY_{country_code}")
             else:
-                module.fail_json(
-                    msg=f"Invalid destination country code '{country_code}'. Must be ISO3166 Alpha2."
-                )
+                module.fail_json(msg=f"Invalid destination country code '{country_code}'. Must be ISO3166 Alpha2.")
         rule["dest_countries"] = validated_dest_countries
 
     rule_id = rule.get("id")
@@ -316,9 +310,7 @@ def core(module):
     if rule_id is not None:
         result, _unused, error = client.nat_control_policy.get_rule(rule_id=rule_id)
         if error:
-            module.fail_json(
-                msg=f"Error fetching rule with id {rule_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching rule with id {rule_id}: {to_native(error)}")
         if result:
             existing_rule = result.as_dict()
     else:
@@ -332,11 +324,7 @@ def core(module):
                     break
 
     # Handle predefined/default rules
-    if (
-        state == "absent"
-        and existing_rule
-        and (existing_rule.get("default_rule", False))
-    ):
+    if state == "absent" and existing_rule and (existing_rule.get("default_rule", False)):
         module.exit_json(changed=False, msg="Deletion of default rule is not allowed.")
 
     # Normalize and compare rules
@@ -349,10 +337,7 @@ def core(module):
         for attr in params:
             if attr in processed and processed[attr] is not None:
                 if isinstance(processed[attr], list):
-                    if all(
-                        isinstance(item, dict) and "id" in item
-                        for item in processed[attr]
-                    ):
+                    if all(isinstance(item, dict) and "id" in item for item in processed[attr]):
                         processed[attr] = [item["id"] for item in processed[attr]]
                     else:
                         processed[attr] = sorted(processed[attr])
@@ -407,25 +392,16 @@ def core(module):
 
         # Sort lists of IDs for comparison
         if isinstance(desired_value, list) and isinstance(current_value, list):
-            if all(isinstance(x, int) for x in desired_value) and all(
-                isinstance(x, int) for x in current_value
-            ):
+            if all(isinstance(x, int) for x in desired_value) and all(isinstance(x, int) for x in current_value):
                 desired_value = sorted(desired_value)
                 current_value = sorted(current_value)
 
         if current_value != desired_value:
             differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}"
-            )
+            module.warn(f"Difference detected in {key}. Current: {current_value}, Desired: {desired_value}")
 
     if module.check_mode:
-        module.exit_json(
-            changed=bool(
-                (state == "present" and (not existing_rule or differences_detected))
-                or (state == "absent" and existing_rule)
-            )
-        )
+        module.exit_json(changed=bool((state == "present" and (not existing_rule or differences_detected)) or (state == "absent" and existing_rule)))
 
     if state == "present":
         if existing_rule:
@@ -463,9 +439,7 @@ def core(module):
                     }
                 )
                 module.warn("Payload Update for SDK: {}".format(update_data))
-                updated_rule, _unused, error = client.nat_control_policy.update_rule(
-                    **update_data
-                )
+                updated_rule, _unused, error = client.nat_control_policy.update_rule(**update_data)
                 if error:
                     module.fail_json(msg=f"Error updating rule: {to_native(error)}")
                 module.exit_json(changed=True, data=updated_rule.as_dict())
@@ -511,9 +485,7 @@ def core(module):
 
     elif state == "absent":
         if existing_rule:
-            _unused, _unused, error = client.nat_control_policy.delete_rule(
-                rule_id=existing_rule.get("id")
-            )
+            _unused, _unused, error = client.nat_control_policy.delete_rule(rule_id=existing_rule.get("id"))
             if error:
                 module.fail_json(msg=f"Error deleting rule: {to_native(error)}")
             module.exit_json(changed=True, data=existing_rule)

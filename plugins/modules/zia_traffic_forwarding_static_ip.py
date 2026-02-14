@@ -164,12 +164,8 @@ def core(module):
             static_ip["city"] = None
 
     # Validate geo override requirements
-    if static_ip.get("geo_override") and (
-        static_ip.get("latitude") is None or static_ip.get("longitude") is None
-    ):
-        module.fail_json(
-            msg="When 'geo_override' is set to True, 'latitude' and 'longitude' must be provided."
-        )
+    if static_ip.get("geo_override") and (static_ip.get("latitude") is None or static_ip.get("longitude") is None):
+        module.fail_json(msg="When 'geo_override' is set to True, 'latitude' and 'longitude' must be provided.")
 
     # Validate coordinates if provided
     latitude = static_ip.get("latitude")
@@ -186,9 +182,7 @@ def core(module):
     if static_ip_id:
         result = client.traffic_static_ip.get_static_ip(static_ip_id)
         if result[2]:  # Error check
-            module.fail_json(
-                msg=f"Error fetching static IP ID {static_ip_id}: {to_native(result[2])}"
-            )
+            module.fail_json(msg=f"Error fetching static IP ID {static_ip_id}: {to_native(result[2])}")
         existing_static_ip = result[0].as_dict() if result[0] else None
     else:
         result = client.traffic_static_ip.list_static_ips()
@@ -209,14 +203,10 @@ def core(module):
         if key in ["latitude", "longitude"]:  # Special handling for coordinates
             if not diff_suppress_func_coordinate(current.get(key), value):
                 differences_detected = True
-                module.warn(
-                    f"Difference detected in {key}. Current: {current.get(key)}, Desired: {value}"
-                )
+                module.warn(f"Difference detected in {key}. Current: {current.get(key)}, Desired: {value}")
         elif current.get(key) != value:
             differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {current.get(key)}, Desired: {value}"
-            )
+            module.warn(f"Difference detected in {key}. Current: {current.get(key)}, Desired: {value}")
 
     if module.check_mode:
         if state == "present" and (existing_static_ip is None or differences_detected):
@@ -242,9 +232,7 @@ def core(module):
                     }
                 )
                 module.warn("Payload Update for SDK: {}".format(update_data))
-                module.warn(
-                    "Static IP address attributes cannot be modified at this time. Update skipped."
-                )
+                module.warn("Static IP address attributes cannot be modified at this time. Update skipped.")
                 # Skip the actual API call but return the desired state
                 module.exit_json(
                     changed=False,
@@ -268,21 +256,15 @@ def core(module):
             module.warn("Payload Update for SDK: {}".format(create_data))
             created = client.traffic_static_ip.add_static_ip(**create_data)
             if created[2]:
-                module.fail_json(
-                    msg=f"Error creating static IP: {to_native(created[2])}"
-                )
+                module.fail_json(msg=f"Error creating static IP: {to_native(created[2])}")
             module.exit_json(changed=True, data=created[0].as_dict())
     elif state == "absent":
         if existing_static_ip:
             static_ip_to_delete = existing_static_ip.get("id")
             if not static_ip_to_delete:
-                module.fail_json(
-                    msg="Cannot delete static IP: ID is missing from the existing resource."
-                )
+                module.fail_json(msg="Cannot delete static IP: ID is missing from the existing resource.")
 
-            _unused, _unused, error = client.traffic_static_ip.delete_static_ip(
-                static_ip_to_delete
-            )
+            _unused, _unused, error = client.traffic_static_ip.delete_static_ip(static_ip_to_delete)
             if error:
                 module.fail_json(msg=f"Error deleting static IP: {to_native(error)}")
             module.exit_json(changed=True, data=existing_static_ip)

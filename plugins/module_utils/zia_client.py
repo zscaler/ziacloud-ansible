@@ -49,21 +49,52 @@ try:
     HAS_VERSION = True
 except ImportError as e:
     HAS_VERSION = False
-    VERSION_IMPORT_ERROR = missing_required_lib(
-        "plugins.module_utils.version (version information)"
-    )
+    VERSION_IMPORT_ERROR = missing_required_lib("plugins.module_utils.version (version information)")
 
-VALID_ZIA_CLOUD = {
-    "zscaler",
-    "zscloud",
-    "zscalerbeta",
-    "zspreview",
-    "zscalerone",
-    "zscalertwo",
-    "zscalerthree",
-    "zscalergov",
-    "zscalerten",
-}
+# =============================================================================
+# Authentication Modes (mutually exclusive)
+# =============================================================================
+#
+# 1. LEGACY API MODE
+#    - use_legacy_client=true (required)
+#    - Parameters: username, password, api_key, cloud (ALL required)
+#    - ZIA_CLOUD env var; cloud is ALWAYS required
+#    - Valid cloud values: zscloud, zscaler, zscalerbeta, zspreview, zscalerone,
+#      zscalertwo, zscalerthree, zscalergov, zscalerten
+#    - use_legacy_client MUST NOT be set when using OneAPI parameters
+#
+# 2. OneAPI MODE (default)
+#    - use_legacy_client=false or omitted
+#    - Parameters: client_id + (client_secret OR private_key) + vanity_domain
+#    - Cloud: optional (ZSCALER_CLOUD); only beta or production
+#    - For production, omit cloud or set to "production"
+#
+# 3. SANDBOX MODE (separate from Legacy and OneAPI)
+#    - sandbox_token + sandbox_cloud
+#    - No client_id, no legacy params
+#
+# =============================================================================
+
+# Legacy API: ZIA_CLOUD values (identify endpoint e.g. zsapi.zscalerone.net)
+VALID_ZIA_CLOUD = frozenset(
+    {
+        "zscaler",
+        "zscloud",
+        "zscalerbeta",
+        "zspreview",
+        "zscalerone",
+        "zscalertwo",
+        "zscalerthree",
+        "zscalergov",
+        "zscalerten",
+    }
+)
+
+# OneAPI: ZSCALER_CLOUD values only
+VALID_ZSCALER_CLOUD = frozenset({"beta", "production"})
+
+# Combined for argument_spec choices (cloud param shared by both modes)
+CLOUD_CHOICES = sorted(VALID_ZIA_CLOUD | VALID_ZSCALER_CLOUD)
 
 
 class ZIAClientHelper:
@@ -79,24 +110,79 @@ class ZIAClientHelper:
                 exception=VERSION_IMPORT_ERROR,
             )
 
-        # Initialize provider to an empty dict if None
         provider = module.params.get("provider") or {}
+        use_legacy_client = self._resolve_use_legacy_client(provider, module)
 
-        # Get use_legacy_client flag from provider, module params, or environment
-        use_legacy_client = (
-            provider.get("use_legacy_client")
-            or module.params.get("use_legacy_client")
-            or os.getenv("ZSCALER_USE_LEGACY_CLIENT", "").lower() == "true"
-        )
-
-        if use_legacy_client:
+        # Sandbox mode: sandbox_token + sandbox_cloud, no Legacy/OneAPI params
+        if self._is_sandbox_mode(provider, module):
+            self._client = self._init_sandbox_client(module, provider)
+        elif use_legacy_client:
+            self._validate_no_oneapi_params_with_legacy(provider, module)
             self._client = self._init_legacy_client(module, provider)
         else:
+            self._validate_legacy_params_require_use_legacy_client(provider, module)
             self._client = self._init_oneapi_client(module, provider)
 
-        # Set user agent for both client types
         ansible_version = ansible_release.__version__
         self.user_agent = f"ziacloud-ansible/{ansible_version} (collection/{ansible_collection_version}) ({platform.system().lower()} {platform.machine()})"
+
+    @staticmethod
+    def _resolve_use_legacy_client(provider, module):
+        """Resolve use_legacy_client from provider, module params, or env."""
+        val = provider.get("use_legacy_client") or module.params.get("use_legacy_client")
+        if val is not None:
+            return bool(val)
+        return os.getenv("ZSCALER_USE_LEGACY_CLIENT", "").lower() == "true"
+
+    @staticmethod
+    def _is_sandbox_mode(provider, module):
+        """Sandbox mode: sandbox_token + sandbox_cloud, no Legacy/OneAPI creds."""
+        sandbox_token = provider.get("sandbox_token") or module.params.get("sandbox_token") or os.getenv("ZSCALER_SANDBOX_TOKEN")
+        sandbox_cloud = provider.get("sandbox_cloud") or module.params.get("sandbox_cloud") or os.getenv("ZSCALER_SANDBOX_CLOUD")
+        has_legacy = any(
+            provider.get(k) or module.params.get(k) or os.getenv(env)
+            for k, env in [
+                ("username", "ZIA_USERNAME"),
+                ("password", "ZIA_PASSWORD"),
+                ("api_key", "ZIA_API_KEY"),
+            ]
+        )
+        has_oneapi = any(
+            provider.get(k) or module.params.get(k) or os.getenv(env)
+            for k, env in [
+                ("client_id", "ZSCALER_CLIENT_ID"),
+                ("client_secret", "ZSCALER_CLIENT_SECRET"),
+                ("private_key", "ZSCALER_PRIVATE_KEY"),
+                ("vanity_domain", "ZSCALER_VANITY_DOMAIN"),
+            ]
+        )
+        return sandbox_token and sandbox_cloud and not has_legacy and not has_oneapi
+
+    def _validate_legacy_params_require_use_legacy_client(self, provider, module):
+        """When Legacy params are provided without use_legacy_client, fail with clear guidance."""
+        params = self._resolve_legacy_params(provider, module)
+        has_all_legacy = all([params["username"], params["password"], params["api_key"], params["cloud"]])
+        if has_all_legacy:
+            module.fail_json(
+                msg="You appear to be using Legacy API parameters (username, password, api_key, cloud). "
+                "For Legacy authentication, set use_legacy_client=true in the provider or ZSCALER_USE_LEGACY_CLIENT=true as an environment variable."
+            )
+
+    def _validate_no_oneapi_params_with_legacy(self, provider, module):
+        """use_legacy_client MUST NOT be set when using OneAPI parameters."""
+        has_oneapi = (
+            (provider.get("vanity_domain") or module.params.get("vanity_domain") or os.getenv("ZSCALER_VANITY_DOMAIN"))
+            and (provider.get("client_id") or module.params.get("client_id") or os.getenv("ZSCALER_CLIENT_ID"))
+            and (
+                (provider.get("client_secret") or module.params.get("client_secret") or os.getenv("ZSCALER_CLIENT_SECRET"))
+                or (provider.get("private_key") or module.params.get("private_key") or os.getenv("ZSCALER_PRIVATE_KEY"))
+            )
+        )
+        if has_oneapi:
+            module.fail_json(
+                msg="Cannot use use_legacy_client=true with OneAPI parameters (client_id, vanity_domain, client_secret or private_key). "
+                "Use use_legacy_client=false for OneAPI mode, or provide only Legacy parameters (username, password, api_key, cloud) for Legacy mode."
+            )
 
     def __getattr__(self, name):
         """Delegate attribute access to the underlying client's zia service"""
@@ -107,40 +193,45 @@ class ZIAClientHelper:
             # If not found in zia service, try the client directly
             return getattr(self._client, name)
 
+    def _init_sandbox_client(self, module, provider):
+        """Sandbox mode: sandbox_token + sandbox_cloud (separate from Legacy/OneAPI)."""
+        sandbox_token = provider.get("sandbox_token") or module.params.get("sandbox_token") or os.getenv("ZSCALER_SANDBOX_TOKEN")
+        sandbox_cloud = provider.get("sandbox_cloud") or module.params.get("sandbox_cloud") or os.getenv("ZSCALER_SANDBOX_CLOUD")
+        config = {
+            "sandbox_token": sandbox_token,
+            "sandbox_cloud": sandbox_cloud,
+            "logging": {"enabled": True, "verbose": False},
+        }
+        return OneAPIClient(config)
+
+    @staticmethod
+    def _resolve_legacy_params(provider, module):
+        """Resolve Legacy API params: username, password, api_key, cloud (ZIA_CLOUD)."""
+        return {
+            "username": provider.get("username") or module.params.get("username") or os.getenv("ZIA_USERNAME"),
+            "password": provider.get("password") or module.params.get("password") or os.getenv("ZIA_PASSWORD"),
+            "api_key": provider.get("api_key") or module.params.get("api_key") or os.getenv("ZIA_API_KEY"),
+            "cloud": provider.get("cloud") or os.getenv("ZIA_CLOUD") or module.params.get("cloud"),
+        }
+
     def _init_legacy_client(self, module, provider):
-        """Initialize the legacy ZIA client with username/password/api_key authentication"""
-        # Use provider or environment variables
-        username = (
-            provider.get("username")
-            or module.params.get("username")
-            or os.getenv("ZIA_USERNAME")
-        )
-        password = (
-            provider.get("password")
-            or module.params.get("password")
-            or os.getenv("ZIA_PASSWORD")
-        )
-        api_key = (
-            provider.get("api_key")
-            or module.params.get("api_key")
-            or os.getenv("ZIA_API_KEY")
-        )
-        cloud_env = (
-            provider.get("cloud")
-            or module.params.get("cloud")
-            or os.getenv("ZIA_CLOUD")
-        )
+        """Legacy API mode: username, password, api_key, cloud (all required). use_legacy_client=true."""
+        params = self._resolve_legacy_params(provider, module)
+        username, password, api_key, cloud_env = params["username"], params["password"], params["api_key"], params["cloud"]
 
         if not all([username, password, api_key, cloud_env]):
             module.fail_json(
-                msg="All legacy authentication parameters must be provided (username, password, api_key, cloud)."
+                msg="All legacy authentication parameters must be provided (username, password, api_key, cloud). "
+                "Use ZIA_CLOUD env var or provider cloud (e.g. zscalerone, zscalertwo, zscalergov)."
             )
 
-        # Only validate cloud environment if using ZIA_CLOUD
-        if os.getenv("ZIA_CLOUD"):
-            cloud_env = cloud_env.lower()
-            if cloud_env not in VALID_ZIA_CLOUD:
-                module.fail_json(msg=f"Invalid ZIA Cloud environment '{cloud_env}'.")
+        cloud_env = cloud_env.lower()
+        if cloud_env not in VALID_ZIA_CLOUD:
+            module.fail_json(
+                msg=f"Invalid cloud '{cloud_env}' for Legacy client. "
+                f"Valid values: {', '.join(sorted(VALID_ZIA_CLOUD))}. "
+                "Use use_legacy_client=true with ZIA_CLOUD."
+            )
 
         config = {
             "username": username,
@@ -151,68 +242,32 @@ class ZIAClientHelper:
 
         return LegacyZIAClient(config)
 
+    @staticmethod
+    def _resolve_oneapi_params(provider, module):
+        """Resolve OneAPI params and optional sandbox. Cloud uses ZSCALER_CLOUD."""
+        return {
+            "client_id": provider.get("client_id") or module.params.get("client_id") or os.getenv("ZSCALER_CLIENT_ID"),
+            "client_secret": provider.get("client_secret") or module.params.get("client_secret") or os.getenv("ZSCALER_CLIENT_SECRET"),
+            "private_key": provider.get("private_key") or module.params.get("private_key") or os.getenv("ZSCALER_PRIVATE_KEY"),
+            "vanity_domain": provider.get("vanity_domain") or module.params.get("vanity_domain") or os.getenv("ZSCALER_VANITY_DOMAIN"),
+            "cloud": provider.get("cloud") or os.getenv("ZSCALER_CLOUD") or module.params.get("cloud"),
+            "sandbox_token": provider.get("sandbox_token") or module.params.get("sandbox_token") or os.getenv("ZSCALER_SANDBOX_TOKEN"),
+            "sandbox_cloud": provider.get("sandbox_cloud") or module.params.get("sandbox_cloud") or os.getenv("ZSCALER_SANDBOX_CLOUD"),
+        }
+
     def _init_oneapi_client(self, module, provider):
-        """Initialize the OneAPI client with OAuth2 authentication"""
-        # Get OneAPI parameters from provider, module params, or environment
-        client_id = (
-            provider.get("client_id")
-            or module.params.get("client_id")
-            or os.getenv("ZSCALER_CLIENT_ID")
-        )
-        client_secret = (
-            provider.get("client_secret")
-            or module.params.get("client_secret")
-            or os.getenv("ZSCALER_CLIENT_SECRET")
-        )
-        private_key = (
-            provider.get("private_key")
-            or module.params.get("private_key")
-            or os.getenv("ZSCALER_PRIVATE_KEY")
-        )
-        vanity_domain = (
-            provider.get("vanity_domain")
-            or module.params.get("vanity_domain")
-            or os.getenv("ZSCALER_VANITY_DOMAIN")
-        )
-        cloud_env = (
-            provider.get("cloud")
-            or module.params.get("cloud")
-            or os.getenv("ZSCALER_CLOUD")
-        )
-        sandbox_token = (
-            provider.get("sandbox_token")
-            or module.params.get("sandbox_token")
-            or os.getenv("ZSCALER_SANDBOX_TOKEN")
-        )
-        sandbox_cloud = (
-            provider.get("sandbox_cloud")
-            or module.params.get("sandbox_cloud")
-            or os.getenv("ZSCALER_SANDBOX_CLOUD")
-        )
+        """OneAPI mode: client_id + (client_secret OR private_key) + vanity_domain. Cloud optional."""
+        p = self._resolve_oneapi_params(provider, module)
+        client_id, client_secret, private_key = p["client_id"], p["client_secret"], p["private_key"]
+        vanity_domain, cloud_env = p["vanity_domain"], p["cloud"]
+        sandbox_token, sandbox_cloud = p["sandbox_token"], p["sandbox_cloud"]
 
-        # Sandbox-only authentication
-        if (
-            sandbox_token
-            and sandbox_cloud
-            and not client_id
-            and not client_secret
-            and not private_key
-        ):
-            config = {
-                "sandbox_token": sandbox_token,
-                "sandbox_cloud": sandbox_cloud,
-                "logging": {"enabled": True, "verbose": False},
-            }
-            return OneAPIClient(config)
-
-        # Validate required parameters for OAuth2
+        # Validate required OneAPI parameters
         if not vanity_domain:
             module.fail_json(msg="vanity_domain is required for OneAPI authentication")
 
         if not (client_id and (client_secret or private_key)):
-            module.fail_json(
-                msg="client_id with either client_secret or private_key is required for OneAPI authentication"
-            )
+            module.fail_json(msg="client_id with either client_secret or private_key is required for OneAPI authentication")
 
         # Build config dictionary
         config = {
@@ -226,8 +281,22 @@ class ZIAClientHelper:
         elif private_key:
             config["privateKey"] = private_key
 
+        # OneAPI cloud: optional. Only "beta" is passed; production is default.
+        # Ignore Legacy names (zscalerone, zscalertwo, etc.) - they would break the URL.
         if cloud_env:
-            config["cloud"] = cloud_env.lower()
+            cloud_lower = cloud_env.lower()
+            if cloud_lower == "beta":
+                config["cloud"] = "beta"
+            elif cloud_lower == "production" or cloud_lower in VALID_ZIA_CLOUD:
+                # Production (explicit or Legacy name): omit - SDK defaults to production
+                pass
+            else:
+                module.fail_json(
+                    msg=f"Invalid cloud '{cloud_env}' for OneAPI. "
+                    "Only 'beta' (for beta environment) or 'production' (default, optional) are supported. "
+                    "Legacy cloud names (zscalerone, zscalertwo, zscalergov, etc.) require use_legacy_client=true. "
+                    "For production, omit the cloud parameter or set to 'production'."
+                )
 
         if sandbox_token:
             config["sandbox_token"] = sandbox_token
@@ -267,18 +336,7 @@ class ZIAClientHelper:
                         required=False,
                         fallback=(env_fallback, ["ZIA_CLOUD", "ZSCALER_CLOUD"]),
                         type="str",
-                        choices=[
-                            "zscloud",
-                            "zscaler",
-                            "zscalerbeta",
-                            "zscalerone",
-                            "zscalertwo",
-                            "zscalerthree",
-                            "zscalergov",
-                            "zscalerten",
-                            "beta",
-                            "production",
-                        ],
+                        choices=CLOUD_CHOICES,
                     ),
                     sandbox_token=dict(
                         no_log=True,
@@ -353,18 +411,7 @@ class ZIAClientHelper:
                 required=False,
                 fallback=(env_fallback, ["ZIA_CLOUD", "ZSCALER_CLOUD"]),
                 type="str",
-                choices=[
-                    "zscloud",
-                    "zscaler",
-                    "zscalerbeta",
-                    "zscalerone",
-                    "zscalertwo",
-                    "zscalerthree",
-                    "zscalergov",
-                    "zscalerten",
-                    "beta",
-                    "production",
-                ],
+                choices=CLOUD_CHOICES,
             ),
             sandbox_token=dict(
                 no_log=True,

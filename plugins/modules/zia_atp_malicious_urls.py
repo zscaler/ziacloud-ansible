@@ -94,11 +94,7 @@ def core(module):
     desired_normalized = normalize_urls(malicious_urls)
 
     urls_to_add = list(set(desired_normalized) - set(current_normalized))
-    urls_to_remove = (
-        list(set(current_normalized) & set(desired_normalized))
-        if state == "absent"
-        else []
-    )
+    urls_to_remove = list(set(current_normalized) & set(desired_normalized)) if state == "absent" else []
 
     module.warn(f"✅ Current list: {current_normalized}")
     module.warn(f"🎯 Desired list: {desired_normalized}")
@@ -112,17 +108,13 @@ def core(module):
     changed = False
 
     if state == "present" and urls_to_add:
-        updated_urls, _unused, error = client.atp_policy.add_atp_malicious_urls(
-            urls_to_add
-        )
+        updated_urls, _unused, error = client.atp_policy.add_atp_malicious_urls(urls_to_add)
         if error:
             module.fail_json(msg=f"Error adding malicious URLs: {to_native(error)}")
         changed = True
 
     elif state == "absent" and urls_to_remove:
-        updated_urls, _unused, error = client.atp_policy.delete_atp_malicious_urls(
-            urls_to_remove
-        )
+        updated_urls, _unused, error = client.atp_policy.delete_atp_malicious_urls(urls_to_remove)
         if error:
             module.fail_json(msg=f"Error removing malicious URLs: {to_native(error)}")
         changed = True

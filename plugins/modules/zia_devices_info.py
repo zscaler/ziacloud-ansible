@@ -209,25 +209,17 @@ def core(module):
     if device_name:
         query_params["deviceName"] = device_name
 
-    results, err = collect_all_items(
-        client.device_management.list_devices, query_params=query_params
-    )
+    results, err = collect_all_items(client.device_management.list_devices, query_params=query_params)
     if err:
         module.fail_json(msg=f"Error retrieving devices: {to_native(err)}")
 
-    device_list = (
-        [d.as_dict() if hasattr(d, "as_dict") else d for d in results]
-        if results
-        else []
-    )
+    device_list = [d.as_dict() if hasattr(d, "as_dict") else d for d in results] if results else []
 
     if device_name:
         matched = next((d for d in device_list if d.get("name") == device_name), None)
         if not matched:
             available = [d.get("name") for d in device_list]
-            module.fail_json(
-                msg=f"Device with name '{device_name}' not found. Available devices: {available}"
-            )
+            module.fail_json(msg=f"Device with name '{device_name}' not found. Available devices: {available}")
         device_list = [matched]
 
     module.exit_json(changed=False, devices=device_list)

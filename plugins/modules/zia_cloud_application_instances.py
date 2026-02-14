@@ -146,9 +146,7 @@ def normalize_instance(app_instance):
             for computed_key in ["instance_id", "modified_by", "modified_at"]:
                 item.pop(computed_key, None)
             cleaned_identifiers.append(item)
-        normalized["instance_identifiers"] = sorted(
-            cleaned_identifiers, key=lambda x: x["instance_identifier_name"]
-        )
+        normalized["instance_identifiers"] = sorted(cleaned_identifiers, key=lambda x: x["instance_identifier_name"])
 
     return normalized
 
@@ -172,20 +170,14 @@ def core(module):
     existing_instance = None
 
     if instance_id:
-        result, _unused, error = client.cloud_app_instances.get_cloud_app_instances(
-            instance_id
-        )
+        result, _unused, error = client.cloud_app_instances.get_cloud_app_instances(instance_id)
         if error:
-            module.fail_json(
-                msg=f"Error fetching cloud application instance with id {instance_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching cloud application instance with id {instance_id}: {to_native(error)}")
         existing_instance = result.as_dict()
     else:
         result, _unused, error = client.cloud_app_instances.list_cloud_app_instances()
         if error:
-            module.fail_json(
-                msg=f"Error listing cloud application instances: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error listing cloud application instances: {to_native(error)}")
         instances_list = [instance.as_dict() for instance in result]
         if instance_name:
             for instance in instances_list:
@@ -194,17 +186,13 @@ def core(module):
                     break
 
     normalized_desired = normalize_instance(instance_params)
-    normalized_existing = (
-        normalize_instance(existing_instance) if existing_instance else {}
-    )
+    normalized_existing = normalize_instance(existing_instance) if existing_instance else {}
 
     differences_detected = False
     for key, value in normalized_desired.items():
         if normalized_existing.get(key) != value:
             differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {normalized_existing.get(key)}, Desired: {value}"
-            )
+            module.warn(f"Difference detected in {key}. Current: {normalized_existing.get(key)}, Desired: {value}")
 
     if module.check_mode:
         if state == "present" and (existing_instance is None or differences_detected):
@@ -219,19 +207,13 @@ def core(module):
             if differences_detected:
                 instance_id_to_update = existing_instance.get("instance_id")
                 if not instance_id_to_update:
-                    module.fail_json(
-                        msg="Cannot update cloud app instance: ID is missing from the existing resource."
-                    )
+                    module.fail_json(msg="Cannot update cloud app instance: ID is missing from the existing resource.")
 
-                updated_instance, _unused, error = (
-                    client.cloud_app_instances.update_cloud_app_instances(
-                        instance_id=instance_id_to_update,
-                        instance_name=instance_params.get("instance_name"),
-                        instance_type=instance_params.get("instance_type"),
-                        instance_identifiers=instance_params.get(
-                            "instance_identifiers"
-                        ),
-                    )
+                updated_instance, _unused, error = client.cloud_app_instances.update_cloud_app_instances(
+                    instance_id=instance_id_to_update,
+                    instance_name=instance_params.get("instance_name"),
+                    instance_type=instance_params.get("instance_type"),
+                    instance_identifiers=instance_params.get("instance_identifiers"),
                 )
                 if error:
                     module.fail_json(msg=f"Error updating label: {to_native(error)}")
@@ -239,36 +221,24 @@ def core(module):
             else:
                 module.exit_json(changed=False, data=existing_instance)
         else:
-            new_instance, _unused, error = (
-                client.cloud_app_instances.add_cloud_app_instances(
-                    instance_name=instance_params.get("instance_name"),
-                    instance_type=instance_params.get("instance_type"),
-                    instance_identifiers=instance_params.get("instance_identifiers"),
-                )
+            new_instance, _unused, error = client.cloud_app_instances.add_cloud_app_instances(
+                instance_name=instance_params.get("instance_name"),
+                instance_type=instance_params.get("instance_type"),
+                instance_identifiers=instance_params.get("instance_identifiers"),
             )
             if error:
-                module.fail_json(
-                    msg=f"Error adding cloud app instance: {to_native(error)}"
-                )
+                module.fail_json(msg=f"Error adding cloud app instance: {to_native(error)}")
             module.exit_json(changed=True, data=new_instance.as_dict())
 
     elif state == "absent":
         if existing_instance:
             instance_id_to_delete = existing_instance.get("instance_id")
             if not instance_id_to_delete:
-                module.fail_json(
-                    msg="Cannot delete cloud app instance: ID is missing from the existing resource."
-                )
+                module.fail_json(msg="Cannot delete cloud app instance: ID is missing from the existing resource.")
 
-            _unused, _unused, error = (
-                client.cloud_app_instances.delete_cloud_app_instances(
-                    instance_id_to_delete
-                )
-            )
+            _unused, _unused, error = client.cloud_app_instances.delete_cloud_app_instances(instance_id_to_delete)
             if error:
-                module.fail_json(
-                    msg=f"Error deleting cloud app instance: {to_native(error)}"
-                )
+                module.fail_json(msg=f"Error deleting cloud app instance: {to_native(error)}")
             module.exit_json(changed=True, data=existing_instance)
         else:
             module.exit_json(changed=False, data={})

@@ -16,16 +16,15 @@ This collection contains modules and plugins to assist in automating the configu
 - Free software: [MIT License](https://github.com/zscaler/ziacloud-ansible/blob/master/LICENSE)
 - [Documentation](https://zscaler.github.io/ziacloud-ansible)
 - [Repository](https://github.com/zscaler/ziacloud-ansible)
-- [Example Playbooks](https://github.com/zscaler/ziacloud-playbooks)
 
 ## Tested Ansible Versions
 
 This collection is tested with the most current Ansible releases. Ansible versions
-before 2.15 are **not supported**.
+before 2.16 are **not supported**.
 
 ## Python dependencies
 
-The minimum python version for this collection is python `3.9`.
+The minimum python version for this collection is python `3.10`.
 
 The Python module dependencies are not automatically handled by `ansible-galaxy`. To manually install these dependencies, you have the following options:
 
@@ -58,11 +57,10 @@ You can also include it in a `requirements.yml` file and install it via `ansible
 
 ## Zscaler OneAPI New Framework
 
-The ZIA Ansible Collection now offers support for [OneAPI](https://help.zscaler.com/oneapi/understanding-oneapi) OAuth2 authentication through [Zidentity](https://help.zscaler.com/zidentity/what-zidentity).
+The ZIA Ansible Collection supports two authentication methods:
 
-**NOTE** As of version v2.0.0, this Ansible Collection offers backwards compatibility to the Zscaler legacy API framework. This is the recommended authentication method for organizations whose tenants are still not migrated to [Zidentity](https://help.zscaler.com/zidentity/what-zidentity).
-
-**NOTE** Notice that OneAPI and Zidentity is not currently supported for the following clouds: `zscalergov` and `zscalerten`. Refer to the [Legacy API Framework](#legacy-api-framework) for more information on how authenticate to these environments
+- **OneAPI (default)**: OAuth2 authentication via [OneAPI](https://help.zscaler.com/oneapi/understanding-oneapi) and [Zidentity](https://help.zscaler.com/zidentity/what-zidentity). Use this when your tenant is migrated to Zidentity. Requires `client_id` + (`client_secret` or `private_key`) + `vanity_domain`.
+- **Legacy**: Username/password/API key authentication. Use this when your tenant is **not** yet migrated to Zidentity, or for clouds `zscalergov` and `zscalerten` (OneAPI is not supported there). Requires `use_legacy_client: true`, `username`, `password`, `api_key`, and `cloud`. See [Legacy API Framework](#legacy-api-framework).
 
 ## OneAPI - Using modules from the ziacloud Collection in your playbooks
 
@@ -102,7 +100,7 @@ It's preferable to use content in this collection using their [Fully Qualified C
 
 (Note that [use of the `collections` key is now discouraged](https://ansible-lint.readthedocs.io/rules/fqcn/))
 
-**NOTE**: The `zscaler_cloud` is optional and only required when authenticating to other environments i.e `beta`
+**NOTE**: The `cloud` parameter (ZSCALER_CLOUD) is optional for OneAPI. Omit for production. Set to `beta` only for the beta environment. Do not use Legacy cloud names (zscalerone, zscalertwo, etc.) with OneAPI—they are ignored to prevent URL breakage.
 
 ⚠️ **WARNING:** Hard-coding credentials into any Ansible playbook configuration is not recommended, and risks secret leakage should this file be committed to public version controls.
 
@@ -269,6 +267,17 @@ For details about how to retrieve your tenant Base URL and API key/token refer t
 As of version v2.0.0, the legacy sandbox authentication environment variables `ZIA_CLOUD` and `ZIA_SANDBOX_TOKEN` are no longer supported.
 
 Authentication to the Zscaler Sandbox service requires the following new environment variables the `ZSCALER_SANDBOX_CLOUD` and `ZSCALER_SANDBOX_TOKEN` or authentication attributes `sandbox_token` and `sandbox_cloud`. For details on how obtain the API Token visit the Zscaler help portal [About Sandbox API Token](https://help.zscaler.com/zia/about-sandbox-api-token)
+
+## Testing
+
+Run unit tests with coverage from the collection root:
+
+```bash
+poetry run pytest tests/unit/ --cov=plugins --cov-branch --cov-report=xml:coverage.xml --cov-report=html:htmlcov
+poetry run python scripts/check_coverage.py --line-min 70 --branch-min 48
+```
+
+This produces `coverage.xml` and `htmlcov/` (open `htmlcov/index.html` for the report). See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ## Releasing, changelogs, versioning and deprecation
 

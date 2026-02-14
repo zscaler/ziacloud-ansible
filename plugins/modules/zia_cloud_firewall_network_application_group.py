@@ -106,9 +106,7 @@ def normalize_group(group):
         normalized.pop(attr, None)
 
     # Normalize ordering for list-based fields
-    if "network_applications" in normalized and isinstance(
-        normalized["network_applications"], list
-    ):
+    if "network_applications" in normalized and isinstance(normalized["network_applications"], list):
         normalized["network_applications"] = sorted(normalized["network_applications"])
 
     return normalized
@@ -118,10 +116,7 @@ def core(module):
     state = module.params.get("state")
     client = ZIAClientHelper(module)
 
-    group_params = {
-        p: module.params.get(p)
-        for p in ["id", "name", "description", "network_applications"]
-    }
+    group_params = {p: module.params.get(p) for p in ["id", "name", "description", "network_applications"]}
     group_id = group_params.get("id")
     group_name = group_params.get("name")
 
@@ -130,9 +125,7 @@ def core(module):
     if group_id:
         result, _unused, error = client.cloud_firewall.get_network_app_group(group_id)
         if error:
-            module.fail_json(
-                msg=f"Error fetching ip source group with id {group_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error fetching ip source group with id {group_id}: {to_native(error)}")
         existing_group = result.as_dict()
     else:
         result, _unused, error = client.cloud_firewall.list_network_app_groups()
@@ -152,9 +145,7 @@ def core(module):
     for key, value in normalized_desired.items():
         if normalized_existing.get(key) != value:
             differences_detected = True
-            module.warn(
-                f"Difference detected in {key}. Current: {normalized_existing.get(key)}, Desired: {value}"
-            )
+            module.warn(f"Difference detected in {key}. Current: {normalized_existing.get(key)}, Desired: {value}")
 
     if module.check_mode:
         if state == "present" and (existing_group is None or differences_detected):
@@ -169,17 +160,13 @@ def core(module):
             if differences_detected:
                 group_id_to_update = existing_group.get("id")
                 if not group_id_to_update:
-                    module.fail_json(
-                        msg="Cannot update group: ID is missing from the existing resource."
-                    )
+                    module.fail_json(msg="Cannot update group: ID is missing from the existing resource.")
 
-                update_group, _unused, error = (
-                    client.cloud_firewall.update_network_app_group(
-                        group_id=group_id_to_update,
-                        name=group_params.get("name"),
-                        description=group_params.get("description"),
-                        network_applications=group_params.get("network_applications"),
-                    )
+                update_group, _unused, error = client.cloud_firewall.update_network_app_group(
+                    group_id=group_id_to_update,
+                    name=group_params.get("name"),
+                    description=group_params.get("description"),
+                    network_applications=group_params.get("network_applications"),
                 )
                 if error:
                     module.fail_json(msg=f"Error updating group: {to_native(error)}")
@@ -202,9 +189,7 @@ def core(module):
             if not group_id_to_delete:
                 module.fail_json(msg="Cannot delete network app group: ID is missing")
 
-            _unused, _unused, error = client.cloud_firewall.delete_network_app_group(
-                group_id_to_delete
-            )
+            _unused, _unused, error = client.cloud_firewall.delete_network_app_group(group_id_to_delete)
             if error:
                 module.fail_json(msg=f"Error deleting group: {to_native(error)}")
             module.exit_json(changed=True, data=existing_group)

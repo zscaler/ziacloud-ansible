@@ -180,9 +180,7 @@ def core(module):
     if rule_id:
         rule, _unused, error = client.cloud_firewall_rules.get_rule(rule_id=rule_id)
         if error or rule is None:
-            module.fail_json(
-                msg=f"Failed to retrieve Firewall Rule with ID '{rule_id}': {to_native(error)}"
-            )
+            module.fail_json(msg=f"Failed to retrieve Firewall Rule with ID '{rule_id}': {to_native(error)}")
         rules = [rule.as_dict()]
     else:
         result, _unused, error = client.cloud_firewall_rules.list_rules()
@@ -191,27 +189,17 @@ def core(module):
             module.fail_json(msg=f"Error retrieving firewall rules: {to_native(error)}")
 
         if not isinstance(result, list):
-            module.fail_json(
-                msg=f"Expected a list of firewall rules, got: {type(result)}"
-            )
+            module.fail_json(msg=f"Expected a list of firewall rules, got: {type(result)}")
 
         all_rules = [r.as_dict() for r in result]
 
         if rule_name:
             # Do case-insensitive match by name or description
             rule_name_lower = rule_name.lower()
-            matched = [
-                r
-                for r in all_rules
-                if r.get("name", "").lower() == rule_name_lower
-                or r.get("description", "").lower() == rule_name_lower
-            ]
+            matched = [r for r in all_rules if r.get("name", "").lower() == rule_name_lower or r.get("description", "").lower() == rule_name_lower]
             if not matched:
                 available_names = [r.get("name") for r in all_rules]
-                module.fail_json(
-                    msg=f"Firewall Rule with name '{rule_name}' not found. "
-                    f"Available rules: {available_names}"
-                )
+                module.fail_json(msg=f"Firewall Rule with name '{rule_name}' not found. " f"Available rules: {available_names}")
             rules = matched
         else:
             rules = all_rules

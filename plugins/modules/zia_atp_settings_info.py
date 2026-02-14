@@ -286,9 +286,7 @@ def core(module):
 
     atp, _unused, error = client.atp_policy.get_atp_settings()
     if error:
-        module.fail_json(
-            msg=f"Error fetching atp advanced settings: {to_native(error)}"
-        )
+        module.fail_json(msg=f"Error fetching atp advanced settings: {to_native(error)}")
 
     module.exit_json(changed=False, atp=atp.as_dict())
 

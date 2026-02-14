@@ -198,25 +198,17 @@ def core(module):
         destination_group["countries"] = validated
 
     # If type is DSTN_OTHER, either ip_categories or countries must be provided
-    if destination_group["type"] == "DSTN_OTHER" and not (
-        destination_group.get("ip_categories") or destination_group.get("countries")
-    ):
-        module.fail_json(
-            msg="'ip_categories' or 'countries' must be set when 'type' is 'DSTN_OTHER'."
-        )
+    if destination_group["type"] == "DSTN_OTHER" and not (destination_group.get("ip_categories") or destination_group.get("countries")):
+        module.fail_json(msg="'ip_categories' or 'countries' must be set when 'type' is 'DSTN_OTHER'.")
 
     group_id = destination_group.get("id")
     group_name = destination_group.get("name")
     existing_group = None
 
     if group_id:
-        result, _unused, error = client.cloud_firewall.get_ip_destination_group(
-            group_id
-        )
+        result, _unused, error = client.cloud_firewall.get_ip_destination_group(group_id)
         if error:
-            module.fail_json(
-                msg=f"Error retrieving group with ID {group_id}: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error retrieving group with ID {group_id}: {to_native(error)}")
         existing_group = result.as_dict()
     else:
         result, _unused, error = client.cloud_firewall.list_ip_destination_groups()
@@ -231,11 +223,7 @@ def core(module):
     normalized_desired = normalize_ip_group(destination_group)
     normalized_existing = normalize_ip_group(existing_group) if existing_group else {}
 
-    differences_detected = any(
-        normalized_desired[k] != normalized_existing.get(k)
-        for k in normalized_desired
-        if k != "id"
-    )
+    differences_detected = any(normalized_desired[k] != normalized_existing.get(k) for k in normalized_desired if k != "id")
 
     if module.check_mode:
         if state == "present" and (existing_group is None or differences_detected):
@@ -253,21 +241,17 @@ def core(module):
             if differences_detected:
                 group_id_to_update = existing_group.get("id")
                 if not group_id_to_update:
-                    module.fail_json(
-                        msg="Cannot update destination group: ID is missing."
-                    )
+                    module.fail_json(msg="Cannot update destination group: ID is missing.")
 
-                updated_group, _unused, error = (
-                    client.cloud_firewall.update_ip_destination_group(
-                        group_id=group_id_to_update,
-                        name=destination_group.get("name"),
-                        type=destination_group.get("type"),
-                        addresses=destination_group.get("addresses", []),
-                        description=destination_group.get("description", ""),
-                        ip_categories=destination_group.get("ip_categories", []),
-                        url_categories=destination_group.get("url_categories", []),
-                        countries=destination_group.get("countries", []),
-                    )
+                updated_group, _unused, error = client.cloud_firewall.update_ip_destination_group(
+                    group_id=group_id_to_update,
+                    name=destination_group.get("name"),
+                    type=destination_group.get("type"),
+                    addresses=destination_group.get("addresses", []),
+                    description=destination_group.get("description", ""),
+                    ip_categories=destination_group.get("ip_categories", []),
+                    url_categories=destination_group.get("url_categories", []),
+                    countries=destination_group.get("countries", []),
                 )
                 if error:
                     module.fail_json(msg=f"Error updating group: {to_native(error)}")
@@ -293,9 +277,7 @@ def core(module):
             group_id_to_delete = existing_group.get("id")
             if not group_id_to_delete:
                 module.fail_json(msg="Cannot delete destination group: ID is missing.")
-            _unused, _unused, error = client.cloud_firewall.delete_ip_destination_group(
-                group_id_to_delete
-            )
+            _unused, _unused, error = client.cloud_firewall.delete_ip_destination_group(group_id_to_delete)
             if error:
                 module.fail_json(msg=f"Error deleting group: {to_native(error)}")
             module.exit_json(changed=True, data=existing_group)

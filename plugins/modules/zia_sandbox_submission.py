@@ -117,9 +117,7 @@ def main():
     argument_spec.update(
         file_path=dict(type="str", required=True),
         force=dict(type="bool", required=False),
-        inspection_mode=dict(
-            type="str", choices=["sandbox", "out_of_band"], default="sandbox"
-        ),
+        inspection_mode=dict(type="str", choices=["sandbox", "out_of_band"], default="sandbox"),
     )
 
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)

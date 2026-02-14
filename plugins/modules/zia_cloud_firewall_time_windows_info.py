@@ -119,24 +119,16 @@ def core(module):
     all_windows = [tw.as_dict() for tw in result] if result else []
 
     if time_window_id is not None:
-        matched = next(
-            (tw for tw in all_windows if str(tw.get("id")) == str(time_window_id)), None
-        )
+        matched = next((tw for tw in all_windows if str(tw.get("id")) == str(time_window_id)), None)
         if not matched:
             ids = [tw.get("id") for tw in all_windows]
-            module.fail_json(
-                msg=f"Time window with ID '{time_window_id}' not found. Available IDs: {ids}"
-            )
+            module.fail_json(msg=f"Time window with ID '{time_window_id}' not found. Available IDs: {ids}")
         time_windows = [matched]
     elif time_window_name is not None:
-        matched = next(
-            (tw for tw in all_windows if tw.get("name") == time_window_name), None
-        )
+        matched = next((tw for tw in all_windows if tw.get("name") == time_window_name), None)
         if not matched:
             names = [tw.get("name") for tw in all_windows]
-            module.fail_json(
-                msg=f"Time window named '{time_window_name}' not found. Available names: {names}"
-            )
+            module.fail_json(msg=f"Time window named '{time_window_name}' not found. Available names: {names}")
         time_windows = [matched]
     else:
         time_windows = all_windows

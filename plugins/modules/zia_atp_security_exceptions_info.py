@@ -77,9 +77,7 @@ def core(module):
 
     atp, _unused, error = client.atp_policy.get_atp_security_exceptions()
     if error:
-        module.fail_json(
-            msg=f"Error fetching atp security exceptions: {to_native(error)}"
-        )
+        module.fail_json(msg=f"Error fetching atp security exceptions: {to_native(error)}")
 
     module.exit_json(changed=False, atp=atp)
 

@@ -510,18 +510,13 @@ def core(module):
     settings_data = {
         k: module.params.get(k)
         for k in params
-        if module.params.get(k) is not None
-        and not (
-            isinstance(module.params.get(k), str) and module.params.get(k).strip() == ""
-        )
+        if module.params.get(k) is not None and not (isinstance(module.params.get(k), str) and module.params.get(k).strip() == "")
     }
 
     # 1) Fetch current EUN settings from the SDK
     current_settings, _unused, error = client.advanced_settings.get_advanced_settings()
     if error:
-        module.fail_json(
-            msg=f"Error fetching end user notification settings: {to_native(error)}"
-        )
+        module.fail_json(msg=f"Error fetching end user notification settings: {to_native(error)}")
 
     # 2) Convert both current/desired data to normalized dicts
     current_dict = normalize_settings(current_settings.as_dict())
@@ -549,9 +544,7 @@ def core(module):
     if drift:
         module.warn("🔎 Drift found in these keys:")
         for k in diff_keys:
-            module.warn(
-                f"  {k}: current={current_dict.get(k)}, desired={desired_dict.get(k)}"
-            )
+            module.warn(f"  {k}: current={current_dict.get(k)}, desired={desired_dict.get(k)}")
 
     # 4) Respect check_mode
     if module.check_mode:
@@ -571,13 +564,9 @@ def core(module):
 
         module.warn(f"🧼 Cleaned payload sent to SDK: {payload}")
 
-        updated, _unused, error = client.advanced_settings.update_advanced_settings(
-            current_settings
-        )
+        updated, _unused, error = client.advanced_settings.update_advanced_settings(current_settings)
         if error:
-            module.fail_json(
-                msg=f"Error updating end user notification settings: {to_native(error)}"
-            )
+            module.fail_json(msg=f"Error updating end user notification settings: {to_native(error)}")
 
         module.exit_json(changed=True, end_user_notifications=updated.as_dict())
     else:
@@ -588,49 +577,25 @@ def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
     argument_spec.update(
         dict(
-            auth_bypass_urls=dict(
-                type="list", elements="str", required=False, no_log=False
-            ),
-            kerberos_bypass_urls=dict(
-                type="list", elements="str", required=False, no_log=False
-            ),
-            digest_auth_bypass_urls=dict(
-                type="list", elements="str", required=False, no_log=False
-            ),
-            dns_resolution_on_transparent_proxy_exempt_urls=dict(
-                type="list", elements="str", required=False, no_log=False
-            ),
-            dns_resolution_on_transparent_proxy_urls=dict(
-                type="list", elements="str", required=False, no_log=False
-            ),
-            enable_dns_resolution_on_transparent_proxy=dict(
-                type="bool", required=False, no_log=False
-            ),
-            enable_ipv6_dns_resolution_on_transparent_proxy=dict(
-                type="bool", required=False, no_log=False
-            ),
-            enable_ipv6_dns_optimization_on_all_transparent_proxy=dict(
-                type="bool", required=False, no_log=False
-            ),
-            enable_evaluate_policy_on_global_ssl_bypass=dict(
-                type="bool", required=False, no_log=False
-            ),
+            auth_bypass_urls=dict(type="list", elements="str", required=False, no_log=False),
+            kerberos_bypass_urls=dict(type="list", elements="str", required=False, no_log=False),
+            digest_auth_bypass_urls=dict(type="list", elements="str", required=False, no_log=False),
+            dns_resolution_on_transparent_proxy_exempt_urls=dict(type="list", elements="str", required=False, no_log=False),
+            dns_resolution_on_transparent_proxy_urls=dict(type="list", elements="str", required=False, no_log=False),
+            enable_dns_resolution_on_transparent_proxy=dict(type="bool", required=False, no_log=False),
+            enable_ipv6_dns_resolution_on_transparent_proxy=dict(type="bool", required=False, no_log=False),
+            enable_ipv6_dns_optimization_on_all_transparent_proxy=dict(type="bool", required=False, no_log=False),
+            enable_evaluate_policy_on_global_ssl_bypass=dict(type="bool", required=False, no_log=False),
             enable_office365=dict(type="bool", required=False),
             log_internal_ip=dict(type="bool", required=False),
             enforce_surrogate_ip_for_windows_app=dict(type="bool", required=False),
             track_http_tunnel_on_http_ports=dict(type="bool", required=False),
             block_http_tunnel_on_non_http_ports=dict(type="bool", required=False),
             block_domain_fronting_on_host_header=dict(type="bool", required=False),
-            zscaler_client_connector1_and_pac_road_warrior_in_firewall=dict(
-                type="bool", required=False
-            ),
+            zscaler_client_connector1_and_pac_road_warrior_in_firewall=dict(type="bool", required=False),
             cascade_url_filtering=dict(type="bool", required=False),
-            enable_policy_for_unauthenticated_traffic=dict(
-                type="bool", required=False, no_log=False
-            ),
-            block_non_compliant_http_request_on_http_ports=dict(
-                type="bool", required=False
-            ),
+            enable_policy_for_unauthenticated_traffic=dict(type="bool", required=False, no_log=False),
+            block_non_compliant_http_request_on_http_ports=dict(type="bool", required=False),
             enable_admin_rank_access=dict(type="bool", required=False),
             http2_nonbrowser_traffic_enabled=dict(type="bool", required=False),
             ecs_for_all_enabled=dict(type="bool", required=False),
@@ -649,69 +614,27 @@ def main():
                     external_id=dict(type="str", required=False),
                 ),
             ),
-            auth_bypass_apps=dict(
-                type="list", elements="str", required=False, no_log=False
-            ),
-            kerberos_bypass_apps=dict(
-                type="list", elements="str", required=False, no_log=False
-            ),
-            basic_bypass_apps=dict(
-                type="list", elements="str", required=False, no_log=False
-            ),
-            digest_auth_bypass_apps=dict(
-                type="list", elements="str", required=False, no_log=False
-            ),
-            dns_resolution_on_transparent_proxy_exempt_apps=dict(
-                type="list", elements="str", required=False
-            ),
-            dns_resolution_on_transparent_proxy_ipv6_exempt_apps=dict(
-                type="list", elements="str", required=False
-            ),
-            dns_resolution_on_transparent_proxy_apps=dict(
-                type="list", elements="str", required=False
-            ),
-            dns_resolution_on_transparent_proxy_ipv6_apps=dict(
-                type="list", elements="str", required=False
-            ),
-            block_domain_fronting_apps=dict(
-                type="list", elements="str", required=False
-            ),
-            prefer_sni_over_conn_host_apps=dict(
-                type="list", elements="str", required=False
-            ),
-            dns_resolution_on_transparent_proxy_exempt_url_categories=dict(
-                type="list", elements="str", required=False
-            ),
-            dns_resolution_on_transparent_proxy_ipv6_exempt_url_categories=dict(
-                type="list", elements="str", required=False
-            ),
-            dns_resolution_on_transparent_proxy_url_categories=dict(
-                type="list", elements="str", required=False
-            ),
-            dns_resolution_on_transparent_proxy_ipv6_url_categories=dict(
-                type="list", elements="str", required=False
-            ),
-            auth_bypass_url_categories=dict(
-                type="list", elements="str", required=False, no_log=False
-            ),
-            domain_fronting_bypass_url_categories=dict(
-                type="list", elements="str", required=False, no_log=False
-            ),
-            kerberos_bypass_url_categories=dict(
-                type="list", elements="str", required=False, no_log=False
-            ),
-            basic_bypass_url_categories=dict(
-                type="list", elements="str", required=False, no_log=False
-            ),
-            http_range_header_remove_url_categories=dict(
-                type="list", elements="str", required=False
-            ),
-            digest_auth_bypass_url_categories=dict(
-                type="list", elements="str", required=False, no_log=False
-            ),
-            sni_dns_optimization_bypass_url_categories=dict(
-                type="list", elements="str", required=False, no_log=False
-            ),
+            auth_bypass_apps=dict(type="list", elements="str", required=False, no_log=False),
+            kerberos_bypass_apps=dict(type="list", elements="str", required=False, no_log=False),
+            basic_bypass_apps=dict(type="list", elements="str", required=False, no_log=False),
+            digest_auth_bypass_apps=dict(type="list", elements="str", required=False, no_log=False),
+            dns_resolution_on_transparent_proxy_exempt_apps=dict(type="list", elements="str", required=False),
+            dns_resolution_on_transparent_proxy_ipv6_exempt_apps=dict(type="list", elements="str", required=False),
+            dns_resolution_on_transparent_proxy_apps=dict(type="list", elements="str", required=False),
+            dns_resolution_on_transparent_proxy_ipv6_apps=dict(type="list", elements="str", required=False),
+            block_domain_fronting_apps=dict(type="list", elements="str", required=False),
+            prefer_sni_over_conn_host_apps=dict(type="list", elements="str", required=False),
+            dns_resolution_on_transparent_proxy_exempt_url_categories=dict(type="list", elements="str", required=False),
+            dns_resolution_on_transparent_proxy_ipv6_exempt_url_categories=dict(type="list", elements="str", required=False),
+            dns_resolution_on_transparent_proxy_url_categories=dict(type="list", elements="str", required=False),
+            dns_resolution_on_transparent_proxy_ipv6_url_categories=dict(type="list", elements="str", required=False),
+            auth_bypass_url_categories=dict(type="list", elements="str", required=False, no_log=False),
+            domain_fronting_bypass_url_categories=dict(type="list", elements="str", required=False, no_log=False),
+            kerberos_bypass_url_categories=dict(type="list", elements="str", required=False, no_log=False),
+            basic_bypass_url_categories=dict(type="list", elements="str", required=False, no_log=False),
+            http_range_header_remove_url_categories=dict(type="list", elements="str", required=False),
+            digest_auth_bypass_url_categories=dict(type="list", elements="str", required=False, no_log=False),
+            sni_dns_optimization_bypass_url_categories=dict(type="list", elements="str", required=False, no_log=False),
             state=dict(type="str", choices=["present"], default="present"),
         )
     )
