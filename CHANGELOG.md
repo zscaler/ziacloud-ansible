@@ -37,6 +37,7 @@
 ### Bug Fixes
 
 [#105](https://github.com/zscaler/ziacloud-ansible/pull/105) - Improved `zia_client` to support authentication via both OneAPI and legacy methods.
+[#105](https://github.com/zscaler/ziacloud-ansible/pull/105) - Fixed URL Categories update method
 
 ## v2.0.7 (July 25, 2025)
 

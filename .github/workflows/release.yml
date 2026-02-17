@@ -98,6 +98,10 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     needs: [sanity]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # Push tags, changelog, create releases
+      issues: write    # Create failure notification issues
+      pull-requests: write
 
     steps:
       - name: Checkout
@@ -153,6 +157,8 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     needs: [release]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # Push to gh-pages branch
 
     defaults:
       run:
