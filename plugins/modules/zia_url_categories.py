@@ -29,9 +29,11 @@ __metaclass__ = type
 DOCUMENTATION = r"""
 ---
 module: zia_url_categories
-short_description: "Adds a new custom URL category."
+short_description: "Manages custom URL categories."
 description:
-  - "Adds a new custom URL category."
+  - "Creates, updates, or deletes custom URL categories."
+  - "When updating, the module uses incremental updates (ADD_TO_LIST/REMOVE_FROM_LIST) for URL list
+     changes when possible, adding or removing only the diff rather than replacing the entire list."
 author:
   - William Guilherme (@willguibr)
 version_added: "1.0.0"
@@ -264,6 +266,30 @@ def preprocess_category(category, params):
     return preprocessed
 
 
+def _url_list_diff(current, desired):
+    """Compute URLs to add and remove between current and desired lists."""
+    current_set = set(current or [])
+    desired_set = set(desired or [])
+    to_add = sorted(desired_set - current_set)
+    to_remove = sorted(current_set - desired_set)
+    return to_add, to_remove
+
+
+def _sanitize_result(data):
+    """
+    Recursively sanitize dict/list data to remove non-serializable values.
+    Workaround for Zscaler SDK bug: urlcategory.py assigns ZscalerCollection.form_list
+    (function ref) instead of calling it for regex_patterns and regex_patterns_retaining_parent_category.
+    """
+    if callable(data):
+        return None
+    if isinstance(data, dict):
+        return {k: _sanitize_result(v) for k, v in data.items()}
+    if isinstance(data, list):
+        return [_sanitize_result(i) for i in data]
+    return data
+
+
 def core(module):
     state = module.params.get("state", None)
     client = ZIAClientHelper(module)
@@ -300,14 +326,14 @@ def core(module):
         if error:
             module.fail_json(msg=f"Error fetching category: {to_native(error)}")
         if result:
-            existing_category = result.as_dict()
+            existing_category = _sanitize_result(result.as_dict())
     elif category.get("configured_name"):
         result, _unused, error = client.url_categories.list_categories()
         if error:
             module.fail_json(msg=f"Error listing categories: {to_native(error)}")
         for category_ in result or []:
             if category_.configured_name == category.get("configured_name"):
-                existing_category = category_.as_dict()
+                existing_category = _sanitize_result(category_.as_dict())
                 break
 
     desired_category = normalize_url_category(category)
@@ -332,6 +358,10 @@ def core(module):
             desired_value = []
 
         if key == "id" and desired_value is None and current_value is not None:
+            continue
+
+        # EXACT is the API default for url_type; treat unspecified (None) as equivalent
+        if key == "url_type" and desired_value is None and current_value == "EXACT":
             continue
 
         if isinstance(desired_value, list) and isinstance(current_value, list):
@@ -360,20 +390,69 @@ def core(module):
     if state == "present":
         if existing_category:
             if differences_detected:
-                # if category.get("custom_category") and category.get("name"):
-                #     category["configured_name"] = category.pop("name")
-
+                cat_id = existing_category["id"]
                 updated_data = deleteNone(category)
-                updated_data["category_id"] = existing_category["id"]
-                module.warn("Payload for SDK (update): {}".format(updated_data))
 
-                result, _unused, error = client.url_categories.update_url_category(**updated_data)
-                if error or not result:
-                    module.fail_json(msg=f"Failed to update category: {to_native(error)}")
-                module.exit_json(changed=True, data=result.as_dict())
+                # Compute URL list differences for incremental updates (ADD_TO_LIST / REMOVE_FROM_LIST)
+                current_urls = existing_pre.get("urls") or []
+                desired_urls = desired_pre.get("urls") or []
+                current_db_urls = existing_pre.get("db_categorized_urls") or []
+                desired_db_urls = desired_pre.get("db_categorized_urls") or []
+
+                urls_to_add, urls_to_remove = _url_list_diff(current_urls, desired_urls)
+                db_to_add, db_to_remove = _url_list_diff(current_db_urls, desired_db_urls)
+
+                has_adds = urls_to_add or db_to_add
+                has_removes = urls_to_remove or db_to_remove
+
+                if has_adds or has_removes:
+                    # Use incremental updates: ADD_TO_LIST and/or REMOVE_FROM_LIST
+                    # Terraform pattern: send full desired category structure for other attrs,
+                    # but URL lists contain ONLY the items to add/remove (not the full list)
+                    if has_removes:
+                        remove_payload = updated_data.copy()
+                        # Only include URL fields with items to remove; empty lists could be misinterpreted
+                        if urls_to_remove:
+                            remove_payload["urls"] = urls_to_remove
+                        else:
+                            remove_payload.pop("urls", None)
+                        if db_to_remove:
+                            remove_payload["db_categorized_urls"] = db_to_remove
+                        else:
+                            remove_payload.pop("db_categorized_urls", None)
+                        remove_payload = deleteNone(remove_payload)
+                        module.warn("Payload for SDK (REMOVE_FROM_LIST): {}".format(remove_payload))
+                        result, _unused, error = client.url_categories.update_url_category(category_id=cat_id, action="REMOVE_FROM_LIST", **remove_payload)
+                        if error or not result:
+                            module.fail_json(msg=f"Failed to remove URLs from category: {to_native(error)}")
+                    if has_adds:
+                        add_payload = updated_data.copy()
+                        # Only include URL fields with items to add
+                        if urls_to_add:
+                            add_payload["urls"] = urls_to_add
+                        else:
+                            add_payload.pop("urls", None)
+                        if db_to_add:
+                            add_payload["db_categorized_urls"] = db_to_add
+                        else:
+                            add_payload.pop("db_categorized_urls", None)
+                        add_payload = deleteNone(add_payload)
+                        module.warn("Payload for SDK (ADD_TO_LIST): {}".format(add_payload))
+                        result, _unused, error = client.url_categories.update_url_category(category_id=cat_id, action="ADD_TO_LIST", **add_payload)
+                        if error or not result:
+                            module.fail_json(msg=f"Failed to add URLs to category: {to_native(error)}")
+                else:
+                    # No URL list changes; use full update for other attribute changes
+                    updated_data["category_id"] = cat_id
+                    module.warn("Payload for SDK (full update): {}".format(updated_data))
+                    result, _unused, error = client.url_categories.update_url_category(**updated_data)
+                    if error or not result:
+                        module.fail_json(msg=f"Failed to update category: {to_native(error)}")
+
+                module.exit_json(changed=True, data=_sanitize_result(result.as_dict()))
 
             else:
-                module.exit_json(changed=False, data=existing_category, msg="No changes needed.")
+                module.exit_json(changed=False, data=_sanitize_result(existing_category), msg="No changes needed.")
         else:
             # if category.get("custom_category") and category.get("name"):
             #     category["configured_name"] = category.pop("name")  # 🛠 Fix before deleteNone
@@ -383,14 +462,14 @@ def core(module):
             result, _unused, error = client.url_categories.add_url_category(**payload)
             if error or not result:
                 module.fail_json(msg=f"Failed to create category: {to_native(error)}")
-            module.exit_json(changed=True, data=result.as_dict())
+            module.exit_json(changed=True, data=_sanitize_result(result.as_dict()))
 
     elif state == "absent":
         if existing_category:
             _unused, _unused, error = client.url_categories.delete_category(category_id=existing_category["id"])
             if error:
                 module.fail_json(msg=f"Failed to delete category: {to_native(error)}")
-            module.exit_json(changed=True, data=existing_category)
+            module.exit_json(changed=True, data=_sanitize_result(existing_category))
         else:
             module.exit_json(changed=False, data={})
 
