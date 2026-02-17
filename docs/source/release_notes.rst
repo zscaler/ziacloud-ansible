@@ -8,6 +8,7 @@ Releases
 
 Zscaler Internet Access (ZIA) Ansible Collection Changelog
 ----------------------------------------------------------
+
 Version 2.1.0
 ==============
 
@@ -24,7 +25,7 @@ v2.1.0 (February 16, 2026)
   - `zia_extranet` and `zia_extranet_info` - Manage Extranet configurations in ZIA
   - `zia_dc_exclusions` and `zia_dc_exclusions_info` - Manage Extranet configurations in ZIA
   - `zia_tenant_restriction_profile` and `zia_tenant_restriction_profile_info`,
-  - `zia_workload_groups` and `zia_workload_groups_info` - Manages workload group for an organization. 
+  - `zia_workload_groups` and `zia_workload_groups_info` - Manages workload group for an organization.
   -  `zia_virtual_service_edge_node` and `zia_virtual_service_edge_node` - Retrieves the Virtual Service Edge Nodes (VZEN). This resource can be used to set the corresponding node when configuring the resource `zia_vzen_cluster`.
   - `zia_vzen_cluster` and `zia_vzen_cluster_info` - Manage Virtual Service Edge cluster
   - `zia_custom_file_types` and `zia_custom_file_types_info`
@@ -43,12 +44,11 @@ v2.1.0 (February 16, 2026)
   - `zia_location_management`: `sub_loc_scope_enabled`, `sub_loc_scope`, `sub_loc_scope_values`, `sub_loc_acc_ids`
   - `zia_dlp_web_rules`: `eun_template_id`
 
-* (`#105 <https://github.com/zscaler/ziacloud-ansible/pull/105>`_) 
-
 Bug Fixes:
 ---------------
 
 * (`#105 <https://github.com/zscaler/ziacloud-ansible/pull/105>`_) - Improved `zia_client` to support authentication via both OneAPI and legacy methods.
+* (`#105 <https://github.com/zscaler/ziacloud-ansible/pull/105>`_) - Fixed URL Categories update method
 
 v2.0.7 (July 25, 2025)
 -------------------------
