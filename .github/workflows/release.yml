@@ -6,7 +6,7 @@ on:
   pull_request:
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
 
 env:
@@ -31,6 +31,9 @@ jobs:
             python_ver: "3.11"
           - ansible: "2.18"
             python_ver: "3.11"
+          - ansible: "2.19"
+            python_ver: "3.11"
+
     runs-on: ubuntu-latest
     defaults:
       run:
