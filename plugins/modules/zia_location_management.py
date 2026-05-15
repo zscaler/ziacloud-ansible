@@ -303,6 +303,49 @@ options:
           - "Note: If you want Zscaler to provision static IP addresses for your organization, contact Zscaler Support."
         type: str
         required: false
+  extranet:
+    description:
+      - "The ID of the extranet resource that must be assigned to the location."
+      - "Extranets are configured as part of Zscaler Extranet Application Support."
+    type: dict
+    required: false
+    suboptions:
+      id:
+        description: "The unique identifier for the extranet."
+        type: int
+        required: true
+  extranet_dns:
+    description:
+      - "The ID of the DNS server configuration used in the extranet."
+      - "References a DNS entry from the extranet's extranet_dns_list."
+    type: dict
+    required: false
+    suboptions:
+      id:
+        description: "The ID of the DNS server configuration from the extranet."
+        type: int
+        required: true
+  extranet_ip_pool:
+    description:
+      - "The ID of the traffic selector specified in the extranet."
+      - "References an IP pool entry from the extranet's extranet_ip_pool_list."
+    type: dict
+    required: false
+    suboptions:
+      id:
+        description: "The ID of the traffic selector (IP pool) from the extranet."
+        type: int
+        required: true
+  default_extranet_dns:
+    description:
+      - "Indicates that the DNS server configuration used in the extranet is the designated default DNS server."
+    type: bool
+    required: false
+  default_extranet_ts_pool:
+    description:
+      - "Indicates that the traffic selector specified in the extranet is the designated default traffic selector."
+    type: bool
+    required: false
 """
 
 EXAMPLES = r"""
@@ -380,6 +423,46 @@ EXAMPLES = r"""
     sub_loc_scope_values:
       - "vpc-12345678"
       - "vpc-87654321"
+
+# Full extranet dependency chain: VPN credential -> Extranet -> Location association
+- name: Create UFQDN VPN credential
+  zscaler.ziacloud.zia_traffic_forwarding_vpn_credentials:
+    type: "UFQDN"
+    fqdn: "branch1-extranet@acme.com"
+    comments: "Extranet VPN credential"
+    pre_shared_key: "{{ extranet_psk }}"
+  register: vpn_cred
+
+- name: Create extranet with DNS and traffic selectors
+  zscaler.ziacloud.zia_extranet:
+    name: "Partner Extranet"
+    description: "Extranet for partner branch"
+    extranet_dns_list:
+      - name: "Primary DNS"
+        primary_dns_server: "8.8.8.8"
+        secondary_dns_server: "4.4.2.2"
+        use_as_default: true
+    extranet_ip_pool_list:
+      - name: "Traffic Selector 1"
+        ip_start: "10.0.0.1"
+        ip_end: "10.0.0.100"
+        use_as_default: true
+  register: extranet
+
+- name: Create location with extranet association
+  zscaler.ziacloud.zia_location_management:
+    name: "Branch1_Extranet_Location"
+    description: "Location for extranet branch"
+    country: "UNITED_STATES"
+    tz: "UNITED_STATES_AMERICA_LOS_ANGELES"
+    auth_required: true
+    vpn_credentials:
+      - id: "{{ vpn_cred.data.id }}"
+        type: "{{ vpn_cred.data.type }}"
+    extranet:
+      id: "{{ extranet.data.id }}"
+    default_extranet_dns: true
+    default_extranet_ts_pool: true
 """
 
 RETURN = """
@@ -401,9 +484,20 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 import json
 
 
+def normalize_extranet_ref(ref):
+    """Normalize an extranet/ip_pool/dns reference dict to only include id."""
+    if not ref or not isinstance(ref, dict):
+        return None
+    rid = ref.get("id")
+    if rid is not None:
+        return {"id": rid}
+    return None
+
+
 def normalize_location(location):
     """
     Normalize location data by removing computed values.
+    Preserves extranet-related fields so they can be managed.
     """
     if not location:
         return {}
@@ -414,16 +508,11 @@ def normalize_location(location):
         "comments",
         "child_count",
         "cookies_and_proxy",
-        "default_extranet_dns",
-        "default_extranet_ts_pool",
         "digest_auth_enabled",
         "dynamiclocation_groups",
         "ec_location",
         "exclude_from_dynamic_groups",
         "exclude_from_manual_groups",
-        "extranet",
-        "extranet_dns",
-        "extranet_ip_pool",
         "kerberos_auth",
         "language",
         "match_in_child",
@@ -432,6 +521,11 @@ def normalize_location(location):
     ]
     for attr in computed_values:
         normalized.pop(attr, None)
+
+    for ref_key in ("extranet", "extranet_dns", "extranet_ip_pool"):
+        val = normalized.get(ref_key)
+        if val and isinstance(val, dict):
+            normalized[ref_key] = normalize_extranet_ref(val)
     return normalized
 
 
@@ -500,12 +594,21 @@ def core(module):
         "iot_discovery_enabled",
         "iot_enforce_policy_set",
         "vpn_credentials",
+        "extranet",
+        "extranet_dns",
+        "extranet_ip_pool",
+        "default_extranet_dns",
+        "default_extranet_ts_pool",
     ]
 
     location_mgmt = {param: module.params.get(param) for param in params}
 
     # Normalize the VPN creds from user input
     location_mgmt["vpn_credentials"] = normalize_vpn_credentials(module.params.get("vpn_credentials", []))
+    # Normalize extranet reference dicts
+    for ref_key in ("extranet", "extranet_dns", "extranet_ip_pool"):
+        val = module.params.get(ref_key)
+        location_mgmt[ref_key] = normalize_extranet_ref(val) if val else None
 
     validate_location_mgmt(location_mgmt)
 
@@ -628,6 +731,11 @@ def core(module):
                         "iot_discovery_enabled": desired_location.get("iot_discovery_enabled"),
                         "iot_enforce_policy_set": desired_location.get("iot_enforce_policy_set"),
                         "vpn_credentials": desired_location.get("vpn_credentials"),
+                        "extranet": desired_location.get("extranet"),
+                        "extranet_dns": desired_location.get("extranet_dns"),
+                        "extranet_ip_pool": desired_location.get("extranet_ip_pool"),
+                        "default_extranet_dns": desired_location.get("default_extranet_dns"),
+                        "default_extranet_ts_pool": desired_location.get("default_extranet_ts_pool"),
                     }
                 )
                 module.warn("Payload Update for SDK: {}".format(update_location))
@@ -680,6 +788,11 @@ def core(module):
                     "iot_discovery_enabled": desired_location.get("iot_discovery_enabled"),
                     "iot_enforce_policy_set": desired_location.get("iot_enforce_policy_set"),
                     "vpn_credentials": desired_location.get("vpn_credentials"),
+                    "extranet": desired_location.get("extranet"),
+                    "extranet_dns": desired_location.get("extranet_dns"),
+                    "extranet_ip_pool": desired_location.get("extranet_ip_pool"),
+                    "default_extranet_dns": desired_location.get("default_extranet_dns"),
+                    "default_extranet_ts_pool": desired_location.get("default_extranet_ts_pool"),
                 }
             )
             module.warn("Payload Update for SDK: {}".format(create_location))
@@ -763,6 +876,29 @@ def main():
             ),
             required=False,
         ),
+        extranet=dict(
+            type="dict",
+            options=dict(
+                id=dict(type="int", required=True),
+            ),
+            required=False,
+        ),
+        extranet_dns=dict(
+            type="dict",
+            options=dict(
+                id=dict(type="int", required=True),
+            ),
+            required=False,
+        ),
+        extranet_ip_pool=dict(
+            type="dict",
+            options=dict(
+                id=dict(type="int", required=True),
+            ),
+            required=False,
+        ),
+        default_extranet_dns=dict(type="bool", required=False),
+        default_extranet_ts_pool=dict(type="bool", required=False),
         state=dict(type="str", choices=["present", "absent"], default="present"),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)

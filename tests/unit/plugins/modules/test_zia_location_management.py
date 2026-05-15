@@ -90,3 +90,82 @@ class TestLocationManagementModule(ModuleTestCase):
 
         with pytest.raises(AnsibleFailJson):
             zia_location_management.main()
+
+    def test_create_with_extranet(self, mock_client):
+        mock_client.locations.list_locations.return_value = ([], None, None)
+        mock_client.locations.add_location.return_value = (
+            MockBox({
+                "id": 1,
+                "name": "extranet-location",
+                "extranet": {"id": 100, "name": "Partner Extranet"},
+                "extranet_dns": {"id": 200, "name": "Primary DNS"},
+                "extranet_ip_pool": {"id": 300, "name": "TS1"},
+                "default_extranet_dns": True,
+                "default_extranet_ts_pool": False,
+            }),
+            None,
+            None,
+        )
+        set_module_args(
+            provider=DEFAULT_PROVIDER,
+            name="extranet-location",
+            state="present",
+            extranet={"id": 100},
+            extranet_dns={"id": 200},
+            extranet_ip_pool={"id": 300},
+            default_extranet_dns=True,
+            default_extranet_ts_pool=False,
+        )
+        from ansible_collections.zscaler.ziacloud.plugins.modules import zia_location_management
+
+        with pytest.raises(AnsibleExitJson) as result:
+            zia_location_management.main()
+        assert result.value.result.get("changed") is True
+        data = result.value.result.get("data", {})
+        assert data.get("extranet", {}).get("id") == 100
+        assert data.get("default_extranet_dns") is True
+
+    def test_update_with_extranet(self, mock_client):
+        existing = MockBox({
+            "id": 1,
+            "name": "extranet-location",
+            "extranet": None,
+            "extranet_dns": None,
+            "extranet_ip_pool": None,
+            "default_extranet_dns": False,
+            "default_extranet_ts_pool": False,
+        })
+        mock_client.locations.get_location.return_value = (existing, None, None)
+        mock_client.locations.update_location.return_value = (
+            MockBox({
+                "id": 1,
+                "name": "extranet-location",
+                "extranet": {"id": 100, "name": "Partner Extranet"},
+                "extranet_dns": {"id": 200, "name": "Primary DNS"},
+                "extranet_ip_pool": {"id": 300, "name": "TS1"},
+                "default_extranet_dns": True,
+                "default_extranet_ts_pool": True,
+            }),
+            None,
+            None,
+        )
+        set_module_args(
+            provider=DEFAULT_PROVIDER,
+            id=1,
+            name="extranet-location",
+            state="present",
+            extranet={"id": 100},
+            extranet_dns={"id": 200},
+            extranet_ip_pool={"id": 300},
+            default_extranet_dns=True,
+            default_extranet_ts_pool=True,
+        )
+        from ansible_collections.zscaler.ziacloud.plugins.modules import zia_location_management
+
+        with pytest.raises(AnsibleExitJson) as result:
+            zia_location_management.main()
+        assert result.value.result.get("changed") is True
+        data = result.value.result.get("data", {})
+        assert data.get("extranet", {}).get("id") == 100
+        assert data.get("default_extranet_dns") is True
+        assert data.get("default_extranet_ts_pool") is True

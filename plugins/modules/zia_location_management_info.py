@@ -259,6 +259,55 @@ locations:
       returned: always
       type: bool
       sample: true
+    extranet:
+      description: The extranet resource assigned to the location.
+      returned: when available
+      type: dict
+      contains:
+        id:
+          description: The unique identifier for the extranet.
+          type: int
+          sample: 12345678
+        name:
+          description: The name of the extranet.
+          type: str
+          sample: "Partner Extranet"
+    extranet_dns:
+      description: The DNS server configuration from the extranet assigned to the location.
+      returned: when available
+      type: dict
+      contains:
+        id:
+          description: The ID of the DNS server configuration in the extranet.
+          type: int
+          sample: 87654321
+        name:
+          description: The name of the DNS server configuration.
+          type: str
+          sample: "Primary DNS"
+    extranet_ip_pool:
+      description: The traffic selector (IP pool) from the extranet assigned to the location.
+      returned: when available
+      type: dict
+      contains:
+        id:
+          description: The ID of the traffic selector in the extranet.
+          type: int
+          sample: 11223344
+        name:
+          description: The name of the traffic selector.
+          type: str
+          sample: "Traffic Selector 1"
+    default_extranet_dns:
+      description: Indicates that the DNS server configuration from the extranet is the designated default DNS server.
+      returned: when available
+      type: bool
+      sample: true
+    default_extranet_ts_pool:
+      description: Indicates that the traffic selector from the extranet is the designated default traffic selector.
+      returned: when available
+      type: bool
+      sample: true
 """
 
 
