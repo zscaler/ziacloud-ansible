@@ -57,16 +57,26 @@ jobs:
       - name: Install Poetry
         uses: Gr1N/setup-poetry@v9
 
-      # Install the head of the given branch (devel, stable-2.10)
-      - name: Install ansible-base (${{ matrix.ansible }})
-        run: |
-          poetry run pip install https://github.com/ansible/ansible/archive/stable-${{ matrix.ansible }}.tar.gz --disable-pip-version-check
-
       - name: Create lock file
         run: poetry lock
 
       - name: Install dependencies
         run: poetry install
+
+      # Install the matrix-pinned ansible-core LAST and force it to win.
+      # pyproject.toml declares `ansible-core = "*"`, so the `poetry install`
+      # step above resolves to the newest release available for the runner's
+      # Python (e.g. ansible-core 2.21 on Python 3.12). If we installed the
+      # matrix version before `poetry install`, Poetry would clobber it and
+      # ansible-test would run as 2.21 -> it then looks for a non-existent
+      # tests/sanity/ignore-2.21.txt and every module fails missing-gplv3-license.
+      # Installing the stable-<version> branch here (after Poetry) pins the
+      # ansible-core actually under test so it matches ignore-<version>.txt.
+      - name: Install ansible-core (${{ matrix.ansible }})
+        run: |
+          poetry run pip install --force-reinstall --no-deps \
+            "https://github.com/ansible/ansible/archive/stable-${{ matrix.ansible }}.tar.gz" \
+            --disable-pip-version-check
 
       - name: Run sanity tests
         timeout-minutes: 10
