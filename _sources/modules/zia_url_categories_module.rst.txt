@@ -6,7 +6,7 @@
     :trim:
 
 .. meta::
-  :antsibull-docs: 2.21.0
+  :antsibull-docs: 2.24.0
 
 .. Anchors
 
@@ -16,18 +16,18 @@
 
 .. Title
 
-zscaler.ziacloud.zia_url_categories module -- Adds a new custom URL category.
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+zscaler.ziacloud.zia_url_categories module -- Manages custom URL categories.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. Collection note
 
 .. note::
-    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 2.0.7).
+    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 2.2.0).
 
     It is not included in ``ansible-core``.
     To check whether it is installed, run :code:`ansible-galaxy collection list`.
 
-    To install it, use: :code:`ansible-galaxy collection install zscaler.ziacloud`.
+    To install it, use: :code:`ansible\-galaxy collection install zscaler.ziacloud`.
     You need further requirements to be able to use this module,
     see :ref:`Requirements <ansible_collections.zscaler.ziacloud.zia_url_categories_module_requirements>` for details.
 
@@ -51,7 +51,8 @@ Synopsis
 
 .. Description
 
-- Adds a new custom URL category.
+- Creates, updates, or deletes custom URL categories.
+- When updating, the module uses incremental updates (ADD\_TO\_LIST/REMOVE\_FROM\_LIST) for URL list changes when possible, adding or removing only the diff rather than replacing the entire list.
 
 
 .. Aliases
@@ -65,7 +66,7 @@ Requirements
 ------------
 The below requirements are needed on the host that executes this module.
 
-- Zscaler SDK Python can be obtained from PyPI \ `https://pypi.org/project/zscaler-sdk-python/ <https://pypi.org/project/zscaler-sdk-python/>`__
+- Zscaler SDK Python can be obtained from PyPI \ `https://pypi.org/project/zscaler\-sdk\-python/ <https://pypi.org/project/zscaler-sdk-python/>`__
 
 
 
@@ -224,16 +225,17 @@ Parameters
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry:`"zscloud"`
-      - :ansible-option-choices-entry:`"zscaler"`
-      - :ansible-option-choices-entry:`"zscalerone"`
-      - :ansible-option-choices-entry:`"zscalertwo"`
-      - :ansible-option-choices-entry:`"zscalerthree"`
-      - :ansible-option-choices-entry:`"zscalerbeta"`
-      - :ansible-option-choices-entry:`"zscalergov"`
-      - :ansible-option-choices-entry:`"zscalerten"`
       - :ansible-option-choices-entry:`"beta"`
       - :ansible-option-choices-entry:`"production"`
+      - :ansible-option-choices-entry:`"zscaler"`
+      - :ansible-option-choices-entry:`"zscalerbeta"`
+      - :ansible-option-choices-entry:`"zscalergov"`
+      - :ansible-option-choices-entry:`"zscalerone"`
+      - :ansible-option-choices-entry:`"zscalerten"`
+      - :ansible-option-choices-entry:`"zscalerthree"`
+      - :ansible-option-choices-entry:`"zscalertwo"`
+      - :ansible-option-choices-entry:`"zscloud"`
+      - :ansible-option-choices-entry:`"zspreview"`
 
 
       .. raw:: html
@@ -459,7 +461,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      URL category ID. See \ `https://help.zscaler.com/zia/url-categories#/urlCategories-get <https://help.zscaler.com/zia/url-categories#/urlCategories-get>`__
+      URL category ID. See \ `https://help.zscaler.com/zia/url\-categories#/urlCategories\-get <https://help.zscaler.com/zia/url-categories#/urlCategories-get>`__
 
 
       .. raw:: html
@@ -675,7 +677,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      The private key for JWT-based OAuth2 authentication.
+      The private key for JWT\-based OAuth2 authentication.
 
 
       .. raw:: html
@@ -884,16 +886,17 @@ Parameters
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry:`"zscloud"`
-      - :ansible-option-choices-entry:`"zscaler"`
-      - :ansible-option-choices-entry:`"zscalerone"`
-      - :ansible-option-choices-entry:`"zscalertwo"`
-      - :ansible-option-choices-entry:`"zscalerthree"`
-      - :ansible-option-choices-entry:`"zscalerbeta"`
-      - :ansible-option-choices-entry:`"zscalergov"`
-      - :ansible-option-choices-entry:`"zscalerten"`
       - :ansible-option-choices-entry:`"beta"`
       - :ansible-option-choices-entry:`"production"`
+      - :ansible-option-choices-entry:`"zscaler"`
+      - :ansible-option-choices-entry:`"zscalerbeta"`
+      - :ansible-option-choices-entry:`"zscalergov"`
+      - :ansible-option-choices-entry:`"zscalerone"`
+      - :ansible-option-choices-entry:`"zscalerten"`
+      - :ansible-option-choices-entry:`"zscalerthree"`
+      - :ansible-option-choices-entry:`"zscalertwo"`
+      - :ansible-option-choices-entry:`"zscloud"`
+      - :ansible-option-choices-entry:`"zspreview"`
 
 
       .. raw:: html
@@ -1202,6 +1205,78 @@ Parameters
 
         </div>
 
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-regex_patterns"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_categories_module__parameter-regex_patterns:
+
+      .. rst-class:: ansible-option-title
+
+      **regex_patterns**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-regex_patterns" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Regular expression patterns used to match URLs when url\_type is REGEX.
+
+      Each entry is a regex pattern that URLs are evaluated against.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-regex_patterns_retaining_parent_category"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_categories_module__parameter-regex_patterns_retaining_parent_category:
+
+      .. rst-class:: ansible-option-title
+
+      **regex_patterns_retaining_parent_category**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-regex_patterns_retaining_parent_category" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Retained regex patterns from the parent URL category when url\_type is REGEX.
+
+      Patterns from the parent category that remain associated with this custom category.
+
+
+      .. raw:: html
+
+        </div>
 
   * - .. raw:: html
 
@@ -1526,6 +1601,50 @@ Parameters
   * - .. raw:: html
 
         <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-url_type"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_url_categories_module__parameter-url_type:
+
+      .. rst-class:: ansible-option-title
+
+      **url_type**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-url_type" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Type of URL matching for the category.
+
+      EXACT matches exact URL strings; REGEX matches URLs using regular expression patterns.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"EXACT"`
+      - :ansible-option-choices-entry:`"REGEX"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
         <div class="ansibleOptionAnchor" id="parameter-urls"></div>
 
       .. _ansible_collections.zscaler.ziacloud.zia_url_categories_module__parameter-urls:
@@ -1695,7 +1814,7 @@ Examples
       zscaler.ziacloud.zia_url_categories:
         provider: '{{ provider }}'
         super_category: USER_DEFINED
-        name: Example_Category
+        configured_name: Example_Category
         description: Example_Category
         type: URL_CATEGORY
         keywords:
@@ -1716,6 +1835,19 @@ Examples
           - .baidu.com
           - .cnn.com
           - .level3.com
+
+    - name: Create a URL Category with regex patterns
+      zscaler.ziacloud.zia_url_categories:
+        provider: '{{ provider }}'
+        super_category: USER_DEFINED
+        configured_name: Regex_Category_Example
+        description: Category using regex URL matching
+        type: URL_CATEGORY
+        url_type: REGEX
+        regex_patterns:
+          - ".*\\.example\\.com"
+          - ".*\\.test\\.(com|org)"
+        custom_category: true
 
 
 

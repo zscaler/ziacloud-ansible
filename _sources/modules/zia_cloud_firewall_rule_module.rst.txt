@@ -6,7 +6,7 @@
     :trim:
 
 .. meta::
-  :antsibull-docs: 2.21.0
+  :antsibull-docs: 2.24.0
 
 .. Anchors
 
@@ -22,12 +22,12 @@ zscaler.ziacloud.zia_cloud_firewall_rule module -- Firewall Filtering policy rul
 .. Collection note
 
 .. note::
-    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 2.0.7).
+    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 2.2.0).
 
     It is not included in ``ansible-core``.
     To check whether it is installed, run :code:`ansible-galaxy collection list`.
 
-    To install it, use: :code:`ansible-galaxy collection install zscaler.ziacloud`.
+    To install it, use: :code:`ansible\-galaxy collection install zscaler.ziacloud`.
     You need further requirements to be able to use this module,
     see :ref:`Requirements <ansible_collections.zscaler.ziacloud.zia_cloud_firewall_rule_module_requirements>` for details.
 
@@ -65,7 +65,7 @@ Requirements
 ------------
 The below requirements are needed on the host that executes this module.
 
-- Zscaler SDK Python can be obtained from PyPI \ `https://pypi.org/project/zscaler-sdk-python/ <https://pypi.org/project/zscaler-sdk-python/>`__
+- Zscaler SDK Python can be obtained from PyPI \ `https://pypi.org/project/zscaler\-sdk\-python/ <https://pypi.org/project/zscaler-sdk-python/>`__
 
 
 
@@ -337,16 +337,17 @@ Parameters
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry:`"zscloud"`
-      - :ansible-option-choices-entry:`"zscaler"`
-      - :ansible-option-choices-entry:`"zscalerone"`
-      - :ansible-option-choices-entry:`"zscalertwo"`
-      - :ansible-option-choices-entry:`"zscalerthree"`
-      - :ansible-option-choices-entry:`"zscalerbeta"`
-      - :ansible-option-choices-entry:`"zscalergov"`
-      - :ansible-option-choices-entry:`"zscalerten"`
       - :ansible-option-choices-entry:`"beta"`
       - :ansible-option-choices-entry:`"production"`
+      - :ansible-option-choices-entry:`"zscaler"`
+      - :ansible-option-choices-entry:`"zscalerbeta"`
+      - :ansible-option-choices-entry:`"zscalergov"`
+      - :ansible-option-choices-entry:`"zscalerone"`
+      - :ansible-option-choices-entry:`"zscalerten"`
+      - :ansible-option-choices-entry:`"zscalerthree"`
+      - :ansible-option-choices-entry:`"zscalertwo"`
+      - :ansible-option-choices-entry:`"zscloud"`
+      - :ansible-option-choices-entry:`"zspreview"`
 
 
       .. raw:: html
@@ -558,7 +559,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      User-defined destination IP address groups on which the rule is applied.
+      User\-defined destination IP address groups on which the rule is applied.
 
       If not set, the rule is not restricted to a specific destination IP address group.
 
@@ -630,7 +631,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      Name-ID pairs of device groups for which the rule must be applied.
+      Name\-ID pairs of device groups for which the rule must be applied.
 
       This field is applicable for devices that are managed using Zscaler Client Connector.
 
@@ -719,7 +720,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      Name-ID pairs of devices for which rule must be applied.
+      Name\-ID pairs of devices for which rule must be applied.
 
       Specifies devices that are managed using Zscaler Client Connector.
 
@@ -1097,7 +1098,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      User-defined network service application group on which the rule is applied.
+      User\-defined network service application group on which the rule is applied.
 
       If not set, the rule is not restricted to a specific network service application group.
 
@@ -1133,7 +1134,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      User-defined network service applications on which the rule is applied.
+      User\-defined network service applications on which the rule is applied.
 
       If not set, the rule is not restricted to a specific network service application.
 
@@ -1171,7 +1172,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      User-defined network service group on which the rule is applied.
+      User\-defined network service group on which the rule is applied.
 
       If not set, the rule is not restricted to a specific network service group.
 
@@ -1207,7 +1208,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      User-defined network services on which the rule is applied.
+      User\-defined network services on which the rule is applied.
 
       If not set, the rule is not restricted to a specific network service.
 
@@ -1311,7 +1312,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      The private key for JWT-based OAuth2 authentication.
+      The private key for JWT\-based OAuth2 authentication.
 
 
       .. raw:: html
@@ -1520,16 +1521,17 @@ Parameters
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry:`"zscloud"`
-      - :ansible-option-choices-entry:`"zscaler"`
-      - :ansible-option-choices-entry:`"zscalerone"`
-      - :ansible-option-choices-entry:`"zscalertwo"`
-      - :ansible-option-choices-entry:`"zscalerthree"`
-      - :ansible-option-choices-entry:`"zscalerbeta"`
-      - :ansible-option-choices-entry:`"zscalergov"`
-      - :ansible-option-choices-entry:`"zscalerten"`
       - :ansible-option-choices-entry:`"beta"`
       - :ansible-option-choices-entry:`"production"`
+      - :ansible-option-choices-entry:`"zscaler"`
+      - :ansible-option-choices-entry:`"zscalerbeta"`
+      - :ansible-option-choices-entry:`"zscalergov"`
+      - :ansible-option-choices-entry:`"zscalerone"`
+      - :ansible-option-choices-entry:`"zscalerten"`
+      - :ansible-option-choices-entry:`"zscalerthree"`
+      - :ansible-option-choices-entry:`"zscalertwo"`
+      - :ansible-option-choices-entry:`"zscloud"`
+      - :ansible-option-choices-entry:`"zspreview"`
 
 
       .. raw:: html
@@ -2010,7 +2012,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      User-defined source IP address groups for which the rule is applicable.
+      User\-defined source IP address groups for which the rule is applicable.
 
       If not set, the rule is not restricted to a specific source IP address group.
 
@@ -2046,7 +2048,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      User-defined source IP addresses for which the rule is applicable.
+      User\-defined source IP addresses for which the rule is applicable.
 
       If not set, the rule is not restricted to a specific source IP address.
 

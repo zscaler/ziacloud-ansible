@@ -6,7 +6,7 @@
     :trim:
 
 .. meta::
-  :antsibull-docs: 2.21.0
+  :antsibull-docs: 2.24.0
 
 .. Anchors
 
@@ -16,18 +16,18 @@
 
 .. Title
 
-zscaler.ziacloud.zia_third_party_proxy_service module -- Adds a new object for a third-party proxy service
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+zscaler.ziacloud.zia_third_party_proxy_service module -- Adds a new object for a third\-party proxy service
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. Collection note
 
 .. note::
-    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 2.0.7).
+    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 2.2.0).
 
     It is not included in ``ansible-core``.
     To check whether it is installed, run :code:`ansible-galaxy collection list`.
 
-    To install it, use: :code:`ansible-galaxy collection install zscaler.ziacloud`.
+    To install it, use: :code:`ansible\-galaxy collection install zscaler.ziacloud`.
     You need further requirements to be able to use this module,
     see :ref:`Requirements <ansible_collections.zscaler.ziacloud.zia_third_party_proxy_service_module_requirements>` for details.
 
@@ -51,7 +51,7 @@ Synopsis
 
 .. Description
 
-- Adds a new object for a third-party proxy service
+- Adds a new object for a third\-party proxy service
 
 
 .. Aliases
@@ -65,7 +65,7 @@ Requirements
 ------------
 The below requirements are needed on the host that executes this module.
 
-- Zscaler SDK Python can be obtained from PyPI \ `https://pypi.org/project/zscaler-sdk-python/ <https://pypi.org/project/zscaler-sdk-python/>`__
+- Zscaler SDK Python can be obtained from PyPI \ `https://pypi.org/project/zscaler\-sdk\-python/ <https://pypi.org/project/zscaler-sdk-python/>`__
 
 
 
@@ -115,7 +115,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      The IP address or the FQDN of the third-party proxy service
+      The IP address or the FQDN of the third\-party proxy service
 
 
       .. raw:: html
@@ -183,7 +183,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      Flag indicating whether the added X-Authenticated-User header is Base64 encoded.
+      Flag indicating whether the added X\-Authenticated\-User header is Base64 encoded.
 
 
       .. rst-class:: ansible-option-line
@@ -225,7 +225,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      The root certificate used by the third-party proxy to perform SSL inspection.
+      The root certificate used by the third\-party proxy to perform SSL inspection.
 
 
       .. raw:: html
@@ -377,16 +377,17 @@ Parameters
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry:`"zscloud"`
-      - :ansible-option-choices-entry:`"zscaler"`
-      - :ansible-option-choices-entry:`"zscalerone"`
-      - :ansible-option-choices-entry:`"zscalertwo"`
-      - :ansible-option-choices-entry:`"zscalerthree"`
-      - :ansible-option-choices-entry:`"zscalerbeta"`
-      - :ansible-option-choices-entry:`"zscalergov"`
-      - :ansible-option-choices-entry:`"zscalerten"`
       - :ansible-option-choices-entry:`"beta"`
       - :ansible-option-choices-entry:`"production"`
+      - :ansible-option-choices-entry:`"zscaler"`
+      - :ansible-option-choices-entry:`"zscalerbeta"`
+      - :ansible-option-choices-entry:`"zscalergov"`
+      - :ansible-option-choices-entry:`"zscalerone"`
+      - :ansible-option-choices-entry:`"zscalerten"`
+      - :ansible-option-choices-entry:`"zscalerthree"`
+      - :ansible-option-choices-entry:`"zscalertwo"`
+      - :ansible-option-choices-entry:`"zscloud"`
+      - :ansible-option-choices-entry:`"zspreview"`
 
 
       .. raw:: html
@@ -488,7 +489,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      Flag indicating whether X-Authenticated-User header is added by the proxy.
+      Flag indicating whether X\-Authenticated\-User header is added by the proxy.
 
 
       .. rst-class:: ansible-option-line
@@ -598,7 +599,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      The port number on which the third-party proxy service listens to the requests forwarded from Zscaler
+      The port number on which the third\-party proxy service listens to the requests forwarded from Zscaler
 
 
       .. raw:: html
@@ -632,7 +633,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      The private key for JWT-based OAuth2 authentication.
+      The private key for JWT\-based OAuth2 authentication.
 
 
       .. raw:: html
@@ -841,16 +842,17 @@ Parameters
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry:`"zscloud"`
-      - :ansible-option-choices-entry:`"zscaler"`
-      - :ansible-option-choices-entry:`"zscalerone"`
-      - :ansible-option-choices-entry:`"zscalertwo"`
-      - :ansible-option-choices-entry:`"zscalerthree"`
-      - :ansible-option-choices-entry:`"zscalerbeta"`
-      - :ansible-option-choices-entry:`"zscalergov"`
-      - :ansible-option-choices-entry:`"zscalerten"`
       - :ansible-option-choices-entry:`"beta"`
       - :ansible-option-choices-entry:`"production"`
+      - :ansible-option-choices-entry:`"zscaler"`
+      - :ansible-option-choices-entry:`"zscalerbeta"`
+      - :ansible-option-choices-entry:`"zscalergov"`
+      - :ansible-option-choices-entry:`"zscalerone"`
+      - :ansible-option-choices-entry:`"zscalerten"`
+      - :ansible-option-choices-entry:`"zscalerthree"`
+      - :ansible-option-choices-entry:`"zscalertwo"`
+      - :ansible-option-choices-entry:`"zscloud"`
+      - :ansible-option-choices-entry:`"zspreview"`
 
 
       .. raw:: html

@@ -1,0 +1,2225 @@
+.. Document meta
+
+:orphan:
+
+.. |antsibull-internal-nbsp| unicode:: 0xA0
+    :trim:
+
+.. meta::
+  :antsibull-docs: 2.24.0
+
+.. Anchors
+
+.. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module:
+
+.. Anchors: short name for ansible.builtin
+
+.. Title
+
+zscaler.ziacloud.zia_virtual_service_edge_node module -- Adds a virtual service edge node.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+.. Collection note
+
+.. note::
+    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 2.2.0).
+
+    It is not included in ``ansible-core``.
+    To check whether it is installed, run :code:`ansible-galaxy collection list`.
+
+    To install it, use: :code:`ansible\-galaxy collection install zscaler.ziacloud`.
+    You need further requirements to be able to use this module,
+    see :ref:`Requirements <ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module_requirements>` for details.
+
+    To use it in a playbook, specify: :code:`zscaler.ziacloud.zia_virtual_service_edge_node`.
+
+.. version_added
+
+.. rst-class:: ansible-version-added
+
+New in zscaler.ziacloud 1.0.0
+
+.. contents::
+   :local:
+   :depth: 1
+
+.. Deprecated
+
+
+Synopsis
+--------
+
+.. Description
+
+- Adds a virtual service edge node.
+
+
+.. Aliases
+
+
+.. Requirements
+
+.. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module_requirements:
+
+Requirements
+------------
+The below requirements are needed on the host that executes this module.
+
+- Zscaler SDK Python can be obtained from PyPI \ `https://pypi.org/project/zscaler\-sdk\-python/ <https://pypi.org/project/zscaler-sdk-python/>`__
+
+
+
+
+
+
+.. Options
+
+Parameters
+----------
+
+.. tabularcolumns:: \X{1}{3}\X{2}{3}
+
+.. list-table::
+  :width: 100%
+  :widths: auto
+  :header-rows: 1
+  :class: longtable ansible-option-table
+
+  * - Parameter
+    - Comments
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-api_key"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-api_key:
+
+      .. rst-class:: ansible-option-title
+
+      **api_key**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-api_key" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the obfuscated API key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-client_id"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-client_id:
+
+      .. rst-class:: ansible-option-title
+
+      **client_id**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-client_id" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The client ID for OAuth2 authentication.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-client_secret"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-client_secret:
+
+      .. rst-class:: ansible-option-title
+
+      **client_secret**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-client_secret" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The client secret for OAuth2 authentication.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-cloud"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-cloud:
+
+      .. rst-class:: ansible-option-title
+
+      **cloud**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-cloud" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The Zscaler cloud name provisioned for your organization.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"beta"`
+      - :ansible-option-choices-entry:`"production"`
+      - :ansible-option-choices-entry:`"zscaler"`
+      - :ansible-option-choices-entry:`"zscalerbeta"`
+      - :ansible-option-choices-entry:`"zscalergov"`
+      - :ansible-option-choices-entry:`"zscalerone"`
+      - :ansible-option-choices-entry:`"zscalerten"`
+      - :ansible-option-choices-entry:`"zscalerthree"`
+      - :ansible-option-choices-entry:`"zscalertwo"`
+      - :ansible-option-choices-entry:`"zscloud"`
+      - :ansible-option-choices-entry:`"zspreview"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-cluster_name"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-cluster_name:
+
+      .. rst-class:: ansible-option-title
+
+      **cluster_name**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-cluster_name" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Virtual Service Edge cluster name.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-default_gateway"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-default_gateway:
+
+      .. rst-class:: ansible-option-title
+
+      **default_gateway**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-default_gateway" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The IP address of the default gateway to the internet.
+
+      Only IPv4 addresses are supported.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-deployment_mode"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-deployment_mode:
+
+      .. rst-class:: ansible-option-title
+
+      **deployment_mode**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-deployment_mode" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Specifies the deployment mode.
+
+      Select either :literal:`STANDALONE` or :literal:`CLUSTER` if you have the VMware ESXi platform.
+
+      Otherwise, select only :literal:`STANDALONE`.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"STANDALONE"`
+      - :ansible-option-choices-entry:`"CLUSTER"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-establish_support_tunnel_enabled"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-establish_support_tunnel_enabled:
+
+      .. rst-class:: ansible-option-title
+
+      **establish_support_tunnel_enabled**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-establish_support_tunnel_enabled" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A Boolean value that indicates whether or not a support tunnel for Zscaler Support is enabled.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-id"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-id:
+
+      .. rst-class:: ansible-option-title
+
+      **id**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-id" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The unique identifier for the Virtual Service Edge node.
+
+      Used to reference an existing node for update or delete operations.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-in_production"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-in_production:
+
+      .. rst-class:: ansible-option-title
+
+      **in_production**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-in_production" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Represents the Virtual Service Edge instances deployed for production purposes.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-ip_address"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-ip_address:
+
+      .. rst-class:: ansible-option-title
+
+      **ip_address**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-ip_address" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The Virtual Service Edge cluster IP address.
+
+      Only IPv4 addresses are supported.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-ip_sec_enabled"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-ip_sec_enabled:
+
+      .. rst-class:: ansible-option-title
+
+      **ip_sec_enabled**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-ip_sec_enabled" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A Boolean value that specifies whether to terminate IPSec traffic from the client at selected Virtual Service Edge instances for the Virtual Service Edge cluster.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-load_balancer_ip_address"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-load_balancer_ip_address:
+
+      .. rst-class:: ansible-option-title
+
+      **load_balancer_ip_address**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-load_balancer_ip_address" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The IP address of the load balancer.
+
+      This field is applicable only when the deployment\_mode is set to :literal:`CLUSTER`.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-name"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-name:
+
+      .. rst-class:: ansible-option-title
+
+      **name**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-name" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string` / :ansible-option-required:`required`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Name of the Virtual Service Edge node.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-on_demand_support_tunnel_enabled"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-on_demand_support_tunnel_enabled:
+
+      .. rst-class:: ansible-option-title
+
+      **on_demand_support_tunnel_enabled**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-on_demand_support_tunnel_enabled" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A Boolean value that indicates whether or not the On\-Demand Support Tunnel is enabled.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-password"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-password:
+
+      .. rst-class:: ansible-option-title
+
+      **password**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-password" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the password for the API admin.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-private_key"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-private_key:
+
+      .. rst-class:: ansible-option-title
+
+      **private_key**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-private_key" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The private key for JWT\-based OAuth2 authentication.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-provider:
+
+      .. rst-class:: ansible-option-title
+
+      **provider**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`dictionary`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A dict containing authentication credentials.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/api_key"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-provider/api_key:
+
+      .. rst-class:: ansible-option-title
+
+      **api_key**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/api_key" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Obfuscated API key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/client_id"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-provider/client_id:
+
+      .. rst-class:: ansible-option-title
+
+      **client_id**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/client_id" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      OAuth2 client ID.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/client_secret"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-provider/client_secret:
+
+      .. rst-class:: ansible-option-title
+
+      **client_secret**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/client_secret" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      OAuth2 client secret.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/cloud"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-provider/cloud:
+
+      .. rst-class:: ansible-option-title
+
+      **cloud**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/cloud" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Zscaler cloud name.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"beta"`
+      - :ansible-option-choices-entry:`"production"`
+      - :ansible-option-choices-entry:`"zscaler"`
+      - :ansible-option-choices-entry:`"zscalerbeta"`
+      - :ansible-option-choices-entry:`"zscalergov"`
+      - :ansible-option-choices-entry:`"zscalerone"`
+      - :ansible-option-choices-entry:`"zscalerten"`
+      - :ansible-option-choices-entry:`"zscalerthree"`
+      - :ansible-option-choices-entry:`"zscalertwo"`
+      - :ansible-option-choices-entry:`"zscloud"`
+      - :ansible-option-choices-entry:`"zspreview"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/password"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-provider/password:
+
+      .. rst-class:: ansible-option-title
+
+      **password**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/password" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Password for the API admin.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/private_key"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-provider/private_key:
+
+      .. rst-class:: ansible-option-title
+
+      **private_key**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/private_key" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Private key for OAuth2 JWT.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/sandbox_cloud"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-provider/sandbox_cloud:
+
+      .. rst-class:: ansible-option-title
+
+      **sandbox_cloud**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/sandbox_cloud" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Sandbox Cloud environment.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/sandbox_token"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-provider/sandbox_token:
+
+      .. rst-class:: ansible-option-title
+
+      **sandbox_token**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/sandbox_token" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Sandbox API Key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/use_legacy_client"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-provider/use_legacy_client:
+
+      .. rst-class:: ansible-option-title
+
+      **use_legacy_client**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/use_legacy_client" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Whether to use the legacy Zscaler API client.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/username"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-provider/username:
+
+      .. rst-class:: ansible-option-title
+
+      **username**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/username" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Email ID of the API admin.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/vanity_domain"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-provider/vanity_domain:
+
+      .. rst-class:: ansible-option-title
+
+      **vanity_domain**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/vanity_domain" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Vanity domain for OAuth2.
+
+
+      .. raw:: html
+
+        </div>
+
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-sandbox_cloud"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-sandbox_cloud:
+
+      .. rst-class:: ansible-option-title
+
+      **sandbox_cloud**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-sandbox_cloud" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The Sandbox cloud environment for API access.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-sandbox_token"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-sandbox_token:
+
+      .. rst-class:: ansible-option-title
+
+      **sandbox_token**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-sandbox_token" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the Sandbox API Key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-state"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-state:
+
+      .. rst-class:: ansible-option-title
+
+      **state**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-state" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Specifies the desired state of the resource.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry-default:`"present"` :ansible-option-choices-default-mark:`← (default)`
+      - :ansible-option-choices-entry:`"absent"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-status"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-status:
+
+      .. rst-class:: ansible-option-title
+
+      **status**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-status" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Specifies the status of the Virtual Service Edge cluster.
+
+      The status is set to ENABLED by default.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"ENABLED"`
+      - :ansible-option-choices-entry:`"DISABLED"`
+      - :ansible-option-choices-entry:`"DISABLED\_BY\_SERVICE\_PROVIDER"`
+      - :ansible-option-choices-entry:`"NOT\_PROVISIONED\_IN\_SERVICE\_PROVIDER"`
+      - :ansible-option-choices-entry:`"IN\_TRIAL"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-subnet_mask"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-subnet_mask:
+
+      .. rst-class:: ansible-option-title
+
+      **subnet_mask**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-subnet_mask" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The Virtual Service Edge cluster subnet mask (e.g. 255.255.255.0).
+
+      Only IPv4 addresses are supported.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-type"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-type:
+
+      .. rst-class:: ansible-option-title
+
+      **type**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-type" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The Virtual Service Edge cluster type.
+
+      For the complete list of supported types refer to the API documentation.
+
+      `https://help.zscaler.com/zia/service\-edges#/virtualZenNodes\-post <https://help.zscaler.com/zia/service-edges#/virtualZenNodes-post>`__
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-use_legacy_client"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-use_legacy_client:
+
+      .. rst-class:: ansible-option-title
+
+      **use_legacy_client**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-use_legacy_client" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Whether to use the legacy Zscaler API client.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-username"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-username:
+
+      .. rst-class:: ansible-option-title
+
+      **username**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-username" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the email ID of the API admin.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-vanity_domain"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-vanity_domain:
+
+      .. rst-class:: ansible-option-title
+
+      **vanity_domain**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-vanity_domain" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The vanity domain provisioned by Zscaler for OAuth2 flows.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-vzen_sku_type"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__parameter-vzen_sku_type:
+
+      .. rst-class:: ansible-option-title
+
+      **vzen_sku_type**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-vzen_sku_type" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The Virtual Service Edge SKU type.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"SMALL"`
+      - :ansible-option-choices-entry:`"MEDIUM"`
+      - :ansible-option-choices-entry:`"LARGE"`
+
+
+      .. raw:: html
+
+        </div>
+
+
+.. Attributes
+
+
+.. Notes
+
+Notes
+-----
+
+.. note::
+   - Check mode is supported.
+
+.. Seealso
+
+
+.. Examples
+
+Examples
+--------
+
+.. code-block:: yaml+jinja
+
+    - name: Create a Virtual Service Edge node with basic configuration
+      zscaler.ziacloud.zia_virtual_service_edge_node:
+        provider: '{{ provider }}'
+        name: "VZEN-Example-01"
+        status: ENABLED
+        ip_address: "10.0.0.100"
+        subnet_mask: "255.255.255.0"
+        default_gateway: "10.0.0.1"
+        type: "SMLB"
+        deployment_mode: STANDALONE
+
+    - name: Create a Virtual Service Edge node with cluster deployment
+      zscaler.ziacloud.zia_virtual_service_edge_node:
+        provider: '{{ provider }}'
+        status: ENABLED
+        ip_address: "10.0.0.100"
+        subnet_mask: "255.255.255.0"
+        default_gateway: "10.0.0.1"
+        type: "VZEN"
+        deployment_mode: CLUSTER
+        load_balancer_ip_address: "10.0.0.50"
+        vzen_sku_type: LARGE
+        ip_sec_enabled: false
+
+    - name: Update an existing Virtual Service Edge node by ID
+      zscaler.ziacloud.zia_virtual_service_edge_node:
+        provider: '{{ provider }}'
+        id: 123456
+        name: "VZEN-Updated"
+        status: DISABLED
+
+    - name: Delete a Virtual Service Edge node
+      zscaler.ziacloud.zia_virtual_service_edge_node:
+        provider: '{{ provider }}'
+        id: 123456
+        state: absent
+
+
+
+.. Facts
+
+
+.. Return values
+
+Return Values
+-------------
+Common return values are documented :ref:`here <common_return_values>`, the following are the fields unique to this module:
+
+.. tabularcolumns:: \X{1}{3}\X{2}{3}
+
+.. list-table::
+  :width: 100%
+  :widths: auto
+  :header-rows: 1
+  :class: longtable ansible-option-table
+
+  * - Key
+    - Description
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="return-data"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__return-data:
+
+      .. rst-class:: ansible-option-title
+
+      **data**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#return-data" title="Permalink to this return value"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`dictionary`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The Virtual Service Edge node resource record.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-returned-bold:`Returned:` on success
+
+
+      .. raw:: html
+
+        </div>
+
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="return-data/default_gateway"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__return-data/default_gateway:
+
+      .. rst-class:: ansible-option-title
+
+      **default_gateway**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#return-data/default_gateway" title="Permalink to this return value"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      The default gateway IP address.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-returned-bold:`Returned:` success
+
+
+      .. raw:: html
+
+        </div>
+
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="return-data/id"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__return-data/id:
+
+      .. rst-class:: ansible-option-title
+
+      **id**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#return-data/id" title="Permalink to this return value"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`integer`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      The unique identifier for the Virtual Service Edge node.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-returned-bold:`Returned:` success
+
+
+      .. raw:: html
+
+        </div>
+
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="return-data/in_production"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__return-data/in_production:
+
+      .. rst-class:: ansible-option-title
+
+      **in_production**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#return-data/in_production" title="Permalink to this return value"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Whether the node is deployed for production.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-returned-bold:`Returned:` success
+
+
+      .. raw:: html
+
+        </div>
+
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="return-data/ip_address"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__return-data/ip_address:
+
+      .. rst-class:: ansible-option-title
+
+      **ip_address**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#return-data/ip_address" title="Permalink to this return value"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      The Virtual Service Edge cluster IP address.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-returned-bold:`Returned:` success
+
+
+      .. raw:: html
+
+        </div>
+
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="return-data/ip_sec_enabled"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__return-data/ip_sec_enabled:
+
+      .. rst-class:: ansible-option-title
+
+      **ip_sec_enabled**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#return-data/ip_sec_enabled" title="Permalink to this return value"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Whether IPSec traffic termination is enabled.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-returned-bold:`Returned:` success
+
+
+      .. raw:: html
+
+        </div>
+
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="return-data/name"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__return-data/name:
+
+      .. rst-class:: ansible-option-title
+
+      **name**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#return-data/name" title="Permalink to this return value"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Name of the Virtual Service Edge node.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-returned-bold:`Returned:` success
+
+
+      .. raw:: html
+
+        </div>
+
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="return-data/status"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__return-data/status:
+
+      .. rst-class:: ansible-option-title
+
+      **status**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#return-data/status" title="Permalink to this return value"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      The status of the Virtual Service Edge cluster.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-returned-bold:`Returned:` success
+
+
+      .. raw:: html
+
+        </div>
+
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="return-data/subnet_mask"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__return-data/subnet_mask:
+
+      .. rst-class:: ansible-option-title
+
+      **subnet_mask**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#return-data/subnet_mask" title="Permalink to this return value"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      The Virtual Service Edge cluster subnet mask.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-returned-bold:`Returned:` success
+
+
+      .. raw:: html
+
+        </div>
+
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="return-data/type"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_virtual_service_edge_node_module__return-data/type:
+
+      .. rst-class:: ansible-option-title
+
+      **type**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#return-data/type" title="Permalink to this return value"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      The Virtual Service Edge cluster type.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-returned-bold:`Returned:` success
+
+
+      .. raw:: html
+
+        </div>
+
+
+
+
+..  Status (Presently only deprecated)
+
+
+.. Authors
+
+Authors
+~~~~~~~
+
+- William Guilherme (@willguibr)
+
+
+.. Extra links
+
+Collection links
+~~~~~~~~~~~~~~~~
+
+.. ansible-links::
+
+  - title: "Issue Tracker"
+    url: "https://github.com/zscaler/ziacloud-ansible/issues"
+    external: true
+  - title: "Repository (Sources)"
+    url: "https://github.com/zscaler/ziacloud-ansible"
+    external: true
+
+
+.. Parsing errors

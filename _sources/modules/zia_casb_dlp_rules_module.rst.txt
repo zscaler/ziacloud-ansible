@@ -1,0 +1,2827 @@
+.. Document meta
+
+:orphan:
+
+.. |antsibull-internal-nbsp| unicode:: 0xA0
+    :trim:
+
+.. meta::
+  :antsibull-docs: 2.24.0
+
+.. Anchors
+
+.. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module:
+
+.. Anchors: short name for ansible.builtin
+
+.. Title
+
+zscaler.ziacloud.zia_casb_dlp_rules module -- Manages CASB DLP rules
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+.. Collection note
+
+.. note::
+    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 2.2.0).
+
+    It is not included in ``ansible-core``.
+    To check whether it is installed, run :code:`ansible-galaxy collection list`.
+
+    To install it, use: :code:`ansible\-galaxy collection install zscaler.ziacloud`.
+    You need further requirements to be able to use this module,
+    see :ref:`Requirements <ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module_requirements>` for details.
+
+    To use it in a playbook, specify: :code:`zscaler.ziacloud.zia_casb_dlp_rules`.
+
+.. version_added
+
+.. rst-class:: ansible-version-added
+
+New in zscaler.ziacloud 1.0.0
+
+.. contents::
+   :local:
+   :depth: 1
+
+.. Deprecated
+
+
+Synopsis
+--------
+
+.. Description
+
+- Adds, updates, or removes SaaS Security Data at Rest Scanning DLP rules.
+
+
+.. Aliases
+
+
+.. Requirements
+
+.. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module_requirements:
+
+Requirements
+------------
+The below requirements are needed on the host that executes this module.
+
+- Zscaler SDK Python can be obtained from PyPI \ `https://pypi.org/project/zscaler\-sdk\-python/ <https://pypi.org/project/zscaler-sdk-python/>`__
+
+
+
+
+
+
+.. Options
+
+Parameters
+----------
+
+.. tabularcolumns:: \X{1}{3}\X{2}{3}
+
+.. list-table::
+  :width: 100%
+  :widths: auto
+  :header-rows: 1
+  :class: longtable ansible-option-table
+
+  * - Parameter
+    - Comments
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-action"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-action:
+
+      .. rst-class:: ansible-option-title
+
+      **action**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-action" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The configured action for the policy rule.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_REPORT\_INCIDENT"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_SHARE\_READ\_ONLY"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_EXTERNAL\_SHARE\_READ\_ONLY"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_INTERNAL\_SHARE\_READ\_ONLY"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_REMOVE\_PUBLIC\_LINK\_SHARE"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_REVOKE\_SHARE"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_REMOVE\_EXTERNAL\_SHARE"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_REMOVE\_INTERNAL\_SHARE"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_REMOVE\_COLLABORATORS"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_REMOVE\_INTERNAL\_LINK\_SHARE"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_REMOVE\_DISCOVERABLE"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_NOTIFY\_END\_USER"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_APPLY\_MIP\_TAG"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_APPLY\_BOX\_TAG"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_MOVE\_TO\_RESTRICTED\_FOLDER"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_REMOVE"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_QUARANTINE"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_APPLY\_EMAIL\_TAG"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_APPLY\_GOOGLEDRIVE\_LABEL"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_REMOVE\_EXT\_COLLABORATORS"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_QUARANTINE\_TO\_USER\_ROOT\_FOLDER"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_APPLY\_WATERMARK"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_REMOVE\_WATERMARK"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_APPLY\_HEADER"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_APPLY\_FOOTER"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_APPLY\_HEADER\_FOOTER"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_REMOVE\_HEADER"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_REMOVE\_FOOTER"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_REMOVE\_HEADER\_FOOTER"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_BLOCK"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_APPLY\_ATLASSIAN\_CLASSIFICATION\_LABEL"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_ALLOW"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_REDACT"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-api_key"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-api_key:
+
+      .. rst-class:: ansible-option-title
+
+      **api_key**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-api_key" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the obfuscated API key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-auditor_notification"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-auditor_notification:
+
+      .. rst-class:: ansible-option-title
+
+      **auditor_notification**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-auditor_notification" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`dictionary`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Notification template for DLP email alerts. Provide as dict with :literal:`id` key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-bucket_owner"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-bucket_owner:
+
+      .. rst-class:: ansible-option-title
+
+      **bucket_owner**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-bucket_owner" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A user who inspects their buckets for sensitive data.
+
+      When you choose a user, their buckets are available in the Buckets field.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-buckets"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-buckets:
+
+      .. rst-class:: ansible-option-title
+
+      **buckets**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-buckets" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      List of bucket IDs for the Zscaler service to inspect for sensitive data.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-casb_email_label"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-casb_email_label:
+
+      .. rst-class:: ansible-option-title
+
+      **casb_email_label**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-casb_email_label" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`dictionary`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Email label associated with the rule. Provide as dict with :literal:`id` key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-casb_tombstone_template"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-casb_tombstone_template:
+
+      .. rst-class:: ansible-option-title
+
+      **casb_tombstone_template**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-casb_tombstone_template" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`dictionary`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Quarantine tombstone template. Provide as dict with :literal:`id` key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-client_id"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-client_id:
+
+      .. rst-class:: ansible-option-title
+
+      **client_id**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-client_id" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The client ID for OAuth2 authentication.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-client_secret"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-client_secret:
+
+      .. rst-class:: ansible-option-title
+
+      **client_secret**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-client_secret" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The client secret for OAuth2 authentication.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-cloud"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-cloud:
+
+      .. rst-class:: ansible-option-title
+
+      **cloud**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-cloud" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The Zscaler cloud name provisioned for your organization.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"beta"`
+      - :ansible-option-choices-entry:`"production"`
+      - :ansible-option-choices-entry:`"zscaler"`
+      - :ansible-option-choices-entry:`"zscalerbeta"`
+      - :ansible-option-choices-entry:`"zscalergov"`
+      - :ansible-option-choices-entry:`"zscalerone"`
+      - :ansible-option-choices-entry:`"zscalerten"`
+      - :ansible-option-choices-entry:`"zscalerthree"`
+      - :ansible-option-choices-entry:`"zscalertwo"`
+      - :ansible-option-choices-entry:`"zscloud"`
+      - :ansible-option-choices-entry:`"zspreview"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-cloud_app_tenant_ids"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-cloud_app_tenant_ids:
+
+      .. rst-class:: ansible-option-title
+
+      **cloud_app_tenant_ids**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-cloud_app_tenant_ids" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      List of cloud application tenant IDs for which the rule is applied.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-collaboration_scope"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-collaboration_scope:
+
+      .. rst-class:: ansible-option-title
+
+      **collaboration_scope**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-collaboration_scope" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Collaboration scope for the rule.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-components"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-components:
+
+      .. rst-class:: ansible-option-title
+
+      **components**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-components" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      List of components for which the rule is applied.
+
+      Zscaler service inspects these components for sensitive data.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-content_location"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-content_location:
+
+      .. rst-class:: ansible-option-title
+
+      **content_location**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-content_location" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The location for the content that the Zscaler service inspects for sensitive data.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"CONTENT\_LOCATION\_PRIVATE\_CHANNEL"`
+      - :ansible-option-choices-entry:`"CONTENT\_LOCATION\_PUBLIC\_CHANNEL"`
+      - :ansible-option-choices-entry:`"CONTENT\_LOCATION\_SHARED\_CHANNEL"`
+      - :ansible-option-choices-entry:`"CONTENT\_LOCATION\_DIRECT\_MESSAGE"`
+      - :ansible-option-choices-entry:`"CONTENT\_LOCATION\_MULTI\_PERSON\_DIRECT\_MESSAGE"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-criteria_domain_profile_ids"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-criteria_domain_profile_ids:
+
+      .. rst-class:: ansible-option-title
+
+      **criteria_domain_profile_ids**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-criteria_domain_profile_ids" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      List of domain profile IDs that are mandatory in the criteria.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-departments"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-departments:
+
+      .. rst-class:: ansible-option-title
+
+      **departments**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-departments" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      List of department IDs for which the rule is applied.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-description"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-description:
+
+      .. rst-class:: ansible-option-title
+
+      **description**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-description" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      An admin editable text\-based description of the rule.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-dlp_engines"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-dlp_engines:
+
+      .. rst-class:: ansible-option-title
+
+      **dlp_engines**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-dlp_engines" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      List of DLP engine IDs to which the DLP policy rule must be applied.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-domains"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-domains:
+
+      .. rst-class:: ansible-option-title
+
+      **domains**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-domains" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The domain for the external organization sharing the channel.
+
+      Only applicable when content\_location is :literal:`CONTENT\_LOCATION\_SHARED\_CHANNEL`.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-email_recipient_profile_ids"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-email_recipient_profile_ids:
+
+      .. rst-class:: ansible-option-title
+
+      **email_recipient_profile_ids**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-email_recipient_profile_ids" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      List of recipient profile IDs for which the rule is applied.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-enabled"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-enabled:
+
+      .. rst-class:: ansible-option-title
+
+      **enabled**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-enabled" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Administrative state of the rule.
+
+      If :literal:`true`\ , rule is ENABLED. If :literal:`false`\ , rule is DISABLED.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-entity_group_ids"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-entity_group_ids:
+
+      .. rst-class:: ansible-option-title
+
+      **entity_group_ids**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-entity_group_ids" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      List of entity group IDs that are part of the rule criteria.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-excluded_domain_profile_ids"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-excluded_domain_profile_ids:
+
+      .. rst-class:: ansible-option-title
+
+      **excluded_domain_profile_ids**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-excluded_domain_profile_ids" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      List of domain profile IDs excluded from the criteria for the rule.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-external_auditor_email"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-external_auditor_email:
+
+      .. rst-class:: ansible-option-title
+
+      **external_auditor_email**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-external_auditor_email" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Email address of the external auditor to whom the DLP email alerts are sent.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-file_types"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-file_types:
+
+      .. rst-class:: ansible-option-title
+
+      **file_types**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-file_types" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      File types for which the rule is applied. If not set, applied across all file types.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-groups"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-groups:
+
+      .. rst-class:: ansible-option-title
+
+      **groups**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-groups" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      List of group IDs for which the rule is applied.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-id"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-id:
+
+      .. rst-class:: ansible-option-title
+
+      **id**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-id" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The unique identifier for the CASB DLP rule.
+
+      Used to reference an existing rule for update or delete.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-include_criteria_domain_profile"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-include_criteria_domain_profile:
+
+      .. rst-class:: ansible-option-title
+
+      **include_criteria_domain_profile**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-include_criteria_domain_profile" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      If true, criteria\_domain\_profiles is included as part of the criteria, else excluded.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-include_email_recipient_profile"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-include_email_recipient_profile:
+
+      .. rst-class:: ansible-option-title
+
+      **include_email_recipient_profile**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-include_email_recipient_profile" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      If true, email\_recipient\_profiles is included as part of the criteria, else excluded.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-include_entity_groups"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-include_entity_groups:
+
+      .. rst-class:: ansible-option-title
+
+      **include_entity_groups**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-include_entity_groups" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      If true, entity\_groups is included as part of the criteria, else excluded.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-included_domain_profile_ids"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-included_domain_profile_ids:
+
+      .. rst-class:: ansible-option-title
+
+      **included_domain_profile_ids**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-included_domain_profile_ids" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      List of domain profile IDs included in the criteria for the rule.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-labels"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-labels:
+
+      .. rst-class:: ansible-option-title
+
+      **labels**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-labels" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      List of rule label IDs associated with the rule.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-name"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-name:
+
+      .. rst-class:: ansible-option-title
+
+      **name**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-name" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string` / :ansible-option-required:`required`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Rule name.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-object_type_ids"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-object_type_ids:
+
+      .. rst-class:: ansible-option-title
+
+      **object_type_ids**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-object_type_ids" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      List of object type IDs for which the rule is applied.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-order"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-order:
+
+      .. rst-class:: ansible-option-title
+
+      **order**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-order" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`integer` / :ansible-option-required:`required`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Order of rule execution with respect to other SaaS Security Data at Rest Scanning DLP rules.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-password"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-password:
+
+      .. rst-class:: ansible-option-title
+
+      **password**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-password" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the password for the API admin.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-private_key"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-private_key:
+
+      .. rst-class:: ansible-option-title
+
+      **private_key**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-private_key" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The private key for JWT\-based OAuth2 authentication.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-provider:
+
+      .. rst-class:: ansible-option-title
+
+      **provider**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`dictionary`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A dict containing authentication credentials.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/api_key"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-provider/api_key:
+
+      .. rst-class:: ansible-option-title
+
+      **api_key**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/api_key" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Obfuscated API key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/client_id"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-provider/client_id:
+
+      .. rst-class:: ansible-option-title
+
+      **client_id**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/client_id" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      OAuth2 client ID.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/client_secret"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-provider/client_secret:
+
+      .. rst-class:: ansible-option-title
+
+      **client_secret**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/client_secret" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      OAuth2 client secret.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/cloud"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-provider/cloud:
+
+      .. rst-class:: ansible-option-title
+
+      **cloud**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/cloud" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Zscaler cloud name.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"beta"`
+      - :ansible-option-choices-entry:`"production"`
+      - :ansible-option-choices-entry:`"zscaler"`
+      - :ansible-option-choices-entry:`"zscalerbeta"`
+      - :ansible-option-choices-entry:`"zscalergov"`
+      - :ansible-option-choices-entry:`"zscalerone"`
+      - :ansible-option-choices-entry:`"zscalerten"`
+      - :ansible-option-choices-entry:`"zscalerthree"`
+      - :ansible-option-choices-entry:`"zscalertwo"`
+      - :ansible-option-choices-entry:`"zscloud"`
+      - :ansible-option-choices-entry:`"zspreview"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/password"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-provider/password:
+
+      .. rst-class:: ansible-option-title
+
+      **password**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/password" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Password for the API admin.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/private_key"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-provider/private_key:
+
+      .. rst-class:: ansible-option-title
+
+      **private_key**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/private_key" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Private key for OAuth2 JWT.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/sandbox_cloud"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-provider/sandbox_cloud:
+
+      .. rst-class:: ansible-option-title
+
+      **sandbox_cloud**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/sandbox_cloud" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Sandbox Cloud environment.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/sandbox_token"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-provider/sandbox_token:
+
+      .. rst-class:: ansible-option-title
+
+      **sandbox_token**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/sandbox_token" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Sandbox API Key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/use_legacy_client"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-provider/use_legacy_client:
+
+      .. rst-class:: ansible-option-title
+
+      **use_legacy_client**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/use_legacy_client" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Whether to use the legacy Zscaler API client.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/username"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-provider/username:
+
+      .. rst-class:: ansible-option-title
+
+      **username**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/username" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Email ID of the API admin.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-indent"></div><div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-provider/vanity_domain"></div>
+
+      .. raw:: latex
+
+        \hspace{0.02\textwidth}\begin{minipage}[t]{0.3\textwidth}
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-provider/vanity_domain:
+
+      .. rst-class:: ansible-option-title
+
+      **vanity_domain**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-provider/vanity_domain" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+      .. raw:: latex
+
+        \end{minipage}
+
+    - .. raw:: html
+
+        <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
+
+      Vanity domain for OAuth2.
+
+
+      .. raw:: html
+
+        </div>
+
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-quarantine_location"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-quarantine_location:
+
+      .. rst-class:: ansible-option-title
+
+      **quarantine_location**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-quarantine_location" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Location where all the quarantined files are moved and necessary actions are taken.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-rank"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-rank:
+
+      .. rst-class:: ansible-option-title
+
+      **rank**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-rank" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Admin rank assigned to this rule. Mandatory when admin rank\-based access restriction is enabled.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-receiver"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-receiver:
+
+      .. rst-class:: ansible-option-title
+
+      **receiver**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-receiver" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`dictionary`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Details of the DLP Incident Receiver, Provide as dict with :literal:`id` key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-recipient"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-recipient:
+
+      .. rst-class:: ansible-option-title
+
+      **recipient**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-recipient" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Specifies if the email recipient is internal or external.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-redaction_profile"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-redaction_profile:
+
+      .. rst-class:: ansible-option-title
+
+      **redaction_profile**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-redaction_profile" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`dictionary`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Redaction profile in the criteria. Provide as dict with :literal:`id` key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-sandbox_cloud"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-sandbox_cloud:
+
+      .. rst-class:: ansible-option-title
+
+      **sandbox_cloud**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-sandbox_cloud" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The Sandbox cloud environment for API access.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-sandbox_token"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-sandbox_token:
+
+      .. rst-class:: ansible-option-title
+
+      **sandbox_token**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-sandbox_token" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the Sandbox API Key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-severity"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-severity:
+
+      .. rst-class:: ansible-option-title
+
+      **severity**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-severity" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The severity level of the incidents that match the policy rule.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"RULE\_SEVERITY\_HIGH"`
+      - :ansible-option-choices-entry:`"RULE\_SEVERITY\_MEDIUM"`
+      - :ansible-option-choices-entry:`"RULE\_SEVERITY\_LOW"`
+      - :ansible-option-choices-entry:`"RULE\_SEVERITY\_INFO"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-state"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-state:
+
+      .. rst-class:: ansible-option-title
+
+      **state**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-state" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Specifies the desired state of the resource.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry-default:`"present"` :ansible-option-choices-default-mark:`← (default)`
+      - :ansible-option-choices-entry:`"absent"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-tag"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-tag:
+
+      .. rst-class:: ansible-option-title
+
+      **tag**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-tag" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`dictionary`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Tag applied to the rule. Provide as dict with :literal:`id` key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-type"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-type:
+
+      .. rst-class:: ansible-option-title
+
+      **type**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-type" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string` / :ansible-option-required:`required`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The type of SaaS Security Data at Rest Scanning DLP rule.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_FILE"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_EMAIL"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_CRM"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_ITSM"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_COLLAB"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_REPO"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_STORAGE"`
+      - :ansible-option-choices-entry:`"OFLCASB\_DLP\_GENAI"`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-use_legacy_client"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-use_legacy_client:
+
+      .. rst-class:: ansible-option-title
+
+      **use_legacy_client**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-use_legacy_client" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Whether to use the legacy Zscaler API client.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry-default:`false` :ansible-option-choices-default-mark:`← (default)`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-username"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-username:
+
+      .. rst-class:: ansible-option-title
+
+      **username**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-username" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      A string that contains the email ID of the API admin.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-users"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-users:
+
+      .. rst-class:: ansible-option-title
+
+      **users**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-users" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`list` / :ansible-option-elements:`elements=integer`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      List of user IDs for which the rule is applied.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-vanity_domain"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-vanity_domain:
+
+      .. rst-class:: ansible-option-title
+
+      **vanity_domain**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-vanity_domain" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`string`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The vanity domain provisioned by Zscaler for OAuth2 flows.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-watermark_delete_old_version"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-watermark_delete_old_version:
+
+      .. rst-class:: ansible-option-title
+
+      **watermark_delete_old_version**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-watermark_delete_old_version" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Specifies whether to delete an old version of the watermarked file.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-watermark_profile"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-watermark_profile:
+
+      .. rst-class:: ansible-option-title
+
+      **watermark_profile**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-watermark_profile" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`dictionary`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Watermark profile applied to the rule. Provide as dict with :literal:`id` key.
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-without_content_inspection"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-without_content_inspection:
+
+      .. rst-class:: ansible-option-title
+
+      **without_content_inspection**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-without_content_inspection" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`boolean`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      If true, Content Matching is set to None.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-choices:`Choices:`
+
+      - :ansible-option-choices-entry:`false`
+      - :ansible-option-choices-entry:`true`
+
+
+      .. raw:: html
+
+        </div>
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="parameter-zscaler_incident_receiver"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__parameter-zscaler_incident_receiver:
+
+      .. rst-class:: ansible-option-title
+
+      **zscaler_incident_receiver**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#parameter-zscaler_incident_receiver" title="Permalink to this option"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`dictionary`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      Zscaler Incident Receiver details. Provide as dict with :literal:`id` key.
+
+
+      .. raw:: html
+
+        </div>
+
+
+.. Attributes
+
+
+.. Notes
+
+Notes
+-----
+
+.. note::
+   - Check mode is supported.
+   - :literal:`type` and :literal:`name` are required for create. :literal:`type` with :literal:`id` or :literal:`name` for update/delete.
+
+.. Seealso
+
+
+.. Examples
+
+Examples
+--------
+
+.. code-block:: yaml+jinja
+
+    - name: Create a CASB DLP rule
+      zscaler.ziacloud.zia_casb_dlp_rules:
+        provider: '{{ provider }}'
+        name: "My DLP Rule"
+        type: OFLCASB_DLP_ITSM
+        order: 1
+        description: "Rule created by Ansible"
+        action: OFLCASB_DLP_REPORT_INCIDENT
+        severity: RULE_SEVERITY_HIGH
+        components:
+          - COMPONENT_ITSM_OBJECTS
+          - COMPONENT_ITSM_ATTACHMENTS
+        collaboration_scope:
+          - ANY
+        file_types:
+          - FTCATEGORY_APPX
+          - FTCATEGORY_SQL
+
+    - name: Update a CASB DLP rule by ID
+      zscaler.ziacloud.zia_casb_dlp_rules:
+        provider: '{{ provider }}'
+        id: 1070199
+        type: OFLCASB_DLP_ITSM
+        name: "Updated Rule Name"
+        order: 1
+
+    - name: Delete a CASB DLP rule
+      zscaler.ziacloud.zia_casb_dlp_rules:
+        provider: '{{ provider }}'
+        id: 1070199
+        type: OFLCASB_DLP_ITSM
+        state: absent
+
+
+
+.. Facts
+
+
+.. Return values
+
+Return Values
+-------------
+Common return values are documented :ref:`here <common_return_values>`, the following are the fields unique to this module:
+
+.. tabularcolumns:: \X{1}{3}\X{2}{3}
+
+.. list-table::
+  :width: 100%
+  :widths: auto
+  :header-rows: 1
+  :class: longtable ansible-option-table
+
+  * - Key
+    - Description
+
+  * - .. raw:: html
+
+        <div class="ansible-option-cell">
+        <div class="ansibleOptionAnchor" id="return-data"></div>
+
+      .. _ansible_collections.zscaler.ziacloud.zia_casb_dlp_rules_module__return-data:
+
+      .. rst-class:: ansible-option-title
+
+      **data**
+
+      .. raw:: html
+
+        <a class="ansibleOptionLink" href="#return-data" title="Permalink to this return value"></a>
+
+      .. ansible-option-type-line::
+
+        :ansible-option-type:`dictionary`
+
+      .. raw:: html
+
+        </div>
+
+    - .. raw:: html
+
+        <div class="ansible-option-cell">
+
+      The CASB DLP rule resource record.
+
+
+      .. rst-class:: ansible-option-line
+
+      :ansible-option-returned-bold:`Returned:` on success
+
+
+      .. raw:: html
+
+        </div>
+
+
+
+..  Status (Presently only deprecated)
+
+
+.. Authors
+
+Authors
+~~~~~~~
+
+- William Guilherme (@willguibr)
+
+
+.. Extra links
+
+Collection links
+~~~~~~~~~~~~~~~~
+
+.. ansible-links::
+
+  - title: "Issue Tracker"
+    url: "https://github.com/zscaler/ziacloud-ansible/issues"
+    external: true
+  - title: "Repository (Sources)"
+    url: "https://github.com/zscaler/ziacloud-ansible"
+    external: true
+
+
+.. Parsing errors

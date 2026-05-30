@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Authentication &mdash; Ansible Collections Documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=41de9001" />
-      <link rel="stylesheet" type="text/css" href="_static/css/ansible.css?v=c5b67dd2" />
+      <link rel="stylesheet" type="text/css" href="_static/css/ansible.css?v=b54c304f" />
       <link rel="stylesheet" type="text/css" href="_static/antsibull-minimal.css" />
       <link rel="stylesheet" type="text/css" href="_static/css/rtd-ethical-ads.css?v=289b023e" />
 
@@ -16,13 +16,13 @@
     <link rel="shortcut icon" href="_static/images/Ansible-Mark-RGB_Black.png"/>
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=9a3ee07e"></script>
+      <script src="_static/documentation_options.js?v=b21de401"></script>
       <script src="_static/doctools.js?v=9a2dae69"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Examples" href="examples.html" />
+    <link rel="next" title="Activation Overview" href="activation_overview.html" />
     <link rel="prev" title="Installation" href="installation.html" /><!-- extra head elements for Ansible beyond RTD Sphinx Theme -->
 
 
@@ -77,13 +77,17 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="requirements.html">Requirements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Authentication</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Authentication</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#choosing-your-authentication-method">Choosing Your Authentication Method</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="#zscaler-oneapi-new-framework">Zscaler OneAPI New Framework</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#client-secret-authentication">Client Secret Authentication</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#private-key-authentication">Private Key Authentication</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#legacy-api-authentication">Legacy API Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="activation_overview.html">Activation Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Module reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="common_return_values.html">Common Return Values</a></li>
@@ -133,14 +137,21 @@
   <section id="authentication">
 <h1>Authentication<a class="headerlink" href="#authentication" title="Link to this heading"></a></h1>
 <p>This guide covers the authentication methods available for the ZIA Ansible Collection modules.</p>
+<section id="choosing-your-authentication-method">
+<h2>Choosing Your Authentication Method<a class="headerlink" href="#choosing-your-authentication-method" title="Link to this heading"></a></h2>
+<p>The collection supports two mutually exclusive modes:</p>
+<ul class="simple">
+<li><p><strong>OneAPI (default)</strong> – Use when your tenant is migrated to (<a class="reference external" href="https://help.zscaler.com/zidentity/what-zidentity">Zidentity</a>). Requires <code class="docutils literal notranslate"><span class="pre">client_id</span></code> plus either <code class="docutils literal notranslate"><span class="pre">client_secret</span></code> or <code class="docutils literal notranslate"><span class="pre">private_key</span></code>, and <code class="docutils literal notranslate"><span class="pre">vanity_domain</span></code>. The <code class="docutils literal notranslate"><span class="pre">cloud</span></code> parameter is optional (omit for production; use <code class="docutils literal notranslate"><span class="pre">beta</span></code> for beta).</p></li>
+<li><p><strong>Legacy</strong> – Use when your tenant is <strong>not</strong> on Zidentity, or for <code class="docutils literal notranslate"><span class="pre">zscalergov</span></code> and <code class="docutils literal notranslate"><span class="pre">zscalerten</span></code> clouds (OneAPI is not supported there). Requires <code class="docutils literal notranslate"><span class="pre">use_legacy_client:</span> <span class="pre">true</span></code> plus <code class="docutils literal notranslate"><span class="pre">username</span></code>, <code class="docutils literal notranslate"><span class="pre">password</span></code>, <code class="docutils literal notranslate"><span class="pre">api_key</span></code>, and <code class="docutils literal notranslate"><span class="pre">cloud</span></code>. The <code class="docutils literal notranslate"><span class="pre">cloud</span></code> parameter is required; use one of: zscaler, zscloud, zscalerbeta, zspreview, zscalerone, zscalertwo, zscalerthree, zscalergov, zscalerten.</p></li>
+</ul>
+</section>
 </section>
 <section id="zscaler-oneapi-new-framework">
 <h1>Zscaler OneAPI New Framework<a class="headerlink" href="#zscaler-oneapi-new-framework" title="Link to this heading"></a></h1>
-<p>The ZIA Ansible Collection now offers support for (<a class="reference external" href="https://help.zscaler.com/oneapi/understanding-oneapi">OneAPI</a>) OAuth2 authentication through (<a class="reference external" href="https://help.zscaler.com/zidentity/what-zidentity">Zidentity</a>)</p>
+<p>The ZIA Ansible Collection offers (<a class="reference external" href="https://help.zscaler.com/oneapi/understanding-oneapi">OneAPI</a>) OAuth2 authentication through (<a class="reference external" href="https://help.zscaler.com/zidentity/what-zidentity">Zidentity</a>).</p>
 <ul class="simple">
-<li><p>NOTE: As of version v2.0.0, this Ansible Collection offers backwards compatibility to the Zscaler legacy API framework. This is the recommended authentication method for organizations whose tenants are still not migrated to (<a class="reference external" href="https://help.zscaler.com/zidentity/what-zidentity">Zidentity</a>)</p></li>
-<li><p>NOTE: Notice that OneAPI and Zidentity is not currently supported for the following clouds: <cite>zscalergov</cite> and <cite>zscalerten</cite>. Refer to the Legacy API Framework for more information on how authenticate to these environments</p></li>
-<li><p>NOTE: The authentication parameter <cite>cloud</cite> or <cite>ZSCALER_CLOUD</cite> are optional, and only required when authenticating to a non-production environment i.e <cite>beta</cite></p></li>
+<li><p>NOTE: OneAPI is not supported for <code class="docutils literal notranslate"><span class="pre">zscalergov</span></code> and <code class="docutils literal notranslate"><span class="pre">zscalerten</span></code>. Use the Legacy API Framework for those clouds. See <a class="reference internal" href="#legacy-api-authentication">Legacy API Authentication</a> below.</p></li>
+<li><p>NOTE: For OneAPI: The <code class="docutils literal notranslate"><span class="pre">cloud</span></code> parameter or <code class="docutils literal notranslate"><span class="pre">ZSCALER_CLOUD</span></code> env var is optional. Omit for production. Set to <code class="docutils literal notranslate"><span class="pre">beta</span></code> only when authenticating to the beta environment. Legacy cloud names (zscalerone, zscalertwo, etc.) must not be used with OneAPI—they would break the API URL.</p></li>
 </ul>
 <section id="client-secret-authentication">
 <h2>Client Secret Authentication<a class="headerlink" href="#client-secret-authentication" title="Link to this heading"></a></h2>
@@ -311,7 +322,8 @@ For example, to execute the <cite>zia_rule_labels.yml</cite> playbook using <cit
 </section>
 <section id="legacy-api-authentication">
 <h1>Legacy API Authentication<a class="headerlink" href="#legacy-api-authentication" title="Link to this heading"></a></h1>
-<p>The ZIA Ansible Collection supports the following environments:</p>
+<p>Use Legacy authentication when your tenant is not on Zidentity, or for <code class="docutils literal notranslate"><span class="pre">zscalergov</span></code> and <code class="docutils literal notranslate"><span class="pre">zscalerten</span></code> clouds. You must set <code class="docutils literal notranslate"><span class="pre">use_legacy_client:</span> <span class="pre">true</span></code> (or <code class="docutils literal notranslate"><span class="pre">ZSCALER_USE_LEGACY_CLIENT=true</span></code>) and provide <code class="docutils literal notranslate"><span class="pre">username</span></code>, <code class="docutils literal notranslate"><span class="pre">password</span></code>, <code class="docutils literal notranslate"><span class="pre">api_key</span></code>, and <code class="docutils literal notranslate"><span class="pre">cloud</span></code>. The <code class="docutils literal notranslate"><span class="pre">cloud</span></code> parameter is required.</p>
+<p>The ZIA Ansible Collection supports the following cloud environments for Legacy:</p>
 <ul class="simple">
 <li><p>zscaler</p></li>
 <li><p>zscalerone</p></li>
@@ -421,7 +433,7 @@ For example, to execute the <cite>zia_rule_labels.yml</cite> playbook using <cit
 
 <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="examples.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="activation_overview.html" class="btn btn-neutral float-right" title="Activation Overview" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -6,7 +6,7 @@
     :trim:
 
 .. meta::
-  :antsibull-docs: 2.21.0
+  :antsibull-docs: 2.24.0
 
 .. Anchors
 
@@ -22,12 +22,12 @@ zscaler.ziacloud.zia_atp_settings_info module -- Retrieves the advanced threat c
 .. Collection note
 
 .. note::
-    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 2.0.7).
+    This module is part of the `zscaler.ziacloud collection <https://galaxy.ansible.com/ui/repo/published/zscaler/ziacloud/>`_ (version 2.2.0).
 
     It is not included in ``ansible-core``.
     To check whether it is installed, run :code:`ansible-galaxy collection list`.
 
-    To install it, use: :code:`ansible-galaxy collection install zscaler.ziacloud`.
+    To install it, use: :code:`ansible\-galaxy collection install zscaler.ziacloud`.
     You need further requirements to be able to use this module,
     see :ref:`Requirements <ansible_collections.zscaler.ziacloud.zia_atp_settings_info_module_requirements>` for details.
 
@@ -65,7 +65,7 @@ Requirements
 ------------
 The below requirements are needed on the host that executes this module.
 
-- Zscaler SDK Python can be obtained from PyPI \ `https://pypi.org/project/zscaler-sdk-python/ <https://pypi.org/project/zscaler-sdk-python/>`__
+- Zscaler SDK Python can be obtained from PyPI \ `https://pypi.org/project/zscaler\-sdk\-python/ <https://pypi.org/project/zscaler-sdk-python/>`__
 
 
 
@@ -224,16 +224,17 @@ Parameters
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry:`"zscloud"`
-      - :ansible-option-choices-entry:`"zscaler"`
-      - :ansible-option-choices-entry:`"zscalerone"`
-      - :ansible-option-choices-entry:`"zscalertwo"`
-      - :ansible-option-choices-entry:`"zscalerthree"`
-      - :ansible-option-choices-entry:`"zscalerbeta"`
-      - :ansible-option-choices-entry:`"zscalergov"`
-      - :ansible-option-choices-entry:`"zscalerten"`
       - :ansible-option-choices-entry:`"beta"`
       - :ansible-option-choices-entry:`"production"`
+      - :ansible-option-choices-entry:`"zscaler"`
+      - :ansible-option-choices-entry:`"zscalerbeta"`
+      - :ansible-option-choices-entry:`"zscalergov"`
+      - :ansible-option-choices-entry:`"zscalerone"`
+      - :ansible-option-choices-entry:`"zscalerten"`
+      - :ansible-option-choices-entry:`"zscalerthree"`
+      - :ansible-option-choices-entry:`"zscalertwo"`
+      - :ansible-option-choices-entry:`"zscloud"`
+      - :ansible-option-choices-entry:`"zspreview"`
 
 
       .. raw:: html
@@ -301,7 +302,7 @@ Parameters
 
         <div class="ansible-option-cell">
 
-      The private key for JWT-based OAuth2 authentication.
+      The private key for JWT\-based OAuth2 authentication.
 
 
       .. raw:: html
@@ -510,16 +511,17 @@ Parameters
 
       :ansible-option-choices:`Choices:`
 
-      - :ansible-option-choices-entry:`"zscloud"`
-      - :ansible-option-choices-entry:`"zscaler"`
-      - :ansible-option-choices-entry:`"zscalerone"`
-      - :ansible-option-choices-entry:`"zscalertwo"`
-      - :ansible-option-choices-entry:`"zscalerthree"`
-      - :ansible-option-choices-entry:`"zscalerbeta"`
-      - :ansible-option-choices-entry:`"zscalergov"`
-      - :ansible-option-choices-entry:`"zscalerten"`
       - :ansible-option-choices-entry:`"beta"`
       - :ansible-option-choices-entry:`"production"`
+      - :ansible-option-choices-entry:`"zscaler"`
+      - :ansible-option-choices-entry:`"zscalerbeta"`
+      - :ansible-option-choices-entry:`"zscalergov"`
+      - :ansible-option-choices-entry:`"zscalerone"`
+      - :ansible-option-choices-entry:`"zscalerten"`
+      - :ansible-option-choices-entry:`"zscalerthree"`
+      - :ansible-option-choices-entry:`"zscalertwo"`
+      - :ansible-option-choices-entry:`"zscloud"`
+      - :ansible-option-choices-entry:`"zspreview"`
 
 
       .. raw:: html
@@ -1952,7 +1954,7 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      Indicates whether to allow or block third-party websites that gather cookie information,
+      Indicates whether to allow or block third\-party websites that gather cookie information,
 
       which can be used to personally identify users, track internet activity, or steal a user's session or sensitive information.
 
@@ -2774,7 +2776,7 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
 
         <div class="ansible-option-indent-desc"></div><div class="ansible-option-cell">
 
-      Indicates whether to allow or block this type of cross-site scripting (XSS)
+      Indicates whether to allow or block this type of cross\-site scripting (XSS)
 
 
       .. rst-class:: ansible-option-line
