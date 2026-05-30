@@ -1,11 +1,15 @@
 name: Unit Tests
 
 on:
+  # Run when a PR is merged into master.
   push:
     branches: [master]
+  # Run when a PR is opened/updated (opened, synchronize, reopened).
   pull_request:
+  # Run daily, Monday to Friday at 06:00 PST (14:00 UTC).
   schedule:
     - cron: '0 14 * * 1-5'
+  # Allow manual runs on demand.
   workflow_dispatch:
 
 permissions:
