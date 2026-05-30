@@ -11,7 +11,7 @@ The **Zscaler Internet Access Collection** has the following requirements in ord
 Python dependencies
 ----------------------
 
-The minimum python version for this collection is python `3.9`.
+The minimum python version for this collection is python `3.10`.
 
 The Python module dependencies are not automatically handled by `ansible-galaxy`. To manually install these dependencies, you have the following options:
 

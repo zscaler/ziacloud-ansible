@@ -165,7 +165,7 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 def core(module):
     client = ZIAClientHelper(module)
 
-    result, _unused, error = client.browser_control_settings.get_browser_control_settings()
+    result, _unused, error = client.secure_browsing.get_browser_control_settings()
     if error:
         module.fail_json(msg=f"Error retrieving Browser Control policy: {to_native(error)}")
     if result is None:

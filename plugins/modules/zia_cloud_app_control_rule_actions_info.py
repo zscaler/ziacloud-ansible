@@ -39,6 +39,9 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 notes:
     - Check mode is not supported.
+    - C(query) (JMESPath) is applied locally to the retrieved list of actions before the derived
+      C(available_actions), C(available_actions_without_isolate), C(isolate_actions) and
+      C(filtered_actions) outputs are computed.
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
   - zscaler.ziacloud.fragments.documentation
@@ -64,6 +67,15 @@ options:
     required: false
     type: list
     elements: str
+  query:
+    description:
+      - An optional JMESPath expression applied locally to the flat list of action strings returned by the API.
+      - Use this for advanced client-side filtering/projection when C(action_prefixes) is not enough.
+      - The expression operates on a list of strings, so reference the current element with C(@)
+        (e.g. C([?starts_with(@, 'ALLOW')])).
+      - Applied before the derived action lists are computed. See U(https://jmespath.org/) for the syntax.
+    required: false
+    type: str
 """
 
 EXAMPLES = r"""
@@ -85,12 +97,31 @@ EXAMPLES = r"""
       - "ALLOW"
       - "BLOCK"
   register: result
+
+- name: Get only ALLOW actions using a JMESPath query
+  zscaler.ziacloud.zia_cloud_app_control_rule_actions_info:
+    provider: '{{ provider }}'
+    type: "STREAMING_MEDIA"
+    cloud_apps:
+      - "DROPBOX"
+    query: "[?starts_with(@, 'ALLOW')]"
+  register: result
+
+- name: Exclude ISOLATE actions using a JMESPath query
+  zscaler.ziacloud.zia_cloud_app_control_rule_actions_info:
+    provider: '{{ provider }}'
+    type: "WEBMAIL"
+    cloud_apps:
+      - "AOL_MAIL"
+    query: "[?!starts_with(@, 'ISOLATE')]"
+  register: result
 """
 
 RETURN = r"""
 available_actions:
   description:
     - List of all available actions for the specified cloud applications and rule type (includes ISOLATE actions).
+    - When C(query) is set, this list reflects the result of the JMESPath expression.
   returned: always
   type: list
   elements: str
@@ -120,6 +151,9 @@ from traceback import format_exc
 
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
+    filter_by_jmespath,
+)
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
     ZIAClientHelper,
 )
@@ -129,6 +163,7 @@ def core(module):
     rule_type = module.params.get("type")
     cloud_apps = module.params.get("cloud_apps") or []
     action_prefixes = module.params.get("action_prefixes") or []
+    query = module.params.get("query")
 
     if not cloud_apps:
         module.fail_json(msg="cloud_apps is required and must be a non-empty list.")
@@ -139,6 +174,16 @@ def core(module):
         module.fail_json(msg=f"Error retrieving available actions: {to_native(error)}")
 
     actions = list(actions) if actions else []
+
+    if query:
+        try:
+            actions = filter_by_jmespath(actions, query)
+        except (ImportError, ValueError) as e:
+            module.fail_json(msg=to_native(e))
+        if actions is None:
+            actions = []
+        elif not isinstance(actions, list):
+            actions = [actions]
 
     # Separate ISOLATE actions from non-ISOLATE actions
     actions_without_isolate = [a for a in actions if not a.startswith("ISOLATE_")]
@@ -170,6 +215,7 @@ def main():
             type=dict(type="str", required=True),
             cloud_apps=dict(type="list", elements="str", required=True),
             action_prefixes=dict(type="list", elements="str", required=False),
+            query=dict(type="str", required=False),
         )
     )
     module = AnsibleModule(

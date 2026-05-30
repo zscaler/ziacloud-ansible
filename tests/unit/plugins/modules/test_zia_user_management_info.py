@@ -83,3 +83,63 @@ class TestUserManagementinfoModule(ModuleTestCase):
 
         with pytest.raises(AnsibleFailJson):
             zia_user_management_info.main()
+
+    def test_jmespath_query_filter(self, mock_client):
+        mock_client.user_management.list_users.return_value = (
+            [
+                MockBox({"id": 1, "name": "Adam", "department": {"name": "Engineering"}}),
+                MockBox({"id": 2, "name": "Beth", "department": {"name": "Marketing"}}),
+                MockBox({"id": 3, "name": "Carl", "department": {"name": "Engineering"}}),
+            ],
+            None,
+            None,
+        )
+        set_module_args(provider=DEFAULT_PROVIDER, query="[?department.name == 'Engineering']")
+        from ansible_collections.zscaler.ziacloud.plugins.modules import zia_user_management_info
+
+        with pytest.raises(AnsibleExitJson) as result:
+            zia_user_management_info.main()
+        users = result.value.result["users"]
+        assert [u["name"] for u in users] == ["Adam", "Carl"]
+
+    def test_jmespath_query_projection(self, mock_client):
+        mock_client.user_management.list_users.return_value = (
+            [
+                MockBox({"id": 1, "name": "Adam", "email": "adam@example.com"}),
+                MockBox({"id": 2, "name": "Beth", "email": "beth@example.com"}),
+            ],
+            None,
+            None,
+        )
+        set_module_args(provider=DEFAULT_PROVIDER, query="[*].email")
+        from ansible_collections.zscaler.ziacloud.plugins.modules import zia_user_management_info
+
+        with pytest.raises(AnsibleExitJson) as result:
+            zia_user_management_info.main()
+        assert result.value.result["users"] == ["adam@example.com", "beth@example.com"]
+
+    def test_jmespath_query_no_match_returns_empty(self, mock_client):
+        mock_client.user_management.list_users.return_value = (
+            [MockBox({"id": 1, "name": "Adam"})],
+            None,
+            None,
+        )
+        set_module_args(provider=DEFAULT_PROVIDER, query="[?name == 'does-not-exist']")
+        from ansible_collections.zscaler.ziacloud.plugins.modules import zia_user_management_info
+
+        with pytest.raises(AnsibleExitJson) as result:
+            zia_user_management_info.main()
+        assert result.value.result["users"] == []
+
+    def test_invalid_jmespath_query_fails(self, mock_client):
+        mock_client.user_management.list_users.return_value = (
+            [MockBox({"id": 1, "name": "Adam"})],
+            None,
+            None,
+        )
+        set_module_args(provider=DEFAULT_PROVIDER, query="[?broken(")
+        from ansible_collections.zscaler.ziacloud.plugins.modules import zia_user_management_info
+
+        with pytest.raises(AnsibleFailJson) as result:
+            zia_user_management_info.main()
+        assert "JMESPath" in result.value.result["msg"]

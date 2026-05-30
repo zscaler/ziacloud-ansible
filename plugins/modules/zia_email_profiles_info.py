@@ -28,10 +28,10 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 ---
-module: zia_admin_roles_info
-short_description: "Gets a list of admin roles"
+module: zia_email_profiles_info
+short_description: "Gets a list of ZIA Email Profiles"
 description:
-  - "Gets a list of admin roles"
+  - "Gets a list of ZIA Email Profiles, optionally filtered by ID or name."
 author:
   - William Guilherme (@willguibr)
 version_added: "2.0.0"
@@ -45,110 +45,101 @@ extends_documentation_fragment:
 
 options:
   id:
-    description:
-      - Admin role ID.
+    description: "The unique identifier for the email profile."
     type: int
     required: false
   name:
-    description:
-      - Name of the admin role.
+    description: "The name of the email profile."
     required: false
     type: str
 """
 
 EXAMPLES = r"""
-- name: Gets a list of all admin roles
-  zscaler.ziacloud.zia_admin_roles_info:
-  provider: '{{ provider }}'
-
-- name: Gets a list of an admin roles
-  zscaler.ziacloud.zia_admin_roles_info:
+- name: Gets all email profiles
+  zscaler.ziacloud.zia_email_profiles_info:
     provider: '{{ provider }}'
-    name: "Engineering"
+
+- name: Gets an email profile by name
+  zscaler.ziacloud.zia_email_profiles_info:
+    provider: '{{ provider }}'
+    name: "Example"
 """
 
 RETURN = r"""
-roles:
-  description: >-
-    List of roles returned from Zscaler ZIA based on the provided criteria. Each element in the list
-    is a dictionary that describes a role.
+profiles:
+  description: A list of email profiles fetched based on the given criteria.
   returned: always
   type: list
   elements: dict
   contains:
     id:
-      description: The unique identifier for the admin role.
-      type: int
+      description: The unique identifier for the email profile.
       returned: always
-      sample: 26270
+      type: int
+      sample: 3687131
     name:
-      description: The name of the admin role.
-      type: str
+      description: The name of the email profile.
       returned: always
-      sample: "Engineering_Role"
-    rank:
-      description: The rank associated with the admin role.
-      type: int
-      returned: when available
-      sample: 7
-    report_time_duration:
-      description: The time duration for reporting, represented in minutes. A value of -1 may indicate unlimited or not applicable.
-      type: int
-      returned: when available
-      sample: -1
-    role_type:
-      description: The type of the admin role, indicating the role's scope and permissions.
       type: str
+      sample: "Example"
+    description:
+      description: Additional information about the email profile.
       returned: always
-      sample: "EXEC_INSIGHT_AND_ORG_ADMIN"
+      type: str
+      sample: "Example email profile"
+    emails:
+      description: The list of email addresses associated with the email profile.
+      returned: always
+      type: list
+      elements: str
+      sample: ["john.doe@example.com"]
 """
 
 from traceback import format_exc
+
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
     ZIAClientHelper,
 )
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
+    collect_all_items,
+)
 
 
 def core(module):
-    role_id = module.params.get("id", None)
-    role_name = module.params.get("name", None)
+    profile_id = module.params.get("id")
+    profile_name = module.params.get("name")
+
     client = ZIAClientHelper(module)
-    roles = []
+    profiles = []
 
-    if role_id:
-        # Get role by ID
-        result, _unused, error = client.admin_roles.get_role(role_id)
-        if error:
-            module.fail_json(msg=f"Error fetching role with id {role_id}: {to_native(error)}")
-        if result:
-            roles = [result.as_dict()]
+    if profile_id is not None:
+        result, _unused, error = client.email_profiles.get_email_profile(profile_id)
+        if error or result is None:
+            module.fail_json(msg=f"Failed to retrieve Email Profile with ID '{profile_id}': {to_native(error)}")
+        profiles = [result.as_dict()]
     else:
-        # List roles with optional name filter
         query_params = {}
-        if role_name:
-            query_params["search"] = role_name
+        if profile_name:
+            query_params["search"] = profile_name
 
-        result, _unused, error = client.admin_roles.list_roles(query_params=query_params)
-        if error:
-            module.fail_json(msg=f"Error listing roles: {to_native(error)}")
+        result, err = collect_all_items(client.email_profiles.list_email_profiles, query_params)
+        if err:
+            module.fail_json(msg=f"Error retrieving Email Profiles: {to_native(err)}")
 
-        roles = [role.as_dict() for role in result] if result else []
+        profile_list = [p.as_dict() if hasattr(p, "as_dict") else p for p in result] if result else []
 
-        # If name was specified but not found in search, try exact match
-        if role_name and not roles:
-            result, _unused, error = client.admin_roles.list_roles()
-            if error:
-                module.fail_json(msg=f"Error listing all roles: {to_native(error)}")
+        if profile_name:
+            matched = next((p for p in profile_list if p.get("name") == profile_name), None)
+            if not matched:
+                available = [p.get("name") for p in profile_list]
+                module.fail_json(msg=f"Email Profile with name '{profile_name}' not found. Available profiles: {available}")
+            profiles = [matched]
+        else:
+            profiles = profile_list
 
-            all_roles = [role.as_dict() for role in result] if result else []
-            for role in all_roles:
-                if role.get("name") == role_name:
-                    roles = [role]
-                    break
-
-    module.exit_json(changed=False, roles=roles)
+    module.exit_json(changed=False, profiles=profiles)
 
 
 def main():
@@ -157,11 +148,13 @@ def main():
         name=dict(type="str", required=False),
         id=dict(type="int", required=False),
     )
+
     module = AnsibleModule(
         argument_spec=argument_spec,
         supports_check_mode=True,
-        mutually_exclusive=[("name", "id")],
+        mutually_exclusive=[["name", "id"]],
     )
+
     try:
         core(module)
     except Exception as e:

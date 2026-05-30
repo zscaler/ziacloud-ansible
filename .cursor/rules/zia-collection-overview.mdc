@@ -1,0 +1,41 @@
+---
+description: Overview and core conventions for the zscaler.ziacloud Ansible Collection
+alwaysApply: true
+---
+
+# zscaler.ziacloud Collection
+
+This repo is an Ansible Collection (`zscaler.ziacloud`) for **Zscaler Internet
+Access (ZIA)**, built on top of the `zscaler-sdk-python` SDK. Modules never call
+the REST API directly — all calls go through the SDK via `ZIAClientHelper`.
+
+See `CLAUDE.md` at the repo root for the full guide.
+
+## Non-negotiables
+
+- Module files: `plugins/modules/zia_<resource>.py` (CRUD) and
+  `zia_<resource>_info.py` (read-only). FQCN `zscaler.ziacloud.zia_<resource>`.
+- Every new/changed module **MUST** ship with:
+  1. a unit test at `tests/unit/plugins/modules/test_zia_<resource>.py`,
+  2. an ignore entry in **every** `tests/sanity/ignore-2.1X.txt`
+     (`plugins/modules/zia_<resource>.py validate-modules:missing-gplv3-license`),
+  3. passing `black` formatting (`make format` / `make check-format`).
+- Keep the version in sync between `galaxy.yml` and
+  `plugins/module_utils/version.py`.
+- Reuse `plugins/module_utils/utils.py` helpers (`deleteNone`, `normalize_list`,
+  `collect_all_items`, validators) and `plugins/doc_fragments/fragments.py`
+  documentation fragments instead of duplicating them.
+
+## SDK call contract
+
+```python
+client = ZIAClientHelper(module)              # __getattr__ -> client.zia.<service>
+result, _unused, error = client.<service>.<method>(...)
+if error:
+    module.fail_json(msg=f"Error ...: {to_native(error)}")
+data = result.as_dict() if hasattr(result, "as_dict") else result
+```
+
+When in doubt, copy the structure of the closest existing module
+(e.g. `zia_rule_labels.py` for simple CRUD, `zia_cloud_firewall_ips_rules.py`
+for rule-style resources).

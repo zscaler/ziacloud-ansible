@@ -49,12 +49,12 @@ class TestBrowserControlPolicyModule(ModuleTestCase):
             client_instance = MagicMock()
             mock_class.return_value = client_instance
 
-            client_instance.browser_control_settings.update_browser_control_settings.return_value = (
+            client_instance.secure_browsing.update_browser_control_settings.return_value = (
                 MockBox({"id": 1, "name": "test", "whitelist_urls": [], "blacklist_urls": []}),
                 None,
                 None,
             )
-            client_instance.browser_control_settings.get_browser_control_settings.return_value = (
+            client_instance.secure_browsing.get_browser_control_settings.return_value = (
                 MockBox({"id": 1, "name": "test", "whitelist_urls": [], "blacklist_urls": []}),
                 None,
                 None,
@@ -62,7 +62,7 @@ class TestBrowserControlPolicyModule(ModuleTestCase):
             yield client_instance
 
     def test_list_or_get(self, mock_client):
-        mock_client.browser_control_settings.get_browser_control_settings.return_value = (
+        mock_client.secure_browsing.get_browser_control_settings.return_value = (
             MockBox({"id": 1, "name": "test", "whitelist_urls": [], "blacklist_urls": []}),
             None,
             None,
@@ -75,7 +75,7 @@ class TestBrowserControlPolicyModule(ModuleTestCase):
         assert result.value.result["changed"] is False
 
     def test_api_error(self, mock_client):
-        mock_client.browser_control_settings.get_browser_control_settings.return_value = (None, None, "API Error")
+        mock_client.secure_browsing.get_browser_control_settings.return_value = (None, None, "API Error")
         set_module_args(provider=DEFAULT_PROVIDER)
         from ansible_collections.zscaler.ziacloud.plugins.modules import zia_browser_control_policy
 
@@ -84,7 +84,7 @@ class TestBrowserControlPolicyModule(ModuleTestCase):
 
     def test_state_absent_no_op(self, mock_client):
         """state=absent is a no-op for singleton - cannot delete."""
-        mock_client.browser_control_settings.get_browser_control_settings.return_value = (
+        mock_client.secure_browsing.get_browser_control_settings.return_value = (
             MockBox({"plugin_check_frequency": "DAILY", "enable_warnings": True}),
             None,
             None,
@@ -100,7 +100,7 @@ class TestBrowserControlPolicyModule(ModuleTestCase):
     def test_check_mode_with_diff(self, mock_client):
         """check_mode when policy differs - reports changed."""
         current = {"plugin_check_frequency": "DAILY", "enable_warnings": False}
-        mock_client.browser_control_settings.get_browser_control_settings.return_value = (MockBox(current), None, None)
+        mock_client.secure_browsing.get_browser_control_settings.return_value = (MockBox(current), None, None)
         set_module_args(provider=DEFAULT_PROVIDER, plugin_check_frequency="WEEKLY", _ansible_check_mode=True)
         from ansible_collections.zscaler.ziacloud.plugins.modules import zia_browser_control_policy
 
@@ -111,7 +111,7 @@ class TestBrowserControlPolicyModule(ModuleTestCase):
     def test_check_mode_no_diff(self, mock_client):
         """check_mode when policy matches - no change."""
         current = {"plugin_check_frequency": "DAILY", "enable_warnings": True}
-        mock_client.browser_control_settings.get_browser_control_settings.return_value = (MockBox(current), None, None)
+        mock_client.secure_browsing.get_browser_control_settings.return_value = (MockBox(current), None, None)
         set_module_args(provider=DEFAULT_PROVIDER, plugin_check_frequency="DAILY", enable_warnings=True, _ansible_check_mode=True)
         from ansible_collections.zscaler.ziacloud.plugins.modules import zia_browser_control_policy
 
@@ -121,8 +121,8 @@ class TestBrowserControlPolicyModule(ModuleTestCase):
 
     def test_update_error_path(self, mock_client):
         """API error on update."""
-        mock_client.browser_control_settings.get_browser_control_settings.return_value = (MockBox({"plugin_check_frequency": "WEEKLY"}), None, None)
-        mock_client.browser_control_settings.update_browser_control_settings.return_value = (None, None, "Update failed")
+        mock_client.secure_browsing.get_browser_control_settings.return_value = (MockBox({"plugin_check_frequency": "WEEKLY"}), None, None)
+        mock_client.secure_browsing.update_browser_control_settings.return_value = (None, None, "Update failed")
         set_module_args(provider=DEFAULT_PROVIDER, plugin_check_frequency="DAILY")
         from ansible_collections.zscaler.ziacloud.plugins.modules import zia_browser_control_policy
 
@@ -132,8 +132,8 @@ class TestBrowserControlPolicyModule(ModuleTestCase):
     def test_smart_isolation_profile_dict_path(self, mock_client):
         """smart_isolation_profile as dict - branch coverage for profile path."""
         current = {"smart_isolation_profile": {"id": "abc-123"}}
-        mock_client.browser_control_settings.get_browser_control_settings.return_value = (MockBox(current), None, None)
-        mock_client.browser_control_settings.update_browser_control_settings.return_value = (
+        mock_client.secure_browsing.get_browser_control_settings.return_value = (MockBox(current), None, None)
+        mock_client.secure_browsing.update_browser_control_settings.return_value = (
             MockBox({"smart_isolation_profile": {"id": "xyz-456"}}),
             None,
             None,
@@ -152,8 +152,8 @@ class TestBrowserControlPolicyModule(ModuleTestCase):
     def test_smart_isolation_users_groups_int_ids(self, mock_client):
         """smart_isolation_users/groups with int IDs - branch coverage."""
         current = {"smart_isolation_users": [], "smart_isolation_groups": []}
-        mock_client.browser_control_settings.get_browser_control_settings.return_value = (MockBox(current), None, None)
-        mock_client.browser_control_settings.update_browser_control_settings.return_value = (MockBox({}), None, None)
+        mock_client.secure_browsing.get_browser_control_settings.return_value = (MockBox(current), None, None)
+        mock_client.secure_browsing.update_browser_control_settings.return_value = (MockBox({}), None, None)
         set_module_args(
             provider=DEFAULT_PROVIDER,
             smart_isolation_users=[100, 200],
@@ -164,3 +164,34 @@ class TestBrowserControlPolicyModule(ModuleTestCase):
         with pytest.raises(AnsibleExitJson) as result:
             zia_browser_control_policy.main()
         assert result.value.result["changed"] is True
+
+    def test_smart_isolation_requires_profile(self, mock_client):
+        """enable_smart_browser_isolation=True without smart_isolation_profile must fail (required_if)."""
+        set_module_args(
+            provider=DEFAULT_PROVIDER,
+            enable_smart_browser_isolation=True,
+        )
+        from ansible_collections.zscaler.ziacloud.plugins.modules import zia_browser_control_policy
+
+        with pytest.raises(AnsibleFailJson) as result:
+            zia_browser_control_policy.main()
+        assert "smart_isolation_profile" in result.value.result["msg"]
+
+    def test_update_refetches_persisted_state(self, mock_client):
+        """After update, the module re-fetches via get_browser_control_settings and returns that state."""
+        initial = {"plugin_check_frequency": "WEEKLY", "enable_warnings": False}
+        persisted = {"plugin_check_frequency": "DAILY", "enable_warnings": True}
+        mock_client.secure_browsing.get_browser_control_settings.side_effect = [
+            (MockBox(initial), None, None),
+            (MockBox(persisted), None, None),
+        ]
+        mock_client.secure_browsing.update_browser_control_settings.return_value = (MockBox(initial), None, None)
+        set_module_args(provider=DEFAULT_PROVIDER, plugin_check_frequency="DAILY")
+        from ansible_collections.zscaler.ziacloud.plugins.modules import zia_browser_control_policy
+
+        with pytest.raises(AnsibleExitJson) as result:
+            zia_browser_control_policy.main()
+        mock_client.secure_browsing.update_browser_control_settings.assert_called_once()
+        assert mock_client.secure_browsing.get_browser_control_settings.call_count == 2
+        assert result.value.result["changed"] is True
+        assert result.value.result["data"]["plugin_check_frequency"] == "DAILY"

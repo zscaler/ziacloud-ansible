@@ -9,11 +9,37 @@ Releases
 Zscaler Internet Access (ZIA) Ansible Collection Changelog
 ----------------------------------------------------------
 
+Version 2.2.0
+==============
+
+v2.2.0 (May 29, 2026)
+---------------------------
+
+### Notes
+
+- Python Versions: **v3.9, v3.10, v3.11**
+
+#### Enhancements
+
+* (`#119 <https://github.com/zscaler/ziacloud-ansible/pull/119>`_) - Added new resources `zia_ips_signature_rules` and `zia_ips_signature_rules_info` - Manage IPS Signature Rules
+* (`#119 <https://github.com/zscaler/ziacloud-ansible/pull/119>`_) - Added new resources `zia_email_profiles` and `zia_email_profiles_info` - Manage Email Recipient Profiles
+* (`#119 <https://github.com/zscaler/ziacloud-ansible/pull/119>`_) - Added new resource `zia_browser_control_supported_versions_info` - Retrieve the list of supported browser versions
+* (`#119 <https://github.com/zscaler/ziacloud-ansible/pull/119>`_) - Added local JMESPath `query` filtering to the info modules `zia_user_management_info`, `zia_user_management_groups_info`, `zia_user_management_department_info`, `zia_cloud_applications_info`, `zia_cloud_app_control_rule_actions_info`, and `zia_browser_control_supported_versions_info`
+* (`#119 <https://github.com/zscaler/ziacloud-ansible/pull/119>`_) - Added support for the `EXTRANET` profile and `extranet`, `extranet_dns`, `extranet_ip_pool`, `default_extranet_dns`, and `default_extranet_ts_pool` attributes in `zia_location_management`
+
+Bug Fixes:
+---------------
+
+* (`#119 <https://github.com/zscaler/ziacloud-ansible/pull/119>`_) - Fixed `zia_location_management` idempotency for sublocations so re-runs no longer attempt to recreate existing sublocations
+* (`#119 <https://github.com/zscaler/ziacloud-ansible/pull/119>`_) - Fixed `zia_location_management` drift on the `extranet`, `extranet_dns`, and `extranet_ip_pool` attributes by comparing them by `id` only
+* (`#119 <https://github.com/zscaler/ziacloud-ansible/pull/119>`_) - Updated `zia_browser_control_policy` and `zia_browser_control_policy_info` to use the `secure_browsing` SDK service and persist smart browser isolation settings
+
 Version 2.1.0
 ==============
 
 v2.1.0 (February 16, 2026)
--------------------------
+---------------------------
+
 ### Notes
 
 - Python Versions: **v3.9, v3.10, v3.11**

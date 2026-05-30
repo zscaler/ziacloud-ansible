@@ -34,6 +34,7 @@ help:
 	@echo "$(COLOR_OK)  reqs                       	Recreate the requirements.txt file$(COLOR_NONE)"
 	@echo "$(COLOR_WARNING)test$(COLOR_NONE)"
 	@echo "$(COLOR_OK)  test:integration:zia          Execute the full integration test suite$(COLOR_NONE)"
+	@echo "$(COLOR_OK)  test:molecule:ssl-bypass       Run Molecule test for zia_ssl_bypass role$(COLOR_NONE)"
 	@echo "$(COLOR_OK)  old-sanity          		Sanity tests for Ansible v2.9 and Ansible v2.10$(COLOR_NONE)"
 	@echo "$(COLOR_OK)  new-sanity          	        Sanity tests for Ansible v2.11 and above$(COLOR_NONE)"
 	@echo "$(COLOR_OK)  new-sanity-docker          	Sanity tests for Ansible v2.11 and above via Docker$(COLOR_NONE)"
@@ -70,7 +71,7 @@ docs:		## Build collection documentation
 	mv antsibull/collections/zscaler/ziacloud/* docs/source/modules
 	rm -rf antsibull
 	rm -f docs/source/modules/index.rst
-	cd docs && sphinx-build source html
+	cd docs && poetry run sphinx-build source html
 
 .PHONY: clean
 clean:		## Remove all auto-generated files
@@ -89,6 +90,15 @@ test\:integration\:zia:
 	@echo "$(COLOR_ZSCALER)Running zia integration tests...$(COLOR_NONE)"
 	ansible-playbook tests/integration/run_all_tests.yml
 
+.PHONY: test-molecule-ssl-bypass
+test\:molecule\:ssl-bypass:		## Run Molecule test for zia_ssl_bypass role
+	@echo "$(COLOR_ZSCALER)Running Molecule test: zia_ssl_bypass...$(COLOR_NONE)"
+	cd $(CURDIR) && molecule test -s zia_ssl_bypass
+
+.PHONY: test-molecule-ssl-bypass-no-destroy
+test\:molecule\:ssl-bypass\:no-destroy:	## Run Molecule test without cleanup (for debugging)
+	@echo "$(COLOR_ZSCALER)Running Molecule test (no destroy): zia_ssl_bypass...$(COLOR_NONE)"
+	cd $(CURDIR) && molecule test -s zia_ssl_bypass --destroy never
 
 .PHONY: old-sanity
 old-sanity:		## Sanity tests for Ansible v2.9 and Ansible v2.10

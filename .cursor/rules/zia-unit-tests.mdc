@@ -1,0 +1,47 @@
+---
+description: How to write unit tests for ZIA Ansible modules
+globs: tests/unit/**/*.py
+alwaysApply: false
+---
+
+# ZIA Unit Tests
+
+Every module has a matching `tests/unit/plugins/modules/test_zia_<resource>.py`.
+Tests use pytest + `unittest.mock`; SDK clients are always mocked (no network).
+
+## Pattern
+
+```python
+from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import ZIAClientHelper
+from tests.unit.plugins.modules.common.utils import (
+    set_module_args, AnsibleExitJson, AnsibleFailJson, ModuleTestCase, DEFAULT_PROVIDER,
+)
+from unittest.mock import MagicMock, patch
+import pytest
+
+REAL_ARGUMENT_SPEC = ZIAClientHelper.zia_argument_spec()
+
+class TestZIAResource(ModuleTestCase):
+    @pytest.fixture
+    def mock_client(self):
+        with patch("ansible_collections.zscaler.ziacloud.plugins.modules.zia_<resource>.ZIAClientHelper") as mock_class:
+            base_spec = REAL_ARGUMENT_SPEC.copy()
+            base_spec.update(name=dict(type="str", required=True), state=dict(type="str", default="present"))
+            mock_class.zia_argument_spec.return_value = base_spec
+            client_instance = MagicMock()
+            mock_class.return_value = client_instance
+            yield client_instance
+```
+
+## Rules
+
+- Patch `ZIAClientHelper` at the MODULE's import path (the module under test),
+  not the shared one.
+- Mock SDK methods to return tuples: `(MockBox({...}), None, None)` on success,
+  `(None, None, "error")` on failure. `MockBox.as_dict()` returns the dict.
+- Inject args with `set_module_args(provider=DEFAULT_PROVIDER, ...)`; add
+  `_ansible_check_mode=True` for check-mode tests.
+- Call `zia_<resource>.main()` inside `pytest.raises(AnsibleExitJson)` (success)
+  or `AnsibleFailJson` (failure); assert on `result.value.result[...]`.
+- Cover create, update, delete, idempotent no-op, check mode, and error paths.
+- Run: `poetry run pytest tests/unit/plugins/modules/test_zia_<resource>.py -q`.
