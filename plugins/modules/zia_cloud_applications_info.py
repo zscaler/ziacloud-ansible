@@ -40,6 +40,7 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 notes:
     - Check mode is not supported.
+    - C(query) (JMESPath) is applied locally, after any C(app_name) selection, to the returned list of applications.
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
   - zscaler.ziacloud.fragments.documentation
@@ -95,6 +96,15 @@ options:
         - Show count of applications grouped by application category
     type: bool
     required: false
+
+  query:
+    description:
+      - An optional JMESPath expression applied locally to the returned list of applications.
+      - Use this for advanced client-side filtering/projection when C(app_class)/C(app_name) are not enough.
+      - Applied last, after any C(app_name) selection. See U(https://jmespath.org/) for the syntax.
+      - Each entry exposes keys such as C(app), C(app_name), C(parent) and C(parent_name).
+    type: str
+    required: false
 """
 
 EXAMPLES = r"""
@@ -104,6 +114,18 @@ EXAMPLES = r"""
     mode: ssl_policy
     app_class: WEB_MAIL
     group_results: false
+
+- name: Get applications in the WEB_MAIL category (JMESPath filter)
+  zscaler.ziacloud.zia_cloud_applications_info:
+    provider: '{{ provider }}'
+    mode: app_policy
+    query: "[?parent == 'WEB_MAIL']"
+
+- name: Return only the application names (JMESPath projection)
+  zscaler.ziacloud.zia_cloud_applications_info:
+    provider: '{{ provider }}'
+    mode: app_policy
+    query: "[*].app_name"
 """
 
 RETURN = r"""
@@ -139,6 +161,7 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 )
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
     collect_all_items,
+    filter_by_jmespath,
 )
 
 
@@ -150,6 +173,7 @@ def core(module):
         module.fail_json(msg="Parameter 'mode' must be either 'app_policy' or 'ssl_policy'")
 
     app_name = module.params.get("app_name")
+    query = module.params.get("query")
     query_params = {}
 
     supported_params = ["app_class", "group_results"]
@@ -177,6 +201,14 @@ def core(module):
                 module.fail_json(msg=f"Cloud application with name '{app_name}' not found. Available: {available}")
             all_apps = [matched]
 
+        if query:
+            try:
+                all_apps = filter_by_jmespath(all_apps, query)
+            except (ImportError, ValueError) as e:
+                module.fail_json(msg=to_native(e))
+            if all_apps is None:
+                all_apps = []
+
         module.exit_json(changed=False, applications=all_apps)
 
     except Exception as e:
@@ -190,6 +222,7 @@ def main():
             mode=dict(type="str", choices=["app_policy", "ssl_policy"], required=True),
             app_name=dict(type="str", required=False),
             group_results=dict(type="bool", required=False),
+            query=dict(type="str", required=False),
             app_class=dict(
                 type="str",
                 required=False,

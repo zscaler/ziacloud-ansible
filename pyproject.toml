@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ziacloud-ansible"
-version = "2.1.0"
+version = "2.2.0"
 description = "Ansible collection for Zscaler Internet Access"
 authors = ["Zscaler Technology Alliances <devrel@zscaler.com>"]
 license = "MIT"
@@ -11,8 +11,9 @@ repository = "https://github.com/zscaler/ziacloud-ansible"
 package-mode = false
 
 [tool.poetry.dependencies]
-python = ">=3.9.2,<4.0"
-zscaler-sdk-python = ">=1.9.14"
+python = ">=3.10,<4.0"
+zscaler-sdk-python = ">=1.9.30"
+jmespath = ">=1.1.0"
 xmltodict = ">=0.12.0"
 aiohttp = ">=3.8.4"
 dpath = ">=2.1.5"

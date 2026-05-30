@@ -9,7 +9,7 @@ Installation
 
 This collection has the following environment requirements:
 
-* Python 3.8 or higher
+* Python 3.10 or higher
 * Ansible 2.9 or higher
 
 Install the collection using `ansible-galaxy`:

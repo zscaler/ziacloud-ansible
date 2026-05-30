@@ -209,7 +209,7 @@ options:
       - "For all other locations with authentication disabled, it sets profile to SERVER."
     type: str
     default: NONE
-    choices: ['NONE', 'CORPORATE', 'SERVER', 'GUESTWIFI', 'IOT']
+    choices: ['NONE', 'CORPORATE', 'SERVER', 'GUESTWIFI', 'IOT', 'EXTRANET']
   iot_discovery_enabled:
     description: "If this field is set to true, IoT discovery is enabled for this location."
     type: bool
@@ -302,6 +302,51 @@ options:
           - "This is a required field for IP auth type and is not applicable to other auth types."
           - "Note: If you want Zscaler to provision static IP addresses for your organization, contact Zscaler Support."
         type: str
+        required: false
+  default_extranet_dns:
+    description:
+      - Indicates whether the default DNS server of the assigned extranet is used for the location.
+      - Applicable only when C(profile) is set to C(EXTRANET).
+    type: bool
+    required: false
+  default_extranet_ts_pool:
+    description:
+      - Indicates whether the default traffic selector IP pool of the assigned extranet is used for the location.
+      - Applicable only when C(profile) is set to C(EXTRANET).
+    type: bool
+    required: false
+  extranet:
+    description:
+      - The extranet resource that is assigned to the location.
+      - Applicable only when C(profile) is set to C(EXTRANET).
+    type: dict
+    required: false
+    suboptions:
+      id:
+        description: The unique identifier of the extranet.
+        type: int
+        required: false
+  extranet_dns:
+    description:
+      - The extranet DNS server configuration that is assigned to the location.
+      - Applicable only when C(profile) is set to C(EXTRANET).
+    type: dict
+    required: false
+    suboptions:
+      id:
+        description: The unique identifier of the extranet DNS server configuration.
+        type: int
+        required: false
+  extranet_ip_pool:
+    description:
+      - The extranet traffic selector IP pool that is assigned to the location.
+      - Applicable only when C(profile) is set to C(EXTRANET).
+    type: dict
+    required: false
+    suboptions:
+      id:
+        description: The unique identifier of the extranet traffic selector IP pool.
+        type: int
         required: false
 """
 
@@ -414,16 +459,11 @@ def normalize_location(location):
         "comments",
         "child_count",
         "cookies_and_proxy",
-        "default_extranet_dns",
-        "default_extranet_ts_pool",
         "digest_auth_enabled",
         "dynamiclocation_groups",
         "ec_location",
         "exclude_from_dynamic_groups",
         "exclude_from_manual_groups",
-        "extranet",
-        "extranet_dns",
-        "extranet_ip_pool",
         "kerberos_auth",
         "language",
         "match_in_child",
@@ -499,6 +539,11 @@ def core(module):
         "ipv6_dns64_prefix",
         "iot_discovery_enabled",
         "iot_enforce_policy_set",
+        "default_extranet_dns",
+        "default_extranet_ts_pool",
+        "extranet",
+        "extranet_dns",
+        "extranet_ip_pool",
         "vpn_credentials",
     ]
 
@@ -520,22 +565,31 @@ def core(module):
         if result:
             existing_location = result.as_dict()
     else:
-        # Use search to find locations including sublocations by name (fixes idempotency for sublocations)
+        parent_id = location_mgmt.get("parent_id")
+        is_sublocation = parent_id is not None and parent_id != 0
         query_params = {"search": location_name} if location_name else {}
-        result, _unused, error = client.locations.list_locations(query_params=query_params)
-        if error:
-            module.fail_json(msg=f"Error listing locations: {to_native(error)}")
+
+        # Sublocations are NOT returned by the top-level /locations listing, so they
+        # must be looked up under their parent via /locations/{parent_id}/sublocations.
+        # Using list_locations for a sublocation always returns no match, which made the
+        # module attempt a re-create on every run (fixes idempotency for sublocations).
+        if is_sublocation:
+            result, _unused, error = client.locations.list_sub_locations(location_id=parent_id, query_params=query_params)
+            if error:
+                module.fail_json(msg=f"Error listing sub-locations for parent {parent_id}: {to_native(error)}")
+        else:
+            result, _unused, error = client.locations.list_locations(query_params=query_params)
+            if error:
+                module.fail_json(msg=f"Error listing locations: {to_native(error)}")
+
         if result:
-            parent_id = location_mgmt.get("parent_id")
             for location_ in result:
                 if location_.name != location_name:
                     continue
-                loc_dict = location_.as_dict()
-                # For sublocations, also match parent_id to avoid confusing with same-named parent
-                if parent_id is not None and parent_id != 0:
-                    if loc_dict.get("parent_id") != parent_id:
-                        continue
-                existing_location = loc_dict
+                # The sublocations endpoint is already scoped to the parent, so a name
+                # match is sufficient there. For top-level locations, a name match is
+                # likewise sufficient since sublocations are excluded from that listing.
+                existing_location = location_.as_dict()
                 break
 
     # Normalize server's current location data and local "desired" data
@@ -562,6 +616,21 @@ def core(module):
                     "current": list(current_ids_types),
                     "desired": list(desired_ids_types),
                 }
+        elif key in ("extranet", "extranet_dns", "extranet_ip_pool"):
+            # These are id-reference objects. The API echoes back extra fields
+            # (e.g. name), so compare by id only to avoid perpetual drift.
+            if desired_value is None:
+                continue
+
+            desired_ref_id = (desired_value or {}).get("id")
+            current_ref_id = (current_value or {}).get("id")
+            if desired_ref_id != current_ref_id:
+                differences_detected = True
+                differences_summary[key] = {
+                    "current": current_value,
+                    "desired": desired_value,
+                }
+                module.warn(f"Difference detected in {key}. " f"Current: {current_value}, " f"Desired: {desired_value}")
         else:
             # If desired is None, skip. (Means we didn't want to set that field at all)
             if desired_value is None:
@@ -628,6 +697,11 @@ def core(module):
                         "iot_discovery_enabled": desired_location.get("iot_discovery_enabled"),
                         "iot_enforce_policy_set": desired_location.get("iot_enforce_policy_set"),
                         "vpn_credentials": desired_location.get("vpn_credentials"),
+                        "default_extranet_dns": desired_location.get("default_extranet_dns"),
+                        "default_extranet_ts_pool": desired_location.get("default_extranet_ts_pool"),
+                        "extranet": desired_location.get("extranet"),
+                        "extranet_dns": desired_location.get("extranet_dns"),
+                        "extranet_ip_pool": desired_location.get("extranet_ip_pool"),
                     }
                 )
                 module.warn("Payload Update for SDK: {}".format(update_location))
@@ -680,6 +754,11 @@ def core(module):
                     "iot_discovery_enabled": desired_location.get("iot_discovery_enabled"),
                     "iot_enforce_policy_set": desired_location.get("iot_enforce_policy_set"),
                     "vpn_credentials": desired_location.get("vpn_credentials"),
+                    "default_extranet_dns": desired_location.get("default_extranet_dns"),
+                    "default_extranet_ts_pool": desired_location.get("default_extranet_ts_pool"),
+                    "extranet": desired_location.get("extranet"),
+                    "extranet_dns": desired_location.get("extranet_dns"),
+                    "extranet_ip_pool": desired_location.get("extranet_ip_pool"),
                 }
             )
             module.warn("Payload Update for SDK: {}".format(create_location))
@@ -702,6 +781,15 @@ def core(module):
 
 def main():
     argument_spec = ZIAClientHelper.zia_argument_spec()
+
+    id_spec = dict(
+        type="dict",
+        required=False,
+        options=dict(
+            id=dict(type="int", required=False),
+        ),
+    )
+
     argument_spec.update(
         id=dict(type="int", required=False),
         name=dict(type="str", required=True),
@@ -747,10 +835,12 @@ def main():
         iot_enforce_policy_set=dict(type="bool", required=False),
         up_bandwidth=dict(type="int", required=False),
         dn_bandwidth=dict(type="int", required=False),
+        default_extranet_dns=dict(type="bool", required=False),
+        default_extranet_ts_pool=dict(type="bool", required=False),
         profile=dict(
             type="str",
             default="NONE",
-            choices=["NONE", "CORPORATE", "SERVER", "GUESTWIFI", "IOT"],
+            choices=["NONE", "CORPORATE", "SERVER", "GUESTWIFI", "IOT", "EXTRANET"],
         ),
         vpn_credentials=dict(
             type="list",
@@ -763,6 +853,9 @@ def main():
             ),
             required=False,
         ),
+        extranet=id_spec,
+        extranet_dns=id_spec,
+        extranet_ip_pool=id_spec,
         state=dict(type="str", choices=["present", "absent"], default="present"),
     )
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)

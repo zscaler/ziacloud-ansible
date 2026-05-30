@@ -39,6 +39,7 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 notes:
     - Check mode is not supported.
+    - C(query) (JMESPath) is applied locally, after any C(id)/C(name) selection, to the returned list of groups.
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
   - zscaler.ziacloud.fragments.documentation
@@ -52,6 +53,14 @@ options:
     description: "Group name."
     required: false
     type: str
+  query:
+    description:
+      - An optional JMESPath expression applied locally to the returned list of groups.
+      - Use this for advanced client-side filtering/projection when the C(name) search is not enough.
+      - Applied last, after any C(id)/C(name) selection. See U(https://jmespath.org/) for the syntax.
+      - Each entry exposes keys such as C(id) and C(name).
+    required: false
+    type: str
 """
 
 EXAMPLES = r"""
@@ -63,6 +72,16 @@ EXAMPLES = r"""
   zscaler.ziacloud.zia_user_management_groups_info:
     provider: '{{ provider }}'
     name: "marketing"
+
+- name: Get groups whose name starts with 'A' (JMESPath)
+  zscaler.ziacloud.zia_user_management_groups_info:
+    provider: '{{ provider }}'
+    query: "[?starts_with(name, 'A')]"
+
+- name: Return only the group names (JMESPath projection)
+  zscaler.ziacloud.zia_user_management_groups_info:
+    provider: '{{ provider }}'
+    query: "[*].name"
 """
 
 RETURN = r"""
@@ -96,12 +115,14 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 )
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
     collect_all_items,
+    filter_by_jmespath,
 )
 
 
 def core(module):
     group_id = module.params.get("id")
     group_name = module.params.get("name")
+    query = module.params.get("query")
 
     client = ZIAClientHelper(module)
     groups = []
@@ -131,6 +152,14 @@ def core(module):
         else:
             groups = group_list
 
+    if query:
+        try:
+            groups = filter_by_jmespath(groups, query)
+        except (ImportError, ValueError) as e:
+            module.fail_json(msg=to_native(e))
+        if groups is None:
+            groups = []
+
     module.exit_json(changed=False, groups=groups)
 
 
@@ -139,6 +168,7 @@ def main():
     argument_spec.update(
         name=dict(type="str", required=False),
         id=dict(type="int", required=False),
+        query=dict(type="str", required=False),
     )
 
     module = AnsibleModule(

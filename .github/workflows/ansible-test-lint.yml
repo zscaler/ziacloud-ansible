@@ -16,7 +16,7 @@ permissions:
 env:
   NAMESPACE: zscaler
   COLLECTION_NAME: ziacloud
-  PYTHON_VERSION: 3.8
+  PYTHON_VERSION: 3.10
 
 jobs:
 

@@ -63,6 +63,46 @@ except ImportError:
     BABEL_IMPORT_ERROR = "The 'babel' module is required. Please install it using 'pip install Babel'."
 
 
+try:
+    import jmespath
+    from jmespath.exceptions import JMESPathError
+
+    HAS_JMESPATH = True
+    JMESPATH_IMPORT_ERROR = None
+except ImportError:
+    jmespath = None
+    JMESPathError = Exception
+    HAS_JMESPATH = False
+    JMESPATH_IMPORT_ERROR = missing_required_lib("jmespath")
+
+
+def filter_by_jmespath(data, expression):
+    """
+    Locally filter or transform an API result using a JMESPath expression.
+
+    Useful for info modules where the API returns a flat list with no
+    server-side query parameters, so filtering must happen client-side. This
+    mirrors the JMESPath client-side filtering exposed by the Zscaler SDK.
+
+    Args:
+        data: The data structure to query (typically a list of dicts).
+        expression (str): A JMESPath expression. See https://jmespath.org/.
+
+    Returns:
+        The result of evaluating the expression against ``data``.
+
+    Raises:
+        ImportError: If the ``jmespath`` library is not installed.
+        ValueError: If the JMESPath expression is invalid.
+    """
+    if not HAS_JMESPATH:
+        raise ImportError(JMESPATH_IMPORT_ERROR)
+    try:
+        return jmespath.search(expression, data)
+    except JMESPathError as e:
+        raise ValueError(f"Invalid JMESPath expression '{expression}': {e}")
+
+
 def to_snake_case(string):
     return re.sub(r"(?<!^)(?=[A-Z])", "_", string).lower()
 

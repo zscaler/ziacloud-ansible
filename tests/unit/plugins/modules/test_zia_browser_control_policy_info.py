@@ -49,7 +49,7 @@ class TestBrowserControlPolicyinfoModule(ModuleTestCase):
             client_instance = MagicMock()
             mock_class.return_value = client_instance
 
-            client_instance.browser_control_settings.get_browser_control_settings.return_value = (
+            client_instance.secure_browsing.get_browser_control_settings.return_value = (
                 MockBox({"id": 1, "name": "test", "whitelist_urls": [], "blacklist_urls": []}),
                 None,
                 None,
@@ -57,7 +57,7 @@ class TestBrowserControlPolicyinfoModule(ModuleTestCase):
             yield client_instance
 
     def test_list_or_get(self, mock_client):
-        mock_client.browser_control_settings.get_browser_control_settings.return_value = (
+        mock_client.secure_browsing.get_browser_control_settings.return_value = (
             MockBox({"id": 1, "name": "test", "whitelist_urls": [], "blacklist_urls": []}),
             None,
             None,
@@ -70,7 +70,7 @@ class TestBrowserControlPolicyinfoModule(ModuleTestCase):
         assert result.value.result["changed"] is False
 
     def test_api_error(self, mock_client):
-        mock_client.browser_control_settings.get_browser_control_settings.return_value = (None, None, "API Error")
+        mock_client.secure_browsing.get_browser_control_settings.return_value = (None, None, "API Error")
         set_module_args(provider=DEFAULT_PROVIDER)
         from ansible_collections.zscaler.ziacloud.plugins.modules import zia_browser_control_policy_info
 

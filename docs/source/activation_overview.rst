@@ -26,10 +26,16 @@ Activation Options with the Ansible Collection
 
 The collection supports the following ways to activate changes:
 
-| Method | Description |
-|--------|-------------|
-| **``zia_activation_status`` module** | Add the module as the last task (or a dedicated play) in your playbook. It activates pending changes after your configuration tasks succeed. See :doc:`examples` for usage. |
-| **ZIA Admin UI** | After running your playbook, log into the ZIA Admin Console and activate changes manually when ready. |
+.. list-table::
+   :header-rows: 1
+   :widths: 30 70
+
+   * - Method
+     - Description
+   * - **``zia_activation_status`` module**
+     - Add the module as the last task (or a dedicated play) in your playbook. It activates pending changes after your configuration tasks succeed. See :doc:`examples` for usage.
+   * - **ZIA Admin UI**
+     - After running your playbook, log into the ZIA Admin Console and activate changes manually when ready.
 
 .. note::
    The ZIA platform has its own auto-activation behavior, independent of the Ansible collection. Pending changes may be activated automatically when: (1) the session has been inactive for a configurable period (e.g. 30 minutes, see Advanced Settings), or (2) an admin logs out. This applies to all API-based changes, including Ansible. If you do not want changes to go live until you decide, use the ``zia_activation_status`` module and run it only when you are ready, or push changes only when you intend them to take effect.

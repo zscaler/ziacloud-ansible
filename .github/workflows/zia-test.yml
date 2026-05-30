@@ -1,15 +1,9 @@
 name: ZIA Test
 
+# Integration tests are expensive and hit live tenants, so they run on demand
+# only (manually via the Actions tab or the GitHub API). They intentionally do
+# NOT run on pull_request, merge_group, push, or any schedule.
 on:
-  pull_request:
-    types: [opened, synchronize]
-  merge_group:
-    types: [checks_requested]
-  push:
-    branches:
-      - master
-  schedule:
-    - cron: '0 14 * * 1'  # Mondays 06:00 PST (14:00 UTC)
   workflow_dispatch:
 
 permissions:

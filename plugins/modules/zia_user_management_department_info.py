@@ -39,6 +39,7 @@ requirements:
     - Zscaler SDK Python can be obtained from PyPI U(https://pypi.org/project/zscaler-sdk-python/)
 notes:
     - Check mode is not supported.
+    - C(query) (JMESPath) is applied locally, after any C(id)/C(name) selection, to the returned list of departments.
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
   - zscaler.ziacloud.fragments.documentation
@@ -52,6 +53,14 @@ options:
     description: "Department name."
     required: false
     type: str
+  query:
+    description:
+      - An optional JMESPath expression applied locally to the returned list of departments.
+      - Use this for advanced client-side filtering/projection when the C(name) search is not enough.
+      - Applied last, after any C(id)/C(name) selection. See U(https://jmespath.org/) for the syntax.
+      - Each entry exposes keys such as C(id), C(name) and C(comments).
+    required: false
+    type: str
 """
 
 EXAMPLES = r"""
@@ -63,6 +72,16 @@ EXAMPLES = r"""
   zscaler.ziacloud.zia_user_management_department_info:
     provider: '{{ provider }}'
     name: "marketing"
+
+- name: Get departments whose name starts with 'A' (JMESPath)
+  zscaler.ziacloud.zia_user_management_department_info:
+    provider: '{{ provider }}'
+    query: "[?starts_with(name, 'A')]"
+
+- name: Return only the department names (JMESPath projection)
+  zscaler.ziacloud.zia_user_management_department_info:
+    provider: '{{ provider }}'
+    query: "[*].name"
 """
 
 RETURN = r"""
@@ -99,6 +118,7 @@ from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.utils import (
     collect_all_items,
+    filter_by_jmespath,
 )
 from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import (
     ZIAClientHelper,
@@ -108,6 +128,7 @@ from ansible_collections.zscaler.ziacloud.plugins.module_utils.zia_client import
 def core(module):
     department_id = module.params.get("id")
     department_name = module.params.get("name")
+    query = module.params.get("query")
 
     client = ZIAClientHelper(module)
     departments = []
@@ -137,6 +158,14 @@ def core(module):
         else:
             departments = department_list
 
+    if query:
+        try:
+            departments = filter_by_jmespath(departments, query)
+        except (ImportError, ValueError) as e:
+            module.fail_json(msg=to_native(e))
+        if departments is None:
+            departments = []
+
     module.exit_json(changed=False, departments=departments)
 
 
@@ -145,6 +174,7 @@ def main():
     argument_spec.update(
         name=dict(type="str", required=False),
         id=dict(type="int", required=False),
+        query=dict(type="str", required=False),
     )
 
     module = AnsibleModule(

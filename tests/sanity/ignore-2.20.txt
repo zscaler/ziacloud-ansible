@@ -149,3 +149,8 @@ plugins/modules/zia_casb_dlp_rules_info.py validate-modules:missing-gplv3-licens
 plugins/modules/zia_cloud_app_control_rule_actions_info.py validate-modules:missing-gplv3-license
 plugins/modules/zia_virtual_service_edge_node.py validate-modules:missing-gplv3-license
 plugins/modules/zia_virtual_service_edge_node_info.py validate-modules:missing-gplv3-license
+plugins/modules/zia_ips_signature_rules.py validate-modules:missing-gplv3-license
+plugins/modules/zia_ips_signature_rules_info.py validate-modules:missing-gplv3-license
+plugins/modules/zia_browser_control_supported_versions_info.py validate-modules:missing-gplv3-license
+plugins/modules/zia_email_profiles.py validate-modules:missing-gplv3-license
+plugins/modules/zia_email_profiles_info.py validate-modules:missing-gplv3-license

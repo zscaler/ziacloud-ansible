@@ -42,6 +42,7 @@ requirements:
 notes:
     - Check mode is supported.
     - This is a singleton resource. state=absent performs a no-op (policy cannot be deleted).
+    - When C(enable_smart_browser_isolation) is true, C(smart_isolation_profile) is required.
 extends_documentation_fragment:
   - zscaler.ziacloud.fragments.provider
   - zscaler.ziacloud.fragments.documentation
@@ -116,7 +117,9 @@ options:
     required: false
     type: bool
   enable_smart_browser_isolation:
-    description: If true, Smart Browser Isolation is enabled.
+    description:
+      - If true, Smart Browser Isolation is enabled.
+      - When set to true, C(smart_isolation_profile) is required.
     required: false
     type: bool
   smart_isolation_profile_id:
@@ -126,6 +129,7 @@ options:
   smart_isolation_profile:
     description:
       - The browser isolation profile. Provide as a dict with C(id) key (UUID string).
+      - Required when C(enable_smart_browser_isolation) is true.
       - Example a dict with C(id) key containing a UUID such as C(161d0907-0a57-4aab-98c2-eccbd651c448).
     required: false
     type: dict
@@ -331,7 +335,7 @@ def core(module):
             policy_params.pop("smart_isolation_profile", None)
 
     # Always fetch current state (singleton)
-    result, _unused, error = client.browser_control_settings.get_browser_control_settings()
+    result, _unused, error = client.secure_browsing.get_browser_control_settings()
     if error:
         module.fail_json(msg=f"Error retrieving Browser Control policy: {to_native(error)}")
 
@@ -375,10 +379,16 @@ def core(module):
                 ids = _extract_ids_from_refs(update_params[key])
                 update_params[key] = [int(x) for x in ids] if ids else []
 
-        updated, _unused, error = client.browser_control_settings.update_browser_control_settings(**update_params)
+        _updated, _unused, error = client.secure_browsing.update_browser_control_settings(**update_params)
         if error:
             module.fail_json(msg=f"Error updating Browser Control policy: {to_native(error)}")
-        data = updated.as_dict() if updated and hasattr(updated, "as_dict") else updated
+
+        # Re-fetch the singleton to ensure the returned data reflects the
+        # persisted state (including Smart Browser Isolation attributes).
+        refreshed, _unused, error = client.secure_browsing.get_browser_control_settings()
+        if error:
+            module.fail_json(msg=f"Error retrieving Browser Control policy after update: {to_native(error)}")
+        data = refreshed.as_dict() if refreshed and hasattr(refreshed, "as_dict") else refreshed
         module.exit_json(changed=True, data=data)
     else:
         module.exit_json(changed=False, data=existing_policy)
@@ -411,7 +421,13 @@ def main():
             state=dict(type="str", choices=["present", "absent"], default="present"),
         )
     )
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=True,
+        required_if=[
+            ["enable_smart_browser_isolation", True, ["smart_isolation_profile"]],
+        ],
+    )
     try:
         core(module)
     except Exception as e:

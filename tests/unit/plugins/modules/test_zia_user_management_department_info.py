@@ -91,3 +91,60 @@ class TestUserManagementDepartmentinfoModule(ModuleTestCase):
 
         with pytest.raises(AnsibleFailJson):
             zia_user_management_department_info.main()
+
+    def test_jmespath_query_filter(self, mock_client):
+        mock_client.user_management.list_departments.return_value = (
+            [
+                MockBox({"id": 1, "name": "A000"}),
+                MockBox({"id": 2, "name": "marketing"}),
+                MockBox({"id": 3, "name": "A001"}),
+            ],
+            None,
+            None,
+        )
+        set_module_args(provider=DEFAULT_PROVIDER, query="[?starts_with(name, 'A')]")
+        from ansible_collections.zscaler.ziacloud.plugins.modules import zia_user_management_department_info
+
+        with pytest.raises(AnsibleExitJson) as result:
+            zia_user_management_department_info.main()
+        departments = result.value.result["departments"]
+        assert [d["name"] for d in departments] == ["A000", "A001"]
+
+    def test_jmespath_query_projection(self, mock_client):
+        mock_client.user_management.list_departments.return_value = (
+            [MockBox({"id": 1, "name": "A000"}), MockBox({"id": 2, "name": "marketing"})],
+            None,
+            None,
+        )
+        set_module_args(provider=DEFAULT_PROVIDER, query="[*].name")
+        from ansible_collections.zscaler.ziacloud.plugins.modules import zia_user_management_department_info
+
+        with pytest.raises(AnsibleExitJson) as result:
+            zia_user_management_department_info.main()
+        assert result.value.result["departments"] == ["A000", "marketing"]
+
+    def test_jmespath_query_no_match_returns_empty(self, mock_client):
+        mock_client.user_management.list_departments.return_value = (
+            [MockBox({"id": 1, "name": "marketing"})],
+            None,
+            None,
+        )
+        set_module_args(provider=DEFAULT_PROVIDER, query="[?name == 'does-not-exist']")
+        from ansible_collections.zscaler.ziacloud.plugins.modules import zia_user_management_department_info
+
+        with pytest.raises(AnsibleExitJson) as result:
+            zia_user_management_department_info.main()
+        assert result.value.result["departments"] == []
+
+    def test_invalid_jmespath_query_fails(self, mock_client):
+        mock_client.user_management.list_departments.return_value = (
+            [MockBox({"id": 1, "name": "marketing"})],
+            None,
+            None,
+        )
+        set_module_args(provider=DEFAULT_PROVIDER, query="[?broken(")
+        from ansible_collections.zscaler.ziacloud.plugins.modules import zia_user_management_department_info
+
+        with pytest.raises(AnsibleFailJson) as result:
+            zia_user_management_department_info.main()
+        assert "JMESPath" in result.value.result["msg"]
