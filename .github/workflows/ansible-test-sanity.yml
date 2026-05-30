@@ -27,14 +27,20 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - ansible: "2.15"
-            python_ver: "3.11"
           - ansible: "2.16"
             python_ver: "3.11"
           - ansible: "2.17"
             python_ver: "3.11"
           - ansible: "2.18"
             python_ver: "3.11"
+          - ansible: "2.18"
+            python_ver: "3.12"
+          - ansible: "2.19"
+            python_ver: "3.11"
+          - ansible: "2.19"
+            python_ver: "3.12"
+          - ansible: "2.20"
+            python_ver: "3.12"
     defaults:
       run:
         working-directory: ./ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}

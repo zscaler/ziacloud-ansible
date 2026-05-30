@@ -23,16 +23,20 @@ jobs:
     strategy:
       matrix:
         include:
-          - ansible: "2.15"
-            python_ver: "3.11"
           - ansible: "2.16"
             python_ver: "3.11"
           - ansible: "2.17"
             python_ver: "3.11"
           - ansible: "2.18"
             python_ver: "3.11"
+          - ansible: "2.18"
+            python_ver: "3.12"
           - ansible: "2.19"
             python_ver: "3.11"
+          - ansible: "2.19"
+            python_ver: "3.12"
+          - ansible: "2.20"
+            python_ver: "3.12"
 
     runs-on: ubuntu-latest
     defaults:
@@ -145,7 +149,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Store built collection
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: collection
           path: |
@@ -208,7 +212,7 @@ jobs:
           mkdir -p ziacloud-ansible/ansible_collections/zscaler/ziacloud
 
       - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4.8.0
+        uses: JamesIves/github-pages-deploy-action@v4.6.3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: gh-pages
