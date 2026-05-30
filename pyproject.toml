@@ -55,7 +55,7 @@ pycodestyle = "*"
 # from requirements.txt
 certifi = ">=2023.11.17"
 chardet = ">=5.2.0"
-idna = "3.10"
+idna = "3.15"
 requests = ">=2.22.0"
 urllib3 = ">=2.0"
 
