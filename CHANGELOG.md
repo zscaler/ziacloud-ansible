@@ -1,5 +1,25 @@
 # Zscaler Internet Access (ZIA) Ansible Collection Changelog
 
+## v2.2.3 (June 1, 2026)
+
+### Notes
+
+- Python Versions: **v3.9, v3.10, v3.11**
+
+#### Internals
+
+[#123](https://github.com/zscaler/ziacloud-ansible/pull/123) - Fixed sanity CI so the matrix-pinned `ansible-core` is installed after `poetry install` (preventing an unintended upgrade that broke `validate-modules`), bumped `requires_ansible` to `>=2.16.0`, added a `2.16`/Python 3.12 sanity job, and corrected README license badge and relative links
+
+## v2.2.2 (June 1, 2026)
+
+### Notes
+
+- Python Versions: **v3.9, v3.10, v3.11**
+
+#### Internals
+
+[#122](https://github.com/zscaler/ziacloud-ansible/pull/122) - Fixed sanity CI so the matrix-pinned `ansible-core` is installed after `poetry install` (preventing an unintended upgrade that broke `validate-modules`), bumped `requires_ansible` to `>=2.16.0`, added a `2.16`/Python 3.12 sanity job, and corrected README license badge and relative links
+
 ## v2.2.1 (June 1, 2026)
 
 ### Notes
@@ -157,7 +177,7 @@
 
 ⚠️ **WARNING**: Please refer to the [Authentication Page](https://ziacloud-ansible.readthedocs.io/en/latest/authentication.html) for details on authentication requirements prior to upgrading your collection configuration.
 
-⚠️ **WARNING**: Attention Government customers. OneAPI and Zidentity is not currently supported for the following clouds: `zscalergov` and `zscalerten`. Refer to the [Legacy API Framework](https://github.com/zscaler/terraform-provider-zpa/blob/master/docs/index) section for more information on how authenticate to these environments using the legacy method.
+⚠️ **WARNING**: Attention Government customers. OneAPI and Zidentity is not currently supported for the following clouds: `zscalergov` and `zscalerten`. Refer to the [Legacy API Framework](https://github.com/zscaler/ziacloud-ansible/blob/master/README.md#legacy-api-framework) section for more information on how authenticate to these environments using the legacy method.
 
 ### ENV VARS: ZIA Sandbox Submission - BREAKING CHANGES
 

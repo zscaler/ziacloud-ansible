@@ -5,7 +5,7 @@
 [![sanity](https://github.com/zscaler/ziacloud-ansible/actions/workflows/ansible-test-sanity.yml/badge.svg?branch=master)](https://github.com/zscaler/ziacloud-ansible/actions/workflows/ansible-test-sanity.yml)
 [![Documentation Status](https://readthedocs.org/projects/ziacloud-ansible/badge/?version=latest)](https://ziacloud-ansible.readthedocs.io/en/latest/?badge=latest)
 [![License](https://img.shields.io/github/license/zscaler/ziacloud-ansible?color=blue)](https://github.com/zscaler/ziacloud-ansible/blob/master/LICENSE)
-[![Zscaler Community](https://img.shields.io/badge/zscaler-community-blue)](https://community.zscaler.com/)
+[![Zscaler Community](https://img.shields.io/badge/zscaler-community-blue)](https://community.zscaler.com/s/)
 
 ## Zscaler Support
 
