@@ -4,7 +4,7 @@
 [![Ansible Lint](https://github.com/zscaler/ziacloud-ansible/actions/workflows/ansible-test-lint.yml/badge.svg?branch=master)](https://github.com/zscaler/ziacloud-ansible/actions/workflows/ansible-test-lint.yml)
 [![sanity](https://github.com/zscaler/ziacloud-ansible/actions/workflows/ansible-test-sanity.yml/badge.svg?branch=master)](https://github.com/zscaler/ziacloud-ansible/actions/workflows/ansible-test-sanity.yml)
 [![Documentation Status](https://readthedocs.org/projects/ziacloud-ansible/badge/?version=latest)](https://ziacloud-ansible.readthedocs.io/en/latest/?badge=latest)
-[![License](https://img.shields.io/github/license/zscaler/ziacloud-ansible?color=blue)](https://github.com/zscaler/ziacloud-ansible/v2/blob/master/LICENSE)
+[![License](https://img.shields.io/github/license/zscaler/ziacloud-ansible?color=blue)](https://github.com/zscaler/ziacloud-ansible/blob/master/LICENSE)
 [![Zscaler Community](https://img.shields.io/badge/zscaler-community-blue)](https://community.zscaler.com/)
 
 ## Zscaler Support
@@ -277,13 +277,13 @@ poetry run pytest tests/unit/ --cov=plugins --cov-branch --cov-report=xml:covera
 poetry run python scripts/check_coverage.py --line-min 70 --branch-min 48
 ```
 
-This produces `coverage.xml` and `htmlcov/` (open `htmlcov/index.html` for the report). See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+This produces `coverage.xml` and `htmlcov/` (open `htmlcov/index.html` for the report). See [CONTRIBUTING.md](https://github.com/zscaler/ziacloud-ansible/blob/master/CONTRIBUTING.md) for details.
 
 ## Releasing, changelogs, versioning and deprecation
 
 The intended release frequency for major and minor versions are performed whenever there is a need for fixing issues or to address security concerns.
 
-Changelog details are created automatically and more recently can be found [here](./CHANGELOG.md), but also the full history is [here](https://github.com/zscaler/ziacloud-ansible/releases).
+Changelog details are created automatically and more recently can be found [here](https://github.com/zscaler/ziacloud-ansible/blob/master/CHANGELOG.md), but also the full history is [here](https://github.com/zscaler/ziacloud-ansible/releases).
 
 [Semantic versioning](https://semver.org/) is adhered to for this project.
 
