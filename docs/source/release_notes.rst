@@ -9,6 +9,21 @@ Releases
 Zscaler Internet Access (ZIA) Ansible Collection Changelog
 ----------------------------------------------------------
 
+Version 2.2.4
+==============
+
+v2.2.4 (June 2, 2026)
+---------------------------
+
+Notes
+-------
+
+- Python Versions: **v3.9, v3.10, v3.11**
+
+#### Internals
+
+* (`#127 <https://github.com/zscaler/ziacloud-ansible/pull/127>`_) - Added the Red Hat partner certification checker workflow, set `license: [MIT]` in `galaxy.yml`, and resolved README link and version-statement issues raised during certification review
+
 Version 2.2.3
 ==============
 
