@@ -24,7 +24,7 @@ Notes
 
 * (`#123 <https://github.com/zscaler/ziacloud-ansible/pull/123>`_) - Fixed sanity CI so the matrix-pinned `ansible-core` is installed after `poetry install` (preventing an unintended upgrade that broke `validate-modules`), bumped `requires_ansible` to `>=2.16.0`, added a `2.16`/Python 3.12 sanity job, and corrected README license badge and relative links
 
-* (`#123 <https://github.com/zscaler/ziacloud-ansible/pull/123>`_) - Added the Red Hat partner certification checker workflow, set `license: [MIT]` in `galaxy.yml`, and resolved README link and version-statement issues raised during certification review
+* (`#127 <https://github.com/zscaler/ziacloud-ansible/pull/127>`_) - Added the Red Hat partner certification checker workflow, set `license: [MIT]` in `galaxy.yml`, and resolved README link and version-statement issues raised during certification review
 
 * (`#123 <https://github.com/zscaler/ziacloud-ansible/pull/123>`_) - Release v2.2.3
 
