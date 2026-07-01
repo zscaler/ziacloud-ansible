@@ -36,7 +36,7 @@ concurrency:
 # for each affected version of ansible-core (for example, `tests/sanity/ignore-2.18.txt`) and add corresponding entries.
 jobs:
   call:
-    uses: ansible-collections/partner-certification-checker/.github/workflows/certification-reusable.yml@v2.0.0 # zizmor: ignore[unpinned-uses]
+    uses: ansible-collections/partner-certification-checker/.github/workflows/certification-reusable.yml@v3.0.0 # zizmor: ignore[unpinned-uses]
     # This collection requires a minimum of ansible-core 2.16.0
     # (meta/runtime.yml: requires_ansible ">=2.16.0"), which is the
     # reusable workflow default, so no overrides are needed.
